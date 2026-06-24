@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <!-- Background -->
+  <rect x="15" y="15" width="130" height="130" rx="8" fill="#FFF5F5"/>
+  <!-- Trend line chart (downward) -->
+  <polyline points="30,30 50,50 70,40 90,90 110,110 130,120" stroke="#E74C3C" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Area under line (fill) -->
+  <polygon points="30,30 50,50 70,40 90,90 110,110 130,120 130,130 30,130" fill="#E74C3C" opacity="0.15"/>
+  <!-- Data points (circles on line) -->
+  <circle cx="30" cy="30" r="5" fill="#E74C3C" stroke="white" stroke-width="2"/>
+  <circle cx="50" cy="50" r="4" fill="#E74C3C"/>
+  <circle cx="70" cy="40" r="4" fill="#E74C3C"/>
+  <circle cx="90" cy="90" r="4" fill="#E74C3C"/>
+  <circle cx="110" cy="110" r="4" fill="#E74C3C"/>
+  <circle cx="130" cy="120" r="4" fill="#E74C3C"/>
+  <!-- Down arrow at end -->
+  <polygon points="130,125 122,110 138,110" fill="#E74C3C"/>
+  <!-- Grid lines (faint) -->
+  <line x1="15" y1="80" x2="145" y2="80" stroke="#DEE2E6" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="15" y1="50" x2="145" y2="50" stroke="#DEE2E6" stroke-width="1" stroke-dasharray="3,3"/>
+  <!-- Percentage label -->
+  <text x="30" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="#E74C3C" font-family="Arial">-32%</text>
+</svg>

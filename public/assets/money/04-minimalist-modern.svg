@@ -1,0 +1,28 @@
+<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad-money-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad-money-green" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#52C41A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#389E0D;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Stack of money bills -->
+  <rect x="45" y="55" width="70" height="12" rx="2" fill="url(#grad-money-green)" stroke="#27AE60" stroke-width="1.5" opacity="0.9"/>
+  <rect x="45" y="68" width="70" height="12" rx="2" fill="url(#grad-money-gold)" stroke="#D4A300" stroke-width="1.5" opacity="0.9"/>
+  <rect x="45" y="81" width="70" height="12" rx="2" fill="url(#grad-money-green)" stroke="#27AE60" stroke-width="1.5" opacity="0.9"/>
+
+  <!-- Dollar sign overlay -->
+  <g opacity="0.7">
+    <circle cx="80" cy="74" r="8" fill="none" stroke="white" stroke-width="1.5"/>
+    <path d="M 80 70 L 80 78" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 77 72 L 83 72" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 77 76 L 83 76" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Subtle shine/highlight -->
+  <rect x="48" y="57" width="60" height="3" rx="1.5" fill="white" opacity="0.3"/>
+</svg>

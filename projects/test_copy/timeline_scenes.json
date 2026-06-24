@@ -1,0 +1,374 @@
+{
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 2700,
+  "background": "#FAFAF8",
+  "audio": "audio/voice.mp3",
+  "scenes": [
+    {
+      "id": "scene_hook_stats",
+      "label": "Hook — 3 nước cho tiền, sinh vẫn giảm",
+      "startFrame": 0,
+      "durationFrames": 390,
+      "layout": "SOLO",
+      "backgroundSrc": "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)",
+      "narration": "Ở Hàn Quốc thì chính phủ bảo là đẻ một đứa con là được 2 triệu tức là đâu khoảng tầm 40 triệu tiền mình ấy. Ông Hungari thì còn chơi lớn hơn là phụ nữ mà để từ bốn đứa trở lên là được miễn thuế thu nhập cá nhân suốt đời luôn. Còn Nhật Bản thì lập ra hẳn một cơ quan mà chuyên đi lo trẻ em với gia đình. Cơ mà ở mấy nước này thì tỉ lệ sinh nó vẫn giảm.",
+      "entities": [
+        {
+          "assetId": "cat_host",
+          "src": "characters/cat_explain",
+          "position": { "x": 0.5, "y": 0.52 },
+          "scale": 1.8,
+          "enterAnimation": "popIn",
+          "animationDuration": 20,
+          "emphasize": { "animation": "bounce", "delay": 80, "duration": 25 }
+        },
+        {
+          "assetId": "icon_money_korea",
+          "src": "money/01-flat-bold-color",
+          "position": { "x": 0.22, "y": 0.30 },
+          "scale": 1.0,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 40,
+          "animationDuration": 18
+        },
+        {
+          "assetId": "icon_tax_hungary",
+          "src": "tax/01-flat-bold-color",
+          "position": { "x": 0.78, "y": 0.30 },
+          "scale": 1.0,
+          "enterAnimation": "slideRight",
+          "enterDelay": 100,
+          "animationDuration": 18
+        },
+        {
+          "assetId": "icon_family_japan",
+          "src": "family/01-flat-bold-color",
+          "position": { "x": 0.5, "y": 0.76 },
+          "scale": 1.1,
+          "enterAnimation": "slideUp",
+          "enterDelay": 160,
+          "animationDuration": 18
+        },
+        {
+          "assetId": "icon_trending_down",
+          "src": "trending_down/01-flat-bold-color",
+          "position": { "x": 0.5, "y": 0.30 },
+          "scale": 1.2,
+          "enterAnimation": "zoomIn",
+          "enterDelay": 280,
+          "animationDuration": 22,
+          "clearPrevious": ["icon_money_korea", "icon_tax_hungary", "icon_family_japan"]
+        }
+      ],
+      "texts": [
+        {
+          "id": "title_hook",
+          "content": "Cho 1 tỷ vẫn không chịu đẻ — tại sao?",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 15,
+          "duration": 150
+        },
+        {
+          "id": "callout_result",
+          "content": "Hàn Quốc · Hungary · Nhật — tỉ lệ sinh vẫn giảm",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 190,
+          "duration": 180
+        }
+      ],
+      "transition": { "style": "wipe", "duration": 15 },
+      "clearPrevious": false
+    },
+    {
+      "id": "scene_paradox_qa",
+      "label": "Nghịch lý — tại sao? → phải nhìn từ hẹn hò",
+      "startFrame": 390,
+      "durationFrames": 510,
+      "layout": "QA_REVEAL",
+      "backgroundSrc": "linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)",
+      "narration": "Ờ tôi ngồi đọc mấy cái số liệu xong rồi cũng thắc mắc phết là tại sao cứ cho tiền mà người ta vẫn không chịu đẻ nhỉ. Tại vì kiểu logic bình thường thì là kiểu chắc là tại nghèo mới không dám đẻ. Thì bây giờ có tiền này thì càng phải đẻ đúng không? Ngày xưa nghèo còn đẻ nhiều thế cơ mà. Thì để giải thích được cái này thì chúng ta sẽ phải quay về bước đầu tiên của lập gia đình là hẹn hò.",
+      "entities": [
+        {
+          "assetId": "cat_thinking",
+          "src": "characters/cat_think",
+          "position": { "x": 0.5, "y": 0.52 },
+          "scale": 1.8,
+          "enterAnimation": "popIn",
+          "animationDuration": 20,
+          "emphasize": { "animation": "bounce", "delay": 60, "duration": 25 }
+        },
+        {
+          "assetId": "cat_revealed",
+          "src": "characters/cat_happy",
+          "position": { "x": 0.5, "y": 0.52 },
+          "scale": 1.8,
+          "enterAnimation": "zoomIn",
+          "enterDelay": 320,
+          "animationDuration": 22,
+          "clearPrevious": ["cat_thinking"]
+        }
+      ],
+      "texts": [
+        {
+          "id": "callout_why",
+          "content": "Cho tiền, sao vẫn không đẻ?",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "background": "#F2994A",
+          "delay": 60,
+          "duration": 200
+        },
+        {
+          "id": "callout_reveal",
+          "content": "Phải bắt đầu từ hẹn hò!",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "background": "#2D9CDB",
+          "delay": 360,
+          "duration": 130
+        }
+      ],
+      "transition": { "style": "fadeBlack", "duration": 25 },
+      "clearPrevious": true
+    },
+    {
+      "id": "scene_dating_hard",
+      "label": "Hẹn hò khó — app đầy mà vẫn ế",
+      "startFrame": 900,
+      "durationFrames": 450,
+      "layout": "DUAL_CONTRAST",
+      "backgroundSrc": "linear-gradient(180deg, #0A0E27 0%, #1A237E 50%, #0D1B4A 100%)",
+      "narration": "Và chúng ta sẽ dùng khung lý thuyết là lý thuyết trò chơi để giải thích vì sao mà hẹn hò ngày càng khó. Tại sao mà mấy cái app hẹn hò thì đầy mà người ta vẫn ế.",
+      "entities": [
+        {
+          "assetId": "cat_shrug_dating",
+          "src": "characters/cat_shrug",
+          "position": { "x": 0.28, "y": 0.52 },
+          "scale": 1.65,
+          "enterAnimation": "slideRight",
+          "animationDuration": 20,
+          "emphasize": { "animation": "pulse", "delay": 60, "duration": 20 }
+        },
+        {
+          "assetId": "icon_dating_down",
+          "src": "trending_down/01-flat-bold-color",
+          "position": { "x": 0.72, "y": 0.48 },
+          "scale": 1.5,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 180,
+          "animationDuration": 20,
+          "emphasize": { "animation": "shake", "delay": 240, "duration": 20 }
+        }
+      ],
+      "texts": [
+        {
+          "id": "callout_app_full",
+          "content": "App hẹn hò đầy",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_LEFT",
+          "background": "#2D9CDB",
+          "delay": 80,
+          "duration": 180
+        },
+        {
+          "id": "callout_still_single",
+          "content": "Mà người ta vẫn ế",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_RIGHT",
+          "background": "#EB5757",
+          "delay": 230,
+          "duration": 180
+        }
+      ],
+      "transition": { "style": "flash", "duration": 10 },
+      "clearPrevious": true
+    },
+    {
+      "id": "scene_100_years_stat",
+      "label": "STAT DRAMA — 100 năm biến mất",
+      "startFrame": 1350,
+      "durationFrames": 270,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
+      "narration": "Và với cái đà mà không ai cưới nhau, không ai đẻ này thì nhiều quốc gia sẽ biến mất trong vòng 100 năm nữa.",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat_shocked",
+          "src": "characters/cat_surprised",
+          "position": { "x": 0.5, "y": 0.65 },
+          "scale": 1.5,
+          "enterAnimation": "popIn",
+          "animationDuration": 20,
+          "emphasize": { "animation": "shake", "delay": 50, "duration": 20 }
+        }
+      ],
+      "texts": [
+        {
+          "id": "stat_100",
+          "content": "100 năm",
+          "style": "STAT",
+          "slot": "STAT_CENTER",
+          "delay": 20,
+          "duration": 240
+        },
+        {
+          "id": "caption_disappear",
+          "content": "Nhiều quốc gia sẽ biến mất",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 80,
+          "duration": 180
+        }
+      ],
+      "transition": { "style": "fadeBlack", "duration": 30 }
+    },
+    {
+      "id": "scene_series_intro",
+      "label": "Giới thiệu series — Mèo Giải Thích × Predictive History",
+      "startFrame": 1620,
+      "durationFrames": 480,
+      "layout": "CHAR_PROP",
+      "backgroundSrc": "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)",
+      "narration": "Chào mừng các bạn đến với series chuyển thể của mèo giải thích. Nên mà chúng tôi chuyển thể những cái video hay của nước ngoài sang tiếng Việt cho anh em cùng tham khảo. Và series đầu tiên chúng tôi làm là series lý thuyết trò chơi của kênh Predictive History. Video này thì chúng tôi sẽ dựa vào nội dung của những video đó cũng như là thêm những cái ý kiến tìm hiểu phản biện của cá nhân để chúng ta có những cái bữa ăn, những cái giấc ngủ, những cái lần rửa bass năng suất hơn.",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat_happy_host",
+          "src": "characters/cat_happy",
+          "position": { "x": 0.35, "y": 0.52 },
+          "scale": 1.7,
+          "enterAnimation": "slideRight",
+          "animationDuration": 20,
+          "emphasize": { "animation": "bounce", "delay": 60, "duration": 25 }
+        },
+        {
+          "assetId": "icon_investment",
+          "src": "investment/01-flat-bold-color",
+          "position": { "x": 0.68, "y": 0.50 },
+          "scale": 1.4,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 20,
+          "animationDuration": 20
+        }
+      ],
+      "texts": [
+        {
+          "id": "section_series",
+          "content": "Series: Lý Thuyết Trò Chơi",
+          "style": "SECTION",
+          "slot": "SECTION_HEADER",
+          "delay": 40,
+          "duration": 180
+        },
+        {
+          "id": "body_series_credit",
+          "content": "Predictive History × Mèo Giải Thích",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 230,
+          "duration": 220
+        }
+      ],
+      "transition": { "style": "wipe", "duration": 15 }
+    },
+    {
+      "id": "scene_game_theory_3parts",
+      "label": "Lý thuyết trò chơi — 3 phần cốt lõi",
+      "startFrame": 2100,
+      "durationFrames": 600,
+      "layout": "ICON_TRIPLE",
+      "backgroundSrc": "#FFFFFF",
+      "narration": "Đầu tiên chúng ta nói một chút về cái lý thuyết trò chơi đi. Thì bất kỳ trò chơi nào cũng sẽ có ba phần là người chơi, tức là đối tượng tham gia này, à luật chơi tức là những cái dàng buộc, những cái giới hạn, những cái gì được làm, không được làm và phần thưởng. Tại vì là chơi thì phải có thưởng chứ không ai chơi làm cái gì. Nó chính là cái mà khiến những cái người chơi muốn chơi. Thì để hiểu một cái trò chơi ấ thì chúng ta cần hiểu là ai đang chơi này, hiểu luật chơi là gì và phần thưởng là gì thì sẽ hiểu được thôi.",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat_teacher_gt",
+          "src": "characters/cat_teacher",
+          "position": { "x": 0.5, "y": 0.72 },
+          "scale": 1.6,
+          "enterAnimation": "popIn",
+          "animationDuration": 20,
+          "emphasize": { "animation": "bounce", "delay": 40, "duration": 20 }
+        },
+        {
+          "assetId": "icon_player",
+          "src": "person/01-flat-bold-color",
+          "position": { "x": 0.22, "y": 0.38 },
+          "scale": 1.0,
+          "enterAnimation": "slideUp",
+          "enterDelay": 90,
+          "animationDuration": 18
+        },
+        {
+          "assetId": "icon_rules",
+          "src": "check/01-flat-bold-color",
+          "position": { "x": 0.50, "y": 0.38 },
+          "scale": 1.0,
+          "enterAnimation": "slideUp",
+          "enterDelay": 180,
+          "animationDuration": 18
+        },
+        {
+          "assetId": "icon_reward",
+          "src": "profit/01-flat-bold-color",
+          "position": { "x": 0.78, "y": 0.38 },
+          "scale": 1.0,
+          "enterAnimation": "slideUp",
+          "enterDelay": 270,
+          "animationDuration": 18
+        }
+      ],
+      "texts": [
+        {
+          "id": "section_gt",
+          "content": "Lý thuyết trò chơi là gì?",
+          "style": "SECTION",
+          "slot": "SECTION_HEADER",
+          "delay": 20,
+          "duration": 570
+        },
+        {
+          "id": "callout_player",
+          "content": "Người chơi",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_LEFT",
+          "background": "#2D9CDB",
+          "delay": 110,
+          "duration": 470
+        },
+        {
+          "id": "callout_rules",
+          "content": "Luật chơi",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "background": "#27AE60",
+          "delay": 200,
+          "duration": 380
+        },
+        {
+          "id": "callout_reward",
+          "content": "Phần thưởng",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_RIGHT",
+          "background": "#FF6B35",
+          "delay": 290,
+          "duration": 290
+        },
+        {
+          "id": "caption_gt_insight",
+          "content": "Hiểu 3 phần này = đoán được mọi trò chơi",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 420,
+          "duration": 170
+        }
+      ],
+      "transition": { "style": "fadeWhite", "duration": 15 }
+    }
+  ]
+}
