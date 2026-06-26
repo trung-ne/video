@@ -2,6 +2,54 @@
 
 Quy trình chi tiết tạo video từ đầu đến cuối.
 
+> **💡 Chọn kiến trúc phù hợp model của bạn:**
+> - **Model yếu (Haiku free tier)**: Tách thành 3 session nhỏ (xem phần "Kiến trúc tối ưu")
+> - **Model mạnh (Sonnet/API paid)**: Làm trong 1 session duy nhất
+
+---
+
+## Kiến trúc tối ưu theo Model
+
+### Model Yếu (Free Tier - Haiku, rate limit ~3-5 req/min)
+
+**Vấn đề:** Context limit + rate limit → không thể làm full pipeline trong 1 session.
+
+**Giải pháp:** Tách thành **3 session độc lập**:
+
+```
+📋 Session 1 (30k tokens)     📝 Session 2 (20k tokens)     ✅ Session 3 (15k tokens)
+├─ Đọc transcript             ├─ Load timeline.json         ├─ Load timeline final
+├─ Gen timeline + TTS         ├─ Fix bugs/issues            ├─ Render MP4
+├─ Save timeline.json         ├─ Verify structure           └─ Publish
+└─ Save voice.wav             └─ Save changes
+```
+
+**Chi phí:** `3 sessions × 30k tokens ≈ $0.24` (Claude API Haiku) hoặc **miễn phí** (Claude.ai free, chỉ chờ rate limit)
+
+**Workflow:**
+1. **Session 1**: Tạo timeline + audio, lưu `projects/<video>/timeline.json`
+2. **Wait** ~5-10 phút (rate limit)
+3. **Session 2**: Load timeline, fix lỗi, test structure, lưu changes
+4. **Wait** ~5-10 phút
+5. **Session 3**: Verify final, render (hoặc chạy render.ts tay)
+
+### Model Mạnh (Sonnet 4.6 API, Claude Studio - no rate limit)
+
+**Ưu điểm:** Context lớn (200k), không rate limit, quality cao.
+
+**Workflow:** Làm **toàn bộ trong 1 session dài**:
+```
+📝 Start Session (80-120k tokens total)
+├─ Đọc transcript
+├─ Gen timeline + TTS
+├─ Verify output
+├─ Fix bugs nếu cần
+├─ Render MP4
+└─ Done
+```
+
+**Chi phí:** `120k tokens ≈ $0.36` (Sonnet API) = rẻ hơn 1 cà phê.
+
 ---
 
 ## Overview: 5 bước chính
@@ -192,20 +240,89 @@ explorer output\my-video.mp4
 
 ---
 
-## Quick Reference: Commands
+## Quick Reference: Commands (Session-based)
 
-### Generate timeline từ transcript
+### 🔴 SESSION 1: Timeline + Audio Generation
+
+**Mục tiêu:** Tạo timeline từ transcript + TTS audio, verify cơ bản.
 
 ```bash
+cd c:\Users\Administrator\Documents\video
+
 # Edge TTS (nhanh, tiếng Việt)
-npx ts-node scripts/generate-timeline.ts --transcript <file> --tts --out timeline.json
+npx ts-node scripts/generate-timeline.ts \
+  --transcript projects/my-video/transcript.txt \
+  --tts --tts-voice vi-VN-HoaiMyNeural \
+  --out projects/my-video/timeline.json
 
-# Kokoro TTS (cao chất, tiếng Anh)
-npx ts-node scripts/generate-timeline.ts --transcript <file> --tts-kokoro --out timeline.json
+# Hoặc Kokoro TTS (cao chất, tiếng Anh)
+npx ts-node scripts/generate-timeline.ts \
+  --transcript projects/my-video/transcript.txt \
+  --tts-kokoro --tts-voice af_heart --tts-lang a \
+  --out projects/my-video/timeline.json
 
-# Chỉ cần audio có sẵn
-npx ts-node scripts/generate-timeline.ts --transcript <file> --audio "audio/voice.mp3" --out timeline.json
+# Verify output
+cat projects/my-video/timeline.json | jq '.scenes | length'  # Số scenes
+cat projects/my-video/timeline.json | jq '.durationInFrames'  # Frames
+cat public/audio/my-video/durations.json | jq '.totalSec'  # Duration giây
 ```
+
+**Lưu:** `projects/my-video/timeline.json` + `public/audio/my-video/voice.wav`
+
+---
+
+### 🟡 SESSION 2: Fix & Verify Timeline (sau 5-10 min)
+
+**Mục tiêu:** Load timeline từ session 1, fix lỗi, verify structure, save changes.
+
+```bash
+# Load + inspect timeline
+cat projects/my-video/timeline.json | jq '.events | length'  # Events count
+
+# Validate timeline
+npx ts-node scripts/validate-timeline.ts projects/my-video/timeline.json
+
+# Nếu cần fix: edit file trực tiếp hoặc dùng /edit-timeline skill
+# ... edit và save ...
+
+# Verify cuối cùng
+npx ts-node scripts/validate-timeline.ts projects/my-video/timeline.json
+```
+
+**Lưu:** Changes vào `projects/my-video/timeline.json`
+
+---
+
+### 🟢 SESSION 3: Render Final (sau 5-10 min thêm)
+
+**Mục tiêu:** Render MP4 từ timeline đã verify.
+
+```bash
+# Render
+npx ts-node scripts/render.ts \
+  --timeline projects/my-video/timeline.json \
+  --out output/my-video.mp4
+
+# Hoặc dùng default timeline.json
+npx ts-node scripts/render.ts
+```
+
+**Output:** `output/my-video.mp4` ✅
+
+---
+
+## Alternative: Single-Session (Model Mạnh)
+
+Nếu dùng **Claude Sonnet API** hoặc **Claude Studio** (không rate limit), chạy hết trong 1 session:
+
+```bash
+# Tất cả trong 1 lần
+npx ts-node scripts/generate-timeline.ts --transcript ... --tts-kokoro ...
+npx ts-node scripts/validate-timeline.ts projects/my-video/timeline.json
+npx ts-node scripts/render.ts --timeline projects/my-video/timeline.json ...
+```
+
+**Lợi ích:** Nhanh, không chờ, có context toàn bộ để fix lỗi ngay.
 
 ### Run TTS riêng (nếu muốn regenerate audio)
 
@@ -344,16 +461,40 @@ cp timeline.json timeline.backup-v1.json
 
 ## Công cụ hỗ trợ
 
-Nếu dùng **Claude Code**:
+### Dùng CLI (bất kỳ model nào)
+
+```bash
+# Generate timeline + TTS
+npx ts-node scripts/generate-timeline.ts --transcript <file> --tts-kokoro --out ...
+
+# Validate timeline
+npx ts-node scripts/validate-timeline.ts <timeline.json>
+
+# Render MP4
+npx ts-node scripts/render.ts --timeline <timeline.json> --out output/video.mp4
+
+# Preview (Remotion Studio)
+npm start  # → http://localhost:3000
+```
+
+### Dùng Claude Code Skills (Session 1 & 2)
+
+Nếu dùng **Claude Code** (Claude.ai + Code):
 
 ```
-/generate <transcript>         # Gen timeline from transcript
-/render <timeline>             # Render to MP4
-/preview                       # Open Remotion Studio
-/validate <timeline>           # Check timeline for errors
-/list-assets                   # Danh sách SVG có sẵn
-/edit-timeline <timeline>      # Sửa timeline thông minh
+💡 SESSION 1:
+/generate @projects/my-video/transcript.txt  # Tạo timeline + TTS
+
+🔧 SESSION 2:
+/edit-timeline @projects/my-video/timeline.json  # Fix lỗi
+/validate @projects/my-video/timeline.json       # Verify
+/list-assets                                      # Xem available SVGs
+
+✅ SESSION 3 (hoặc tay):
+/render --timeline @projects/my-video/timeline.json  # Render MP4
 ```
+
+**Lợi ích:** Skills tự handle TTS + audio sync, không cần chạy Python riêng.
 
 ---
 
