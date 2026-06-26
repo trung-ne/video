@@ -2,503 +2,1151 @@
   "fps": 30,
   "width": 1920,
   "height": 1080,
-  "durationInFrames": 2250,
-  "audio": "audio/voice.mp3",
-  "background": "#FAFAF8",
-  "events": [
+  "durationInFrames": 17700,
+  "background": "#0f0c29",
+  "scenes": [
     {
-      "frame": 0,
-      "type": "transition",
-      "style": "wipe",
-      "duration": 15
+      "id": "scene-01-hook",
+      "label": "Nghịch lý: cho tiền vẫn không chịu đẻ",
+      "startFrame": 0,
+      "durationFrames": 1800,
+      "layout": "SOLO",
+      "backgroundSrc": "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-think",
+          "src": "characters/cat_think",
+          "slot": "HOST",
+          "scale": 1.8,
+          "enterAnimation": "popIn",
+          "enterDelay": 10,
+          "emphasize": {
+            "animation": "bounce",
+            "delay": 80,
+            "duration": 25
+          }
+        },
+        {
+          "assetId": "money-icon",
+          "src": "finance/money",
+          "position": { "x": 0.80, "y": 0.42 },
+          "scale": 1.1,
+          "enterAnimation": "popIn",
+          "enterDelay": 350,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 30,
+            "duration": 20
+          }
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-hook",
+          "content": "Cho tiền... vẫn không chịu đẻ?",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 20
+        },
+        {
+          "id": "callout-korea",
+          "content": "🇰🇷 Hàn Quốc: ~40 triệu/em bé",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.75 },
+          "delay": 120,
+          "background": "#1e40af"
+        },
+        {
+          "id": "callout-hungary",
+          "content": "🇭🇺 Hungary: miễn thuế thu nhập suốt đời",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.82 },
+          "delay": 280,
+          "background": "#7f1d1d"
+        },
+        {
+          "id": "callout-japan",
+          "content": "🇯🇵 Nhật: lập cơ quan chuyên trách trẻ em",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.89 },
+          "delay": 450,
+          "background": "#064e3b"
+        },
+        {
+          "id": "stat-still-drop",
+          "content": "Tỉ lệ sinh vẫn giảm.",
+          "style": "STAT",
+          "position": { "x": 0.50, "y": 0.45 },
+          "delay": 900
+        }
+      ]
     },
     {
-      "frame": 0,
-      "type": "background",
-      "src": "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)",
-      "duration": 25
+      "id": "scene-02-game-theory-def",
+      "label": "Định nghĩa Lý thuyết trò chơi: 3 phần",
+      "startFrame": 1800,
+      "durationFrames": 600,
+      "layout": "ICON_TRIPLE",
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "transition": { "style": "fadeBlack", "duration": 15 },
+      "entities": [
+        {
+          "assetId": "cat-host",
+          "src": "characters/cat_explain",
+          "slot": "HOST",
+          "scale": 1.4,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "icon-player",
+          "src": "person/01-flat-bold-color",
+          "position": { "x": 0.22, "y": 0.40 },
+          "scale": 1.0,
+          "enterAnimation": "slideUp",
+          "enterDelay": 30
+        },
+        {
+          "assetId": "icon-rules",
+          "src": "props/book",
+          "position": { "x": 0.50, "y": 0.40 },
+          "scale": 1.0,
+          "enterAnimation": "slideUp",
+          "enterDelay": 90
+        },
+        {
+          "assetId": "icon-reward",
+          "src": "props/trophy",
+          "position": { "x": 0.78, "y": 0.40 },
+          "scale": 1.0,
+          "enterAnimation": "slideUp",
+          "enterDelay": 150
+        }
+      ],
+      "texts": [
+        {
+          "id": "section-gt",
+          "content": "Lý thuyết trò chơi — 3 phần",
+          "style": "SECTION",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "label-player",
+          "content": "Người chơi",
+          "style": "CALLOUT",
+          "slot": "LABEL_UNDER_LEFT",
+          "delay": 30,
+          "background": "#2563eb"
+        },
+        {
+          "id": "label-rules",
+          "content": "Luật chơi",
+          "style": "CALLOUT",
+          "slot": "LABEL_UNDER_CENTER",
+          "delay": 90,
+          "background": "#d97706"
+        },
+        {
+          "id": "label-reward",
+          "content": "Phần thưởng",
+          "style": "CALLOUT",
+          "slot": "LABEL_UNDER_RIGHT",
+          "delay": 150,
+          "background": "#16a34a"
+        },
+        {
+          "id": "body-gt",
+          "content": "Hiểu 3 phần này → đoán được trò chơi đi đến đâu",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 300
+        }
+      ]
     },
     {
-      "frame": 0,
-      "type": "enter",
-      "assetId": "cat_main_intro",
-      "src": "characters/cat_explain",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 1.8,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
+      "id": "scene-03a-lineup",
+      "label": "Mô phỏng: 5 nam xếp hạng 1-5",
+      "startFrame": 2400,
+      "durationFrames": 900,
+      "layout": "LINEUP",
+      "backgroundSrc": "linear-gradient(180deg, #4c1d95 0%, #6d28d9 50%, #5b21b6 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "male-1",
+          "src": "characters/cat_sad",
+          "position": { "x": 0.12, "y": 0.52 },
+          "scale": 0.85,
+          "enterAnimation": "slideUp",
+          "enterDelay": 0,
+          "badge": "1"
+        },
+        {
+          "assetId": "male-2",
+          "src": "characters/cat_worker",
+          "position": { "x": 0.28, "y": 0.52 },
+          "scale": 0.85,
+          "enterAnimation": "slideUp",
+          "enterDelay": 20,
+          "badge": "2"
+        },
+        {
+          "assetId": "male-3",
+          "src": "characters/cat",
+          "position": { "x": 0.44, "y": 0.52 },
+          "scale": 0.85,
+          "enterAnimation": "slideUp",
+          "enterDelay": 40,
+          "badge": "3"
+        },
+        {
+          "assetId": "male-4",
+          "src": "characters/cat_talk",
+          "position": { "x": 0.60, "y": 0.52 },
+          "scale": 0.85,
+          "enterAnimation": "slideUp",
+          "enterDelay": 60,
+          "badge": "4"
+        },
+        {
+          "assetId": "male-5",
+          "src": "characters/cat_business",
+          "position": { "x": 0.76, "y": 0.52 },
+          "scale": 1.1,
+          "enterAnimation": "popIn",
+          "enterDelay": 80,
+          "badge": "5",
+          "emphasize": {
+            "animation": "bounce",
+            "delay": 50,
+            "duration": 25
+          }
+        }
+      ],
+      "texts": [
+        {
+          "id": "section-sim",
+          "content": "Xã hội 10 người — 5 nam, 5 nữ",
+          "style": "SECTION",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "body-rank",
+          "content": "Xếp hạng: ngoại hình · tiền bạc · địa vị xã hội",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 180
+        },
+        {
+          "id": "caption-all-want-5",
+          "content": "Tất cả phụ nữ đều muốn lấy anh số 5 ⭐",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 450
+        }
+      ]
     },
     {
-      "frame": 15,
-      "type": "text",
-      "textId": "title_hook_main",
-      "content": "Cho 1 tỷ vẫn không chịu đẻ — tại sao?",
-      "position": {
-        "x": 0.5,
-        "y": 0.12
-      },
-      "style": "TITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 165
+      "id": "scene-03b-cascade",
+      "label": "Hậu quả: kẻ tham nhất nhận kết quả tệ nhất",
+      "startFrame": 3300,
+      "durationFrames": 1200,
+      "layout": "DIALOGUE",
+      "backgroundSrc": "linear-gradient(135deg, #1e3a5f 0%, #2c5f2e 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-greedy-5",
+          "src": "characters/cat_business",
+          "slot": "LEFT",
+          "scale": 1.4,
+          "enterAnimation": "slideRight",
+          "enterDelay": 0,
+          "label": "Anh #5 (tham)",
+          "emphasize": {
+            "animation": "shake",
+            "delay": 80,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "arrow-chain",
+          "src": "ui/arrow_down",
+          "position": { "x": 0.50, "y": 0.45 },
+          "scale": 0.7,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 400
+        },
+        {
+          "assetId": "cat-result",
+          "src": "characters/cat_sad",
+          "slot": "RIGHT",
+          "scale": 1.3,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 30,
+          "label": "Kết cục ngược"
+        }
+      ],
+      "texts": [
+        {
+          "id": "bubble-greedy",
+          "content": "Tao hẹn hò cả 5 cô cùng lúc!",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_LEFT",
+          "delay": 30,
+          "background": "#dc2626"
+        },
+        {
+          "id": "bubble-cascade",
+          "content": "Cô #5 → anh #4 → cô #4 → anh #3...",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_RIGHT",
+          "delay": 220,
+          "background": "#0284c7"
+        },
+        {
+          "id": "body-cascade-result",
+          "content": "Anh #5 tham → kẹt lại với cô #1",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 550
+        },
+        {
+          "id": "insight-cooperate",
+          "content": "Giải pháp tốt nhất: hợp tác — nồi nào úp vung nấy",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.91 },
+          "delay": 850,
+          "background": "#16a34a"
+        }
+      ]
     },
     {
-      "frame": 40,
-      "type": "enter",
-      "assetId": "money_korea",
-      "src": "money/01-flat-bold-color",
-      "position": {
-        "x": 0.25,
-        "y": 0.35
-      },
-      "scale": 1,
-      "animation": "slideLeft",
-      "animationDuration": 18,
-      "zIndex": 2
+      "id": "scene-04-nash",
+      "label": "Cân bằng Nash: ai cũng vừa lòng",
+      "startFrame": 4500,
+      "durationFrames": 600,
+      "layout": "DIALOGUE",
+      "backgroundSrc": "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-happy-a",
+          "src": "characters/cat_happy",
+          "slot": "LEFT",
+          "scale": 1.3,
+          "enterAnimation": "slideRight",
+          "enterDelay": 10,
+          "label": "Anh #3 ✓"
+        },
+        {
+          "assetId": "family-heart",
+          "src": "family/01-flat-bold-color",
+          "position": { "x": 0.50, "y": 0.42 },
+          "scale": 0.9,
+          "enterAnimation": "popIn",
+          "enterDelay": 180
+        },
+        {
+          "assetId": "cat-happy-b",
+          "src": "characters/cat_happy",
+          "slot": "RIGHT",
+          "scale": 1.3,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 10,
+          "label": "Cô #3 ✓"
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-nash",
+          "content": "Cân bằng Nash",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "body-nash",
+          "content": "Không ai có lợi hơn khi đơn phương đổi chiến lược",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 250
+        },
+        {
+          "id": "caption-nash-ideal",
+          "content": "Lý thuyết nói: xã hội phát triển khi ai cũng có đôi",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 400
+        }
+      ]
     },
     {
-      "frame": 80,
-      "type": "emphasize",
-      "assetId": "cat_main_intro",
-      "animation": "bounce",
-      "duration": 25
+      "id": "scene-05-reality-harsh",
+      "label": "Thực tế: không ai muốn chơi nữa",
+      "startFrame": 5100,
+      "durationFrames": 1500,
+      "layout": "DUAL_CONTRAST",
+      "backgroundSrc": "linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-lonely",
+          "src": "characters/cat_sad",
+          "slot": "LEFT",
+          "scale": 1.4,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 0,
+          "label": "Thanh niên hiện đại"
+        },
+        {
+          "assetId": "computer-home",
+          "src": "props/computer_desk",
+          "slot": "RIGHT",
+          "scale": 1.2,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 120,
+          "label": "Ở nhà chơi game"
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-reality",
+          "content": "Thực tế: không ai muốn chơi",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "callout-want5",
+          "content": "\"Cùng lắm lấy #4, thà ế còn hơn #3\"",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_LEFT",
+          "delay": 80,
+          "background": "#991b1b"
+        },
+        {
+          "id": "callout-giveup",
+          "content": "Cạnh tranh gay gắt · xác suất ≈ 0",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_RIGHT",
+          "delay": 250,
+          "background": "#374151"
+        },
+        {
+          "id": "body-bachelor",
+          "content": "Nhiều nam 25-30 tuổi chưa từng hẹn hò",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 550
+        },
+        {
+          "id": "insight-tired",
+          "content": "Không phải xấu hay kém — trò chơi hẹn hò quá mệt mỏi",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 900
+        }
+      ]
     },
     {
-      "frame": 80,
-      "type": "enter",
-      "assetId": "money_hungary",
-      "src": "money/01-flat-bold-color",
-      "position": {
-        "x": 0.75,
-        "y": 0.35
-      },
-      "scale": 1,
-      "animation": "slideRight",
-      "animationDuration": 18,
-      "zIndex": 2
+      "id": "scene-06-status-reward",
+      "label": "Phần thưởng mới: Thể diện xã hội",
+      "startFrame": 6600,
+      "durationFrames": 900,
+      "layout": "CHAR_PROP",
+      "backgroundSrc": "linear-gradient(135deg, #4776e6 0%, #8e54e9 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-stylish",
+          "src": "characters/cat_sunglasses",
+          "slot": "LEFT_MID",
+          "scale": 1.6,
+          "enterAnimation": "slideRight",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "trophy-status",
+          "src": "props/trophy",
+          "position": { "x": 0.72, "y": 0.40 },
+          "scale": 1.1,
+          "enterAnimation": "popIn",
+          "enterDelay": 150
+        },
+        {
+          "assetId": "money-flex",
+          "src": "finance/money",
+          "position": { "x": 0.80, "y": 0.58 },
+          "scale": 0.9,
+          "enterAnimation": "popIn",
+          "enterDelay": 250
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-status",
+          "content": "Phần thưởng mới: Thể diện",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "callout-show",
+          "content": "Lấy người này → có khoe được không?",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 100,
+          "background": "#d97706"
+        },
+        {
+          "id": "body-status",
+          "content": "Đi họp lớp · đăng Facebook · flex Instagram",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 350
+        },
+        {
+          "id": "caption-status",
+          "content": "Thà ế còn hơn lấy người không đủ tiêu chuẩn để khoe",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 600
+        }
+      ]
     },
     {
-      "frame": 120,
-      "type": "enter",
-      "assetId": "family_japan",
-      "src": "family/01-flat-bold-color",
-      "position": {
-        "x": 0.5,
-        "y": 0.7
-      },
-      "scale": 1.2,
-      "animation": "slideUp",
-      "animationDuration": 18,
-      "zIndex": 2
+      "id": "scene-07-zero-sum",
+      "label": "Zero-sum game: trò chơi tổng bằng 0",
+      "startFrame": 7500,
+      "durationFrames": 900,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(135deg, #200122 0%, #6f0000 100%)",
+      "clearPrevious": true,
+      "transition": { "style": "flash", "duration": 12 },
+      "entities": [
+        {
+          "assetId": "cat-shocked",
+          "src": "characters/cat_surprised",
+          "slot": "HOST",
+          "scale": 1.6,
+          "enterAnimation": "popIn",
+          "enterDelay": 15
+        }
+      ],
+      "texts": [
+        {
+          "id": "stat-zero",
+          "content": "ZERO-SUM GAME",
+          "style": "STAT",
+          "slot": "STAT_CENTER",
+          "delay": 0
+        },
+        {
+          "id": "body-zero",
+          "content": "Ai cũng oai = không ai oai cả",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 150
+        },
+        {
+          "id": "caption-zero",
+          "content": "→ Cho tiền không giải quyết được vấn đề thể diện",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 380
+        }
+      ]
     },
     {
-      "frame": 180,
-      "type": "text",
-      "textId": "body_paradox_short",
-      "content": "Hàn Quốc chi tiền tỷ, tỉ lệ sinh vẫn thấp.",
-      "position": {
-        "x": 0.5,
-        "y": 0.82
-      },
-      "style": "BODY",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 480
+      "id": "scene-08a-stone-age",
+      "label": "Giai đoạn 1: Ăn lông ở lỗ — làng 200 người",
+      "startFrame": 8400,
+      "durationFrames": 750,
+      "layout": "SOLO",
+      "backgroundSrc": "linear-gradient(180deg, #3d2b1f 0%, #5d4037 50%, #4e342e 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-primitive",
+          "src": "characters/cat",
+          "slot": "HOST",
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 10
+        }
+      ],
+      "texts": [
+        {
+          "id": "section-3stages",
+          "content": "3 giai đoạn lịch sử loài người",
+          "style": "SECTION",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "callout-stage1",
+          "content": "Giai đoạn 1: Ăn lông ở lỗ",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 30,
+          "background": "#78350f"
+        },
+        {
+          "id": "body-stage1",
+          "content": "Làng ~200 người · nhiều người tình · cả làng nuôi con",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 180
+        },
+        {
+          "id": "caption-stage1",
+          "content": "Phần thưởng: cả làng không tuyệt chủng",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 400
+        }
+      ]
     },
     {
-      "frame": 510,
-      "type": "transition",
-      "style": "wipe",
-      "duration": 15
+      "id": "scene-08b-war-era",
+      "label": "Giai đoạn 2: Chiến tranh — hôn nhân sắp đặt",
+      "startFrame": 9150,
+      "durationFrames": 750,
+      "layout": "DIALOGUE",
+      "backgroundSrc": "linear-gradient(180deg, #1a0a0a 0%, #2d1b00 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-parent",
+          "src": "characters/cat_dad",
+          "slot": "LEFT",
+          "scale": 1.35,
+          "enterAnimation": "slideRight",
+          "enterDelay": 0,
+          "label": "Cha mẹ đặt đâu"
+        },
+        {
+          "assetId": "cat-obey",
+          "src": "characters/cat_sad",
+          "slot": "RIGHT",
+          "scale": 1.2,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 40,
+          "label": "Con ngồi đấy"
+        }
+      ],
+      "texts": [
+        {
+          "id": "callout-stage2",
+          "content": "Giai đoạn 2: Chiến tranh & Hôn nhân sắp đặt",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 0,
+          "background": "#7f1d1d"
+        },
+        {
+          "id": "body-stage2",
+          "content": "Thiếu lính · cần dân cầy ruộng → đẻ nhiều là được",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 250
+        },
+        {
+          "id": "caption-stage2",
+          "content": "Cha mẹ đặt đâu con ngồi đấy — không cần hẹn hò",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 450
+        }
+      ]
     },
     {
-      "frame": 510,
-      "type": "background",
-      "src": "linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)",
-      "duration": 25
+      "id": "scene-08c-modern-era",
+      "label": "Giai đoạn 3: Thời hiện đại — 8 tỷ người",
+      "startFrame": 9900,
+      "durationFrames": 750,
+      "layout": "DUAL_CONTRAST",
+      "backgroundSrc": "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-rich-now",
+          "src": "characters/cat_business",
+          "slot": "LEFT",
+          "scale": 1.3,
+          "enterAnimation": "slideRight",
+          "enterDelay": 0,
+          "label": "Thế giới giàu hơn"
+        },
+        {
+          "assetId": "cat-picky-now",
+          "src": "characters/cat_shrug",
+          "slot": "RIGHT",
+          "scale": 1.3,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 60,
+          "label": "Kỳ vọng cao hơn"
+        }
+      ],
+      "texts": [
+        {
+          "id": "callout-stage3",
+          "content": "Giai đoạn 3: Hiện đại — 8 tỷ người",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 0,
+          "background": "#1e3a8a"
+        },
+        {
+          "id": "body-stage3",
+          "content": "Sướng hơn → kỳ vọng hẹn hò cũng phải sướng tương xứng",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 220
+        },
+        {
+          "id": "caption-stage3",
+          "content": "Hẹn hò = bàn đạp nhảy tầng lớp",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 450
+        }
+      ]
     },
     {
-      "frame": 510,
-      "type": "enter",
-      "assetId": "cat_think_question",
-      "src": "characters/cat_think",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 1.8,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
+      "id": "scene-09-rome",
+      "label": "Bài học lịch sử: Đế chế La Mã sụp đổ",
+      "startFrame": 10650,
+      "durationFrames": 600,
+      "layout": "CHAR_PROP",
+      "backgroundSrc": "linear-gradient(180deg, #2c1654 0%, #4a1942 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-teacher-rome",
+          "src": "characters/cat_teacher",
+          "slot": "LEFT_MID",
+          "scale": 1.5,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "book-history",
+          "src": "props/book",
+          "position": { "x": 0.72, "y": 0.42 },
+          "scale": 1.4,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 120
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-rome",
+          "content": "Đế chế La Mã — 2000 năm trước",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "body-rome",
+          "content": "Quý tộc giàu → từ chối đẻ → Augustus ra luật phạt",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 180
+        },
+        {
+          "id": "caption-rome",
+          "content": "Tiền & chính sách đã thất bại từ 2000 năm trước",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 380
+        }
+      ]
     },
     {
-      "frame": 525,
-      "type": "clear",
-      "assetIds": []
+      "id": "scene-10-global-numbers",
+      "label": "Con số báo động toàn cầu",
+      "startFrame": 11250,
+      "durationFrames": 1050,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(135deg, #0d0d0d 0%, #1a0505 100%)",
+      "clearPrevious": true,
+      "transition": { "style": "fadeBlack", "duration": 15 },
+      "entities": [
+        {
+          "assetId": "chart-global-down",
+          "src": "finance/trending_down",
+          "position": { "x": 0.50, "y": 0.20 },
+          "scale": 1.2,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": "stat-safe",
+          "content": "2.1",
+          "style": "STAT",
+          "position": { "x": 0.22, "y": 0.47 },
+          "delay": 0
+        },
+        {
+          "id": "stat-warn",
+          "content": "1.5",
+          "style": "STAT",
+          "position": { "x": 0.50, "y": 0.47 },
+          "delay": 180
+        },
+        {
+          "id": "stat-critical",
+          "content": "1.0",
+          "style": "STAT",
+          "position": { "x": 0.78, "y": 0.47 },
+          "delay": 360
+        },
+        {
+          "id": "label-safe",
+          "content": "Duy trì dân số",
+          "style": "CALLOUT",
+          "position": { "x": 0.22, "y": 0.63 },
+          "delay": 0,
+          "background": "#16a34a"
+        },
+        {
+          "id": "label-warn",
+          "content": "Bắt đầu giảm",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.63 },
+          "delay": 180,
+          "background": "#d97706"
+        },
+        {
+          "id": "label-critical",
+          "content": "Xã hội tự hủy",
+          "style": "CALLOUT",
+          "position": { "x": 0.78, "y": 0.63 },
+          "delay": 360,
+          "background": "#dc2626"
+        },
+        {
+          "id": "body-global",
+          "content": "Châu Phi: đang đẻ nhiều · Bắc Mỹ / Châu Âu / Đông Á: tụt dốc",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 650
+        }
+      ]
     },
     {
-      "frame": 540,
-      "type": "enter",
-      "assetId": "thought_bubble_why",
-      "src": "props/thought_bubble",
-      "position": {
-        "x": 0.7,
-        "y": 0.25
-      },
-      "scale": 1,
-      "animation": "fadeIn",
-      "animationDuration": 18,
-      "zIndex": 2
+      "id": "scene-11-korea",
+      "label": "Hàn Quốc: trường hợp cực đoan nhất thế giới",
+      "startFrame": 12300,
+      "durationFrames": 1500,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(180deg, #0f0c29 0%, #141862 50%, #0a0a0a 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-korea-sad",
+          "src": "characters/cat_sad",
+          "slot": "HOST",
+          "scale": 1.5,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "chart-korea",
+          "src": "chart_down/01-flat-bold-color",
+          "position": { "x": 0.80, "y": 0.35 },
+          "scale": 1.0,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 250
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-korea",
+          "content": "🇰🇷 Hàn Quốc — Thấp nhất thế giới",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "stat-korea-rate",
+          "content": "0.6 – 0.8",
+          "style": "STAT",
+          "slot": "STAT_CENTER",
+          "delay": 100
+        },
+        {
+          "id": "caption-korea",
+          "content": "Chỉ còn tồn tại vài thế hệ nữa",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 250
+        },
+        {
+          "id": "body-korea-reason",
+          "content": "Xã hội coi trọng thể diện đến mức cực đoan",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 500
+        },
+        {
+          "id": "callout-nokid",
+          "content": "\"No Kid Zone\" — trẻ con là phiền phức",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.78 },
+          "delay": 750,
+          "background": "#991b1b"
+        },
+        {
+          "id": "stat-2060",
+          "content": "2060: lực lượng lao động giảm 50%",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.91 },
+          "delay": 1100,
+          "background": "#7f1d1d"
+        }
+      ]
     },
     {
-      "frame": 570,
-      "type": "emphasize",
-      "assetId": "cat_think_question",
-      "animation": "bounce",
-      "duration": 25
+      "id": "scene-12-exceptions",
+      "label": "Ngoại lệ: Israel và Ả Rập Saudi vẫn đẻ nhiều",
+      "startFrame": 13800,
+      "durationFrames": 900,
+      "layout": "DUAL_CONTRAST",
+      "backgroundSrc": "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-israel",
+          "src": "characters/cat_happy",
+          "slot": "LEFT",
+          "scale": 1.3,
+          "enterAnimation": "slideRight",
+          "enterDelay": 0,
+          "label": "🇮🇱 Israel"
+        },
+        {
+          "assetId": "family-center",
+          "src": "family/01-flat-bold-color",
+          "position": { "x": 0.50, "y": 0.42 },
+          "scale": 0.9,
+          "enterAnimation": "popIn",
+          "enterDelay": 200
+        },
+        {
+          "assetId": "cat-saudi",
+          "src": "characters/cat_happy",
+          "slot": "RIGHT",
+          "scale": 1.3,
+          "enterAnimation": "slideLeft",
+          "enterDelay": 50,
+          "label": "🇸🇦 Ả Rập Saudi"
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-except",
+          "content": "Ngoại lệ: giàu vẫn đẻ nhiều",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "callout-israel",
+          "content": "Sinh con = bản sắc dân tộc · đáng tự hào",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_LEFT",
+          "delay": 80,
+          "background": "#1e40af"
+        },
+        {
+          "id": "callout-saudi",
+          "content": "Dầu mỏ + tôn giáo khuyến khích đẻ nhiều",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_RIGHT",
+          "delay": 180,
+          "background": "#14532d"
+        },
+        {
+          "id": "insight-status-flip",
+          "content": "Đẻ con = nâng thể diện → tỉ lệ sinh tự nhiên tăng",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 450
+        }
+      ]
     },
     {
-      "frame": 590,
-      "type": "text",
-      "textId": "callout_question_why",
-      "content": "Cho tiền, sao vẫn không đẻ?",
-      "position": {
-        "x": 0.5,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "background": "#F2994A",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 790
+      "id": "scene-13-vietnam",
+      "label": "Thực trạng Việt Nam 2024",
+      "startFrame": 14700,
+      "durationFrames": 1200,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(135deg, #7f1d1d 0%, #4c0519 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-vn-worry",
+          "src": "characters/cat_think",
+          "slot": "HOST",
+          "scale": 1.5,
+          "enterAnimation": "popIn",
+          "enterDelay": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-vn",
+          "content": "🇻🇳 Việt Nam 2024",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "stat-vn-rate",
+          "content": "1.91",
+          "style": "STAT",
+          "slot": "STAT_CENTER",
+          "delay": 80
+        },
+        {
+          "id": "caption-vn-lowest",
+          "content": "Thấp nhất lịch sử · Năm thứ 3 dưới mức 2.1",
+          "style": "CAPTION",
+          "slot": "CAPTION",
+          "delay": 220
+        },
+        {
+          "id": "callout-hcm",
+          "content": "TP.HCM: chỉ 1.39 — thấp nhất cả nước",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.78 },
+          "delay": 500,
+          "background": "#991b1b"
+        },
+        {
+          "id": "body-vn-future",
+          "content": "Sau 2035: số người chết > số trẻ em sinh ra",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 800
+        }
+      ]
     },
     {
-      "frame": 810,
-      "type": "enter",
-      "assetId": "cat_couple_heart",
-      "src": "characters/cat_happy",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 1.7,
-      "animation": "zoomIn",
-      "animationDuration": 25,
-      "zIndex": 2
+      "id": "scene-14-social-media",
+      "label": "Mạng xã hội: sân chơi ×1.000.000",
+      "startFrame": 15900,
+      "durationFrames": 1050,
+      "layout": "SIZE_HIERARCHY",
+      "backgroundSrc": "linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "crowd-big",
+          "src": "people/company",
+          "position": { "x": 0.50, "y": 0.32 },
+          "scale": 2.5,
+          "enterAnimation": "zoomIn",
+          "enterDelay": 100
+        },
+        {
+          "assetId": "cat-alone-small",
+          "src": "characters/cat_sad",
+          "position": { "x": 0.45, "y": 0.68 },
+          "scale": 0.85,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-social",
+          "content": "Mạng xã hội: sân chơi ×1.000.000",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "body-social",
+          "content": "Ngày xưa: so sánh với 200 người · Bây giờ: hàng triệu",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 250
+        },
+        {
+          "id": "callout-swipe",
+          "content": "Vuốt mãi → não bộ nghĩ lựa chọn vô hạn → chọn không được ai",
+          "style": "CALLOUT",
+          "position": { "x": 0.50, "y": 0.91 },
+          "delay": 600,
+          "background": "#4c1d95"
+        }
+      ]
     },
     {
-      "frame": 860,
-      "type": "text",
-      "textId": "callout_reveal_dating",
-      "content": "Bắt đầu từ hẹn hò",
-      "position": {
-        "x": 0.5,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "background": "#2D9CDB",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1010
-    },
-    {
-      "frame": 1050,
-      "type": "transition",
-      "style": "fadeBlack",
-      "duration": 30
-    },
-    {
-      "frame": 1050,
-      "type": "background",
-      "src": "linear-gradient(180deg, #0A0E27 0%, #1A237E 50%, #0D1B4A 100%)",
-      "duration": 25
-    },
-    {
-      "frame": 1050,
-      "type": "enter",
-      "assetId": "cat_shrug_dating",
-      "src": "characters/cat_shrug",
-      "position": {
-        "x": 0.28,
-        "y": 0.52
-      },
-      "scale": 1.65,
-      "animation": "slideRight",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1080,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 1100,
-      "type": "emphasize",
-      "assetId": "cat_shrug_dating",
-      "animation": "pulse",
-      "duration": 20
-    },
-    {
-      "frame": 1130,
-      "type": "text",
-      "textId": "callout_hard_dating",
-      "content": "Hẹn hò ngày càng khó",
-      "position": {
-        "x": 0.25,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "color": "#FFFFFF",
-      "background": "#2D9CDB",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1310
-    },
-    {
-      "frame": 1250,
-      "type": "enter",
-      "assetId": "cat_sad_nations",
-      "src": "characters/cat_sad",
-      "position": {
-        "x": 0.72,
-        "y": 0.52
-      },
-      "scale": 1.65,
-      "animation": "slideLeft",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1270,
-      "type": "enter",
-      "assetId": "hourglass_time",
-      "src": "props/hourglass",
-      "position": {
-        "x": 0.72,
-        "y": 0.25
-      },
-      "scale": 1,
-      "animation": "fadeIn",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 1310,
-      "type": "text",
-      "textId": "callout_nations_disappear",
-      "content": "Nhiều quốc gia sẽ biến mất",
-      "position": {
-        "x": 0.75,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "color": "#FFFFFF",
-      "background": "#EB5757",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1490
-    },
-    {
-      "frame": 1530,
-      "type": "emphasize",
-      "assetId": "cat_sad_nations",
-      "animation": "pulse",
-      "duration": 20
-    },
-    {
-      "frame": 1530,
-      "type": "transition",
-      "style": "wipe",
-      "duration": 15
-    },
-    {
-      "frame": 1530,
-      "type": "background",
-      "src": "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)",
-      "duration": 25
-    },
-    {
-      "frame": 1530,
-      "type": "enter",
-      "assetId": "cat_happy_series",
-      "src": "characters/cat_happy",
-      "position": {
-        "x": 0.35,
-        "y": 0.52
-      },
-      "scale": 1.7,
-      "animation": "slideRight",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1545,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 1550,
-      "type": "enter",
-      "assetId": "book_series",
-      "src": "props/book",
-      "position": {
-        "x": 0.65,
-        "y": 0.58
-      },
-      "scale": 1.4,
-      "animation": "slideLeft",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1570,
-      "type": "text",
-      "textId": "section_header_series",
-      "content": "Series mới: Lý thuyết trò chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.15
-      },
-      "style": "SECTION",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1720
-    },
-    {
-      "frame": 1590,
-      "type": "emphasize",
-      "assetId": "cat_happy_series",
-      "animation": "bounce",
-      "duration": 25
-    },
-    {
-      "frame": 1730,
-      "type": "text",
-      "textId": "body_series_desc",
-      "content": "Mèo giải thích chuyển thể video hay, thêm phản biện.",
-      "position": {
-        "x": 0.5,
-        "y": 0.82
-      },
-      "style": "BODY",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1930
-    },
-    {
-      "frame": 1980,
-      "type": "transition",
-      "style": "wipe",
-      "duration": 15
-    },
-    {
-      "frame": 1980,
-      "type": "background",
-      "src": "#FFFFFF",
-      "duration": 25
-    },
-    {
-      "frame": 1980,
-      "type": "enter",
-      "assetId": "cat_teacher_gt",
-      "src": "characters/cat_teacher",
-      "position": {
-        "x": 0.5,
-        "y": 0.7
-      },
-      "scale": 1.6,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1995,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 2000,
-      "type": "text",
-      "textId": "section_header_gametheory",
-      "content": "Lý thuyết trò chơi là gì?",
-      "position": {
-        "x": 0.5,
-        "y": 0.15
-      },
-      "style": "SECTION",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2100
-    },
-    {
-      "frame": 2010,
-      "type": "emphasize",
-      "assetId": "cat_teacher_gt",
-      "animation": "bounce",
-      "duration": 20
-    },
-    {
-      "frame": 2060,
-      "type": "enter",
-      "assetId": "icon_player",
-      "src": "person/01-flat-bold-color",
-      "position": {
-        "x": 0.25,
-        "y": 0.35
-      },
-      "scale": 1,
-      "animation": "slideUp",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 2080,
-      "type": "text",
-      "textId": "callout_player",
-      "content": "Người chơi",
-      "position": {
-        "x": 0.25,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "background": "#2D9CDB",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2180
-    },
-    {
-      "frame": 2130,
-      "type": "enter",
-      "assetId": "icon_rules",
-      "src": "props/concept_card",
-      "position": {
-        "x": 0.5,
-        "y": 0.35
-      },
-      "scale": 1,
-      "animation": "slideUp",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 2150,
-      "type": "text",
-      "textId": "callout_rules",
-      "content": "Luật chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "background": "#FF6B35",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2249
+      "id": "scene-15-conclusion",
+      "label": "Kết luận: hỏi đúng câu hỏi mới hiểu được xã hội",
+      "startFrame": 16950,
+      "durationFrames": 750,
+      "layout": "SOLO",
+      "backgroundSrc": "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "cat-conclude-happy",
+          "src": "characters/cat_happy",
+          "slot": "HOST",
+          "scale": 1.9,
+          "enterAnimation": "popIn",
+          "enterDelay": 10,
+          "emphasize": {
+            "animation": "bounce",
+            "delay": 40,
+            "duration": 25
+          }
+        },
+        {
+          "assetId": "brain-icon",
+          "src": "props/brain",
+          "position": { "x": 0.80, "y": 0.38 },
+          "scale": 1.0,
+          "enterAnimation": "popIn",
+          "enterDelay": 200
+        }
+      ],
+      "texts": [
+        {
+          "id": "title-conclusion",
+          "content": "Hỏi đúng câu hỏi → hiểu đúng xã hội",
+          "style": "TITLE",
+          "slot": "TOP_TITLE",
+          "delay": 0
+        },
+        {
+          "id": "body-conclude",
+          "content": "Ai chơi? · Luật chơi là gì? · Phần thưởng là gì?",
+          "style": "BODY",
+          "slot": "BODY",
+          "delay": 180
+        },
+        {
+          "id": "cta",
+          "content": "Trò chơi thể diện có ảnh hưởng đến bạn không? 👇",
+          "style": "CALLOUT",
+          "slot": "CAPTION",
+          "delay": 400,
+          "background": "#15803d"
+        }
+      ]
     }
   ]
 }

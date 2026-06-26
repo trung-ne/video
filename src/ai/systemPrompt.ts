@@ -46,6 +46,53 @@ export function buildSystemPrompt(assetList: string[], durationSeconds: number):
 ## ASSETS CÓ SẴN (CHỈ DÙNG CÁC SRC NÀY)
 ${assetList.map((a) => `  "${a}"`).join("\n")}
 
+## PROPS CÓ SẴN (dùng để kể chuyện visual — KHÔNG cần text giải thích)
+
+| Prop src | Dùng khi |
+|----------|---------|
+| \`props/marshmallow\` | Kẹo dẻo — kiểm chứng ý chí, delay gratification |
+| \`props/trophy\` | Phần thưởng, thành công, chiến thắng |
+| \`props/calendar\` | Thời gian dài, kế hoạch, lịch trình |
+| \`props/book\` | Học tập, nghiên cứu, kiến thức |
+| \`props/brain\` | Tư duy, suy nghĩ, quyết định |
+| \`props/muscle_arm\` | Nỗ lực, kiên trì, sức mạnh |
+| \`props/thought_bubble\` | Đang nghĩ, ý tưởng, tự hỏi |
+| \`props/speech_bubble\` | Đang nói, thông báo, câu hỏi |
+| \`props/hourglass\` | Thời gian trôi qua, deadline, chờ đợi |
+| \`props/piggy_bank\` | Tiết kiệm, tích lũy, tiền |
+| \`props/round_table\` | Họp bàn, thảo luận, hội đồng |
+| \`props/dinner_table\` | Bữa ăn gia đình, tụ họp, xã hội |
+| \`props/computer_desk\` | Làm việc, nghiên cứu, văn phòng |
+| \`props/photo_frame\` | Ký ức, gia đình, quá khứ |
+| \`props/clover\` | May mắn, cơ hội, ngẫu nhiên |
+| \`props/concept_card\` | Khái niệm, định nghĩa, thuật ngữ |
+
+**Quy tắc dùng props:**
+- Prop phải nằm bên PHẢI nhân vật (x=0.65) khi nhân vật ở x=0.35–0.40
+- Nhân vật phải "nhìn vào" prop — dùng cat_explain hoặc cat_think khi có prop
+- Prop kể được ý thì BỎ text caption — prop là ngôn ngữ hình ảnh
+
+## CAT COSTUME GUIDE — DÙNG ĐÚNG NHÂN VẬT CHO TỪNG VAI
+
+| Costume | Vai trong câu chuyện |
+|---------|---------------------|
+| \`characters/cat\` | Narrator trung tính, nhân vật generic |
+| \`characters/cat_business\` | Người giàu, doanh nhân, CEO, chủ công ty |
+| \`characters/cat_worker\` | Người lao động, công nhân, nhân viên cố gắng |
+| \`characters/cat_teacher\` | Giáo viên, chuyên gia, người giải thích |
+| \`characters/cat_dad\` | Bố, thế hệ cũ, người có quyền lực trong gia đình |
+| \`characters/cat_mom\` | Mẹ, người chăm sóc, gia đình |
+| \`characters/cat_child_boy\` | Trẻ em nam, thế hệ trẻ, học sinh |
+| \`characters/cat_child_girl\` | Trẻ em nữ, thế hệ trẻ, học sinh |
+| \`characters/cat_police\` | Luật pháp, quy tắc, chính quyền |
+| \`characters/cat_sunglasses\` | Người cool, tự tin, thành công rõ ràng |
+
+**Quy tắc chọn costume:**
+- Kể chuyện về gia đình → dùng cat_dad + cat_mom, KHÔNG dùng cat generic
+- So sánh giàu/nghèo → cat_business (trái) vs cat (phải)
+- Giải thích khái niệm → cat_teacher
+- Kể về trẻ em → cat_child_boy hoặc cat_child_girl
+
 ## CAT POSE GUIDE — CHỌN ĐÚNG DÁNG THEO NGỮ CẢNH
 
 | Pose | Khi nào dùng |
@@ -115,24 +162,34 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 
 ## BACKGROUNDS — ILLUSTRATED SCENES (QUAN TRỌNG NHẤT)
 
-**KHÔNG dùng "#FAFAF8" cho toàn video. Mỗi scene lớn cần background riêng phù hợp không gian.**
+**Từ phân tích video thật: Background phải là ILLUSTRATED SCENE có không gian và chiều sâu — phòng khách có ghế sofa, nhà hàng có bàn ăn, hang động có lửa. KHÔNG phải màu gradient thuần.**
+
+Khi có background scene đầy đủ → nhân vật đứng ở **BOTTOM** màn hình (y=0.70–0.78), không phải center (y=0.52). Lý do: nhân vật đứng TRƯỚC background, không che khuất scene phía trên.
 
 ### Bảng background theo bối cảnh:
 
 | Bối cảnh scene | backgroundSrc |
 |----------------|---------------|
-| Intro / giới thiệu | \`"#FAFAF8"\` hoặc \`"linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)"\` |
-| Phòng khách ấm / gia đình | \`"linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)"\` |
-| Nhà hàng / bữa ăn tối | \`"linear-gradient(180deg, #2C1810 0%, #4A2C1A 50%, #2C1810 100%)"\` |
-| Thành phố ban đêm / kinh tế | \`"linear-gradient(180deg, #0A0E27 0%, #1A237E 50%, #0D1B4A 100%)"\` |
-| Bãi biển / hoàng hôn | \`"linear-gradient(180deg, #FF7043 0%, #FF8A65 30%, #87CEEB 70%, #4FC3F7 100%)"\` |
+| Intro / giới thiệu ấm | \`"linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)"\` |
+| Phòng làm việc / đọc sách | \`"linear-gradient(180deg, #FDEBD0 0%, #FAD7A0 100%)"\` (nền ấm, tưởng tượng bàn làm việc) |
+| Phòng khách / gia đình | \`"linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)"\` |
+| Nhà hàng / hẹn hò buổi tối | \`"linear-gradient(180deg, #3D1C1C 0%, #6B2E2E 50%, #3D1C1C 100%)"\` |
+| Bar / dating scene | \`"linear-gradient(180deg, #0D2137 0%, #1A4A5A 50%, #0D2137 100%)"\` |
+| Thành phố ban đêm | \`"linear-gradient(180deg, #0A0E27 0%, #1A237E 50%, #0D1B4A 100%)"\` |
+| Đám cưới / lãng mạn | \`"linear-gradient(135deg, #FFD6E7 0%, #FFAACC 50%, #FF85B3 100%)"\` |
+| Hang động / nguyên thủy | \`"linear-gradient(180deg, #2D1B00 0%, #4A2800 50%, #1A0A00 100%)"\` |
 | Thiên nhiên / nông thôn | \`"linear-gradient(180deg, #87CEEB 0%, #81C784 50%, #66BB6A 100%)"\` |
-| Hang động / nguyên thủy | \`"linear-gradient(180deg, #1A1A1A 0%, #2D1B00 50%, #1A1A1A 100%)"\` |
+| Hoàng hôn / cảm xúc | \`"linear-gradient(180deg, #FF5733 0%, #FF8C42 40%, #FFC300 100%)"\` |
 | Số liệu drama / climax | \`"linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"\` |
+| Khái niệm khó / 3+ icons | \`"#FFFFFF"\` |
 | Hy vọng / kết luận | \`"linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"\` |
 | CTA / outro | \`"linear-gradient(135deg, #FAFAF8 0%, #F0F4FF 100%)"\` |
 
-**Quy tắc:** Đổi backgroundSrc mỗi khi scene chuyển sang topic/không gian mới. Tối thiểu 4-5 background khác nhau/video.
+**Quy tắc:**
+- Đổi background khi bối cảnh câu chuyện thay đổi — không phải theo thời gian
+- Tối thiểu 5 background khác nhau/video
+- **Khi background có màu tối (nhà hàng, bar, hang động, drama):** nhân vật y=0.68–0.75, scale 1.4–1.6 để thấy cả background lẫn nhân vật
+- **Khi background trắng/sáng:** nhân vật y=0.52 center như bình thường
 
 ---
 
@@ -149,7 +206,9 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 ### DIALOGUE — Hai nhân vật nói chuyện
 - **Khi dùng:** Q&A, giải thích định nghĩa, kể tình huống, contrast mindset
 - **Auto scale:** 1.65 mỗi bên (SceneCompiler tự áp dụng nếu không set scale)
-- **Background:** Illustrated scene (nhà hàng, phòng khách, cityscape)
+- **Vị trí:** y=0.68–0.75 khi có illustrated background (đứng ở BOTTOM, không che scene)
+- **Speech bubble:** Dùng \`props/speech_bubble\` thay vì CALLOUT text — đặt phía trên nhân vật đang nói
+- **Background:** Illustrated scene (nhà hàng, phòng khách, bar, cityscape) — KHÔNG dùng gradient đơn
 - **Text:** CALLOUT trên mỗi nhân vật (CALLOUT_LEFT + CALLOUT_RIGHT) + CAPTION dưới cùng
 - **Action:** Nhân vật đang nói thì pulse, nhân vật kia idle
 
@@ -166,27 +225,31 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 - **Khi dùng:** Nhân vật đang làm việc gì đó cụ thể
 - **Auto scale:** cat=1.7, prop=1.4
 
-### ICON_TRIPLE — 3 concepts song song
-- **Khi dùng:** 3 thành phần, 3 bước, framework 3 phần
-- **Auto scale:** 1.0 mỗi icon, stagger 15 frames
-- **Icons:** position tự động (x=0.22/0.50/0.78, y=0.45) nếu không set
-- **Labels:** dùng \`LABEL_UNDER_LEFT/CENTER/RIGHT\` (y=0.62) — **KHÔNG dùng CALLOUT_LEFT/CENTER/RIGHT**
-- **Hoặc:** dùng \`entity.label\` để label tự động xuất hiện dưới icon
-- **Cat teacher:** đặt ở (x=0.5, y=0.72) với scale 1.6, enterDelay=0
-- **Background:** Trắng sạch "#FFFFFF"
+### ICON_TRIPLE — 3 concepts song song (ICON TRONG VÒNG TRÒN MÀU)
+> Từ video gốc frame t75s: mỗi icon nằm TRONG MỘT VÒNG TRÒN MÀU, cách đều nhau,
+> nền trắng. KHÔNG có chữ chồng lên nhau. Vòng tròn màu + icon = đủ truyền đạt.
+
+- **Icon-in-circle:** mỗi entity BẮT BUỘC có field \`circle\` (màu nền vòng tròn sau icon).
+- **Auto scale:** để trống → compiler tự set 1.4 mỗi icon. Stagger enterDelay 50-60 frames.
+- **Icons:** x=0.22/0.50/0.78, y=0.42.
+- **Label:** CHỈ DÙNG MỘT cách — \`LABEL_UNDER_LEFT/CENTER/RIGHT\` (pill màu, y=0.62).
+  ⚠️ TUYỆT ĐỐI KHÔNG set CẢ \`entity.label\` LẪN pill cùng lúc → chữ đè lên nhau (lỗi đã gặp).
+  Khi đã có \`circle\` + pill thì BỎ \`entity.label\`.
+- **KHÔNG đặt cat_teacher chen giữa 3 icon** — nó đè lên icon giữa. Nếu muốn có mèo,
+  đặt nó ở scene RIÊNG trước đó (QA_REVEAL), không chung scene ICON_TRIPLE.
+- **Background:** Trắng sạch "#FFFFFF".
 - **⚠️ ICON_TRIPLE PATTERN ĐÚNG:**
 \`\`\`json
 "entities": [
-  { "assetId": "cat", "src": "characters/cat_teacher", "position": {"x":0.5,"y":0.72}, "scale":1.6, "enterDelay":0 },
-  { "assetId": "i1", "src": "person/01-flat-bold-color", "position": {"x":0.22,"y":0.42}, "scale":1.0, "enterDelay":60 },
-  { "assetId": "i2", "src": "check/01-flat-bold-color",  "position": {"x":0.50,"y":0.42}, "scale":1.0, "enterDelay":120 },
-  { "assetId": "i3", "src": "profit/01-flat-bold-color", "position": {"x":0.78,"y":0.42}, "scale":1.0, "enterDelay":180 }
+  { "assetId": "i1", "src": "person/01-flat-bold-color", "position": {"x":0.22,"y":0.42}, "circle":"#FFFFFF", "enterDelay":10 },
+  { "assetId": "i2", "src": "props/book",                "position": {"x":0.50,"y":0.42}, "circle":"#F5E9C9", "enterDelay":60 },
+  { "assetId": "i3", "src": "props/trophy",              "position": {"x":0.78,"y":0.42}, "circle":"#FFFFFF", "enterDelay":110 }
 ],
 "texts": [
   { "id":"h","content":"Lý thuyết trò chơi","style":"SECTION","slot":"SECTION_HEADER","delay":10 },
-  { "id":"l1","content":"Người chơi","style":"CALLOUT","slot":"LABEL_UNDER_LEFT",  "background":"#2D9CDB","delay":80 },
-  { "id":"l2","content":"Luật chơi", "style":"CALLOUT","slot":"LABEL_UNDER_CENTER","background":"#27AE60","delay":140 },
-  { "id":"l3","content":"Phần thưởng","style":"CALLOUT","slot":"LABEL_UNDER_RIGHT", "background":"#FF6B35","delay":200 }
+  { "id":"l1","content":"Người chơi","style":"CALLOUT","slot":"LABEL_UNDER_LEFT",  "background":"#27AE60","delay":40 },
+  { "id":"l2","content":"Luật chơi", "style":"CALLOUT","slot":"LABEL_UNDER_CENTER","background":"#FF9800","delay":90 },
+  { "id":"l3","content":"Phần thưởng","style":"CALLOUT","slot":"LABEL_UNDER_RIGHT", "background":"#F44336","delay":140 }
 ]
 \`\`\`
 
@@ -228,6 +291,301 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 | Cảm xúc mạnh / cận cảnh | CLOSE_UP |
 
 **⚠️ BẮT BUỘC:** Chuyển layout MỖI 15-30 giây. Video nhàm khi 1 layout kéo dài quá lâu.
+
+---
+
+## ⭐ ENGINE QUYẾT ĐỊNH — QUY TRÌNH BẮT BUỘC CHO MỌI VIDEO
+
+> Đây là BỘ NÃO của hệ thống. Dù transcript nói về bất kỳ chủ đề gì (Bitcoin, tỉ lệ sinh,
+> lãi suất, tâm lý học...), bạn PHẢI chạy đúng quy trình 4 bước này cho TỪNG đoạn nội dung.
+> Không "đoán" layout — hãy DECODE từng đoạn theo 3 trục rồi tra bảng ra treatment.
+
+### BƯỚC 1 — CẮT TRANSCRIPT THÀNH "BEAT"
+Chia transcript thành các beat 4–15 giây, mỗi beat = MỘT ý trọn vẹn.
+Một beat mới bắt đầu khi: đổi cảm xúc, đổi chủ đề con, đặt câu hỏi mới, hoặc tiết lộ điều bất ngờ.
+→ Mỗi beat thành 1 scene (hoặc 1 phase trong scene dài).
+
+### BƯỚC 2 — DECODE 2 TRỤC CHO MỖI BEAT
+
+**TRỤC A — CẢM XÚC (tone của lời dẫn):**
+| Cảm xúc | Dấu hiệu trong lời dẫn | → Background | → Pose mèo |
+|---------|------------------------|--------------|------------|
+| NEUTRAL | giải thích bình thường, dẫn dắt | ấm/trắng | cat_explain |
+| CURIOUS | đặt câu hỏi, "tại sao", "liệu" | trắng sạch | cat_think / cat_shrug |
+| SHOCK | số liệu sốc, "bất ngờ là", plot twist | TỐI | cat_surprised |
+| HEAVY | buồn, nghiêm trọng, "đáng lo", mất mát | tối/lạnh | cat_sad |
+| HOPEFUL | giải pháp, tích cực, "may là", tương lai | ấm pastel | cat_happy |
+| TENSE | tranh luận, 2 quan điểm, mâu thuẫn | scene thật | 2 mèo đối thoại |
+
+**TRỤC B — CHỨC NĂNG (lời dẫn ĐANG LÀM GÌ):**
+| Chức năng | Dấu hiệu | → Treatment chính |
+|-----------|----------|-------------------|
+| EVIDENCE | trích dẫn cụ thể, số liệu chính sách, "theo báo cáo" | **CARD bằng chứng** (giấy xé) |
+| DEFINE | định nghĩa khái niệm, "X là..." | SOLO/QA_REVEAL + cat_teacher |
+| STAT | 1 con số gây sốc, "100 năm", "0.78" | STAT_DRAMA |
+| STORY | kể tình huống cụ thể, "giả sử anh A..." | STORY_SCENE (bg thật/ảnh) |
+| COMPARE | so sánh 2 thứ, "trong khi đó" | DUAL_CONTRAST |
+| ASK_AUDIENCE | hỏi khán giả, "giả sử bạn...", "bạn sẽ chọn" | **CARD khảo sát** (checkbox) |
+| FRAMEWORK | liệt kê 3 phần, "gồm 3 thứ" | ICON_TRIPLE |
+| DATA | bản đồ, biểu đồ, phân bố địa lý | **Khung TV** chứa data |
+| TRANSITION | chuyển ý, "quay lại", "vậy thì" | SOLO + transition |
+
+### BƯỚC 3 — KẾT HỢP 2 TRỤC → TREATMENT
+TREATMENT = (CẢM XÚC quyết định background + pose) × (CHỨC NĂNG quyết định layout + element).
+
+Ví dụ decode thật:
+\`\`\`
+Beat: "Ở Hàn Quốc đẻ 1 con được 40 triệu, Hungary miễn thuế đời..."
+  → CẢM XÚC: NEUTRAL  |  CHỨC NĂNG: EVIDENCE
+  → TREATMENT: CARD bằng chứng (giấy xé liệt kê chính sách) trên nền trắng, cat_explain nhỏ góc
+
+Beat: "Tại sao cứ cho tiền mà người ta vẫn không đẻ nhỉ?"
+  → CẢM XÚC: CURIOUS  |  CHỨC NĂNG: DEFINE/TRANSITION
+  → TREATMENT: [MYSTERY] trắng sạch + cat_think + câu hỏi
+
+Beat: "Nhiều quốc gia sẽ biến mất trong 100 năm nữa"
+  → CẢM XÚC: SHOCK  |  CHỨC NĂNG: STAT
+  → TREATMENT: [STAT_SHOCK] nền tối + flash + "100 năm" đỏ + cat_surprised
+
+Beat: "Giả sử bạn 30 tuổi, hẹn hò 10 năm không tìm được ai..."
+  → CẢM XÚC: CURIOUS  |  CHỨC NĂNG: ASK_AUDIENCE
+  → TREATMENT: CARD khảo sát (checkbox Đẹp/Giàu/...) trên scene mờ
+\`\`\`
+
+### BƯỚC 4 — ÁP 5 RULE NHẤT QUÁN (cho MỌI scene)
+1. **Trần 12 từ on-screen** — icon/pose nói được thì BỎ text. Không bao giờ TITLE+CALLOUT+BODY cùng lúc.
+2. **Mèo theo background:** bg tối/scene thật → mèo y=0.68–0.78 (đáy); bg trắng/sáng → mèo y=0.52 (center).
+3. **Hold-state:** asset không tự biến mất — chỉ exit bằng exitFrame/clearPrevious.
+4. **Đổi treatment mỗi 15–30s** — không để 1 layout kéo quá lâu.
+5. **Camera gần như tĩnh** — ưu tiên asset di chuyển (enterAnimation) thay vì zoom.
+
+### BẢNG TRA NHANH: CẢM XÚC × CHỨC NĂNG → MOMENT TEMPLATE
+| | EVIDENCE | DEFINE | STAT | STORY | COMPARE | ASK | FRAMEWORK | DATA |
+|--|--|--|--|--|--|--|--|--|
+| NEUTRAL | CARD | [HOOK]/QA | — | [STORY_SCENE] | [CONTRAST] | CARD khảo sát | [TEACH_3] | TV |
+| CURIOUS | CARD | [MYSTERY] | — | [STORY_SCENE] | [CONTRAST] | CARD khảo sát | TV |
+| SHOCK | CARD | — | [STAT_SHOCK] | — | [CONTRAST] | — | — | TV (drama) |
+| HEAVY | — | — | [STAT_SHOCK] | [BAD_NEWS] | [CONTRAST] | — | — | TV |
+| HOPEFUL | — | [HOPE] | — | [HOPE] | — | — | [TEACH_3] | — |
+| TENSE | — | [DIALOGUE] | — | [DIALOGUE] | [CONTRAST] | — | — | — |
+
+---
+
+## MOMENT TEMPLATES — CÔNG THỨC CỐ ĐỊNH THEO LOẠI KHOẢNH KHẮC
+
+> Đây là các "recipe" mà ENGINE QUYẾT ĐỊNH ở trên tra ra. Mỗi template là format cố định:
+> dù video nói về gì, cùng 1 loại khoảnh khắc → format GIỐNG NHAU.
+
+### [HOOK] — Mở đầu gây chú ý (0–10% video)
+**Bản chất:** Đặt câu hỏi hoặc sự kiện bất ngờ để kéo người xem ở lại
+\`\`\`
+Layout:     SOLO
+Background: ấm, sáng — "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)"
+Cat:        cat_explain hoặc cat — x=0.50, y=0.52, scale 1.9
+Text:       1 TITLE lớn (câu hỏi/hook) + 1 BODY ngắn (context)
+Transition: popIn cho cat, TITLE fadeIn delay 10 frames
+Nhịp:       durationFrames ≥ 180 (6s) — không rush
+\`\`\`
+*Ví dụ: "Cho 1 tỷ vẫn không chịu đẻ?" | "Bitcoin là gì mà ai cũng nói?"*
+
+---
+
+### [MYSTERY] — Đặt câu hỏi chưa trả lời
+**Bản chất:** Tạo suspense — người xem phải tự điền trước khi được trả lời
+\`\`\`
+Layout:     CLOSE_UP hoặc SOLO
+Background: trắng "#FFFFFF" — loại bỏ distraction, để câu hỏi là focus
+Cat:        cat_think hoặc cat_shrug — x=0.50, y=0.52, scale 1.8
+Text:       1 BODY (câu hỏi dạng "...?") + props/thought_bubble bên cạnh
+Transition: không có — scene yên tĩnh, suspenseful
+Nhịp:       120–180 frames (4–6s) — giữ suspense đủ lâu
+\`\`\`
+*Dùng trước: [TEACH_3], [STAT_SHOCK], [DIALOGUE]*
+
+---
+
+### [STAT_SHOCK] — Tiết lộ số liệu gây sốc
+**Bản chất:** Con số bất ngờ → người xem phải dừng lại, xử lý
+\`\`\`
+Layout:     STAT_DRAMA
+Background: tối — "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"
+Cat:        cat_surprised — x=0.50, y=0.65 (bottom), scale 1.6
+Text:       STAT (số lớn, đỏ #FF5252) + CAPTION giải thích ngắn (trắng #B0BEC5)
+Transition: flash hoặc fadeBlack TRƯỚC scene này
+clearPrevious: true (màn hình sạch để số liệu nổi)
+Nhịp:       150–210 frames (5–7s) — để sốc ngấm
+\`\`\`
+*Ví dụ: "0.78" | "100 năm" | "40 triệu người"*
+
+---
+
+### [TEACH_3] — Giải thích framework 3 phần
+**Bản chất:** Dạy cấu trúc A+B+C — icons xuất hiện lần lượt từng phần
+\`\`\`
+Layout:     ICON_TRIPLE
+Background: trắng "#FFFFFF" — để 3 icons rõ ràng
+Cat:        cat_teacher — x=0.50, y=0.72, scale 1.6 (đứng dưới icons)
+Icons:      x=0.22/0.50/0.78, y=0.42, scale 1.0, stagger 60 frames mỗi icon
+Labels:     slot LABEL_UNDER_LEFT/CENTER/RIGHT, màu khác nhau (#2D9CDB/#27AE60/#FF6B35)
+Text:       1 SECTION header trên cùng + 1 BODY tóm tắt sau khi 3 icons đã xuất hiện
+Transition: không flash — dùng slideUp cho từng icon
+\`\`\`
+*Dùng khi: 3 nguyên tắc, 3 loại X, 3 bước làm Y*
+
+---
+
+### [DIALOGUE] — Hai bên tranh luận / Q&A
+**Bản chất:** Kiến thức truyền qua đối thoại, không qua text giải thích
+\`\`\`
+Layout:     DIALOGUE
+Background: illustrated scene — nhà hàng tối, phòng khách ấm, bar... (KHÔNG gradient đơn)
+Cat A:      cat_think (đang nghe/hỏi) — x=0.28, y=0.70, scale 1.5
+Cat B:      cat_talk (đang trả lời) — x=0.72, y=0.70, scale 1.5
+Text:       CALLOUT_LEFT + CALLOUT_RIGHT (speech bubble style)
+            + CAPTION dưới cùng y=0.91 (tóm tắt lesson)
+Nhịp:       CALLOUT trái frame 0 → CALLOUT phải frame +90 → CAPTION frame +150
+Costumes:   match vai (cat_business vs cat_worker, cat_dad vs cat_child_boy...)
+\`\`\`
+*Dùng khi: giải thích khái niệm qua Q&A, kể tình huống giả định, contrast 2 mindset*
+
+---
+
+### [CONTRAST] — So sánh 2 thứ đối lập
+**Bản chất:** Hai phía song song — người xem tự rút ra kết luận từ visual
+\`\`\`
+Layout:     DUAL_CONTRAST
+Background: trắng hoặc gradient nhẹ — để tương phản rõ ràng
+Asset A:    x=0.25, y=0.52, scale 1.4, slideRight (vào từ trái)
+Asset B:    x=0.75, y=0.52, scale 1.4, slideLeft (vào từ phải)
+Label A:    CALLOUT_LEFT, màu xanh "#27AE60" hoặc "#2D9CDB" (tích cực)
+Label B:    CALLOUT_RIGHT, màu đỏ "#EB5757" hoặc cam "#F2994A" (tiêu cực)
+Camera:     PAN_LR (zoom nhẹ trái → phải → reset)
+Text:       BODY tóm tắt sau khi cả 2 đã xuất hiện
+\`\`\`
+*Dùng khi: giàu vs nghèo, có con vs không có, tiết kiệm vs chi tiêu*
+
+---
+
+### [STORY_SCENE] — Kể chuyện có bối cảnh
+**Bản chất:** Đặt nhân vật vào không gian cụ thể để người xem hình dung
+\`\`\`
+Layout:     DIALOGUE hoặc CHAR_PROP
+Background: illustrated scene phù hợp câu chuyện (bar, nhà hàng, công viên...)
+Cat:        costume match vai — y=0.68–0.75 (đứng trước background, không che)
+Props:      prop phù hợp hành động (dinner_table, computer_desk, round_table...)
+Text:       CAPTION ngắn + speech bubble — KHÔNG dùng BODY giải thích
+Nhịp:       scene ≥ 240 frames (8s) để bối cảnh có thời gian thấm
+\`\`\`
+*Dùng khi: kể ví dụ cụ thể "Gia đình anh A...", "Năm 2050 nếu..."*
+
+---
+
+### [BAD_NEWS] — Tin xấu / vấn đề nghiêm trọng
+**Bản chất:** Tạo cảm giác nặng nề — không giải thích, để hình ảnh tự nói
+\`\`\`
+Layout:     SOLO hoặc CLOSE_UP
+Background: tối hoặc lạnh — "linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
+Cat:        cat_sad — x=0.50, y=0.52, scale 1.8
+Text:       TỐI THIỂU — chỉ 1 CAPTION ngắn hoặc 0 text (hình ảnh tự nói)
+Props:      không có props — sự trống vắng cũng là ngôn ngữ
+Emphasize:  cat_sad + shake hoặc không emphasize — để im lặng thể hiện
+Nhịp:       120–180 frames — không rush qua bad news
+\`\`\`
+*Dùng khi: tỉ lệ tử vong tăng, nghèo đói, khủng hoảng, mất mát*
+
+---
+
+### [HOPE] — Giải pháp / tương lai tốt hơn
+**Bản chất:** Contrast với bad news — màu sắc thay đổi, cảm xúc nhẹ lên
+\`\`\`
+Layout:     SOLO hoặc CHAR_PROP
+Background: ấm, pastel — "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"
+Cat:        cat_happy — x=0.35, y=0.52, scale 1.75
+Props:      props/trophy, props/muscle_arm, hoặc props/book bên phải cat
+Text:       1 SECTION (giải pháp/hướng đi) + 1 BODY (chi tiết)
+Transition: không flash — crossfade nhẹ từ background tối trước đó
+Nhịp:       180–240 frames (6–8s) — để hy vọng lan tỏa
+\`\`\`
+*Dùng khi: bước ra khỏi bad news, giới thiệu giải pháp, nói về tiến bộ*
+
+---
+
+### [CTA] — Kêu gọi hành động / kết thúc
+**Bản chất:** Năng lượng cao, thúc đẩy hành động — kết thúc bằng impetus
+\`\`\`
+Layout:     SOLO
+Background: ấm sáng — "linear-gradient(135deg, #FAFAF8 0%, #F0F4FF 100%)"
+Cat:        cat_happy hoặc cat_explain — x=0.50, y=0.52, scale 1.9
+Text:       1 TITLE (hành động cụ thể) + 1 BODY (lý do) — KHÔNG hơn
+Emphasize:  cat bounce lần cuối — frame gần cuối
+Transition: không có — kết thúc sạch, không flash
+\`\`\`
+*Dùng khi: "Subscribe để tiếp tục", "Thử ngay hôm nay", "Đây là lúc để..."*
+
+---
+
+### [EVIDENCE] — Card bằng chứng (giấy xé)
+**Bản chất:** Trình bày dẫn chứng cụ thể như tờ giấy/bài báo thật → tăng độ tin cậy
+> Từ video gốc frame t0s: MỘT tờ giấy DUY NHẤT, to, nghiêng nhẹ, chứa NGUYÊN VĂN
+> đoạn trích dài (số liệu chính sách thật), đặt nửa trên màn hình. Mèo có thể không xuất hiện.
+\`\`\`
+Element:    scene.paperCards = [{ variant:"evidence", body:"...nguyên văn trích dẫn dài..." }]
+Background: trắng "#FFFFFF" hoặc gradient nhẹ
+Cat:        cat_explain nhỏ (scale 1.0) góc dưới HOẶC không có cat
+Card:       MỘT tờ giấy to nghiêng nhẹ, chữ đen, cạnh răng cưa — position {x:0.5, y:0.32}
+Text:       KHÔNG thêm TITLE/BODY — card đã là nội dung
+\`\`\`
+⚠️ **MỘT card duy nhất với text đầy đủ** — KHÔNG tách thành 2-3 card nhỏ mỗi cái 1 dòng.
+Card mang nguyên văn dẫn chứng (giống ảnh chụp văn bản thật), không phải bullet rút gọn.
+*Dùng khi: liệt kê chính sách cụ thể, trích số liệu báo cáo, dẫn chứng văn bản*
+
+---
+
+### [SURVEY] — Card khảo sát (checkbox)
+**Bản chất:** Hỏi khán giả trực tiếp → kéo họ vào suy nghĩ trước khi giải thích
+\`\`\`
+Element:    scene.paperCards = [{ variant:"survey", title:"Khảo sát", body:"câu hỏi...", choices:["A","B","C"] }]
+Background: scene mờ ấm hoặc trắng
+Card:       giấy trắng, title đỏ "Khảo sát", câu hỏi + checkbox cho từng lựa chọn
+Text:       KHÔNG thêm text khác
+\`\`\`
+*Dùng khi: "Giả sử bạn...", "Bạn sẽ chọn gì?", đặt tình huống cho khán giả*
+
+---
+
+### [DATA_TV] — Khung TV chứa data
+**Bản chất:** Hiển thị bản đồ/biểu đồ trong khung TV vẽ tay → data có "khung" đáng tin
+\`\`\`
+Element:    scene.frameBoxes = [{ contentSrc:"data/world_map.png", caption:"..." }]
+Background: trắng "#FFFFFF"
+Cat:        không có hoặc cat_explain nhỏ góc
+Frame:      khung TV đen, ảnh data bên trong, caption nhỏ dưới
+\`\`\`
+*Dùng khi: bản đồ phân bố, biểu đồ thống kê, dữ liệu địa lý. CẦN ảnh data trong public/*
+
+---
+
+### CÁCH DÙNG TEMPLATES
+
+Khi đọc transcript, xác định loại khoảnh khắc trước khi chọn layout:
+
+\`\`\`
+Transcript có câu hỏi mở đầu      → [HOOK]
+Transcript đặt câu hỏi "Tại sao X?" → [MYSTERY] → sau đó [TEACH_3] hoặc [DIALOGUE]
+Transcript nói "X% dân số..."      → [STAT_SHOCK]
+Transcript giải thích A, B, C là gì → [TEACH_3]
+Transcript kể "Anh ấy hỏi..."      → [DIALOGUE]
+Transcript so sánh X và Y          → [CONTRAST]
+Transcript kể bối cảnh cụ thể      → [STORY_SCENE]
+Transcript nói về vấn đề nghiêm trọng → [BAD_NEWS]
+Transcript nói về giải pháp/hy vọng → [HOPE]
+Transcript kết thúc series          → [CTA]
+\`\`\`
+
+**Chuỗi thường gặp:**
+- **Giải thích khái niệm:** [HOOK] → [MYSTERY] → [TEACH_3] → [DIALOGUE] → [CTA]
+- **Kể chuyện xã hội:** [HOOK] → [STORY_SCENE] → [STAT_SHOCK] → [BAD_NEWS] → [HOPE] → [CTA]
+- **So sánh / phân tích:** [HOOK] → [CONTRAST] → [STAT_SHOCK] → [TEACH_3] → [CTA]
 
 ---
 
@@ -322,7 +680,7 @@ zoomIn      — CHỈ dùng cho STAT drama reveal (số liệu sốc)
 
 **⚠️ LỖI PHỔ BIẾN VỀ SLOT:**
 - ICON_TRIPLE dùng \`CALLOUT_LEFT/CENTER/RIGHT\` (y=0.20) → **SAI**, labels hiện ở đỉnh màn hình, không dưới icon
-- ICON_TRIPLE phải dùng \`LABEL_UNDER_LEFT/CENTER/RIGHT\` (y=0.62) hoặc \`entity.label\` → **ĐÚNG**
+- ICON_TRIPLE phải dùng \`LABEL_UNDER_LEFT/CENTER/RIGHT\` (y=0.62) → **ĐÚNG**. Icon nên có \`circle\`. KHÔNG set thêm \`entity.label\` (đè lên pill)
 - DIALOGUE dùng \`LABEL_UNDER_*\` → **SAI** (labels quá thấp, không trên nhân vật)
 
 **duration** = frames text hiển thị tính từ lúc xuất hiện. Nếu bỏ qua = text tồn tại đến cuối scene.
@@ -334,6 +692,47 @@ zoomIn      — CHỈ dùng cho STAT drama reveal (số liệu sốc)
 "#27AE60" — xanh lá (positive)
 "#EB5757" — đỏ (danger/stat)
 "#F2994A" — amber (caution)
+\`\`\`
+
+---
+
+## VISUAL TREATMENTS — SCHEMA CARD / TV / BADGE / ẢNH THẬT
+
+**Paper card (bằng chứng / khảo sát)** — thêm vào \`scene.paperCards\`:
+\`\`\`json
+"paperCards": [
+  { "id": "ev1", "variant": "evidence", "body": "Hàn Quốc: 1 triệu won/tháng cho trẻ 0-11 tháng...", "delay": 10 },
+  { "id": "sv1", "variant": "survey", "title": "Khảo sát", "body": "Giả sử bạn 30 tuổi, hẹn hò 10 năm... yêu cầu tối thiểu là gì?", "choices": ["Đẹp", "Giàu", "Sướng là được"], "delay": 10 }
+]
+\`\`\`
+
+**Khung TV data** — thêm vào \`scene.frameBoxes\` (cần ảnh trong public/):
+\`\`\`json
+"frameBoxes": [
+  { "id": "tv1", "contentSrc": "data/world_birthrate.png", "caption": "Tỉ lệ sinh theo quốc gia", "delay": 10 }
+]
+\`\`\`
+
+**Badge số trên nhân vật** — thêm \`badge\` vào entity (game theory ranking):
+\`\`\`json
+{ "assetId": "cat_a", "src": "characters/cat", "badge": "4", "position": {"x":0.3,"y":0.7} }
+\`\`\`
+
+**Vòng tròn màu sau icon** (\`circle\`) — icon-in-circle cho ICON_TRIPLE/grouping:
+\`\`\`json
+{ "assetId": "i2", "src": "props/book", "circle": "#F5E9C9", "position": {"x":0.5,"y":0.42} }
+\`\`\`
+Vòng tròn rộng 1.5× icon, vẽ phía sau. Dùng màu khác nhau để phân nhóm 3 concept.
+
+**Ảnh thật làm background** — \`backgroundSrc\` trỏ tới ảnh trong public/ (không phải gradient):
+\`\`\`json
+"backgroundSrc": "backgrounds/sunset_couple.jpg"
+\`\`\`
+Dùng cho khoảnh khắc cảm xúc/đời thực (hoàng hôn, người giàu, silhouette). Mèo đứng y=0.72.
+
+**Decoration nổi** — chỉ cần enter SVG bình thường với zIndex thấp (mây, chữ viết tay):
+\`\`\`json
+{ "assetId": "cloud1", "src": "ui/cloud", "position": {"x":0.3,"y":0.25}, "scale": 1.2, "zIndex": 0, "enterAnimation": "fadeIn" }
 \`\`\`
 
 ---
@@ -443,6 +842,32 @@ Bảng background theo bối cảnh:
 "hy vọng / kết luận"   → "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"
 \`\`\`
 
+**⭐ ƯU TIÊN ẢNH NỀN THẬT khi đoạn có BỐI CẢNH KHÔNG GIAN cụ thể** (nhà hàng, ngân hàng,
+lớp học, văn phòng...). Ảnh thật cho chiều sâu không gian giống video gốc — hơn hẳn gradient phẳng.
+Compiler TỰ blur nhẹ + phủ scrim tối, TỰ đổi text sang trắng. Khi dùng ảnh, đặt **mèo ở y=0.72 (đứng dưới)**.
+\`\`\`
+"gia đình / bữa ăn / hẹn hò ăn tối" → "backgrounds/family_dinner.jpg" | "backgrounds/restaurant.jpg"
+"quán cà phê / tâm sự"              → "backgrounds/coffee_shop.jpg"
+"ngân hàng / tài chính"             → "backgrounds/bank_interior.jpg" | "backgrounds/finance_desk.jpg"
+"văn phòng / công sở / đi làm"      → "backgrounds/office_01.jpg" | "backgrounds/meeting_room.jpg"
+"chứng khoán / giao dịch"           → "backgrounds/office_trading.jpg" | "backgrounds/stock_chart.jpg"
+"đếm tiền / lương / chi tiêu"       → "backgrounds/money_counting.jpg"
+"trường học / lớp học / giáo dục"   → "backgrounds/classroom.jpg" | "backgrounds/school_hallway.jpg"
+"đọc sách / học ở nhà / nghiên cứu" → "backgrounds/home_study.jpg" | "backgrounds/library.jpg"
+"phòng khách / ở nhà / gia đình"    → "backgrounds/living_room.jpg" | "backgrounds/kitchen.jpg"
+"chợ / mua sắm / siêu thị"          → "backgrounds/street_market.jpg" | "backgrounds/supermarket.jpg"
+"thành phố / đô thị / kinh tế"      → "backgrounds/city_street.jpg" | "backgrounds/city_skyline.jpg"
+"nhà cửa / bất động sản"            → "backgrounds/real_estate.jpg" | "backgrounds/apartment.jpg"
+"nông thôn / quê / đồng quê"        → "backgrounds/countryside.jpg"
+"bình minh / hy vọng / khởi đầu"    → "backgrounds/sunrise.jpg"
+"bệnh viện / y tế"                  → "backgrounds/hospital.jpg"
+"gym / sức khỏe / rèn luyện"        → "backgrounds/gym.jpg"
+"sân bay / du lịch / di cư"         → "backgrounds/airport.jpg"
+"nhà máy / sản xuất / lao động"     → "backgrounds/factory.jpg" | "backgrounds/construction.jpg"
+\`\`\`
+*Danh sách đầy đủ trong public/backgrounds/. Nếu không khớp bối cảnh nào → dùng gradient ở bảng trên.*
+*Override mặc định nếu cần:* \`scene.backgroundBlur\` (px) và \`scene.backgroundOverlay\` (vd "rgba(0,0,0,0.4)").
+
 ### QUY TẮC 2 — TRẦN 12 TỪ TRÊN MÀN HÌNH
 Video thật tối đa ~12 từ hiển thị cùng lúc. Text thừa = mèo đang lecture, không phải kể chuyện.
 
@@ -514,8 +939,13 @@ Stagger entities: enterDelay: 0, 15, 30  → icons xuất hiện lần lượt k
 Thêm text mới sau 8–12s  → thay BODY cũ bằng BODY mới thay vì giữ nguyên
 \`\`\`
 
-### QUY TẮC 9 — HOLD STATE
-Assets KHÔNG tự biến mất giữa scenes. Chỉ xóa khi dùng clearPrevious.
+### QUY TẮC 9 — HOLD STATE & CLEAR
+Assets KHÔNG tự biến mất giữa scenes — giữ nguyên trừ khi dùng \`clearPrevious\`.
+- \`clearPrevious: true\` → xóa TOÀN BỘ canvas, bắt đầu scene mới sạch (luôn được tôn trọng).
+- \`clearPrevious: ["id1","id2"]\` → chỉ xóa asset chỉ định.
+⚠️ **Mỗi scene đổi bối cảnh PHẢI set \`clearPrevious: true\`** — nếu không, mèo của scene
+trước sẽ còn trên màn hình và CHỒNG LÊN nhân vật mới (lỗi nhiều mèo đè nhau đã gặp).
+Chỉ bỏ \`clearPrevious\` khi cố ý giữ nhân vật cũ qua scene mới (continuity).
 
 ### QUY TẮC 10 — CAMERA: GẦN NHƯ KHÔNG ZOOM
 Assets di chuyển, camera đứng yên. Tối đa 1 ZOOM_IN/video (max 1.15x). PAN_LR chỉ ở DUAL_CONTRAST.
@@ -525,12 +955,32 @@ Assets di chuyển, camera đứng yên. Tối đa 1 ZOOM_IN/video (max 1.15x). 
 - Asset ENTER **12–15 frames trước** khi voice nhắc đến nó
 - Mỗi scene 15–30 giây = 450–900 frames durationFrames
 
-### QUY TẮC 12 — SCALE (AUTO-SCALE CÓ SẴN)
-SceneCompiler tự áp dụng nếu không set scale:
+### QUY TẮC 11b — DURATION LOCKING (quan trọng khi dùng TTS pipeline)
+\`durationFrames\` của mỗi scene **KHÔNG ĐƯỢC ĐOÁN** khi pipeline có audio thực tế.
+
+**Pipeline chuẩn (--tts flag):**
+1. AI generate timeline với \`narration\` đầy đủ trong mỗi scene
+2. Pipeline extract narration → Kokoro/Edge TTS → đo duration thực tế
+3. Pipeline **patch** lại \`durationFrames\` = actual TTS clip duration × 30fps
+4. \`durationInFrames\` total = tổng tất cả scenes
+
+**Khi bạn estimate (không có --tts):**
+- 1 từ tiếng Việt ≈ 7 frames (130 từ/phút)
+- 1 từ tiếng Anh ≈ 5 frames (160 từ/phút)
+- Đếm số từ trong \`narration\` → estimate frames
+- Scene có 30 từ tiếng Việt → ~210 frames (7s) tối thiểu
+
+**LUÔN viết \`narration\` đầy đủ cho mỗi scene** — đây là nguồn để TTS generate audio.
+Narration = đúng lời voice-over sẽ đọc, không phải mô tả visual.
+
+### QUY TẮC 12 — SCALE: NHÂN VẬT PHẢI TO, LẤP ĐẦY MÀN HÌNH
+Video gốc: mèo chiếm ~40-50% chiều cao frame, KHÔNG phải icon nhỏ trôi giữa khoảng trắng.
+**NÊN để trống \`scale\`** → SceneCompiler tự áp auto-scale to (đã chuẩn theo refer):
 \`\`\`
-SOLO/CLOSE_UP: 1.9  |  DIALOGUE: 1.65  |  STAT_DRAMA: 1.6  |  ICON_TRIPLE: 1.0
+SOLO/CLOSE_UP: 3.0  |  QA_REVEAL: 2.8  |  STAT_DRAMA/CTA: 2.4  |  DIALOGUE: 2.3
+CHAR_PROP: 2.6/2.0  |  SIZE_HIERARCHY: 3.2/1.6  |  LINEUP: 1.5  |  ICON_TRIPLE: 1.4
 \`\`\`
-Không bao giờ set scale < 1.0 cho nhân vật chính.
+Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GIỜ < 2.0 (trừ icon trong ICON_TRIPLE/LINEUP).
 
 ---
 
@@ -708,11 +1158,20 @@ Không bao giờ set scale < 1.0 cho nhân vật chính.
 11. **DIALOGUE FIRST:** Giải thích quan trọng → DIALOGUE với 2 nhân vật, speech bubble, không BODY text dài
 12. **CAMERA MINIMAL:** Tối đa 1 ZOOM_IN/video, zoom max 1.15
 13. **TRẦN 12 TỪ:** Tổng số từ hiển thị cùng lúc ≤ 12 từ. CALLOUT ≤ 6 từ. BODY ≤ 10 từ.
+13b. **KHÔNG ĐÈ TEXT — 1 TEXT/DẢI Y:** TUYỆT ĐỐI không để 2 text hiển thị CÙNG LÚC trong cùng 1 dải y.
+    - Dải TOP (y 0.08-0.30): chỉ 1 TITLE/SECTION/STAT HOẶC tối đa 2 CALLOUT NGẮN ở 2 cực x (x≤0.30 và x≥0.70), mỗi cái ≤ 4 từ.
+    - Dải BODY (y 0.80-0.93): CHỈ 1 BODY hoặc 1 CAPTION tại 1 thời điểm. Khi cần câu mới → set exitFrame câu cũ = delay câu mới.
+    - 3 label ICON_TRIPLE (y 0.62) ở x=0.22/0.50/0.78 phải NGẮN (≤ 3 từ) để không tràn ngang đè nhau.
+    - Khi chuyển ý trong cùng scene: PHẢI exit text cũ TRƯỚC khi enter text mới cùng vùng — không chồng.
 14. **KHÔNG TEXT KHI ICON ĐÃ NÓI:** Nếu icon/pose đã thể hiện được ý — bỏ text đi
 15. **STAGGER ENTRIES:** Entities stagger 12-20 frames, không enter đồng loạt
 16. **POSE MATCH EMOTION:** Mỗi scene chọn đúng cat pose variant theo cảm xúc — KHÔNG dùng \`cat\` neutral cho tất cả
 17. **VISUAL RHYTHM:** Mỗi 240–360 frames phải có ít nhất 1 visual event (enter/emphasize/text change)
-18. **PROP INTERACTION:** Khi dùng prop, đặt nhân vật ở góc nhìn vào prop (cat x=0.35 + prop x=0.65)`;
+18. **PROP INTERACTION:** Khi dùng prop, đặt nhân vật ở góc nhìn vào prop (cat x=0.35 + prop x=0.65)
+19. **EXITFRAME BẮT BUỘC:** Mọi text PHẢI có \`duration\` (số frames hiển thị tính từ delay). Text không có duration = tồn tại đến cuối scene — thường gây rối. Khi 2 text dùng cùng vùng (cùng dải y), text trước PHẢI exit (hết duration) TRƯỚC HOẶC ĐÚNG LÚC text sau xuất hiện. Engine sẽ tự xóa text cũ nếu bị đè, nhưng đừng dựa vào đó — set duration đúng ngay từ đầu.
+20. **PROPS THAY TEXT:** Khi có prop phù hợp, dùng prop thay text. "Tiết kiệm" → props/piggy_bank. "Thời gian" → props/hourglass. "Nỗ lực" → props/muscle_arm. "Thành công" → props/trophy.
+21. **COSTUME MATCH ROLE:** KHÔNG dùng \`characters/cat\` cho tất cả. Bố → cat_dad. Mẹ → cat_mom. Doanh nhân/giàu → cat_business. Trẻ em → cat_child_boy/girl. Giáo viên → cat_teacher. Công nhân → cat_worker.
+22. **VISUAL METAPHOR:** Dùng icon/prop thể hiện ẩn dụ trực quan — house = "nền tảng gia đình", trophy = "phần thưởng", hourglass = "thời gian dài" — KHÔNG viết text giải thích ẩn dụ.`;
 }
 
 export function buildScriptFromIdea(idea: string): string {

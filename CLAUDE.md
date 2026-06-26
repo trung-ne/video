@@ -214,10 +214,33 @@ Mèo đứng ở (x=0.35) nhìn sang phải nơi prop (x=0.65). Prop không ph�
 
 ---
 
-## PHÂN TÍCH VIDEO THẬT — "MÈO GIẢI THÍCH" (từ 241 frames)
+## PHÂN TÍCH VIDEO THẬT — "MÈO GIẢI THÍCH" (từ 241 frames refer/frames/)
 
 > **Phương pháp:** Extract 241 frames (cứ 5 giây/frame) từ video gốc kênh thật, phân tích từng frame.
 > Video dài 20 phút, giải thích chính sách sinh con Hàn Quốc/Hungary qua nhân vật mèo 2D.
+
+### PHÁT HIỆN MỚI NHẤT (v2 — phân tích refer/frames/*.jpg)
+
+| Kỹ thuật | Thực tế video thật | Gap với hệ thống hiện tại |
+|---|---|---|
+| **Mở đầu bằng newspaper cards** | 0–15s: Ảnh chụp bài báo thật chồng lên nhau (jagged paper edge) làm bằng chứng | Chưa có component này |
+| **Illustrated backgrounds** | Phòng làm việc, nhà hàng, bar, hang động, đám cưới — có bàn ghế, lửa, đèn | Chỉ có CSS gradient |
+| **Nhân vật ở BOTTOM** | Khi có illustrated bg: mèo y=0.68–0.78, đứng trước scene | Mèo luôn ở y=0.52 center |
+| **Speech bubble oval** | Bong bóng thoại hình oval trắng có đuôi — dùng props/speech_bubble | Dùng CALLOUT rectangle |
+| **Real photo backgrounds** | Ảnh thật (hoàng hôn, silhouette) làm full-screen bg | Không hỗ trợ |
+| **Survey/poll card** | Card "Khảo sát" có checkbox choices xuất hiện như flash card | Chưa có component |
+| **TV frame với data** | Khung TV hoạt hình, bản đồ thế giới bên trong | Chưa có component |
+| **Avatar circles** | Mặt mèo trong circle frame (dating app profile style) | Chưa có component |
+| **Numbered badges** | Số thứ tự trên người mèo (ranking/game theory) | Chưa có component |
+| **Floating decorations** | Đám mây, bong bóng nổi trôi xung quanh nhân vật | Có thể dùng SVG props |
+
+### QUY TẮC VỊ TRÍ NHÂN VẬT THEO BACKGROUND (CẬP NHẬT)
+
+```
+Background tối/scene đầy đủ   → nhân vật y=0.68–0.78 (đứng ở BOTTOM, background thấy rõ phía trên)
+Background trắng / gradient    → nhân vật y=0.52 (center như bình thường)
+Dialogue trong scene thật      → 2 mèo y=0.70, x=0.28 và x=0.72 (ngồi/đứng ở dưới scene)
+```
 
 ### PHÁT HIỆN QUAN TRỌNG NHẤT — KHÁC VỚI GIẢ ĐỊNH BAN ĐẦU
 

@@ -3,6 +3,8 @@ import {
   Scene,
   SceneEntity,
   SceneText,
+  ScenePaperCard,
+  SceneFrameBox,
   LayoutPreset,
   SLOT_POSITIONS,
   TEXT_SLOT_POSITIONS,
@@ -19,6 +21,8 @@ import {
   ClearEvent,
   TransitionEvent,
   BackgroundEvent,
+  PaperCardEvent,
+  FrameBoxEvent,
 } from "../types/timeline";
 
 // ============================================================
@@ -54,19 +58,53 @@ function compileScene(
   const start = scene.startFrame;
   const sceneEnd = start + scene.durationFrames;
 
+  // Transition duration — used to offset clear + entity enter
+  const transitionDur = scene.transition ? (scene.transition.duration ?? 15) : 0;
+
   // ── 1. Transition ─────────────────────────────────────────
-  if (scene.transition) {
+  // Only emit flash/fadeBlack/fadeWhite — wipe is skipped because BackgroundEvent
+  // already provides a crossfade that is visually equivalent and less jarring.
+  // STAT_DRAMA scenes with flash/fadeBlack are the primary use case.
+  const shouldEmitTransition =
+    scene.transition &&
+    scene.transition.style !== "wipe";
+
+  if (shouldEmitTransition) {
     events.push({
       frame: start,
       type: "transition",
-      style: scene.transition.style,
-      duration: scene.transition.duration ?? 15,
+      style: scene.transition!.style,
+      duration: transitionDur,
     } as TransitionEvent);
   }
 
-  // ── 2. Clear previous assets ─────────────────────────────
+  // ── 2. Background first (crossfade handles the visual transition) ──
+  if (scene.backgroundSrc) {
+    // Photo backgrounds (not a hex/gradient) get a gentle default blur + scrim so the
+    // flat 2D characters pop and overlay text stays legible — matches the reference video.
+    const isPhoto =
+      !scene.backgroundSrc.startsWith("#") &&
+      !scene.backgroundSrc.startsWith("rgb") &&
+      !scene.backgroundSrc.startsWith("linear-gradient") &&
+      !scene.backgroundSrc.startsWith("radial-gradient");
+    events.push({
+      frame: start,
+      type: "background",
+      src: scene.backgroundSrc,
+      blur: scene.backgroundBlur ?? (isPhoto ? 10 : 0),
+      overlay: scene.backgroundOverlay ?? (isPhoto ? "rgba(0,0,0,0.28)" : undefined),
+      duration: 25,
+    } as BackgroundEvent);
+  }
+
+  // ── 3. Clear AFTER transition completes ──────────────────
+  // clearPrevious is an EXPLICIT signal from the AI — always honor it.
+  //   true      → wipe the whole canvas for a clean slate (new scene context)
+  //   string[]  → clear only the named assets (within-scene phase change)
+  // Hold-state (assets persist across scenes) is the DEFAULT when clearPrevious
+  // is omitted/false, so scenes that want continuity simply don't set it.
   if (scene.clearPrevious) {
-    const clearFrame = start + (scene.transition ? (scene.transition.duration ?? 15) : 0);
+    const clearFrame = start + transitionDur;
     if (scene.clearPrevious === true) {
       events.push({ frame: clearFrame, type: "clear", assetIds: [] } as ClearEvent);
     } else if (Array.isArray(scene.clearPrevious) && scene.clearPrevious.length > 0) {
@@ -74,28 +112,34 @@ function compileScene(
     }
   }
 
-  // ── 2b. Background event from scene.backgroundSrc ────────
-  if (scene.backgroundSrc) {
-    events.push({
-      frame: start,
-      type: "background",
-      src: scene.backgroundSrc,
-      duration: 25,
-    } as BackgroundEvent);
-  }
-
-  // ── 3. Entities ───────────────────────────────────────────
+  // ── 4. Entities enter AFTER transition + small buffer ────
+  // enterDelay is relative to scene start — add transition offset so
+  // entities don't pop in while transition is still playing
   for (let i = 0; i < scene.entities.length; i++) {
     const entity = scene.entities[i];
-    compileEntity(entity, scene, i, start, sceneEnd, events);
+    compileEntity(entity, scene, i, start, sceneEnd, events, transitionDur);
   }
 
-  // ── 4. Texts ──────────────────────────────────────────────
+  // ── 5. Texts ──────────────────────────────────────────────
   for (const text of scene.texts) {
-    compileText(text, scene, start, sceneEnd, events, totalFrames);
+    compileText(text, scene, start, sceneEnd, events, totalFrames, transitionDur);
   }
 
-  // ── 5. Camera ─────────────────────────────────────────────
+  // ── 5b. Paper cards (evidence / survey) ──────────────────
+  if (scene.paperCards) {
+    for (const pc of scene.paperCards) {
+      compilePaperCard(pc, start, sceneEnd, events, totalFrames, transitionDur);
+    }
+  }
+
+  // ── 5c. TV/monitor data frames ───────────────────────────
+  if (scene.frameBoxes) {
+    for (const fb of scene.frameBoxes) {
+      compileFrameBox(fb, start, sceneEnd, events, totalFrames, transitionDur);
+    }
+  }
+
+  // ── 6. Camera ─────────────────────────────────────────────
   if (scene.camera) {
     compileCamera(scene.camera, scene, start, events);
   }
@@ -107,7 +151,8 @@ function compileEntity(
   entityIndex: number,
   sceneStart: number,
   sceneEnd: number,
-  events: TimelineEvent[]
+  events: TimelineEvent[],
+  transitionDur: number = 0
 ): void {
   // Resolve position
   let position: { x: number; y: number };
@@ -122,7 +167,8 @@ function compileEntity(
     position = SLOT_POSITIONS[slot];
   }
 
-  const enterFrame = sceneStart + (entity.enterDelay ?? 0);
+  // Enter after transition finishes so entities don't pop in mid-wipe
+  const enterFrame = sceneStart + transitionDur + (entity.enterDelay ?? 0);
 
   // Entity-level clearPrevious (phase transition within a scene)
   if (entity.clearPrevious && entity.clearPrevious.length > 0) {
@@ -140,6 +186,8 @@ function compileEntity(
     animation: entity.enterAnimation ?? defaultEnterAnimation(entity.role),
     animationDuration: entity.animationDuration ?? 20,
     label: entity.label,
+    badge: entity.badge,
+    circle: entity.circle,
     zIndex: entity.zIndex ?? (entity.role === "host" ? 1 : 2),
   } as EnterEvent);
 
@@ -174,7 +222,8 @@ function compileText(
   sceneStart: number,
   sceneEnd: number,
   events: TimelineEvent[],
-  totalFrames: number
+  totalFrames: number,
+  transitionDur: number = 0
 ): void {
   // Resolve position
   let position: { x: number; y: number };
@@ -186,7 +235,7 @@ function compileText(
     position = defaultTextPosition(text.style);
   }
 
-  const textFrame = sceneStart + (text.delay ?? 0);
+  const textFrame = sceneStart + transitionDur + (text.delay ?? 0);
 
   // Compute exitFrame
   let exitFrame: number | undefined;
@@ -197,8 +246,17 @@ function compileText(
     exitFrame = Math.min(sceneEnd - 5, totalFrames - 1);
   }
 
-  // Auto-adjust text color on dark backgrounds
-  const isDarkBg = scene.backgroundSrc ? isDarkBackground(scene.backgroundSrc) : false;
+  // Auto-adjust text color on dark backgrounds.
+  // Photo backgrounds get a dark scrim by default → treat as dark (light text).
+  const bgIsPhoto = scene.backgroundSrc
+    ? !scene.backgroundSrc.startsWith("#") &&
+      !scene.backgroundSrc.startsWith("rgb") &&
+      !scene.backgroundSrc.startsWith("linear-gradient") &&
+      !scene.backgroundSrc.startsWith("radial-gradient")
+    : false;
+  const isDarkBg = scene.backgroundSrc
+    ? isDarkBackground(scene.backgroundSrc) || bgIsPhoto
+    : false;
   const autoColor = isDarkBg && text.style !== "STAT"
     ? (text.style === "BODY" ? "#E0E0E0" : text.style === "CAPTION" ? "#B0BEC5" : "#FFFFFF")
     : undefined;
@@ -217,6 +275,65 @@ function compileText(
     animation: "fadeIn",
     exitFrame,
   } as TextEvent);
+}
+
+function compilePaperCard(
+  pc: ScenePaperCard,
+  sceneStart: number,
+  sceneEnd: number,
+  events: TimelineEvent[],
+  totalFrames: number,
+  transitionDur: number
+): void {
+  const frame = sceneStart + transitionDur + (pc.delay ?? 0);
+  const exitFrame =
+    pc.duration !== undefined
+      ? Math.min(frame + pc.duration, totalFrames - 1)
+      : Math.min(sceneEnd - 5, totalFrames - 1);
+
+  events.push({
+    frame,
+    type: "paperCard",
+    cardId: pc.id,
+    variant: pc.variant,
+    position: pc.position ?? { x: 0.5, y: 0.42 },
+    scale: pc.scale,
+    title: pc.title,
+    body: pc.body,
+    choices: pc.choices,
+    rotation: pc.rotation,
+    animation: "popIn",
+    exitFrame,
+    width: pc.width,
+  } as PaperCardEvent);
+}
+
+function compileFrameBox(
+  fb: SceneFrameBox,
+  sceneStart: number,
+  sceneEnd: number,
+  events: TimelineEvent[],
+  totalFrames: number,
+  transitionDur: number
+): void {
+  const frame = sceneStart + transitionDur + (fb.delay ?? 0);
+  const exitFrame =
+    fb.duration !== undefined
+      ? Math.min(frame + fb.duration, totalFrames - 1)
+      : Math.min(sceneEnd - 5, totalFrames - 1);
+
+  events.push({
+    frame,
+    type: "frameBox",
+    frameId: fb.id,
+    position: fb.position ?? { x: 0.5, y: 0.42 },
+    scale: fb.scale,
+    contentSrc: fb.contentSrc,
+    caption: fb.caption,
+    animation: "popIn",
+    exitFrame,
+    width: fb.width,
+  } as FrameBoxEvent);
 }
 
 function compileCamera(
@@ -349,37 +466,38 @@ function resolveEntityPosition(
   return slot ? SLOT_POSITIONS[slot] : undefined;
 }
 
-// Default scale per layout — ensures characters fill the screen appropriately
+// Default scale per layout — ensures characters FILL the screen like the reference
+// video (cats are ~40-50% of frame height, not tiny icons floating in whitespace).
 function defaultScaleForLayout(layout: LayoutPreset, entityIndex: number): number {
   switch (layout) {
     case "SOLO":
     case "INTRO":
     case "CLOSE_UP":
-      return 1.9;
+      return 3.0;
     case "DIALOGUE":
     case "DUAL_CONTRAST":
     case "COMPARE":
-      return 1.65;
+      return 2.3;
     case "SIZE_HIERARCHY":
-      return entityIndex === 0 ? 2.0 : 1.0; // big entity first, small second
+      return entityIndex === 0 ? 3.2 : 1.6; // big entity first, small second
     case "CHAR_PROP":
     case "CAUSE_EFFECT":
-      return entityIndex === 0 ? 1.7 : 1.4; // character slightly bigger than prop
+      return entityIndex === 0 ? 2.6 : 2.0; // character slightly bigger than prop
     case "ICON_TRIPLE":
     case "ACCUMULATION":
-      return 1.0;
+      return 1.4;
     case "LINEUP":
-      return 0.95;
+      return 1.5;
     case "STAT_DRAMA":
     case "STAT":
     case "CONCLUSION":
     case "CTA":
-      return 1.6;
+      return 2.4;
     case "QA_REVEAL":
     case "SINGLE":
-      return 1.8;
+      return 2.8;
     default:
-      return 1.2;
+      return 1.8;
   }
 }
 

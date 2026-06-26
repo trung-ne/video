@@ -89,6 +89,9 @@ export interface SceneEntity {
   zIndex?: number;                     // default 1
   label?: string;                      // label shown below asset
 
+  badge?: string;                      // number/text badge on character (e.g. "4")
+  circle?: string;                     // colored disc behind icon (icon-in-circle grouping, e.g. "#8E44AD")
+
   enterAnimation?: AnimationType;      // default: popIn
   enterDelay?: number;                 // frames after scene.startFrame, default 0
   animationDuration?: number;          // frames, default 20
@@ -127,6 +130,33 @@ export interface SceneText {
   fontWeight?: number;
 }
 
+// ─── Paper card (evidence / survey) inside a scene ───────────
+export interface ScenePaperCard {
+  id: string;
+  variant: "evidence" | "survey";
+  body: string;
+  title?: string;            // red header for survey
+  choices?: string[];        // survey checkbox options
+  position?: { x: number; y: number }; // default {0.5, 0.42}
+  scale?: number;
+  rotation?: number;
+  delay?: number;            // frames after scene start
+  duration?: number;         // frames visible; omit = until scene end
+  width?: number;
+}
+
+// ─── TV/monitor frame with data content inside a scene ───────
+export interface SceneFrameBox {
+  id: string;
+  contentSrc: string;        // image path under public/ (map, chart)
+  caption?: string;
+  position?: { x: number; y: number }; // default {0.5, 0.42}
+  scale?: number;
+  delay?: number;
+  duration?: number;
+  width?: number;
+}
+
 // ─── Transition between scenes ───────────────────────────────
 export type TransitionStyle = "flash" | "wipe" | "fadeBlack" | "fadeWhite" | "zoom";
 
@@ -146,9 +176,14 @@ export interface Scene {
   layout: LayoutPreset;
   narration?: string;      // the words being spoken (helps compiler time things)
   backgroundSrc?: string;  // CSS color/gradient or image path for background event
+  backgroundBlur?: number;    // blur px for photo bg (8-14 recommended so flat 2D cat pops)
+  backgroundOverlay?: string; // scrim over photo bg for legibility (e.g. "rgba(0,0,0,0.35)")
 
   entities: SceneEntity[];
   texts: SceneText[];
+
+  paperCards?: ScenePaperCard[]; // evidence / survey cards
+  frameBoxes?: SceneFrameBox[];  // TV/monitor data frames
 
   camera?: SceneCameraHint;
   transition?: SceneTransition; // played at the START of this scene

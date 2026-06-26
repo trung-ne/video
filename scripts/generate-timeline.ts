@@ -31,7 +31,7 @@ import * as path from "path";
 import { execSync } from "child_process";
 import { buildSystemPrompt, buildScriptFromIdea, listAvailableAssets } from "../src/ai/systemPrompt";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
-import { compileScenes } from "../src/engine/sceneCompiler";
+// import { compileScenes } from "../src/engine/sceneCompiler"; // [SCENE_COMPILER]
 
 // --- Parse CLI args ---
 const args = process.argv.slice(2);
@@ -45,6 +45,12 @@ const urlInput = getArg("--url");
 const transcriptInput = getArg("--transcript");
 const audioInput = getArg("--audio");
 const durationOverride = getArg("--duration");
+const ttsFlag = args.includes("--tts") || args.includes("--tts-kokoro");
+const ttsBackend = args.includes("--tts-kokoro") ? "kokoro" : "edge";
+// kokoro voices: af_heart af_bella am_adam am_michael bf_emma bm_george
+// edge voices:   en-US-AvaNeural vi-VN-HoaiMyNeural vi-VN-NamMinhNeural
+const ttsVoice = getArg("--tts-voice") ?? (ttsBackend === "kokoro" ? "af_heart" : "en-US-AvaNeural");
+const ttsLang = getArg("--tts-lang") ?? "a"; // kokoro only: a=US English, b=British, j=Japanese
 
 // Auto output path: cùng folder với transcript nếu không có --out
 const outPath = getArg("--out") ?? (
@@ -356,10 +362,94 @@ ${transcript}
   });
 }
 
+// --- TTS: generate audio per scene, patch timeline durations ---
+async function runTTS(timeline: any, projectDir: string): Promise<void> {
+  if (!Array.isArray(timeline.scenes) || timeline.scenes.length === 0) {
+    console.warn("⚠️  TTS: timeline có 0 scenes, bỏ qua TTS");
+    return;
+  }
+
+  // Extract narrations from scenes
+  const scenes = timeline.scenes.map((s: any) => ({
+    id: s.id ?? `scene-${s.startFrame ?? 0}`,
+    text: (s.narration ?? s.label ?? "").replace(/^\[.*?\]\s*/, "").trim(),
+  }));
+
+  const ttsDir = projectDir;
+  const scenesJsonPath = path.join(ttsDir, "tts_scenes.json");
+  fs.mkdirSync(ttsDir, { recursive: true });
+  fs.writeFileSync(scenesJsonPath, JSON.stringify(scenes, null, 2));
+
+  console.log(`\n🎙️  TTS: ${scenes.length} scenes → ${ttsVoice}`);
+  console.log(`   Outdir: ${ttsDir}`);
+
+  // Run TTS script (kokoro via py -3.11, edge via python)
+  const ttsScript = path.join(path.dirname(__filename),
+    ttsBackend === "kokoro" ? "tts_kokoro.py" : "tts_edge.py");
+  const pythonExe = ttsBackend === "kokoro" ? "py -3.11" : "python";
+  const extraArgs = ttsBackend === "kokoro" ? ` --lang "${ttsLang}"` : "";
+  const cmd = `${pythonExe} "${ttsScript}" --scenes "${scenesJsonPath}" --outdir "${ttsDir}" --voice "${ttsVoice}"${extraArgs}`;
+  try {
+    const output = execSync(cmd, { encoding: "utf-8", timeout: 300000 });
+    console.log(output.trim().split("\n").map(l => "   " + l).join("\n"));
+  } catch (e: any) {
+    console.error("❌ TTS failed:", e.message);
+    throw e;
+  }
+
+  // Read durations.json
+  const durPath = path.join(ttsDir, "durations.json");
+  if (!fs.existsSync(durPath)) {
+    throw new Error(`TTS: durations.json không tạo được tại ${durPath}`);
+  }
+  const durations = JSON.parse(fs.readFileSync(durPath, "utf-8"));
+
+  // Build lookup: scene id → frames
+  const frameMap: Record<string, number> = {};
+  for (const s of durations.scenes) {
+    frameMap[s.id] = s.frames;
+  }
+
+  // Patch timeline: set each scene's durationFrames from actual TTS duration
+  let cursor = 0;
+  let patchedCount = 0;
+  for (const scene of timeline.scenes) {
+    const sid = scene.id ?? `scene-${scene.startFrame ?? 0}`;
+    scene.startFrame = cursor;
+    if (frameMap[sid] !== undefined) {
+      scene.durationFrames = frameMap[sid];
+      patchedCount++;
+    }
+    // else: keep AI-estimated duration as fallback
+    cursor += scene.durationFrames ?? 150;
+  }
+  timeline.durationInFrames = cursor;
+
+  // Save voice.wav to project dir + also copy to public/ for Remotion
+  const voiceWav = path.join(ttsDir, "voice.wav");
+  const publicDir = path.join(process.cwd(), "public");
+  const publicAudioDir = path.join(publicDir, "audio", path.basename(ttsDir));
+
+  // Copy voice.wav to public/ so Remotion can access it
+  fs.mkdirSync(publicAudioDir, { recursive: true });
+  const publicVoiceWav = path.join(publicAudioDir, "voice.wav");
+  fs.copyFileSync(voiceWav, publicVoiceWav);
+
+  // Timeline audio ref is relative to public/
+  const relAudio = `audio/${path.basename(ttsDir)}/voice.wav`;
+  timeline.audio = relAudio;
+
+  console.log(`\n✅ TTS done: ${patchedCount}/${timeline.scenes.length} scenes patched`);
+  console.log(`   Total: ${cursor} frames (${(cursor / 30).toFixed(1)}s)`);
+  console.log(`   Audio: ${voiceWav} (+ public/audio/...)`);
+  console.log(`   Timeline ref: ${relAudio}`);
+}
+
 // --- Main ---
 async function main() {
   console.log("🎬 Cat Explainer — Timeline Generator\n");
   console.log(`   Mode: ${ideaInput ? "💡 Idea" : urlInput ? "🔗 URL" : "📄 Transcript"}`);
+  if (ttsFlag) console.log(`   TTS: ${ttsVoice}`);
 
   // Step 1: Get transcript
   const { text: transcript, source } = await getTranscript();
@@ -371,35 +461,47 @@ async function main() {
   } else if (audioInput) {
     durationSeconds = Math.ceil(getAudioDuration(audioInput));
     console.log(`🎵 Audio duration: ${durationSeconds}s`);
+  } else if (ttsFlag) {
+    // TTS mode: estimate from transcript word count (~2.5 words/sec narration pace)
+    const wordCount = transcript.split(/\s+/).length;
+    durationSeconds = Math.ceil(wordCount / 2.5);
+    console.log(`📝 Transcript: ~${wordCount} words → estimated ${durationSeconds}s`);
   }
 
   // Step 3: Generate timeline
   const timeline = await generateTimeline(transcript, durationSeconds);
 
-  // Step 4: Add audio if provided
-  if (audioInput) {
+  // Step 3.5: TTS — generate audio and patch durations (same folder as timeline)
+  if (ttsFlag && Array.isArray(timeline.scenes)) {
+    const projectDir = path.dirname(outPath);  // Same folder as timeline.json
+    await runTTS(timeline, projectDir);
+  }
+
+  // Step 4: Add audio if provided (non-TTS mode)
+  if (audioInput && !ttsFlag) {
     timeline.audio = audioInput;
   }
 
-  // Step 5: Compile scenes → events (if AI returned SceneTimeline)
-  let compiled = timeline;
-  if (Array.isArray(timeline.scenes)) {
-    console.log(`\n⚙️  Compiling ${timeline.scenes.length} scenes → events...`);
-    try {
-      compiled = compileScenes(timeline);
-      console.log(`   ✅ Compiled: ${compiled.events.length} events`);
-    } catch (e: any) {
-      console.error(`❌ Scene compile failed: ${e.message}`);
-      process.exit(1);
-    }
-  }
-
-  // Also save the raw SceneTimeline for reference/editing
-  if (Array.isArray(timeline.scenes)) {
-    const scenePath = outPath.replace(".json", "_scenes.json");
-    fs.writeFileSync(scenePath, JSON.stringify(timeline, null, 2));
-    console.log(`   SceneTimeline lưu: ${scenePath}`);
-  }
+  // // [SCENE_COMPILER] Tạm comment — AI hiện generate raw events trực tiếp (video-002 pattern)
+  // // Mở lại nếu muốn dùng SceneTimeline → SceneCompiler pipeline
+  // let compiled = timeline;
+  // if (Array.isArray(timeline.scenes)) {
+  //   console.log(`\n⚙️  Compiling ${timeline.scenes.length} scenes → events...`);
+  //   try {
+  //     compiled = compileScenes(timeline);
+  //     console.log(`   ✅ Compiled: ${compiled.events.length} events`);
+  //   } catch (e: any) {
+  //     console.error(`❌ Scene compile failed: ${e.message}`);
+  //     process.exit(1);
+  //   }
+  // }
+  // // Save raw SceneTimeline for reference
+  // if (Array.isArray(timeline.scenes)) {
+  //   const scenePath = outPath.replace(".json", "_scenes.json");
+  //   fs.writeFileSync(scenePath, JSON.stringify(timeline, null, 2));
+  //   console.log(`   SceneTimeline lưu: ${scenePath}`);
+  // }
+  const compiled = timeline;
 
   // Step 6: Validate compiled events
   const validation = validateTimeline(compiled);

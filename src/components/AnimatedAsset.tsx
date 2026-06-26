@@ -93,6 +93,18 @@ export const AnimatedAsset: React.FC<Props> = ({
         pointerEvents: "none",
       }}
     >
+      {asset.circle && (
+        <div
+          style={{
+            position: "absolute",
+            width: size * 1.5,
+            height: size * 1.5,
+            borderRadius: "50%",
+            background: asset.circle,
+            zIndex: -1,
+          }}
+        />
+      )}
       <Img
         src={staticFile(`assets/${asset.src}.svg`)}
         style={{
@@ -119,6 +131,24 @@ export const AnimatedAsset: React.FC<Props> = ({
           }}
         >
           {asset.label}
+        </div>
+      )}
+      {asset.badge && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: size * 0.06,
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontSize: size * 0.3,
+            fontWeight: 900,
+            color: "#FFFFFF",
+            fontFamily: "'Segoe UI', Arial, sans-serif",
+            textShadow: "3px 3px 0 rgba(0,0,0,0.45)",
+            pointerEvents: "none",
+          }}
+        >
+          {asset.badge}
         </div>
       )}
     </div>

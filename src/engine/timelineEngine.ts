@@ -13,6 +13,8 @@ import {
   BackgroundEvent,
   SpeechBubbleEvent,
   CardEvent,
+  PaperCardEvent,
+  FrameBoxEvent,
   TransitionEvent,
 } from "../types/timeline";
 import { interpolate, spring } from "remotion";
@@ -21,6 +23,7 @@ export interface BackgroundState {
   src: string;
   blur: number;
   opacity: number;
+  overlay?: string;
   enterFrame: number;
   duration: number;
 }
@@ -50,6 +53,33 @@ export interface CardState {
   exitFrame: number | null;
   width: number;
   height: number;
+}
+
+export interface PaperCardState {
+  cardId: string;
+  variant: "evidence" | "survey";
+  position: { x: number; y: number };
+  scale: number;
+  title?: string;
+  body: string;
+  choices?: string[];
+  rotation: number;
+  animation: string;
+  enterFrame: number;
+  exitFrame: number | null;
+  width: number;
+}
+
+export interface FrameBoxState {
+  frameId: string;
+  position: { x: number; y: number };
+  scale: number;
+  contentSrc: string;
+  caption?: string;
+  animation: string;
+  enterFrame: number;
+  exitFrame: number | null;
+  width: number;
 }
 
 export interface TransitionState {
@@ -96,6 +126,8 @@ export interface FrameState {
   backgrounds: BackgroundState[];
   speechBubbles: Map<string, SpeechBubbleState>;
   cards: Map<string, CardState>;
+  paperCards: Map<string, PaperCardState>;
+  frameBoxes: Map<string, FrameBoxState>;
   activeTransition: TransitionState | null;
 }
 
@@ -111,6 +143,8 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
     backgrounds: [],
     speechBubbles: new Map(),
     cards: new Map(),
+    paperCards: new Map(),
+    frameBoxes: new Map(),
     activeTransition: null,
   };
 
@@ -132,6 +166,8 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
           opacity: 1,
           zIndex: e.zIndex ?? 1,
           label: e.label,
+          badge: e.badge,
+          circle: e.circle,
           visible: true,
         });
         state.assetEnterFrames.set(e.assetId, e.frame);
@@ -222,6 +258,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         src: e.src,
         blur: e.blur ?? 0,
         opacity: e.opacity ?? 1,
+        overlay: e.overlay,
         enterFrame: e.frame,
         duration: e.duration ?? 20,
       });
@@ -268,6 +305,45 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
       }
     }
 
+    if (event.type === "paperCard" && event.frame <= currentFrame) {
+      const e = event as PaperCardEvent;
+      state.paperCards.set(e.cardId, {
+        cardId: e.cardId,
+        variant: e.variant,
+        position: e.position,
+        scale: e.scale ?? 1,
+        title: e.title,
+        body: e.body,
+        choices: e.choices,
+        rotation: e.rotation ?? (e.variant === "evidence" ? -2 : 0),
+        animation: e.animation ?? "popIn",
+        enterFrame: e.frame,
+        exitFrame: e.exitFrame ?? null,
+        width: e.width ?? 1100,
+      });
+      if (e.exitFrame !== null && currentFrame >= (e.exitFrame ?? 0)) {
+        state.paperCards.delete(e.cardId);
+      }
+    }
+
+    if (event.type === "frameBox" && event.frame <= currentFrame) {
+      const e = event as FrameBoxEvent;
+      state.frameBoxes.set(e.frameId, {
+        frameId: e.frameId,
+        position: e.position,
+        scale: e.scale ?? 1,
+        contentSrc: e.contentSrc,
+        caption: e.caption,
+        animation: e.animation ?? "popIn",
+        enterFrame: e.frame,
+        exitFrame: e.exitFrame ?? null,
+        width: e.width ?? 1000,
+      });
+      if (e.exitFrame !== null && currentFrame >= (e.exitFrame ?? 0)) {
+        state.frameBoxes.delete(e.frameId);
+      }
+    }
+
     if (event.type === "transition" && event.frame <= currentFrame) {
       const e = event as TransitionEvent;
       const dur = e.duration ?? 15;
@@ -290,7 +366,87 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
     }
   }
 
+  // ── Anti-overlap safety net ───────────────────────────────────────────────
+  // When two text overlays occupy overlapping screen boxes at the same frame,
+  // keep only the most-recently-entered one. This prevents stale text from a
+  // previous beat from colliding with fresh text — a common generation mistake
+  // that the slot system alone can't catch (e.g. a wide CALLOUT spilling into
+  // a neighbour, or two BODY lines stacked at the same y). Fixes overlap at
+  // RENDER time so both existing and future timelines render clean.
+  dedupeOverlappingTexts(state.texts, timeline.width ?? 1920, timeline.height ?? 1080);
+
   return state;
+}
+
+// Estimate a text overlay's on-screen bounding box (pixels), mirroring the
+// sizing rules in AnimatedText.tsx as closely as is practical.
+function estimateTextBox(
+  t: TextState,
+  W: number,
+  H: number
+): { x0: number; x1: number; y0: number; y1: number } {
+  const FS_DEFAULT: Record<string, number> = {
+    TITLE: 72, STAT: 120, CALLOUT: 44, SECTION: 54, BODY: 44, CAPTION: 30,
+  };
+  const style = t.style ?? "BODY";
+  const fontSize = t.fontSize ?? FS_DEFAULT[style] ?? 44;
+  const chars = t.content.replace(/\n/g, " ").length;
+  const charW = fontSize * 0.55;
+
+  let boxW: number;
+  let boxH: number;
+
+  if (style === "CALLOUT") {
+    // Pill, whiteSpace: nowrap → width grows with content + 36px padding each side
+    boxW = chars * charW + 72;
+    boxH = fontSize * 1.6;
+  } else if (style === "STAT") {
+    boxW = chars * fontSize * 0.6;
+    boxH = fontSize * 1.3;
+  } else {
+    // TITLE / SECTION / BODY / CAPTION wrap at a maxWidth
+    const maxW = W * (style === "TITLE" ? 0.75 : style === "SECTION" ? 0.7 : 0.72);
+    const unwrapped = chars * charW;
+    boxW = Math.min(unwrapped, maxW);
+    const lines = Math.max(1, Math.ceil(unwrapped / maxW));
+    boxH = fontSize * 1.35 * lines;
+  }
+
+  // Honour explicit line breaks
+  const explicitLines = t.content.split("\n").length;
+  if (explicitLines > 1 && style !== "CALLOUT") {
+    boxH = Math.max(boxH, fontSize * 1.35 * explicitLines);
+  }
+
+  const cx = t.position.x * W;
+  const cy = t.position.y * H;
+  return { x0: cx - boxW / 2, x1: cx + boxW / 2, y0: cy - boxH / 2, y1: cy + boxH / 2 };
+}
+
+function boxesOverlap(
+  a: { x0: number; x1: number; y0: number; y1: number },
+  b: { x0: number; x1: number; y0: number; y1: number }
+): boolean {
+  return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+}
+
+// Remove older texts that collide with a newer one (newer = higher enterFrame).
+function dedupeOverlappingTexts(texts: Map<string, TextState>, W: number, H: number): void {
+  const entries = [...texts.values()].sort((a, b) => a.enterFrame - b.enterFrame);
+  const boxes = entries.map((t) => ({ t, box: estimateTextBox(t, W, H) }));
+  const removed = new Set<string>();
+
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      // i is always older (or equal) than j due to the ascending sort
+      if (boxesOverlap(boxes[i].box, boxes[j].box)) {
+        removed.add(boxes[i].t.textId);
+        break; // i is gone; no need to compare it further
+      }
+    }
+  }
+
+  for (const id of removed) texts.delete(id);
 }
 
 function easeInOut(t: number): number {

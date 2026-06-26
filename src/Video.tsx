@@ -13,6 +13,8 @@ import { AnimatedText } from "./components/AnimatedText";
 import { BackgroundLayer } from "./components/BackgroundLayer";
 import { SpeechBubble } from "./components/SpeechBubble";
 import { ConceptCard } from "./components/ConceptCard";
+import { PaperCard } from "./components/PaperCard";
+import { FrameBox } from "./components/FrameBox";
 import { TransitionOverlay } from "./components/TransitionOverlay";
 
 interface Props {
@@ -43,11 +45,15 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
   const defaultBg = timeline.background ?? "#FAFAF8";
 
   // Resolve background image paths
+  const isCSSValue = (s: string) =>
+    s.startsWith("#") ||
+    s.startsWith("rgb") ||
+    s.startsWith("linear-gradient") ||
+    s.startsWith("radial-gradient");
+
   const resolvedBackgrounds = state.backgrounds.map((bg) => ({
     ...bg,
-    src: bg.src.startsWith("#") || bg.src.startsWith("rgb")
-      ? bg.src
-      : staticFile(bg.src),
+    src: isCSSValue(bg.src) ? bg.src : staticFile(bg.src),
   }));
 
   return (
@@ -115,6 +121,27 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
             anchor={state.assets.get(bubble.anchorAssetId)}
             canvasWidth={width}
             canvasHeight={height}
+          />
+        ))}
+
+        {/* Paper cards — evidence / survey (above characters) */}
+        {Array.from(state.paperCards.entries()).map(([cardId, card]) => (
+          <PaperCard
+            key={cardId}
+            card={card}
+            canvasWidth={width}
+            canvasHeight={height}
+          />
+        ))}
+
+        {/* TV / monitor frames with data content */}
+        {Array.from(state.frameBoxes.entries()).map(([frameId, fb]) => (
+          <FrameBox
+            key={frameId}
+            frameBox={fb}
+            canvasWidth={width}
+            canvasHeight={height}
+            staticFile={staticFile}
           />
         ))}
 

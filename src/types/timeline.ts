@@ -31,6 +31,8 @@ export interface AssetState {
   opacity: number;
   zIndex: number;
   label?: string;        // text label shown below asset
+  badge?: string;        // number/text badge overlaid on the character
+  circle?: string;       // colored disc rendered BEHIND the icon (icon-in-circle grouping)
   visible: boolean;
 }
 
@@ -47,6 +49,8 @@ export interface EnterEvent {
   animationDuration?: number; // frames, default 18
   label?: string;
   zIndex?: number;
+  badge?: string;             // number/text badge on the character (e.g. "4") — game-theory ranking
+  circle?: string;            // colored disc behind icon (icon-in-circle grouping, e.g. "#8E44AD")
 }
 
 export interface ExitEvent {
@@ -121,6 +125,7 @@ export interface BackgroundEvent {
   src: string;          // path relative to public/ (e.g. "backgrounds/office_01.jpg") or hex color "#FAFAF8"
   blur?: number;        // blur px, default 0 (8-16 for behind-character blur)
   opacity?: number;     // 0-1, default 1
+  overlay?: string;     // scrim color drawn OVER a photo bg for legibility (e.g. "rgba(0,0,0,0.35)")
   duration?: number;    // frames for crossfade transition, default 20
 }
 
@@ -155,6 +160,38 @@ export interface CardEvent {
   height?: number;         // px, default 200
 }
 
+// NEW: Paper card — torn-paper document (evidence) or survey (question + checkboxes)
+// Matches the real channel's "newspaper evidence" (t0s) and "Khảo sát" survey card (t250s)
+export interface PaperCardEvent {
+  frame: number;
+  type: "paperCard";
+  cardId: string;
+  variant: "evidence" | "survey"; // evidence = quote/document; survey = question + choices
+  position: Position;             // card center, default {0.5, 0.42}
+  scale?: number;                 // default 1
+  title?: string;                 // red header (survey) e.g. "Khảo sát"; omit for plain evidence
+  body: string;                   // main document/question text
+  choices?: string[];             // survey checkbox options (variant="survey")
+  rotation?: number;              // tilt degrees, default -2 (evidence), 0 (survey)
+  animation?: AnimationType;      // default popIn
+  exitFrame?: number;
+  width?: number;                 // px, default 1100
+}
+
+// NEW: TV/monitor frame containing a data image (map, chart) — matches t700s
+export interface FrameBoxEvent {
+  frame: number;
+  type: "frameBox";
+  frameId: string;
+  position: Position;             // frame center, default {0.5, 0.42}
+  scale?: number;                 // default 1
+  contentSrc: string;             // image path under public/ shown inside the TV
+  caption?: string;               // small caption under the frame
+  animation?: AnimationType;      // default popIn
+  exitFrame?: number;
+  width?: number;                 // px, default 1000
+}
+
 // NEW: Scene flash/wipe transition
 export interface TransitionEvent {
   frame: number;
@@ -174,6 +211,8 @@ export type TimelineEvent =
   | BackgroundEvent
   | SpeechBubbleEvent
   | CardEvent
+  | PaperCardEvent
+  | FrameBoxEvent
   | TransitionEvent;
 
 export interface Timeline {

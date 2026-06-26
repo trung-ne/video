@@ -30,6 +30,10 @@ export function validateSceneTimeline(input: any): ValidationResult {
   }
 
   const validLayouts = [
+    // V3 layouts
+    "SOLO", "DIALOGUE", "DUAL_CONTRAST", "SIZE_HIERARCHY", "CHAR_PROP",
+    "ICON_TRIPLE", "QA_REVEAL", "LINEUP", "STAT_DRAMA", "CLOSE_UP",
+    // Legacy layouts
     "INTRO", "SINGLE", "COMPARE", "CAUSE_EFFECT", "CAUSE_EFFECT_CHAIN",
     "ACCUMULATION", "STAT", "CONCLUSION", "CTA", "CUSTOM",
   ];

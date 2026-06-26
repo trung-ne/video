@@ -88,8 +88,18 @@ export const BackgroundLayer: React.FC<Props> = ({
                 height: "100%",
                 objectFit: "cover",
                 filter: bg.blur > 0 ? `blur(${bg.blur}px)` : undefined,
+                transform: bg.blur > 0 ? "scale(1.06)" : undefined,
               }}
             />
+            {bg.overlay && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: bg.overlay,
+                }}
+              />
+            )}
           </div>
         );
       })}

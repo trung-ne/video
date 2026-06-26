@@ -9,6 +9,7 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { compileScenes } from "../src/engine/sceneCompiler";
 
 const args = process.argv.slice(2);
 
@@ -27,7 +28,8 @@ if (!fs.existsSync(timelinePath)) {
   process.exit(1);
 }
 
-const timeline = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+const timeline = raw.scenes ? compileScenes(raw) : raw;
 console.log(`✅ Timeline loaded: ${timelinePath}`);
 console.log(`   Duration: ${timeline.durationInFrames} frames @ ${timeline.fps}fps`);
 console.log(`   = ${(timeline.durationInFrames / timeline.fps).toFixed(1)} seconds`);
@@ -59,11 +61,12 @@ try {
 
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
-  // Cleanup temp props file
-  fs.unlinkSync(propsTmpFile);
-
   console.log(`\n✅ Render complete: ${outPath}`);
 } catch (err) {
   console.error("\n❌ Render failed:", err);
   process.exit(1);
+} finally {
+  if (fs.existsSync(propsTmpFile)) {
+    fs.unlinkSync(propsTmpFile);
+  }
 }
