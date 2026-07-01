@@ -31,6 +31,8 @@ import * as path from "path";
 import { execSync } from "child_process";
 import { buildSystemPrompt, buildScriptFromIdea, listAvailableAssets } from "../src/ai/systemPrompt";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
+import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
+import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 // import { compileScenes } from "../src/engine/sceneCompiler"; // [SCENE_COMPILER]
 
 // --- Parse CLI args ---
@@ -482,6 +484,16 @@ async function main() {
     timeline.audio = audioInput;
   }
 
+  // Step 4.5: AUTO CHECK & FIX — after timeline + audio are ready.
+  // Repairs the #1 recurring defect: the AI leaving every scene on a flat
+  // gradient so the video looks like ugly color washes. This deterministically
+  // swaps lazy gradients on narrative scenes for real illustrated backgrounds
+  // from public/backgrounds/ (abstract STAT/ICON scenes keep their gradient).
+  if (Array.isArray(timeline.scenes)) {
+    const bgReport = autoFixBackgrounds(timeline);
+    printBackgroundFixReport(bgReport);
+  }
+
   // // [SCENE_COMPILER] Tạm comment — AI hiện generate raw events trực tiếp (video-002 pattern)
   // // Mở lại nếu muốn dùng SceneTimeline → SceneCompiler pipeline
   // let compiled = timeline;
@@ -503,9 +515,14 @@ async function main() {
   // }
   const compiled = timeline;
 
-  // Step 6: Validate compiled events
+  // Step 6: Validate schema + quality check
   const validation = validateTimeline(compiled);
   printValidationResult(validation, outPath);
+
+  if (Array.isArray(compiled.scenes)) {
+    const qReport = runQualityCheck(compiled, outPath);
+    printQualityReport(qReport);
+  }
 
   if (!validation.valid) {
     console.error("\n⚠️  Timeline có lỗi nhưng vẫn lưu để bạn xem xét...");

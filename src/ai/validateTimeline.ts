@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Timeline, EnterEvent } from "../types/timeline";
 import { SceneTimeline, SLOT_POSITIONS, TEXT_SLOT_POSITIONS } from "../types/scene";
+import { isCSSBackground, backgroundImageExists } from "./backgroundResolver";
 
 export interface ValidationResult {
   valid: boolean;
@@ -46,6 +47,8 @@ export function validateSceneTimeline(input: any): ValidationResult {
   const seenSceneIds = new Set<string>();
   const seenTextIds = new Set<string>();
   const seenAssetIds = new Set<string>();
+  const realBgImages = new Set<string>();
+  let gradientBgCount = 0;
 
   let totalFrames = 0;
 
@@ -66,6 +69,18 @@ export function validateSceneTimeline(input: any): ValidationResult {
 
     if (!validLayouts.includes(scene.layout)) {
       errors.push(`${sp} invalid layout "${scene.layout}". Valid: ${validLayouts.join(", ")}`);
+    }
+
+    // Background sanity: track real images vs gradients, catch broken image paths
+    if (scene.backgroundSrc) {
+      const bg: string = scene.backgroundSrc;
+      if (isCSSBackground(bg)) {
+        gradientBgCount++;
+      } else if (backgroundImageExists(bg)) {
+        realBgImages.add(bg);
+      } else {
+        errors.push(`${sp} backgroundSrc image not found: public/${bg}`);
+      }
     }
 
     if (!Array.isArray(scene.entities)) {
@@ -133,6 +148,20 @@ export function validateSceneTimeline(input: any): ValidationResult {
       if (!validTransitionStyles.includes(scene.transition.style)) {
         warnings.push(`${sp} unknown transition style "${scene.transition.style}"`);
       }
+    }
+  }
+
+  // Background variety: the recurring "ugly flat color" defect is a video that
+  // is 100% gradients with no real illustrated scene image.
+  if (input.scenes.length >= 3) {
+    if (realBgImages.size === 0 && gradientBgCount > 0) {
+      warnings.push(
+        `No real background images used (${gradientBgCount} gradient/flat scenes). Video will look like flat color washes — auto-fix will swap narrative scenes to backgrounds/*.jpg.`
+      );
+    } else if (realBgImages.size < 3) {
+      warnings.push(
+        `Only ${realBgImages.size} distinct real background image(s). Aim for ≥5 different backgrounds/*.jpg for variety.`
+      );
     }
   }
 

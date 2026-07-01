@@ -24,9 +24,22 @@ export function listAvailableAssets(): string[] {
   return results;
 }
 
+// Scan public/backgrounds/ and return real illustrated background paths
+// (relative to public/, e.g. "backgrounds/office_01.jpg").
+export function listAvailableBackgrounds(): string[] {
+  const bgDir = path.join(process.cwd(), "public", "backgrounds");
+  if (!fs.existsSync(bgDir)) return [];
+  return fs
+    .readdirSync(bgDir)
+    .filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f))
+    .map((f) => `backgrounds/${f}`)
+    .sort();
+}
+
 export function buildSystemPrompt(assetList: string[], durationSeconds: number): string {
   const fps = 30;
   const totalFrames = durationSeconds * fps;
+  const backgroundList = listAvailableBackgrounds();
 
   return `Bạn là chuyên gia tạo Scene Timeline cho video phong cách "Mèo Giải Thích" — kênh YouTube giải thích kinh tế, xã hội bằng nhân vật mèo 2D.
 
@@ -145,7 +158,7 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
   "durationFrames": 150,
   "layout": "SOLO",
   "narration": "Câu voice-over trong scene này",
-  "backgroundSrc": "#FAFAF8",
+  "backgroundSrc": "backgrounds/living_room.jpg",
 
   "entities": [ ...SceneEntity[] ],
   "texts": [ ...SceneText[] ],
@@ -160,36 +173,44 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 
 ---
 
-## BACKGROUNDS — ILLUSTRATED SCENES (QUAN TRỌNG NHẤT)
+## BACKGROUNDS — ẢNH NỀN THẬT LÀ LỰA CHỌN CHÍNH (QUAN TRỌNG NHẤT)
 
-**Từ phân tích video thật: Background phải là ILLUSTRATED SCENE có không gian và chiều sâu — phòng khách có ghế sofa, nhà hàng có bàn ăn, hang động có lửa. KHÔNG phải màu gradient thuần.**
+**⚠️ QUY TẮC SỐ 1: MẶC ĐỊNH backgroundSrc = MỘT ẢNH NỀN THẬT trong danh sách dưới đây, KHÔNG phải gradient.**
 
-Khi có background scene đầy đủ → nhân vật đứng ở **BOTTOM** màn hình (y=0.70–0.78), không phải center (y=0.52). Lý do: nhân vật đứng TRƯỚC background, không che khuất scene phía trên.
+Video thật dùng ILLUSTRATED SCENE có không gian và chiều sâu — phòng khách có sofa, nhà hàng có bàn ăn, văn phòng có bàn làm việc. Gradient phẳng trông XẤU và rẻ tiền. Hệ thống đã có sẵn ${backgroundList.length} ảnh nền thật 1920×1080 — HÃY DÙNG CHÚNG.
 
-### Bảng background theo bối cảnh:
+Compiler TỰ blur nhẹ + phủ scrim tối lên ảnh + TỰ đổi text sang trắng cho dễ đọc. Khi dùng ảnh nền → đặt **nhân vật ở y=0.70–0.78 (đứng dưới)** để thấy cả cảnh phía trên.
 
-| Bối cảnh scene | backgroundSrc |
+### ẢNH NỀN CÓ SẴN — CHỈ DÙNG ĐÚNG CÁC PATH NÀY (copy chính xác):
+${backgroundList.length > 0
+  ? backgroundList.map((b) => `  "${b}"`).join("\n")
+  : "  (chưa có ảnh nền — dùng gradient ở bảng fallback bên dưới)"}
+
+**Cách chọn ảnh nền:** đọc bối cảnh của đoạn narration → chọn ảnh khớp nhất theo tên file.
+Ví dụ: nói về đi làm/công sở → \`backgrounds/office_01.jpg\`; hẹn hò/tâm sự → \`backgrounds/coffee_shop.jpg\`;
+gia đình/ở nhà → \`backgrounds/living_room.jpg\` hoặc \`backgrounds/family_dinner.jpg\`; tiền lương → \`backgrounds/money_counting.jpg\`;
+chứng khoán → \`backgrounds/office_trading.jpg\`; thành phố/kinh tế → \`backgrounds/city_street.jpg\`;
+hy vọng/tương lai → \`backgrounds/sunrise.jpg\`; nông thôn/gốc rễ → \`backgrounds/countryside.jpg\`.
+
+### GRADIENT — CHỈ DÙNG CHO SCENE TRỪU TƯỢNG (fallback, thiểu số):
+Gradient/màu phẳng CHỈ hợp lệ cho các scene KHÔNG có bối cảnh không gian thật:
+
+| Trường hợp trừu tượng | backgroundSrc |
 |----------------|---------------|
-| Intro / giới thiệu ấm | \`"linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)"\` |
-| Phòng làm việc / đọc sách | \`"linear-gradient(180deg, #FDEBD0 0%, #FAD7A0 100%)"\` (nền ấm, tưởng tượng bàn làm việc) |
-| Phòng khách / gia đình | \`"linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)"\` |
-| Nhà hàng / hẹn hò buổi tối | \`"linear-gradient(180deg, #3D1C1C 0%, #6B2E2E 50%, #3D1C1C 100%)"\` |
-| Bar / dating scene | \`"linear-gradient(180deg, #0D2137 0%, #1A4A5A 50%, #0D2137 100%)"\` |
-| Thành phố ban đêm | \`"linear-gradient(180deg, #0A0E27 0%, #1A237E 50%, #0D1B4A 100%)"\` |
-| Đám cưới / lãng mạn | \`"linear-gradient(135deg, #FFD6E7 0%, #FFAACC 50%, #FF85B3 100%)"\` |
-| Hang động / nguyên thủy | \`"linear-gradient(180deg, #2D1B00 0%, #4A2800 50%, #1A0A00 100%)"\` |
-| Thiên nhiên / nông thôn | \`"linear-gradient(180deg, #87CEEB 0%, #81C784 50%, #66BB6A 100%)"\` |
-| Hoàng hôn / cảm xúc | \`"linear-gradient(180deg, #FF5733 0%, #FF8C42 40%, #FFC300 100%)"\` |
-| Số liệu drama / climax | \`"linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"\` |
-| Khái niệm khó / 3+ icons | \`"#FFFFFF"\` |
-| Hy vọng / kết luận | \`"linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"\` |
-| CTA / outro | \`"linear-gradient(135deg, #FAFAF8 0%, #F0F4FF 100%)"\` |
+| Số liệu drama / climax (STAT_DRAMA) | \`"linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"\` |
+| 3+ icons / khái niệm khó (ICON_TRIPLE) | \`"#FFFFFF"\` |
+| So sánh to/nhỏ (SIZE_HIERARCHY) | \`"#FFFFFF"\` |
+| Cảm xúc cận cảnh (CLOSE_UP) | \`"#FFFFFF"\` |
+| Bad news / nặng nề (nếu không có ảnh khớp) | \`"linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)"\` |
 
 **Quy tắc:**
-- Đổi background khi bối cảnh câu chuyện thay đổi — không phải theo thời gian
-- Tối thiểu 5 background khác nhau/video
-- **Khi background có màu tối (nhà hàng, bar, hang động, drama):** nhân vật y=0.68–0.75, scale 1.4–1.6 để thấy cả background lẫn nhân vật
-- **Khi background trắng/sáng:** nhân vật y=0.52 center như bình thường
+- **MẶC ĐỊNH dùng ảnh nền thật** cho MỌI scene kể chuyện (SOLO, DIALOGUE, DUAL_CONTRAST, CHAR_PROP, LINEUP, STORY).
+- Chỉ dùng gradient/trắng cho STAT_DRAMA, ICON_TRIPLE, SIZE_HIERARCHY, CLOSE_UP.
+- Đổi background khi bối cảnh câu chuyện thay đổi — không phải theo thời gian.
+- **Tối thiểu 5 ẢNH NỀN THẬT khác nhau/video** (không phải 5 gradient — 5 file .jpg khác nhau).
+- **Khi dùng ảnh nền:** nhân vật y=0.70–0.78, scale 1.4–1.6.
+- **Khi dùng gradient/trắng:** nhân vật y=0.52 center.
+- ⚠️ Nếu bạn để cả video toàn gradient → hệ thống sẽ tự động thay bằng ảnh (auto-fix), nhưng HÃY tự chọn đúng ngay từ đầu để khớp bối cảnh nhất.
 
 ---
 
@@ -1044,7 +1065,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
       "startFrame": 0,
       "durationFrames": 210,
       "layout": "SOLO",
-      "backgroundSrc": "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)",
+      "backgroundSrc": "backgrounds/living_room.jpg",
       "narration": "Tại sao người Hàn Quốc không chịu đẻ dù nhà nước cho tiền tỷ?",
       "entities": [
         {
@@ -1083,7 +1104,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
       "startFrame": 210,
       "durationFrames": 330,
       "layout": "DIALOGUE",
-      "backgroundSrc": "linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)",
+      "backgroundSrc": "backgrounds/coffee_shop.jpg",
       "narration": "Bạn bè: Ủa sao không đẻ? Mèo: Vì chi phí nuôi con quá cao, mà lương thì không tăng",
       "entities": [
         {
@@ -1153,7 +1174,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 6. \`id\` của scene, assetId, text.id phải UNIQUE toàn timeline
 7. Tối thiểu ${Math.ceil(durationSeconds / 20)} scenes
 8. Mỗi scene: ít nhất 1 entity + \`backgroundSrc\` — **BẮT BUỘC có backgroundSrc mỗi scene**
-9. **BACKGROUND VARIETY:** Ít nhất 5 backgroundSrc khác nhau trong video — 1 màu suốt = fail
+9. **BACKGROUND = ẢNH THẬT:** MẶC ĐỊNH mỗi scene kể chuyện phải dùng MỘT ẢNH NỀN THẬT (\`backgrounds/*.jpg\` trong danh sách). Ít nhất 5 ẢNH khác nhau/video. Gradient CHỈ cho STAT_DRAMA/ICON_TRIPLE/SIZE_HIERARCHY/CLOSE_UP. Toàn gradient = FAIL.
 10. **LAYOUT VARIETY:** Ít nhất 5 layout khác nhau
 11. **DIALOGUE FIRST:** Giải thích quan trọng → DIALOGUE với 2 nhân vật, speech bubble, không BODY text dài
 12. **CAMERA MINIMAL:** Tối đa 1 ZOOM_IN/video, zoom max 1.15

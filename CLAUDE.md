@@ -257,23 +257,28 @@ Dialogue trong scene thật      → 2 mèo y=0.70, x=0.28 và x=0.72 (ngồi/đ
 
 ## 10 RULES BẮT BUỘC (V3 — CẬP NHẬT TỪ VIDEO THẬT)
 
-### RULE 1 — ILLUSTRATED BACKGROUND (Quan trọng nhất!)
-**Background phải là SCENE CÓ KHÔNG GIAN, không phải màu phẳng.**
+### RULE 1 — ẢNH NỀN THẬT LÀ MẶC ĐỊNH (Quan trọng nhất!)
+**Background của scene kể chuyện PHẢI là MỘT ẢNH NỀN THẬT (`backgrounds/*.jpg`), KHÔNG phải gradient phẳng.**
 
-Video thật dùng illustrated backgrounds cho từng bối cảnh:
+Hệ thống có sẵn ~29 ảnh nền thật 1920×1080 trong `public/backgrounds/`. Renderer ([BackgroundLayer.tsx](src/components/BackgroundLayer.tsx))
+tự render `<img>` cho mọi `backgroundSrc` không phải hex/gradient, TỰ blur nhẹ + phủ scrim + đổi text trắng.
 ```
-Giới thiệu / giải thích nhẹ → phòng khách ấm (sofa, cửa sổ, cây)
-Bữa ăn / gia đình           → bàn ăn tối (nhà hàng, ánh đèn vàng)
-Thành phố / kinh tế          → cityscape ban đêm (tòa nhà, đèn)
-Thiên nhiên / nông thôn      → countryside xanh (cây, đồng cỏ)
-Bãi biển / lãng mạn          → sunset beach (cát, biển, hoàng hôn)
-Hang động / nguyên thủy      → cave dark (đá, lửa)
-Số liệu / drama               → dark solid hoặc gradient tối
-Kết luận / hy vọng            → "#FAFAF8" hoặc warm gradient
+Đi làm / công sở      → backgrounds/office_01.jpg, office_trading.jpg, meeting_room.jpg
+Tiền / tài chính      → backgrounds/money_counting.jpg, bank_interior.jpg, finance_desk.jpg
+Gia đình / ở nhà      → backgrounds/living_room.jpg, family_dinner.jpg, kitchen.jpg
+Hẹn hò / tâm sự       → backgrounds/coffee_shop.jpg, restaurant.jpg
+Học tập / giáo dục    → backgrounds/classroom.jpg, library.jpg, home_study.jpg
+Thành phố / kinh tế   → backgrounds/city_street.jpg, city_skyline.jpg
+Nông thôn / gốc rễ    → backgrounds/countryside.jpg   |   Hy vọng → backgrounds/sunrise.jpg
 ```
-- Dùng `BackgroundEvent` với `src` là ảnh path hoặc gradient phức tạp
-- Chuyển background mỗi 15-30 giây theo không gian câu chuyện
-- Nhân vật đứng TRƯỚC background, KHÔNG bị che khuất
+- **GRADIENT/trắng CHỈ dùng cho scene trừu tượng:** STAT_DRAMA (dark gradient), ICON_TRIPLE / SIZE_HIERARCHY / CLOSE_UP (`#FFFFFF`).
+- Đổi background theo bối cảnh; tối thiểu **5 ẢNH thật khác nhau/video**.
+- Ảnh nền → nhân vật y=0.70–0.78 (đứng dưới); gradient/trắng → y=0.52 center.
+
+**AUTO-FIX (mới):** Sau khi gen timeline + audio, pipeline chạy `autoFixBackgrounds()`
+([backgroundResolver.ts](src/ai/backgroundResolver.ts)) — phát hiện scene còn để gradient và thay bằng
+ảnh nền thật khớp bối cảnh nhất (scene trừu tượng giữ nguyên). `validateTimeline` cảnh báo nếu video
+toàn gradient hoặc path ảnh không tồn tại.
 
 ### RULE 2 — DIALOGUE LÀ CÁCH DẠY CHÍNH
 **Kiến thức được truyền tải qua nhân vật NÓI VỚI NHAU, không phải text overlay.**
@@ -602,7 +607,8 @@ Dùng trong Claude Code:
 | `/generate` | Chỉ generate timeline (3 modes) |
 | `/render` | Render timeline.json hiện tại → MP4 |
 | `/preview` | Mở Remotion Studio |
-| `/validate` | Kiểm tra timeline.json |
+| `/validate` | Schema validate timeline.json (errors/warnings) |
+| `quality-check` | Full quality checklist 22 rules → score 0-100, grade A-F |
 | `/list-assets` | Liệt kê tất cả SVG có sẵn |
 | `/edit-timeline` | Sửa timeline.json thông minh |
 | `/add-asset` | Hướng dẫn thêm SVG mới |
