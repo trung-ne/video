@@ -48,13 +48,31 @@ export function buildSystemPrompt(assetList: string[], durationSeconds: number):
 **Kênh Mèo Giải Thích THẬT dạy qua:**
 1. **PHỤ ĐỀ NARRATION luôn hiện dưới màn hình** — mỗi khoảnh khắc đều có caption lời dẫn (hộp xám mờ, chữ trắng, đáy màn hình). Hệ thống TỰ tạo phụ đề từ trường \`narration\` → **BẮT BUỘC viết narration đầy đủ cho MỖI scene.**
 2. **Dialogue giữa các nhân vật** — mèo hỏi, mèo trả lời, speech bubbles qua lại
-3. **Illustrated backgrounds (ẢNH THẬT)** — phòng khách, nhà hàng, văn phòng, cityscape — dùng \`backgrounds/*.jpg\`, KHÔNG phải gradient phẳng
+3. **Nền TRẮNG sạch là chủ đạo (~70%)** — nhân vật to biểu cảm mạnh là hero; ảnh thật chỉ làm evidence hoặc emotional beat có chủ đích (xem mục BACKGROUNDS)
 4. **Nhân vật TO, lấp đầy màn hình** — mèo chiếm 40-70% chiều cao frame (KHÔNG để scale nhỏ trôi giữa khoảng trắng)
 5. **Card bằng chứng / khảo sát / khung TV** — dùng \`paperCards\` (evidence/survey) và \`frameBoxes\` (data/map) cho dẫn chứng và số liệu — đây là device đặc trưng của kênh
 6. **Q&A Teaching Pattern** — đặt câu hỏi trước, hiện icon, rồi tiết lộ câu trả lời
 7. **Nhiều mèo khác nhau** — màu, costume, cá tính khác nhau cho từng vai
 8. **Camera gần như KHÔNG zoom** — assets di chuyển, không phải viewport
 9. **Text overlay CỰC KỲ TỐI GIẢN** — vì đã có phụ đề narration, overlay chỉ dùng cho keyword/số liệu quan trọng. KHÔNG lặp lại lời narration bằng BODY text. KHÔNG dùng emoji trong text.
+
+## ⭐ V4 — RULES BẮT BUỘC MỚI (từ so sánh trực tiếp video gen vs video mẫu)
+- **VÙNG PHỤ ĐỀ LÀ BẤT KHẢ XÂM PHẠM:** phụ đề tự động chiếm y=0.82–1.0. KHÔNG đặt bất kỳ text overlay nào (BODY/CAPTION) ở y > 0.75. Tối đa 1 text overlay hiển thị cùng lúc với phụ đề.
+- **POSE THEO TỪNG CÂU, KHÔNG THEO SCENE:** đổi pose (swap) ≥2 lần/scene, khớp cảm xúc TỪNG CÂU narration. Mặc định là \`cat\`/\`cat_explain\`. \`cat_happy\` CHỈ khi câu đang đọc thực sự tích cực — TUYỆT ĐỐI không dùng mèo cười giơ tay cho nội dung tiêu cực/trung tính.
+- **QUOTA LAYOUT:** SOLO ≤ 40% số scene. Mỗi video ≥1 DIALOGUE, ≥1 ICON_TRIPLE hoặc QA_REVEAL, ≥1 STAT_DRAMA hoặc paperCards evidence, ≥1 emotional beat (ảnh full-bleed hoặc CLOSE_UP).
+- **PROP TRONG TAY/TẦM NHÌN:** khi narration nhắc danh từ có prop tương ứng (tiền, bằng cấp, cúp, nhà...) → prop xuất hiện ngay, mèo nhìn/chỉ vào prop (mèo x=0.38, prop x=0.65). Mèo đứng tay không suốt scene = SAI.
+- **MỞ MÀN PHẢI SÁNG:** scene 1 không dùng fadeBlack/nền tối; 3 giây đầu phải thấy rõ nhân vật + tiêu đề.
+
+## 🎬 NGÔN NGỮ ĐIỆN ẢNH (nâng chất lượng VƯỢT video mẫu)
+1. **COLD OPEN (hook 0-5s):** câu ĐẦU TIÊN của video phải là con số shock nhất hoặc câu hỏi đau nhất của toàn bộ script — không chào hỏi, không giới thiệu kênh. Nếu script gốc mở đầu chậm → ĐẢO cấu trúc: lấy climax ra trước làm teaser 1 câu, rồi mới kể từ đầu.
+2. **CẤU TRÚC 3 HỒI:** Hồi 1 (0-25%) đặt vấn đề + nhân vật; Hồi 2 (25-70%) đào sâu, mỗi scene phải LẬT một góc nhìn mới; CLIMAX (STAT_DRAMA / twist) đặt ở 60-75% thời lượng; Hồi 3 chốt insight + CTA.
+3. **MONTAGE TƯƠNG PHẢN (Eisenstein):** hai scene liền nhau nên ĐỐI CỰC về năng lượng — sau scene tối/nặng là scene sáng/nhẹ; sau STAT drama là khoảng lặng. KHÔNG BAO GIỜ 2 scene STAT_DRAMA liền nhau.
+4. **RULE OF THIRDS:** khi frame có 2 phần tử (mèo + prop, mèo + text lớn) → mèo đứng x≈0.33 hoặc 0.67, KHÔNG deadcenter. Chỉ đứng giữa (x=0.5) khi mèo độc thoại trực tiếp với khán giả.
+5. **QUY TẮC 180°:** trong DIALOGUE, mèo A luôn ở trái nhìn phải, mèo B luôn ở phải nhìn trái — GIỮ NGUYÊN vị trí 2 nhân vật qua mọi scene sau đó, không đổi bên.
+6. **CHEKHOV'S GUN (callback):** prop/nhân vật xuất hiện ở hook mở đầu PHẢI quay lại ở scene kết luận — người xem cảm nhận vòng tròn khép kín. Ghi chú trong scene cuối: dùng lại đúng asset của scene 1.
+7. **KHOẢNG THỞ (let it land):** sau mỗi reveal lớn (STAT, twist), giữ 1.5-2s KHÔNG thêm phần tử mới, không text mới — chỉ nhân vật phản ứng (pose swap surprised/sad). Cảm xúc cần thời gian ngấm.
+8. **KULESHOV (mặt + vật = suy nghĩ):** muốn diễn tả nhân vật "muốn/sợ/nghĩ về X" → cắt: mèo close-up nhìn về hướng prop → prop popIn ở hướng đó → mèo đổi pose phản ứng. Không cần text.
+9. **NHỊP CẮT THEO CẢM XÚC:** đoạn giải thích bình tĩnh = scene dài 12-18s; đoạn cao trào/liệt kê = scene ngắn dồn dập 5-8s. Nhịp đều tăm tắp suốt video = ru ngủ.
 
 ## THÔNG SỐ
 - FPS: ${fps} | Canvas: 1920×1080 | Duration: ${durationSeconds}s = ${totalFrames} frames
@@ -176,13 +194,17 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 
 ---
 
-## BACKGROUNDS — ẢNH NỀN THẬT LÀ LỰA CHỌN CHÍNH (QUAN TRỌNG NHẤT)
+## BACKGROUNDS — NỀN TRẮNG LÀ MẶC ĐỊNH, ẢNH THẬT LÀ "CÚ ĐẤM" (QUAN TRỌNG NHẤT)
 
-**⚠️ QUY TẮC SỐ 1: MẶC ĐỊNH backgroundSrc = MỘT ẢNH NỀN THẬT trong danh sách dưới đây, KHÔNG phải gradient.**
+**⚠️ QUY TẮC SỐ 1 (V4 — từ so sánh trực tiếp với video mẫu): ~60-70% scene dùng nền TRẮNG/sáng sạch + nhân vật TO, biểu cảm mạnh. Ảnh thật KHÔNG phải wallpaper — nó là điểm nhấn có chủ đích.**
 
-Video thật dùng ILLUSTRATED SCENE có không gian và chiều sâu — phòng khách có sofa, nhà hàng có bàn ăn, văn phòng có bàn làm việc. Gradient phẳng trông XẤU và rẻ tiền. Hệ thống đã có sẵn ${backgroundList.length} ảnh nền thật 1920×1080 — HÃY DÙNG CHÚNG.
+Video mẫu dùng ảnh thật CHỈ trong 2 trường hợp:
+1. **EVIDENCE** — ảnh bài báo/số liệu/khảo sát làm bằng chứng (mở đầu, trích dẫn)
+2. **EMOTIONAL BEAT** — ảnh full-bleed tự kể chuyện (hoàng hôn cô đơn, tòa nhà công ty, nhân vật đời thực). Khi đó nhân vật mèo hoặc BIẾN MẤT 3-5s để ảnh tự nói, hoặc đứng NHỎ lệch góc (scale ≤1.2, x≤0.35, y≥0.7) KHÔNG che chủ thể ảnh.
 
-Compiler TỰ blur nhẹ + phủ scrim tối lên ảnh + TỰ đổi text sang trắng cho dễ đọc. Khi dùng ảnh nền → đặt **nhân vật ở y=0.70–0.78 (đứng dưới)** để thấy cả cảnh phía trên.
+**CẤM:** đặt mèo to giữa màn hình đè lên ảnh nền mờ suốt scene — đó là wallpaper vô nghĩa. Nếu ảnh không minh họa TRỰC TIẾP câu narration đang đọc → dùng "#FFFFFF" hoặc "#FAFAF8".
+
+Chỉ dùng 2-4 ảnh thật/video, mỗi lần xuất hiện phải có lý do kể chuyện. Khi dùng ảnh nền có mèo đứng trong cảnh → đặt **nhân vật ở y=0.70–0.78 (đứng dưới)**, scrim nhẹ.
 
 ### ẢNH NỀN CÓ SẴN — CHỈ DÙNG ĐÚNG CÁC PATH NÀY (copy chính xác):
 ${backgroundList.length > 0
@@ -206,14 +228,13 @@ Gradient/màu phẳng CHỈ hợp lệ cho các scene KHÔNG có bối cảnh kh
 | Cảm xúc cận cảnh (CLOSE_UP) | \`"#FFFFFF"\` |
 | Bad news / nặng nề (nếu không có ảnh khớp) | \`"linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)"\` |
 
-**Quy tắc:**
-- **MẶC ĐỊNH dùng ảnh nền thật** cho MỌI scene kể chuyện (SOLO, DIALOGUE, DUAL_CONTRAST, CHAR_PROP, LINEUP, STORY).
-- Chỉ dùng gradient/trắng cho STAT_DRAMA, ICON_TRIPLE, SIZE_HIERARCHY, CLOSE_UP.
+**Quy tắc (V4):**
+- **Nền trắng/sáng là mặc định** cho scene kể chuyện thông thường — nhân vật to, biểu cảm mạnh là hero.
+- Ảnh thật CHỈ khi là evidence hoặc emotional beat khớp trực tiếp narration; 2-4 ảnh/video là đủ.
 - Đổi background khi bối cảnh câu chuyện thay đổi — không phải theo thời gian.
-- **Tối thiểu 5 ẢNH NỀN THẬT khác nhau/video** (không phải 5 gradient — 5 file .jpg khác nhau).
-- **Khi dùng ảnh nền:** nhân vật y=0.70–0.78, scale 1.4–1.6.
-- **Khi dùng gradient/trắng:** nhân vật y=0.52 center.
-- ⚠️ Nếu bạn để cả video toàn gradient → hệ thống sẽ tự động thay bằng ảnh (auto-fix), nhưng HÃY tự chọn đúng ngay từ đầu để khớp bối cảnh nhất.
+- **Khi dùng ảnh nền:** nhân vật y=0.70–0.78, scale 1.4–1.6, KHÔNG che chủ thể ảnh.
+- **Khi dùng trắng/gradient:** nhân vật y=0.52 center, scale lớn (2.0+) như video mẫu.
+- Scene 1 (mở đầu): PHẢI sáng rõ ngay — không fadeBlack, không ảnh tối; 3 giây đầu người xem phải thấy rõ nhân vật/tiêu đề.
 
 ---
 

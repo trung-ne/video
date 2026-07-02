@@ -9,6 +9,58 @@ Mục tiêu: Tạo hàng trăm video, chỉ thay script/audio — không vẽ l�
 
 ---
 
+## ⭐ V4 — DIRECTOR'S RULES (so sánh trực tiếp output/test_copy.mp4 vs refer/meo.mp4 — ƯU TIÊN CAO NHẤT, override các rule cũ nếu mâu thuẫn)
+
+Phân tích 16 frames video gen vs 241 frames video mẫu cho thấy 7 gap lớn. Các rule sau là BẮT BUỘC:
+
+### V4.1 — NỀN TRẮNG LÀ MẶC ĐỊNH, ẢNH THẬT LÀ "CÚ ĐẤM" (đảo ngược RULE 1 cũ)
+Video mẫu ~70% thời lượng là **nền trắng sạch + nhân vật to, biểu cảm mạnh**. Ảnh thật chỉ xuất hiện có chủ đích:
+- **Evidence**: ảnh chụp bài báo/khảo sát xếp chồng (mở đầu, trích dẫn số liệu)
+- **Emotional beat**: ảnh full-bleed KHÔNG có mèo đè lên (hoàng hôn cô đơn, tòa nhà Samsung, cô gái sang chảnh) — ảnh TỰ kể, mèo tránh ra
+- Ảnh nền mờ đằng sau mèo suốt video = wallpaper vô nghĩa → CẤM. Nếu ảnh không liên quan trực tiếp câu narration đang đọc thì dùng nền trắng.
+- Khi dùng ảnh full-bleed làm emotional beat: KHÔNG đặt nhân vật che chủ thể ảnh; hoặc để ảnh chạy solo 3-5s, hoặc mèo đứng nhỏ lệch góc (scale ≤1.2, x≤0.35, y≥0.7).
+
+### V4.2 — MỘT KHUNG HÌNH = MỘT LỚP TEXT
+Video gen bị: title pill + body text + phụ đề tự động chồng nhau, phụ đề 2 dòng đè lên body text. Rule:
+- Khi phụ đề (subtitle) bật: KHÔNG đặt BODY/CAPTION ở y>0.75. Vùng y 0.82–1.0 là ĐẤT RIÊNG của phụ đề.
+- Tối đa 1 text overlay + 1 phụ đề trên màn hình. Title pill chỉ sống 3-4s đầu scene rồi exit.
+
+### V4.3 — CẢM XÚC POSE PHẢI MATCH TỪNG CÂU, KHÔNG PHẢI TỪNG SCENE
+Video gen dùng cat_happy giơ tay cười cho cả nội dung tiêu cực. Video mẫu đổi biểu cảm theo TỪNG CÂU (mồ hôi lạnh khi lo, mắt híp khi mỉa mai, gãi đầu khi bối rối):
+- Mỗi scene ≥ 2 swap pose; pose mặc định là `cat` neutral / `cat_explain`, KHÔNG phải cat_happy.
+- cat_happy CHỈ khi narration thực sự tích cực (giải pháp, kết luận tốt, đùa vui).
+- Câu hỏi tu từ → cat_shrug/cat_think; số liệu xấu → cat_sad/cat_surprised; mỉa mai → cat_explain.
+
+### V4.4 — CHỐNG MỞ MÀN ĐEN
+Frame 0-10s video gen gần như đen kịt (fadeBlack + scrim + ảnh tối). Rule: 3 giây đầu video PHẢI thấy rõ nhân vật/tiêu đề. Không dùng transition fadeBlack ở scene 1; scrim trên ảnh nền tối đa 35% opacity.
+
+### V4.5 — PHÁ THẾ ĐỘC DIỄN SOLO
+Video gen: 8/11 scene là SOLO mèo giữa màn hình → nhàm. Quota bắt buộc mỗi video:
+- SOLO ≤ 40% số scene. Ít nhất: 1 DIALOGUE (2 mèo), 1 ICON_TRIPLE/QA_REVEAL, 1 STAT_DRAMA hoặc evidence-card, 1 full-bleed emotional beat.
+- Hai scene SOLO liên tiếp → scene sau phải đổi pose + vị trí (x lệch 0.35/0.65) + background.
+
+### V4.6 — PROP THAY LỜI, MÈO TƯƠNG TÁC PROP
+Video mẫu: mèo đội mũ tốt nghiệp cầm bằng trước tòa Samsung, mèo nhìn cuộn giấy. Video gen: mèo tay không suốt 90% thời lượng.
+- Mỗi scene kể-chuyện nên có ≥1 prop mèo NHÌN VÀO hoặc chỉ tay vào (mèo x=0.38 nhìn phải, prop x=0.65).
+- Khi narration nhắc danh từ cụ thể (tiền, nhà, bằng cấp, cúp...) mà có SVG → prop phải xuất hiện trong ≤1s.
+
+### V4.7 — PHỤ ĐỀ GỌN
+Phụ đề video gen tràn 2-3 dòng, cắt giữa từ, nhảy vị trí. Rule: phụ đề ≤ 2 dòng, ≤ 42 ký tự/dòng, vị trí cố định y=0.9, không bao giờ đè lên text overlay khác (xem V4.2).
+**Đã enforce trong code:** [sceneCompiler.ts](src/engine/sceneCompiler.ts) chunk phụ đề ≤76 ký tự + tự đẩy text overlay y>0.74 lên 0.72; [AnimatedText.tsx](src/components/AnimatedText.tsx) neo phụ đề theo cạnh đáy (baseline không nhảy); scrim clamp ≤0.35; scene 1 tự bỏ fadeBlack; `validateTimeline` cảnh báo OPENING_DARK / SOLO_RATIO / MONOTONE_CUTS / POSE_MONOTONY / SUBTITLE_ZONE / photo-wallpaper.
+
+### V4.8 — NGÔN NGỮ ĐIỆN ẢNH (vượt lên video mẫu)
+1. **Cold open:** câu đầu video = con số shock nhất / câu hỏi đau nhất toàn script. Không chào hỏi. Script mở chậm → đảo climax lên làm teaser.
+2. **3 hồi:** đặt vấn đề (0-25%) → đào sâu, mỗi scene lật góc nhìn mới (25-70%) → climax ở 60-75% → chốt insight + CTA.
+3. **Montage tương phản:** 2 scene liền nhau đối cực năng lượng (tối→sáng, dồn dập→lặng). Không 2 STAT_DRAMA liền nhau.
+4. **Rule of thirds:** frame có 2 phần tử → mèo x≈0.33/0.67. Chỉ deadcenter khi độc thoại với khán giả.
+5. **Quy tắc 180°:** DIALOGUE — A trái nhìn phải, B phải nhìn trái, giữ nguyên bên qua mọi scene.
+6. **Chekhov's gun:** prop/nhân vật ở hook mở đầu phải quay lại ở scene kết — khép vòng tròn.
+7. **Khoảng thở:** sau reveal lớn giữ 1.5-2s không phần tử mới, chỉ pose phản ứng.
+8. **Kuleshov:** mèo nhìn hướng X → prop popIn hướng X → mèo đổi pose. Diễn tả "nghĩ về/muốn/sợ" không cần text.
+9. **Nhịp cắt theo cảm xúc:** giải thích = scene 12-18s; cao trào = scene 5-8s dồn dập. Nhịp đều = ru ngủ.
+
+---
+
 ## Cấu trúc dự án
 
 ```

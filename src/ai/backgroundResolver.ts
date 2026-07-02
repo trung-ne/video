@@ -151,8 +151,9 @@ export function resolveBackgroundForScene(
 
   if (best) return stemToPath(best.stem);
 
-  // No keyword hit. Abstract layouts keep their gradient/white; narrative
-  // layouts get a sensible default illustrated scene so they aren't flat.
+  // No keyword hit. V4: a clean white/gradient backdrop with a big expressive
+  // character is the channel's default look — do NOT force a photo wallpaper.
+  // The layout fallback only serves broken-image repair (see autoFixBackgrounds).
   if (ABSTRACT_LAYOUTS.has(scene.layout)) return null;
   const fallbackStem = LAYOUT_DEFAULT_BG[scene.layout] ?? "living_room";
   return stemToPath(fallbackStem) ?? (available.length ? available[0] : null);
@@ -167,13 +168,9 @@ export interface BackgroundFixReport {
 }
 
 /**
- * Post-process a SceneTimeline in place: replace lazy gradient backgrounds on
- * narrative scenes with real illustrated scene images. Abstract "focus" scenes
- * (STAT_DRAMA, ICON_TRIPLE, CLOSE_UP...) keep their gradient/white on purpose.
- *
- * A scene's background is REPLACED when either:
- *   - it points at an image file that does not exist (broken path), OR
- *   - it is a flat gradient/hex AND the layout wants an illustrated scene.
+ * Post-process a SceneTimeline in place. V4 semantics: clean white/gradient
+ * backdrops are the channel's default look and are always respected — the only
+ * thing repaired is a backgroundSrc that points at a missing image file.
  */
 export function autoFixBackgrounds(timeline: any): BackgroundFixReport {
   const available = listAvailableBackgrounds();
@@ -194,12 +191,10 @@ export function autoFixBackgrounds(timeline: any): BackgroundFixReport {
     // A broken image path (not CSS, file missing) → always try to repair.
     const brokenImage = cur && !isCSSBackground(cur) && !backgroundImageExists(cur);
 
-    // A gradient/hex on an abstract layout is intentional — skip (unless broken).
-    if (!brokenImage && isCSSBackground(cur) && ABSTRACT_LAYOUTS.has(scene.layout)) continue;
-
-    // Intentional pure-white/near-white focus backdrop on abstract-ish scene → keep.
-    const isWhite = /^#(fff|ffffff|fafaf8|f5f5f5)$/i.test(cur.trim());
-    if (!brokenImage && isWhite && ABSTRACT_LAYOUTS.has(scene.layout)) continue;
+    // V4: white/gradient is the channel's DEFAULT look on every layout — a
+    // deliberate clean backdrop must never be swapped for a photo wallpaper.
+    // Only broken image paths get repaired.
+    if (!brokenImage && isCSSBackground(cur)) continue;
 
     const resolved = resolveBackgroundForScene(scene, available);
     if (resolved && resolved !== cur) {

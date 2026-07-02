@@ -32,8 +32,8 @@ import {
 export function compileScenes(input: SceneTimeline): Timeline {
   const events: TimelineEvent[] = [];
 
-  for (const scene of input.scenes) {
-    compileScene(scene, events, input.durationInFrames);
+  for (let i = 0; i < input.scenes.length; i++) {
+    compileScene(input.scenes[i], events, input.durationInFrames, i === 0);
   }
 
   // Sort all events by frame
@@ -53,13 +53,22 @@ export function compileScenes(input: SceneTimeline): Timeline {
 function compileScene(
   scene: Scene,
   events: TimelineEvent[],
-  totalFrames: number
+  totalFrames: number,
+  isFirstScene: boolean = false
 ): void {
   const start = scene.startFrame;
   const sceneEnd = start + scene.durationFrames;
 
+  // The opening must be bright and readable within the first seconds — a fade
+  // from black on scene 1 buries the hook, so those transitions are dropped.
+  const openingFade =
+    isFirstScene &&
+    scene.transition &&
+    (scene.transition.style === "fadeBlack" || scene.transition.style === "fadeWhite");
+
   // Transition duration — used to offset clear + entity enter
-  const transitionDur = scene.transition ? (scene.transition.duration ?? 15) : 0;
+  const transitionDur =
+    scene.transition && !openingFade ? (scene.transition.duration ?? 15) : 0;
 
   // ── 1. Transition ─────────────────────────────────────────
   // Only emit flash/fadeBlack/fadeWhite — wipe is skipped because BackgroundEvent
@@ -67,7 +76,8 @@ function compileScene(
   // STAT_DRAMA scenes with flash/fadeBlack are the primary use case.
   const shouldEmitTransition =
     scene.transition &&
-    scene.transition.style !== "wipe";
+    scene.transition.style !== "wipe" &&
+    !openingFade;
 
   if (shouldEmitTransition) {
     events.push({
@@ -92,7 +102,9 @@ function compileScene(
       type: "background",
       src: scene.backgroundSrc,
       blur: scene.backgroundBlur ?? (isPhoto ? 10 : 0),
-      overlay: scene.backgroundOverlay ?? (isPhoto ? "rgba(0,0,0,0.28)" : undefined),
+      overlay: clampOverlayAlpha(
+        scene.backgroundOverlay ?? (isPhoto ? "rgba(0,0,0,0.28)" : undefined)
+      ),
       duration: 25,
     } as BackgroundEvent);
   }
@@ -242,6 +254,13 @@ function compileText(
     position = defaultTextPosition(text.style);
   }
 
+  // The bottom band (y > 0.74) belongs exclusively to the auto subtitle — any
+  // overlay text placed there would collide with it, so it gets pushed up.
+  const subtitlesActive = !!scene.narration && (scene as any).subtitle !== false;
+  if (subtitlesActive && position.y > 0.74) {
+    position = { x: position.x, y: 0.72 };
+  }
+
   const textFrame = sceneStart + transitionDur + (text.delay ?? 0);
 
   // Compute exitFrame
@@ -284,18 +303,25 @@ function compileText(
   } as TextEvent);
 }
 
-// Split narration into subtitle chunks of ~7-9 words, respecting sentence
-// boundaries where possible, then time them evenly across the scene.
-function chunkNarration(narration: string, maxWords = 9): string[] {
+// Split narration into subtitle chunks, respecting sentence boundaries where
+// possible, then time them evenly across the scene. Chunks are capped by
+// CHARACTER count (not just words) so a chunk never wraps past 2 lines in the
+// renderer (~42 chars/line at 40px within the subtitle max-width).
+function chunkNarration(narration: string, maxWords = 9, maxChars = 76): string[] {
   const clean = narration.replace(/\s+/g, " ").trim();
   if (!clean) return [];
   // Prefer splitting on sentence/clause punctuation first
   const clauses = clean.split(/(?<=[.!?…])\s+|(?<=[,;:])\s+/);
   const chunks: string[] = [];
   let buf: string[] = [];
+  const bufLen = () => buf.join(" ").length;
   for (const clause of clauses) {
     const words = clause.split(" ");
     for (const w of words) {
+      if (buf.length > 0 && bufLen() + 1 + w.length > maxChars) {
+        chunks.push(buf.join(" "));
+        buf = [];
+      }
       buf.push(w);
       if (buf.length >= maxWords) {
         chunks.push(buf.join(" "));
@@ -566,6 +592,17 @@ function defaultScaleForLayout(layout: LayoutPreset, entityIndex: number): numbe
     default:
       return 1.8;
   }
+}
+
+// A scrim darker than 35% buries the photo AND the characters (the "black
+// opening" defect) — clamp whatever the AI asked for down to that ceiling.
+function clampOverlayAlpha(overlay: string | undefined, maxAlpha = 0.35): string | undefined {
+  if (!overlay) return overlay;
+  const m = overlay.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/i);
+  if (!m) return overlay;
+  const alpha = parseFloat(m[4]);
+  if (isNaN(alpha) || alpha <= maxAlpha) return overlay;
+  return `rgba(${m[1]},${m[2]},${m[3]},${maxAlpha})`;
 }
 
 // Parse a hex color (#rgb or #rrggbb) → relative luminance 0..1, or null.

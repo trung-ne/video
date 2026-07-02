@@ -180,19 +180,20 @@ export const AnimatedText: React.FC<Props> = ({
   }
 
   // SUBTITLE: burned-in narration caption — dark translucent box, white text,
-  // 2-line wrap at the very bottom. Matches the reference channel's signature look.
+  // max 2-line wrap at the very bottom. Anchored by its BOTTOM edge so the
+  // baseline never jumps when a chunk wraps to a second line.
   if (style === "SUBTITLE") {
     return (
       <div
         style={{
           position: "absolute",
           left: pixelX,
-          top: pixelY,
-          transform: `translate(-50%, -50%)`,
+          bottom: canvasHeight - (text.position.y * canvasHeight + 40),
+          transform: `translateX(-50%)`,
           opacity,
           zIndex: 80,
           pointerEvents: "none",
-          maxWidth: canvasWidth * 0.62,
+          maxWidth: canvasWidth * 0.66,
           textAlign: "center",
         }}
       >
