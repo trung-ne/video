@@ -151,92 +151,13 @@ export function validateSceneTimeline(input: any): ValidationResult {
     }
   }
 
-  // ── V4 director checks ─────────────────────────────────────
-
-  // Photo usage: V4 wants photos as deliberate punches (evidence / emotional
-  // beat), not wallpaper. 0 photos loses those beats; >5 reads as wallpaper.
-  if (input.scenes.length >= 5) {
-    if (realBgImages.size === 0) {
-      warnings.push(
-        `V4: no real background image used. Consider 1-2 photo moments (evidence card / full-bleed emotional beat) — but keep white as the default backdrop.`
-      );
-    } else if (realBgImages.size > 5) {
-      warnings.push(
-        `V4: ${realBgImages.size} distinct photo backgrounds — photos are becoming wallpaper. Use 2-4 deliberate photo moments; default scenes should be white/light.`
-      );
-    }
-  }
-
-  // OPENING_DARK: the first 3 seconds must be bright and readable.
-  const first = input.scenes[0];
-  if (first) {
-    if (first.transition && (first.transition.style === "fadeBlack" || first.transition.style === "fadeWhite")) {
-      warnings.push(
-        `OPENING_DARK: scene[0] uses ${first.transition.style} — the hook is buried. Compiler drops it, but prefer no transition on the opening scene.`
-      );
-    }
-    const fb: string = first.backgroundSrc ?? "";
-    const darkHexes = fb.match(/#[0-9a-fA-F]{6}\b/g) ?? [];
-    const looksDark =
-      darkHexes.length > 0 &&
-      darkHexes.every((h) => {
-        const r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16);
-        return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.35;
-      });
-    if (looksDark) {
-      warnings.push(`OPENING_DARK: scene[0] background is dark ("${fb.slice(0, 50)}"). Open bright — viewers decide in the first 3 seconds.`);
-    }
-  }
-
-  // SOLO_RATIO: >40% single-cat-center scenes = monotone staging.
-  const soloLayouts = new Set(["SOLO", "CLOSE_UP", "SINGLE", "INTRO"]);
-  const soloCount = input.scenes.filter((s: any) => soloLayouts.has(s.layout)).length;
-  if (input.scenes.length >= 5 && soloCount / input.scenes.length > 0.4) {
-    warnings.push(
-      `SOLO_RATIO: ${soloCount}/${input.scenes.length} scenes are solo-character layouts (>40%). Mix in DIALOGUE, ICON_TRIPLE/QA_REVEAL, STAT_DRAMA or evidence paperCards.`
-    );
-  }
-  if (input.scenes.length >= 6 && !input.scenes.some((s: any) => s.layout === "DIALOGUE")) {
-    warnings.push(`No DIALOGUE scene — the reference channel teaches primarily through characters talking to each other.`);
-  }
-
-  // MONOTONE_CUTS: 3+ consecutive scenes with identical layout reads as static.
-  let runLayout = "", runLen = 0;
-  for (const s of input.scenes) {
-    if (s.layout === runLayout) {
-      runLen++;
-      if (runLen === 3) {
-        warnings.push(`MONOTONE_CUTS: 3+ consecutive "${runLayout}" scenes — vary the staging or at least pose/position between them.`);
-      }
-    } else {
-      runLayout = s.layout;
-      runLen = 1;
-    }
-  }
-
-  // POSE_MONOTONY: the same happy pose everywhere kills emotional credibility.
-  const happyScenes = input.scenes.filter((s: any) =>
-    Array.isArray(s.entities) && s.entities.some((e: any) => typeof e.src === "string" && e.src.includes("cat_happy"))
-  ).length;
-  if (input.scenes.length >= 5 && happyScenes / input.scenes.length > 0.3) {
-    warnings.push(
-      `POSE_MONOTONY: cat_happy appears in ${happyScenes}/${input.scenes.length} scenes. Reserve it for genuinely positive beats; default to cat/cat_explain and match pose to each sentence.`
-    );
-  }
-
-  // SUBTITLE_ZONE: overlay text in the subtitle band collides with captions.
-  for (let si = 0; si < input.scenes.length; si++) {
-    const scene = input.scenes[si];
-    if (!scene.narration || scene.subtitle === false || !Array.isArray(scene.texts)) continue;
-    for (const t of scene.texts) {
-      const y = t.position?.y ?? (t.slot ? (TEXT_SLOT_POSITIONS as any)[t.slot]?.y : undefined);
-      if (typeof y === "number" && y > 0.75 && t.style !== "SUBTITLE") {
-        warnings.push(
-          `SUBTITLE_ZONE: Scene[${si}] text "${t.id}" at y=${y} sits in the subtitle band (y>0.75). Compiler pushes it to y=0.72 — place it ≤0.72 yourself.`
-        );
-      }
-    }
-  }
+  // NOTE: aesthetic/director rules (background philosophy, SOLO ratio, pose
+  // monotony, opening brightness, subtitle-band collisions, layout rhythm) live
+  // exclusively in qualityCheck.ts — the single source of truth for V4 quality.
+  // validateTimeline stays a pure SCHEMA gate (required fields, valid enums,
+  // broken paths, range checks) so the two systems never drift out of sync.
+  void realBgImages;
+  void gradientBgCount;
 
   if (input.durationInFrames && Math.abs(totalFrames - input.durationInFrames) > 30) {
     warnings.push(

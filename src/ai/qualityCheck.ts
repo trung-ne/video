@@ -54,12 +54,8 @@ const ABSTRACT_LAYOUTS = new Set([
   "STAT_DRAMA", "STAT", "ICON_TRIPLE", "CLOSE_UP", "SIZE_HIERARCHY",
 ]);
 
-// Narrative layouts that SHOULD have a real background image
-const NARRATIVE_LAYOUTS = new Set([
-  "SOLO", "INTRO", "DIALOGUE", "DUAL_CONTRAST", "CHAR_PROP",
-  "QA_REVEAL", "LINEUP", "CONCLUSION", "CTA", "CAUSE_EFFECT",
-  "CAUSE_EFFECT_CHAIN", "ACCUMULATION", "STORY", "CUSTOM",
-]);
+// Solo-character layouts — a single cat centered. >40% of these = monotone.
+const SOLO_LAYOUTS = new Set(["SOLO", "CLOSE_UP", "SINGLE", "INTRO"]);
 
 // Neutral cat pose — valid only when truly no emotion cue in scene
 const NEUTRAL_CAT_SRCS = new Set(["characters/cat"]);
@@ -162,36 +158,23 @@ function peakSimultaneousWords(scene: any): { words: number; frame: number; text
 
 // ─── Individual checks ───────────────────────────────────────
 
-// CHECK 1: All backgrounds on narrative scenes must be real images
+// CHECK 1 (V4): Background usage. White/gradient is the DEFAULT good backdrop;
+// a broken image path is the only hard failure. Missing backgroundSrc is minor.
 function checkBackgroundReal(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
 
-  const narrativeScenes = scenes.filter((s) => NARRATIVE_LAYOUTS.has(s.layout));
-  const gradientNarrative = narrativeScenes.filter(
-    (s) => s.backgroundSrc && isCSSBackground(s.backgroundSrc)
-  );
-  const missingBg = narrativeScenes.filter((s) => !s.backgroundSrc);
-  const brokenPath = narrativeScenes.filter(
+  const missingBg = scenes.filter((s) => !s.backgroundSrc);
+  const brokenPath = scenes.filter(
     (s) => s.backgroundSrc && !isCSSBackground(s.backgroundSrc) && !backgroundImageExists(s.backgroundSrc)
   );
 
   for (const s of missingBg) {
     issues.push({
-      severity: "MAJOR",
+      severity: "MINOR",
       rule: "BACKGROUND_REAL",
       scene: s.id,
-      message: `${sceneLabel(s)} Không có backgroundSrc`,
-      suggestion: `Thêm backgroundSrc: "backgrounds/living_room.jpg" (hoặc ảnh phù hợp bối cảnh)`,
-    });
-  }
-
-  for (const s of gradientNarrative) {
-    issues.push({
-      severity: "MAJOR",
-      rule: "BACKGROUND_REAL",
-      scene: s.id,
-      message: `${sceneLabel(s)} Layout ${s.layout} dùng gradient thay vì ảnh nền thật`,
-      suggestion: `Đổi backgroundSrc sang backgrounds/*.jpg phù hợp bối cảnh scene`,
+      message: `${sceneLabel(s)} không có backgroundSrc — mặc định về nền phẳng`,
+      suggestion: `Đặt backgroundSrc rõ ràng: "#FFFFFF" cho scene trắng, hoặc backgrounds/*.jpg cho evidence/emotional beat`,
     });
   }
 
@@ -205,33 +188,37 @@ function checkBackgroundReal(scenes: any[]): CheckResult {
     });
   }
 
-  return { name: "Background: ảnh nền thật trên narrative scenes", passed: issues.length === 0, issues };
+  return { name: "Background: path hợp lệ (nền trắng là mặc định — V4)", passed: issues.length === 0, issues };
 }
 
-// CHECK 2: Background variety — at least 5 distinct images
+// CHECK 2 (V4): Photo restraint. Photos are deliberate PUNCHES (evidence /
+// emotional beat), not wallpaper. 0 photos loses those beats on a longer video;
+// >5 distinct photos means they've become background noise.
 function checkBackgroundVariety(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
   const distinctImages = new Set(
     scenes.map((s) => s.backgroundSrc).filter((b) => b && backgroundImageExists(b))
   );
+  const photoScenes = scenes.filter((s) => s.backgroundSrc && backgroundImageExists(s.backgroundSrc)).length;
 
-  if (distinctImages.size < 3 && scenes.length >= 4) {
-    issues.push({
-      severity: "MAJOR",
-      rule: "BACKGROUND_VARIETY",
-      message: `Chỉ ${distinctImages.size} ảnh nền khác nhau (yêu cầu ≥5). Video sẽ trông đơn điệu.`,
-      suggestion: "Thay đổi backgroundSrc cho mỗi scene theo bối cảnh — dùng ảnh khác nhau",
-    });
-  } else if (distinctImages.size < 5 && scenes.length >= 6) {
+  if (scenes.length >= 5 && distinctImages.size === 0) {
     issues.push({
       severity: "MINOR",
       rule: "BACKGROUND_VARIETY",
-      message: `Chỉ ${distinctImages.size} ảnh nền khác nhau (khuyến nghị ≥5 cho video dài)`,
-      suggestion: "Thêm đa dạng background theo bối cảnh từng scene",
+      message: `Không có ảnh thật nào — video bỏ lỡ các "cú đấm" hình ảnh (bằng chứng, khoảnh khắc cảm xúc)`,
+      suggestion: "Thêm 1-2 ảnh full-bleed đúng lúc (evidence card / emotional beat) — vẫn giữ nền trắng làm mặc định",
+    });
+  }
+  if (photoScenes > 5) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "BACKGROUND_VARIETY",
+      message: `${photoScenes} scene dùng ảnh nền — ảnh đang biến thành wallpaper`,
+      suggestion: "Chỉ dùng 2-4 ảnh có chủ đích; scene kể chuyện thông thường để nền trắng + nhân vật to",
     });
   }
 
-  return { name: "Background: đa dạng ≥5 ảnh khác nhau", passed: issues.length === 0, issues };
+  return { name: "Background: ảnh là cú đấm có chủ đích 2-4 lần (V4)", passed: issues.length === 0, issues };
 }
 
 // CHECK 3: Layout variety
@@ -271,7 +258,60 @@ function checkLayoutVariety(scenes: any[]): CheckResult {
     }
   }
 
-  return { name: "Layout: đa dạng ≥5 loại, không lặp 3+ liên tiếp", passed: issues.length === 0, issues };
+  // SOLO_RATIO (V4): >40% solo-cat-center scenes = độc diễn đơn điệu.
+  const soloCount = scenes.filter((s) => SOLO_LAYOUTS.has(s.layout)).length;
+  if (scenes.length >= 5 && soloCount / scenes.length > 0.4) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "LAYOUT_VARIETY",
+      message: `${soloCount}/${scenes.length} scene là solo-character (>40%) — thế đứng đơn điệu`,
+      suggestion: "Trộn thêm DIALOGUE, ICON_TRIPLE/QA_REVEAL, STAT_DRAMA hoặc paperCards evidence",
+    });
+  }
+  // A channel that teaches through dialogue should have at least one on a long video.
+  if (scenes.length >= 6 && !scenes.some((s) => s.layout === "DIALOGUE")) {
+    issues.push({
+      severity: "MINOR",
+      rule: "LAYOUT_VARIETY",
+      message: `Không có scene DIALOGUE — kênh mẫu dạy chủ yếu qua nhân vật nói với nhau`,
+      suggestion: "Thêm ít nhất 1 scene DIALOGUE (2 mèo hỏi–đáp)",
+    });
+  }
+
+  return { name: "Layout: đa dạng, SOLO ≤40%, không lặp 3+ liên tiếp (V4)", passed: issues.length === 0, issues };
+}
+
+// CHECK (V4): The opening must be bright — a dark/faded scene 1 buries the hook.
+function checkOpeningBright(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  const first = scenes[0];
+  if (first) {
+    if (first.transition && (first.transition.style === "fadeBlack" || first.transition.style === "fadeWhite")) {
+      issues.push({
+        severity: "MINOR",
+        rule: "OPENING_DARK",
+        scene: first.id,
+        message: `${sceneLabel(first)} scene mở đầu dùng ${first.transition.style} — chôn vùi hook`,
+        suggestion: "Bỏ transition ở scene 1; 3 giây đầu phải thấy rõ nhân vật + tiêu đề (compiler cũng tự drop)",
+      });
+    }
+    const fb: string = first.backgroundSrc ?? "";
+    const darkHexes = fb.match(/#[0-9a-fA-F]{6}\b/g) ?? [];
+    const looksDark = darkHexes.length > 0 && darkHexes.every((h) => {
+      const r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16);
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.35;
+    });
+    if (looksDark) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "OPENING_DARK",
+        scene: first.id,
+        message: `${sceneLabel(first)} nền scene mở đầu tối ("${fb.slice(0, 40)}")`,
+        suggestion: "Mở đầu sáng — người xem quyết định ở lại/rời đi trong 3 giây đầu",
+      });
+    }
+  }
+  return { name: "Opening: mở màn sáng, không fadeBlack (V4)", passed: issues.length === 0, issues };
 }
 
 // CHECK 4: Scene duration
@@ -476,7 +516,21 @@ function checkCatPoseDiversity(scenes: any[]): CheckResult {
     }
   }
 
-  return { name: "Cat pose: đa dạng theo cảm xúc, không toàn neutral", passed: issues.length === 0, issues };
+  // POSE_MONOTONY (V4): cat_happy giơ tay cười cho mọi cảm xúc là lỗi diễn xuất
+  // nặng nhất của video gen. Chỉ dùng cho beat thực sự tích cực.
+  const happyScenes = scenes.filter((s) =>
+    (s.entities ?? []).some((e: any) => typeof e.src === "string" && e.src.includes("cat_happy"))
+  ).length;
+  if (scenes.length >= 5 && happyScenes / scenes.length > 0.3) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "CAT_POSE",
+      message: `cat_happy xuất hiện ở ${happyScenes}/${scenes.length} scene (>30%) — cười giơ tay cho cả nội dung tiêu cực/trung tính`,
+      suggestion: "Chỉ dùng cat_happy cho beat tích cực thật sự; mặc định cat/cat_explain; đổi pose khớp từng câu narration",
+    });
+  }
+
+  return { name: "Cat pose: đa dạng theo cảm xúc, không toàn neutral/happy (V4)", passed: issues.length === 0, issues };
 }
 
 // CHECK 9: Narration present on every scene
@@ -1026,6 +1080,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkBackgroundReal(scenes),
     checkBackgroundVariety(scenes),
     checkLayoutVariety(scenes),
+    checkOpeningBright(scenes),
     checkSceneDuration(scenes),
     checkTextWordCap(scenes),
     checkTextOverlap(scenes),

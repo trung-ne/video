@@ -1,3 +1,10 @@
+> ## ✅ Cập nhật 2026-07-02 — đã xử lý 2 vấn đề #1
+> - **CLAUDE.md (mâu thuẫn V3↔V4):** đã XOÁ bộ RULE 1-10 + SCENE PATTERNS + phân tích V3 khỏi CLAUDE.md, chuyển sang [rules_history.md](rules_history.md) kèm bảng "V3 nào bị V4 thay thế". CLAUDE.md còn 311 dòng (từ 679), chỉ giữ luật hiện hành + tóm tắt 1 dòng các RULE V3 không mâu thuẫn.
+> - **Hệ quality mâu thuẫn V4 (điểm PROMPT_EVALUATION chưa bắt):** `qualityCheck.ts` từng thưởng ảnh thật (ngược V4.1) → đã sửa `BACKGROUND_REAL/VARIETY` sang "nền trắng mặc định, ảnh là cú đấm 2-4 lần", thêm SOLO_RATIO + POSE_MONOTONY (cat_happy) + OPENING_DARK. `validateTimeline.ts` gỡ hết luật thẩm mỹ → thành cổng SCHEMA thuần. Giờ **một sự thật một chỗ**: schema ở validateTimeline, thẩm mỹ ở qualityCheck.
+> - Còn lại (chưa làm, việc lớn): hợp nhất 4 tầng rule trùng trong systemPrompt.ts (vấn đề tiêu chí 3).
+
+---
+
 # Cấu trúc đánh giá Prompt — Cat Explainer Video System
 
 > Rubric xây dựng dựa trên các nguyên tắc prompt engineering cốt lõi trong "Claude Code in Action"
