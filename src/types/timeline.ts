@@ -70,6 +70,16 @@ export interface MoveEvent {
   duration: number; // frames for the move transition
 }
 
+// Change an existing asset's src (pose/costume) in place — keeps position/scale.
+// Used for continuous micro-variation: swapping a cat's pose mid-scene so a long
+// hold never sits perfectly still (matches the reference channel).
+export interface SwapEvent {
+  frame: number;
+  type: "swap";
+  assetId: string;
+  src: string;
+}
+
 export interface EmphasizeEvent {
   frame: number;
   type: "emphasize";
@@ -94,7 +104,8 @@ export type TextStyle =
   | "CALLOUT"    // Key concept pill with background — short phrase
   | "SECTION"    // Section header — topic change divider
   | "BODY"       // Explanation text — follows narration
-  | "CAPTION";   // Small secondary info — bottom of screen
+  | "CAPTION"    // Small secondary info — bottom of screen
+  | "SUBTITLE";  // Burned-in narration caption — dark box, white text, very bottom
 
 export interface TextEvent {
   frame: number;
@@ -204,6 +215,7 @@ export type TimelineEvent =
   | EnterEvent
   | ExitEvent
   | MoveEvent
+  | SwapEvent
   | EmphasizeEvent
   | CameraEvent
   | TextEvent

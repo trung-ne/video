@@ -31,6 +31,7 @@ export const AnimatedText: React.FC<Props> = ({
     SECTION: { fontSize: 54,  color: "#2D3748", fontWeight: 700 },
     BODY:    { fontSize: 44,  color: "#1a1a1a", fontWeight: 600 },
     CAPTION: { fontSize: 30,  color: "#888888", fontWeight: 500 },
+    SUBTITLE:{ fontSize: 40,  color: "#FFFFFF", fontWeight: 600 },
   };
 
   const d = defaults[style];
@@ -174,6 +175,43 @@ export const AnimatedText: React.FC<Props> = ({
         >
           {text.content}
         </div>
+      </div>
+    );
+  }
+
+  // SUBTITLE: burned-in narration caption — dark translucent box, white text,
+  // 2-line wrap at the very bottom. Matches the reference channel's signature look.
+  if (style === "SUBTITLE") {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: pixelX,
+          top: pixelY,
+          transform: `translate(-50%, -50%)`,
+          opacity,
+          zIndex: 80,
+          pointerEvents: "none",
+          maxWidth: canvasWidth * 0.62,
+          textAlign: "center",
+        }}
+      >
+        <span
+          style={{
+            background: "rgba(30,30,30,0.78)",
+            color,
+            fontSize,
+            fontWeight,
+            fontFamily: "'Segoe UI', 'Arial Rounded MT Bold', sans-serif",
+            lineHeight: 1.5,
+            padding: "6px 14px",
+            borderRadius: 6,
+            boxDecorationBreak: "clone",
+            WebkitBoxDecorationBreak: "clone",
+          }}
+        >
+          {text.content}
+        </span>
       </div>
     );
   }

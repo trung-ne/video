@@ -125,6 +125,13 @@ function compileScene(
     compileText(text, scene, start, sceneEnd, events, totalFrames, transitionDur);
   }
 
+  // ── 5a. Auto subtitles from narration (the reference channel's signature) ──
+  // Burned-in narration caption at the very bottom, chunked into short lines and
+  // timed evenly across the scene. Disabled per-scene with subtitle:false.
+  if (scene.narration && (scene as any).subtitle !== false) {
+    compileSubtitles(scene, start, sceneEnd, events, totalFrames, transitionDur);
+  }
+
   // ── 5b. Paper cards (evidence / survey) ──────────────────
   if (scene.paperCards) {
     for (const pc of scene.paperCards) {
@@ -275,6 +282,66 @@ function compileText(
     animation: "fadeIn",
     exitFrame,
   } as TextEvent);
+}
+
+// Split narration into subtitle chunks of ~7-9 words, respecting sentence
+// boundaries where possible, then time them evenly across the scene.
+function chunkNarration(narration: string, maxWords = 9): string[] {
+  const clean = narration.replace(/\s+/g, " ").trim();
+  if (!clean) return [];
+  // Prefer splitting on sentence/clause punctuation first
+  const clauses = clean.split(/(?<=[.!?…])\s+|(?<=[,;:])\s+/);
+  const chunks: string[] = [];
+  let buf: string[] = [];
+  for (const clause of clauses) {
+    const words = clause.split(" ");
+    for (const w of words) {
+      buf.push(w);
+      if (buf.length >= maxWords) {
+        chunks.push(buf.join(" "));
+        buf = [];
+      }
+    }
+    // flush at clause boundary if we have a reasonable amount
+    if (buf.length >= Math.ceil(maxWords * 0.6)) {
+      chunks.push(buf.join(" "));
+      buf = [];
+    }
+  }
+  if (buf.length) chunks.push(buf.join(" "));
+  return chunks;
+}
+
+function compileSubtitles(
+  scene: Scene,
+  sceneStart: number,
+  sceneEnd: number,
+  events: TimelineEvent[],
+  totalFrames: number,
+  transitionDur: number
+): void {
+  const chunks = chunkNarration(scene.narration!);
+  if (chunks.length === 0) return;
+
+  const spanStart = sceneStart + transitionDur;
+  const spanFrames = Math.max(1, sceneEnd - spanStart);
+  const per = spanFrames / chunks.length;
+
+  for (let i = 0; i < chunks.length; i++) {
+    const frame = Math.round(spanStart + i * per);
+    const exitFrame = Math.min(Math.round(spanStart + (i + 1) * per), totalFrames - 1);
+    events.push({
+      frame,
+      type: "text",
+      textId: `${scene.id}__sub_${i}`,
+      content: chunks[i],
+      position: { x: 0.5, y: 0.9 },
+      style: "SUBTITLE",
+      align: "center",
+      animation: "fadeIn",
+      exitFrame,
+    } as TextEvent);
+  }
 }
 
 function compilePaperCard(
@@ -501,16 +568,27 @@ function defaultScaleForLayout(layout: LayoutPreset, entityIndex: number): numbe
   }
 }
 
-// Detect if a backgroundSrc is dark (needs light text)
+// Parse a hex color (#rgb or #rrggbb) → relative luminance 0..1, or null.
+function hexLuminance(hex: string): number | null {
+  let h = hex.replace("#", "").trim();
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  if (h.length !== 6 || /[^0-9a-fA-F]/.test(h)) return null;
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  // Perceived luminance (Rec. 709)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+// Detect if a backgroundSrc is dark (needs light text).
+// Works for any hex or gradient by averaging the luminance of ALL hex stops —
+// no fragile hardcoded value list (which previously missed e.g. #0f172a).
 function isDarkBackground(src: string): boolean {
   if (!src) return false;
-  // Dark named colors and specific dark values
-  if (src === "#000" || src === "#000000" || src === "#1a1a1a") return true;
-  // Dark gradients: look for dark start colors
-  const darkGradientPatterns = [
-    "#0d0d", "#1a0a", "#1a1a", "#0A0E", "#2C18", "#1A23",
-    "0d0d1a", "1a0a0a", "1a1a2e", "0A0E27", "2C1810", "1A237E", "16213e",
-    "0a0e27", "2c1810", "1a237e",
-  ];
-  return darkGradientPatterns.some(p => src.toLowerCase().includes(p.toLowerCase()));
+  const hexes = src.match(/#[0-9a-fA-F]{3,6}\b/g);
+  if (!hexes || hexes.length === 0) return false;
+  const lums = hexes.map(hexLuminance).filter((l): l is number => l !== null);
+  if (lums.length === 0) return false;
+  const avg = lums.reduce((a, b) => a + b, 0) / lums.length;
+  return avg < 0.5; // below mid-luminance → treat as dark, use light text
 }

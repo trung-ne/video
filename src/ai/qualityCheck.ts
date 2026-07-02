@@ -928,6 +928,90 @@ function checkStagger(scenes: any[]): CheckResult {
   return { name: "Stagger: entities không xuất hiện đồng loạt", passed: issues.length === 0, issues };
 }
 
+// CHECK 23: No emoji in text content
+const EMOJI_RE = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}️]/u;
+function checkNoEmoji(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  for (const s of scenes) {
+    for (const t of (s.texts ?? [])) {
+      if (t.content && EMOJI_RE.test(t.content)) {
+        issues.push({
+          severity: "MINOR",
+          rule: "NO_EMOJI",
+          scene: s.id,
+          message: `${sceneLabel(s)} text "${t.id}" chứa emoji: "${t.content}"`,
+          suggestion: "Xóa emoji — dùng chữ hoặc icon SVG thật. Emoji render không nhất quán.",
+        });
+      }
+    }
+  }
+  return { name: "Text: không dùng emoji", passed: issues.length === 0, issues };
+}
+
+// CHECK 24: Long videos should use signature components (paper cards / TV frames)
+function checkSignatureComponents(timeline: any, scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  const totalSecs = (timeline.durationInFrames ?? 0) / 30;
+  if (totalSecs < 180) return { name: "Signature components: paper card / TV frame (video dài)", passed: true, issues: [] };
+
+  const paperCards = scenes.reduce((n, s) => n + (s.paperCards?.length ?? 0), 0);
+  const frameBoxes = scenes.reduce((n, s) => n + (s.frameBoxes?.length ?? 0), 0);
+
+  if (paperCards === 0 && frameBoxes === 0) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "SIGNATURE_COMPONENTS",
+      message: `Video ${(totalSecs / 60).toFixed(0)} phút không dùng paperCards (evidence/survey) hoặc frameBoxes (TV data) — thiếu device đặc trưng của kênh`,
+      suggestion: "Thêm ≥1 paperCard evidence (dẫn chứng chính sách) hoặc survey (câu hỏi khán giả), và frameBox nếu có bản đồ/biểu đồ",
+    });
+  }
+  return { name: "Signature components: paper card / TV frame (video dài)", passed: issues.length === 0, issues };
+}
+
+// CHECK 26: Scene density — enough scenes for the duration (anti-boredom)
+function checkSceneDensity(timeline: any, scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  const totalSecs = (timeline.durationInFrames ?? 0) / 30;
+  if (totalSecs < 30) return { name: "Scene density: đủ scene cho thời lượng", passed: true, issues: [] };
+
+  const secsPerScene = scenes.length > 0 ? totalSecs / scenes.length : Infinity;
+  const idealScenes = Math.round(totalSecs / 11);
+
+  if (secsPerScene > 45) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "SCENE_DENSITY",
+      message: `${scenes.length} scenes cho ${(totalSecs / 60).toFixed(1)} phút = TB ${secsPerScene.toFixed(0)}s/scene — quá ít, video sẽ nhàm chán`,
+      suggestion: `Cắt nhỏ thành ~${idealScenes} scenes (mỗi 8-15s đổi beat/layout/background)`,
+    });
+  } else if (secsPerScene > 25) {
+    issues.push({
+      severity: "MINOR",
+      rule: "SCENE_DENSITY",
+      message: `TB ${secsPerScene.toFixed(0)}s/scene — hơi dài (lý tưởng 8-15s)`,
+      suggestion: `Cân nhắc cắt thêm để đạt ~${idealScenes} scenes`,
+    });
+  }
+  return { name: "Scene density: đủ scene cho thời lượng", passed: issues.length === 0, issues };
+}
+
+// CHECK 25: Narration coverage → subtitle track exists
+function checkSubtitleCoverage(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  const withNarration = scenes.filter((s) => s.narration && s.narration.trim().length >= 5).length;
+  const ratio = scenes.length > 0 ? withNarration / scenes.length : 0;
+
+  if (ratio < 0.5 && scenes.length >= 2) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "SUBTITLE_COVERAGE",
+      message: `Chỉ ${withNarration}/${scenes.length} scenes có narration — phần lớn video sẽ KHÔNG có phụ đề (signature look của kênh)`,
+      suggestion: "Viết narration đầy đủ cho mọi scene — compiler tự tạo phụ đề burned-in từ đó",
+    });
+  }
+  return { name: "Subtitle: đủ narration để tạo phụ đề mọi scene", passed: issues.length === 0, issues };
+}
+
 // ─── Main runner ─────────────────────────────────────────────
 
 export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): QualityReport {
@@ -956,6 +1040,10 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkStatDrama(scenes),
     checkDialogue(scenes),
     checkStagger(scenes),
+    checkNoEmoji(scenes),
+    checkSignatureComponents(timeline, scenes),
+    checkSubtitleCoverage(scenes),
+    checkSceneDensity(timeline, scenes),
   ];
 
   // Count issues

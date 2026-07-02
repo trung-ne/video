@@ -333,16 +333,24 @@ async function generateTimeline(
 
   const systemPrompt = buildSystemPrompt(assetList, durationSeconds);
 
+  // Scene count MUST scale with duration — one scene per ~10-15s of narration.
+  // A single scene held for minutes = the #1 cause of a boring video. The
+  // reference channel changes context/beat every 5-15s.
+  const minScenes = Math.max(4, Math.round(durationSeconds / 15));
+  const idealScenes = Math.max(6, Math.round(durationSeconds / 11));
+
   return await callWithFallback<any>({
     system: systemPrompt,
     user: `Tạo SceneTimeline JSON cho video sau. Duration: ${durationSeconds} giây (${durationSeconds * 30} frames @ 30fps).
 ${audioInput ? `Audio file: ${audioInput}` : ""}
 
-QUAN TRỌNG:
-- Tối đa 6-8 scenes (không nhiều hơn)
-- Mỗi scene chỉ 1-2 entities, 1-2 texts
-- Trả về JSON thuần túy, KHÔNG có markdown, KHÔNG có \`\`\`json
-- JSON phải hoàn chỉnh, đóng tất cả ngoặc
+QUAN TRỌNG — NHỊP ĐIỆU (chống nhàm chán):
+- **Số scene: tối thiểu ${minScenes}, lý tưởng ~${idealScenes} scenes.** Mỗi scene 8-15 giây, KHÔNG để 1 scene kéo dài hàng phút.
+- Cắt transcript thành nhiều "beat" ngắn — mỗi khi đổi ý/cảm xúc/ví dụ → scene mới (đổi layout + background).
+- Mỗi scene 1-3 entities, tối đa 1-2 overlay text (đã có phụ đề narration ở dưới).
+- **narration BẮT BUỘC cho mỗi scene** (nguồn tạo phụ đề).
+- Dùng đa dạng: paperCards (dẫn chứng/khảo sát), frameBoxes (bản đồ), DIALOGUE, STAT_DRAMA, ICON_TRIPLE — đừng lặp 1 kiểu.
+- Trả về JSON thuần túy, KHÔNG markdown, KHÔNG \`\`\`json. JSON hoàn chỉnh, đóng tất cả ngoặc.
 
 TRANSCRIPT / SCRIPT:
 ---

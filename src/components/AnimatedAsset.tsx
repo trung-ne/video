@@ -22,7 +22,7 @@ interface Props {
   fps: number;
 }
 
-const BASE_ASSET_SIZE = 160; // px at scale 1.0
+const BASE_ASSET_SIZE = 200; // px at scale 1.0 (raised so characters fill the frame like the reference)
 
 export const AnimatedAsset: React.FC<Props> = ({
   asset,

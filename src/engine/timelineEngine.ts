@@ -206,6 +206,12 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
       }
     }
 
+    if (event.type === "swap" && event.frame <= currentFrame) {
+      const e = event as any;
+      const asset = state.assets.get(e.assetId);
+      if (asset) asset.src = e.src; // pose/costume change in place
+    }
+
     if (event.type === "text") {
       const e = event as TextEvent;
       if (e.frame <= currentFrame) {

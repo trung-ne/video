@@ -46,12 +46,15 @@ export function buildSystemPrompt(assetList: string[], durationSeconds: number):
 ## PHONG CÁCH THẬT CỦA KÊNH (học từ phân tích video gốc)
 
 **Kênh Mèo Giải Thích THẬT dạy qua:**
-1. **Dialogue giữa các nhân vật** — mèo hỏi, mèo trả lời, speech bubbles qua lại
-2. **Illustrated backgrounds** — phòng khách, nhà hàng, bãi biển, hang động, cityscape — KHÔNG phải nền trắng đơn thuần
-3. **Q&A Teaching Pattern** — đặt câu hỏi trước, hiện icon, rồi tiết lộ câu trả lời
-4. **Nhiều mèo khác nhau** — màu, costume, cá tính khác nhau cho từng vai
-5. **Camera gần như KHÔNG zoom** — assets di chuyển, không phải viewport
-6. **Text cực kỳ đơn giản** — 1 dòng tiêu đề lớn + 1 dòng body nhỏ + callout pill, không hơn
+1. **PHỤ ĐỀ NARRATION luôn hiện dưới màn hình** — mỗi khoảnh khắc đều có caption lời dẫn (hộp xám mờ, chữ trắng, đáy màn hình). Hệ thống TỰ tạo phụ đề từ trường \`narration\` → **BẮT BUỘC viết narration đầy đủ cho MỖI scene.**
+2. **Dialogue giữa các nhân vật** — mèo hỏi, mèo trả lời, speech bubbles qua lại
+3. **Illustrated backgrounds (ẢNH THẬT)** — phòng khách, nhà hàng, văn phòng, cityscape — dùng \`backgrounds/*.jpg\`, KHÔNG phải gradient phẳng
+4. **Nhân vật TO, lấp đầy màn hình** — mèo chiếm 40-70% chiều cao frame (KHÔNG để scale nhỏ trôi giữa khoảng trắng)
+5. **Card bằng chứng / khảo sát / khung TV** — dùng \`paperCards\` (evidence/survey) và \`frameBoxes\` (data/map) cho dẫn chứng và số liệu — đây là device đặc trưng của kênh
+6. **Q&A Teaching Pattern** — đặt câu hỏi trước, hiện icon, rồi tiết lộ câu trả lời
+7. **Nhiều mèo khác nhau** — màu, costume, cá tính khác nhau cho từng vai
+8. **Camera gần như KHÔNG zoom** — assets di chuyển, không phải viewport
+9. **Text overlay CỰC KỲ TỐI GIẢN** — vì đã có phụ đề narration, overlay chỉ dùng cho keyword/số liệu quan trọng. KHÔNG lặp lại lời narration bằng BODY text. KHÔNG dùng emoji trong text.
 
 ## THÔNG SỐ
 - FPS: ${fps} | Canvas: 1920×1080 | Duration: ${durationSeconds}s = ${totalFrames} frames
@@ -828,6 +831,37 @@ Kỹ thuật tạo 2 giai đoạn trong cùng 1 scene — không cần tạo sce
 
 ---
 
+## ⭐ CHỐNG NHÀM CHÁN — LUÔN CÓ THỨ GÌ ĐÓ THAY ĐỔI (học từ video mẫu)
+
+> Video mẫu KHÔNG BAO GIỜ để màn hình đứng yên. Cứ ~5 giây có thứ thay đổi:
+> mèo đổi tư thế, thêm bong bóng thoại, icon pop-in, mũi tên nối, cắt cảnh mới.
+> Đây là yếu tố quan trọng NHẤT để video không nhàm. Nguyên tắc: **mỗi 4-8 giây (120-240 frames) phải có 1 visual event.**
+
+**Kỹ thuật tạo biến đổi liên tục (dùng nhiều loại, xen kẽ):**
+
+1. **CẮT SCENE NHỎ** — cách mạnh nhất. Đổi ý/cảm xúc → scene mới với layout + background khác. Ưu tiên nhiều scene ngắn 8-15s hơn 1 scene dài.
+
+2. **ĐỔI TƯ THẾ MÈO trong scene** (dùng \`emphasize\` + phase transition với \`clearPrevious\`):
+   - Mèo \`cat_think\` (đang nghe) → sau vài giây → \`cat_talk\`/\`cat_explain\` (đang nói) → \`cat_surprised\` (bất ngờ).
+   - Đặt 2-3 entity cùng assetId khác pose, mỗi cái enterDelay cách nhau + clearPrevious cái trước.
+   *(Lưu ý: hệ thống cũng TỰ động thêm micro pose-swap + bounce cho mèo ở các đoạn hold dài — nhưng bạn tự chọn pose khớp narration thì tốt hơn.)*
+
+3. **BONG BÓNG THOẠI xuất hiện/biến mất** (\`speechBubble\` hoặc CALLOUT có duration ngắn) — mỗi câu thoại 1 bong bóng, hết câu thì biến, câu sau bong bóng mới.
+
+4. **ICON POP-IN theo lời dẫn** — khi narration nhắc tới "tiền/nhà/thời gian" → icon tương ứng popIn đúng lúc đó (enterDelay khớp câu), rồi exit khi qua ý.
+
+5. **MŨI TÊN NỐI nhân quả** — "X dẫn đến Y": đặt asset X (trái) + \`ui/arrow_up\` hoặc arrow (giữa) + asset Y (phải), stagger xuất hiện. Giống video mẫu: mèo → mũi tên → icon like.
+
+6. **EMPHASIZE nhịp nhàng** — nhân vật đang nói thì \`emphasize: pulse/bounce\` mỗi 4-6s để "sống".
+
+7. **STAGGER + MOVE** — entity trượt vào (slideLeft/Right), icon pop lần lượt, asset di chuyển tới vị trí mới (\`move\`) thay vì đứng im.
+
+8. **ĐỔI CON SỐ / TEXT** — trong STAT scene, số đếm tăng dần (emphasize counter) hoặc text cũ exit → text mới enter cùng vị trí.
+
+**QUY TẮC VÀNG:** Với scene bất kỳ > 8 giây, phải có ≥1 sự kiện (pose swap / bubble / icon / emphasize / move) mỗi 4-8 giây. Nếu bạn không tự thêm, engine sẽ tự thêm emphasize + pose-swap — nhưng đừng ỷ lại, hãy chủ động tạo biến đổi khớp nội dung.
+
+---
+
 ## QUY TẮC BẮT BUỘC — SHOW DON'T TELL (từ phân tích video thật)
 
 ### QUY TẮC 0 — HÌNH ẢNH PHẢI MATCH TRANSCRIPT (nền tảng của mọi quy tắc)
@@ -1192,7 +1226,12 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 19. **EXITFRAME BẮT BUỘC:** Mọi text PHẢI có \`duration\` (số frames hiển thị tính từ delay). Text không có duration = tồn tại đến cuối scene — thường gây rối. Khi 2 text dùng cùng vùng (cùng dải y), text trước PHẢI exit (hết duration) TRƯỚC HOẶC ĐÚNG LÚC text sau xuất hiện. Engine sẽ tự xóa text cũ nếu bị đè, nhưng đừng dựa vào đó — set duration đúng ngay từ đầu.
 20. **PROPS THAY TEXT:** Khi có prop phù hợp, dùng prop thay text. "Tiết kiệm" → props/piggy_bank. "Thời gian" → props/hourglass. "Nỗ lực" → props/muscle_arm. "Thành công" → props/trophy.
 21. **COSTUME MATCH ROLE:** KHÔNG dùng \`characters/cat\` cho tất cả. Bố → cat_dad. Mẹ → cat_mom. Doanh nhân/giàu → cat_business. Trẻ em → cat_child_boy/girl. Giáo viên → cat_teacher. Công nhân → cat_worker.
-22. **VISUAL METAPHOR:** Dùng icon/prop thể hiện ẩn dụ trực quan — house = "nền tảng gia đình", trophy = "phần thưởng", hourglass = "thời gian dài" — KHÔNG viết text giải thích ẩn dụ.`;
+22. **VISUAL METAPHOR:** Dùng icon/prop thể hiện ẩn dụ trực quan — house = "nền tảng gia đình", trophy = "phần thưởng", hourglass = "thời gian dài" — KHÔNG viết text giải thích ẩn dụ.
+23. **NARRATION BẮT BUỘC MỖI SCENE:** Mỗi scene PHẢI có \`narration\` đầy đủ (lời voice-over sẽ đọc). Hệ thống tự tạo phụ đề từ đây. Scene thiếu narration = không có phụ đề = fail.
+24. **PHỤ ĐỀ ĐÃ CÓ — ĐỪNG LẶP BẰNG BODY:** Vì narration hiện thành phụ đề đáy màn hình, TUYỆT ĐỐI không viết BODY text lặp lại nội dung narration. Overlay text chỉ cho: TITLE hook, keyword CALLOUT, con số STAT, label icon. Đa số scene chỉ cần 0-1 overlay text + phụ đề.
+25. **KHÔNG EMOJI:** Không dùng emoji (🇰🇷 🎯 ⭐...) trong bất kỳ text content nào. Dùng chữ hoặc icon SVG thật.
+26. **DÙNG COMPONENT ĐẶC TRƯNG:** Video dài (>3 phút) PHẢI dùng ít nhất 1-2 lần: \`paperCards\` variant "evidence" (dẫn chứng/trích số liệu chính sách) hoặc "survey" (câu hỏi khảo sát cho khán giả), và \`frameBoxes\` (bản đồ/biểu đồ trong khung TV) khi có dữ liệu địa lý/thống kê. Đây là device signature — đừng chỉ dùng text + mèo.
+27. **NHÂN VẬT TO:** ĐỂ TRỐNG \`scale\` cho nhân vật chính (compiler tự set to). Nếu set thủ công: SOLO/CLOSE_UP ≥2.6, DIALOGUE ≥2.0, không bao giờ nhân vật chính < 1.6.`;
 }
 
 export function buildScriptFromIdea(idea: string): string {

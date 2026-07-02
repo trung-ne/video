@@ -119,13 +119,14 @@ Timeline là file JSON event-driven. Mỗi event kích hoạt tại một frame 
 }
 ```
 
-### 11 loại event:
+### 12 loại event:
 
 | Type | Tác dụng |
 |------|---------|
 | `enter` | Đưa asset vào canvas với animation |
 | `exit` | Xóa asset khỏi canvas |
 | `move` | Di chuyển asset mượt đến vị trí mới |
+| `swap` | Đổi pose/costume của asset đang hiển thị (giữ nguyên vị trí) — dùng cho micro-variation |
 | `emphasize` | Nhấn mạnh asset đang hiển thị |
 | `camera` | Zoom/pan camera |
 | `text` | Hiển thị text overlay |
@@ -525,6 +526,18 @@ Props:      Đồ vật phù hợp scene (bàn, cửa sổ, etc.)
 | Kể chuyện bối cảnh đầy đủ | K (Scene Bối Cảnh) |
 
 **⚠️ BẮT BUỘC:** Chuyển pattern + background mỗi 15-30 giây.
+
+---
+
+## CHỐNG NHÀM CHÁN — Liveliness Engine (mới)
+
+Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có thứ thay đổi (pose mèo, bong bóng, icon, mũi tên, cắt cảnh). Hệ thống hỗ trợ điều này ở 3 tầng:
+
+1. **Scene density** — [generate-timeline.ts](scripts/generate-timeline.ts) ép số scene scale theo thời lượng (~1 scene / 11-15s). Trước đây cap cứng "6-8 scenes" gây ra video 25 phút chỉ 7 scene → cực nhàm. Quality check `SCENE_DENSITY` cảnh báo nếu TB > 45s/scene.
+
+2. **AI micro-variation** — prompt hướng dẫn AI tự thêm pose swap / bubble / icon pop-in / mũi tên nhân quả / emphasize mỗi 4-8s (section "CHỐNG NHÀM CHÁN" trong systemPrompt).
+
+3. **Liveliness auto-injector** — [liveliness.ts](src/engine/liveliness.ts) chạy sau compile (trong [render.ts](scripts/render.ts)): quét mọi nhân vật, lấp các "quiet window" dài bằng `emphasize` (pulse/bounce) + `swap` pose (chỉ trong họ pose cùng nhân vật, chỉ pose có file tồn tại). Đây là lưới an toàn — kể cả timeline "chết" vẫn có nhịp.
 
 ---
 

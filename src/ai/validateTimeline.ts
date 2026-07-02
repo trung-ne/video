@@ -40,7 +40,7 @@ export function validateSceneTimeline(input: any): ValidationResult {
   ];
   const validSlots = Object.keys(SLOT_POSITIONS);
   const validTextSlots = Object.keys(TEXT_SLOT_POSITIONS);
-  const validTextStyles = ["TITLE", "STAT", "CALLOUT", "SECTION", "BODY", "CAPTION"];
+  const validTextStyles = ["TITLE", "STAT", "CALLOUT", "SECTION", "BODY", "CAPTION", "SUBTITLE"];
   const validCameraActions = ["ZOOM_IN", "ZOOM_OUT", "FOCUS_ON", "RESET", "PAN_LR"];
   const validTransitionStyles = ["flash", "wipe", "fadeBlack", "fadeWhite", "zoom"];
 
@@ -284,6 +284,12 @@ export function validateTimeline(timeline: any, assetDir?: string): ValidationRe
           warnings.push(`${prefix} duplicate textId "${event.textId}"`);
         }
         seenTextIds.add(event.textId);
+        break;
+      }
+
+      case "swap": {
+        if (!event.assetId) errors.push(`${prefix} swap event missing assetId`);
+        if (!event.src) errors.push(`${prefix} swap event missing src`);
         break;
       }
 
