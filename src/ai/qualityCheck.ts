@@ -603,6 +603,30 @@ function checkIconTriple(scenes: any[]): CheckResult {
   return { name: "ICON_TRIPLE: circle field, LABEL_UNDER slots, không double-label", passed: issues.length === 0, issues };
 }
 
+// CHECK (V4): evidence paperCard là nội dung chính của scene — mèo to đứng
+// giữa scene sẽ bị card dài đè lên (đã gặp trong test_copy_video: card 3 câu
+// đè xuống ngang chân mèo). Card evidence nên đứng RIÊNG, không cat entity.
+function checkPaperCardCollision(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  for (const s of scenes) {
+    const cards = s.paperCards ?? [];
+    const longEvidence = cards.filter((c: any) => c.variant === "evidence" && (c.body ?? "").length > 160);
+    if (longEvidence.length === 0) continue;
+
+    const catEntities = (s.entities ?? []).filter((e: any) => e.src?.startsWith("characters/"));
+    if (catEntities.length > 0) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "PAPER_CARD_COLLISION",
+        scene: s.id,
+        message: `${sceneLabel(s)} evidence card dài (${longEvidence[0].body.length} ký tự) + ${catEntities.length} mèo cùng scene — card sẽ đè lên nhân vật`,
+        suggestion: "Tách card evidence thành scene riêng không có cat entity, hoặc rút ngắn body xuống ≤160 ký tự",
+      });
+    }
+  }
+  return { name: "PaperCard: evidence dài không đè lên nhân vật (V4)", passed: issues.length === 0, issues };
+}
+
 // CHECK 11: STAT_DRAMA must have dark background + clearPrevious
 function checkStatDrama(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
@@ -1092,6 +1116,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkCameraUsage(scenes),
     checkClearPrevious(scenes),
     checkIconTriple(scenes),
+    checkPaperCardCollision(scenes),
     checkStatDrama(scenes),
     checkDialogue(scenes),
     checkStagger(scenes),

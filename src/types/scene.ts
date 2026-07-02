@@ -126,6 +126,7 @@ export interface SceneText {
   duration?: number;   // frames visible; if omitted: lasts until scene end
 
   background?: string; // for CALLOUT style
+  color?: string;      // explicit override; otherwise compiler auto-picks by background darkness
   align?: "left" | "center" | "right";
   fontWeight?: number;
 }

@@ -179,7 +179,7 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
   "durationFrames": 150,
   "layout": "SOLO",
   "narration": "Câu voice-over trong scene này",
-  "backgroundSrc": "backgrounds/living_room.jpg",
+  "backgroundSrc": "#FAFAF8",
 
   "entities": [ ...SceneEntity[] ],
   "texts": [ ...SceneText[] ],
@@ -251,9 +251,9 @@ Gradient/màu phẳng CHỈ hợp lệ cho các scene KHÔNG có bối cảnh kh
 ### DIALOGUE — Hai nhân vật nói chuyện
 - **Khi dùng:** Q&A, giải thích định nghĩa, kể tình huống, contrast mindset
 - **Auto scale:** 1.65 mỗi bên (SceneCompiler tự áp dụng nếu không set scale)
-- **Vị trí:** y=0.68–0.75 khi có illustrated background (đứng ở BOTTOM, không che scene)
+- **Vị trí:** y=0.52 trên nền trắng/sáng; y=0.68–0.75 nếu scene này là 1 trong 2-4 cú đấm ảnh thật
 - **Speech bubble:** Dùng \`props/speech_bubble\` thay vì CALLOUT text — đặt phía trên nhân vật đang nói
-- **Background:** Illustrated scene (nhà hàng, phòng khách, bar, cityscape) — KHÔNG dùng gradient đơn
+- **Background:** nền trắng/sáng là mặc định (V4); ảnh thật chỉ khi dialogue diễn ra trong bối cảnh cần thấy (1 trong 2-4 ảnh/video)
 - **Text:** CALLOUT trên mỗi nhân vật (CALLOUT_LEFT + CALLOUT_RIGHT) + CAPTION dưới cùng
 - **Action:** Nhân vật đang nói thì pulse, nhân vật kia idle
 
@@ -426,7 +426,7 @@ Beat: "Giả sử bạn 30 tuổi, hẹn hò 10 năm không tìm được ai..."
 \`\`\`
 Layout:     SOLO
 Background: ấm, sáng — "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)"
-Cat:        cat_explain hoặc cat — x=0.50, y=0.52, scale 1.9
+Cat:        cat_explain hoặc cat — x=0.50, y=0.52, scale ĐỂ TRỐNG (auto 3.0)
 Text:       1 TITLE lớn (câu hỏi/hook) + 1 BODY ngắn (context)
 Transition: popIn cho cat, TITLE fadeIn delay 10 frames
 Nhịp:       durationFrames ≥ 180 (6s) — không rush
@@ -440,7 +440,7 @@ Nhịp:       durationFrames ≥ 180 (6s) — không rush
 \`\`\`
 Layout:     CLOSE_UP hoặc SOLO
 Background: trắng "#FFFFFF" — loại bỏ distraction, để câu hỏi là focus
-Cat:        cat_think hoặc cat_shrug — x=0.50, y=0.52, scale 1.8
+Cat:        cat_think hoặc cat_shrug — x=0.50, y=0.52, scale ĐỂ TRỐNG (auto 3.0)
 Text:       1 BODY (câu hỏi dạng "...?") + props/thought_bubble bên cạnh
 Transition: không có — scene yên tĩnh, suspenseful
 Nhịp:       120–180 frames (4–6s) — giữ suspense đủ lâu
@@ -454,7 +454,7 @@ Nhịp:       120–180 frames (4–6s) — giữ suspense đủ lâu
 \`\`\`
 Layout:     STAT_DRAMA
 Background: tối — "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"
-Cat:        cat_surprised — x=0.50, y=0.65 (bottom), scale 1.6
+Cat:        cat_surprised — x=0.50, y=0.65 (bottom), scale ĐỂ TRỐNG (auto 2.4)
 Text:       STAT (số lớn, đỏ #FF5252) + CAPTION giải thích ngắn (trắng #B0BEC5)
 Transition: flash hoặc fadeBlack TRƯỚC scene này
 clearPrevious: true (màn hình sạch để số liệu nổi)
@@ -469,7 +469,7 @@ Nhịp:       150–210 frames (5–7s) — để sốc ngấm
 \`\`\`
 Layout:     ICON_TRIPLE
 Background: trắng "#FFFFFF" — để 3 icons rõ ràng
-Cat:        cat_teacher — x=0.50, y=0.72, scale 1.6 (đứng dưới icons)
+Cat:        KHÔNG có mèo trong scene ICON_TRIPLE (đè icon giữa) — mèo giới thiệu ở scene trước
 Icons:      x=0.22/0.50/0.78, y=0.42, scale 1.0, stagger 60 frames mỗi icon
 Labels:     slot LABEL_UNDER_LEFT/CENTER/RIGHT, màu khác nhau (#2D9CDB/#27AE60/#FF6B35)
 Text:       1 SECTION header trên cùng + 1 BODY tóm tắt sau khi 3 icons đã xuất hiện
@@ -483,9 +483,9 @@ Transition: không flash — dùng slideUp cho từng icon
 **Bản chất:** Kiến thức truyền qua đối thoại, không qua text giải thích
 \`\`\`
 Layout:     DIALOGUE
-Background: illustrated scene — nhà hàng tối, phòng khách ấm, bar... (KHÔNG gradient đơn)
-Cat A:      cat_think (đang nghe/hỏi) — x=0.28, y=0.70, scale 1.5
-Cat B:      cat_talk (đang trả lời) — x=0.72, y=0.70, scale 1.5
+Background: trắng/sáng (mặc định V4); ảnh thật CHỈ nếu đây là 1 trong 2-4 cú đấm ảnh của video
+Cat A:      cat_think (đang nghe/hỏi) — x=0.28; y=0.52 (nền sáng) / y=0.70 (nếu ảnh thật); scale ĐỂ TRỐNG (auto 2.3)
+Cat B:      cat_talk (đang trả lời) — x=0.72; cùng y với Cat A; scale ĐỂ TRỐNG (auto 2.3)
 Text:       CALLOUT_LEFT + CALLOUT_RIGHT (speech bubble style)
             + CAPTION dưới cùng y=0.91 (tóm tắt lesson)
 Nhịp:       CALLOUT trái frame 0 → CALLOUT phải frame +90 → CAPTION frame +150
@@ -500,8 +500,8 @@ Costumes:   match vai (cat_business vs cat_worker, cat_dad vs cat_child_boy...)
 \`\`\`
 Layout:     DUAL_CONTRAST
 Background: trắng hoặc gradient nhẹ — để tương phản rõ ràng
-Asset A:    x=0.25, y=0.52, scale 1.4, slideRight (vào từ trái)
-Asset B:    x=0.75, y=0.52, scale 1.4, slideLeft (vào từ phải)
+Asset A:    x=0.25, y=0.52, scale ĐỂ TRỐNG (auto 2.3), slideRight (vào từ trái)
+Asset B:    x=0.75, y=0.52, scale ĐỂ TRỐNG (auto 2.3), slideLeft (vào từ phải)
 Label A:    CALLOUT_LEFT, màu xanh "#27AE60" hoặc "#2D9CDB" (tích cực)
 Label B:    CALLOUT_RIGHT, màu đỏ "#EB5757" hoặc cam "#F2994A" (tiêu cực)
 Camera:     PAN_LR (zoom nhẹ trái → phải → reset)
@@ -515,8 +515,8 @@ Text:       BODY tóm tắt sau khi cả 2 đã xuất hiện
 **Bản chất:** Đặt nhân vật vào không gian cụ thể để người xem hình dung
 \`\`\`
 Layout:     DIALOGUE hoặc CHAR_PROP
-Background: illustrated scene phù hợp câu chuyện (bar, nhà hàng, công viên...)
-Cat:        costume match vai — y=0.68–0.75 (đứng trước background, không che)
+Background: đây là ứng viên tốt cho 1 trong 2-4 cú đấm ảnh thật (bối cảnh cần THẤY); nếu đã đủ quota ảnh → nền sáng + prop bối cảnh
+Cat:        costume match vai — y=0.68–0.75 khi có ảnh (đứng trước background, không che)
 Props:      prop phù hợp hành động (dinner_table, computer_desk, round_table...)
 Text:       CAPTION ngắn + speech bubble — KHÔNG dùng BODY giải thích
 Nhịp:       scene ≥ 240 frames (8s) để bối cảnh có thời gian thấm
@@ -530,7 +530,7 @@ Nhịp:       scene ≥ 240 frames (8s) để bối cảnh có thời gian thấ
 \`\`\`
 Layout:     SOLO hoặc CLOSE_UP
 Background: tối hoặc lạnh — "linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
-Cat:        cat_sad — x=0.50, y=0.52, scale 1.8
+Cat:        cat_sad — x=0.50, y=0.52, scale ĐỂ TRỐNG (auto 3.0)
 Text:       TỐI THIỂU — chỉ 1 CAPTION ngắn hoặc 0 text (hình ảnh tự nói)
 Props:      không có props — sự trống vắng cũng là ngôn ngữ
 Emphasize:  cat_sad + shake hoặc không emphasize — để im lặng thể hiện
@@ -545,7 +545,7 @@ Nhịp:       120–180 frames — không rush qua bad news
 \`\`\`
 Layout:     SOLO hoặc CHAR_PROP
 Background: ấm, pastel — "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"
-Cat:        cat_happy — x=0.35, y=0.52, scale 1.75
+Cat:        cat_happy — x=0.35, y=0.52, scale ĐỂ TRỐNG (auto 3.0)
 Props:      props/trophy, props/muscle_arm, hoặc props/book bên phải cat
 Text:       1 SECTION (giải pháp/hướng đi) + 1 BODY (chi tiết)
 Transition: không flash — crossfade nhẹ từ background tối trước đó
@@ -560,7 +560,7 @@ Nhịp:       180–240 frames (6–8s) — để hy vọng lan tỏa
 \`\`\`
 Layout:     SOLO
 Background: ấm sáng — "linear-gradient(135deg, #FAFAF8 0%, #F0F4FF 100%)"
-Cat:        cat_happy hoặc cat_explain — x=0.50, y=0.52, scale 1.9
+Cat:        cat_happy hoặc cat_explain — x=0.50, y=0.52, scale ĐỂ TRỐNG (auto 3.0)
 Text:       1 TITLE (hành động cụ thể) + 1 BODY (lý do) — KHÔNG hơn
 Emphasize:  cat bounce lần cuối — frame gần cuối
 Transition: không có — kết thúc sạch, không flash
@@ -918,9 +918,10 @@ Bảng background theo bối cảnh:
 "hy vọng / kết luận"   → "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"
 \`\`\`
 
-**⭐ ƯU TIÊN ẢNH NỀN THẬT khi đoạn có BỐI CẢNH KHÔNG GIAN cụ thể** (nhà hàng, ngân hàng,
-lớp học, văn phòng...). Ảnh thật cho chiều sâu không gian giống video gốc — hơn hẳn gradient phẳng.
-Compiler TỰ blur nhẹ + phủ scrim tối, TỰ đổi text sang trắng. Khi dùng ảnh, đặt **mèo ở y=0.72 (đứng dưới)**.
+**⭐ BẢNG MAP ẢNH DƯỚI ĐÂY CHỈ DÙNG CHO 2-4 "CÚ ĐẤM" ẢNH THẬT/VIDEO (xem mục BACKGROUNDS V4)** —
+khi beat là evidence hoặc emotional beat có bối cảnh không gian khớp trực tiếp narration.
+KHÔNG dùng bảng này để dán ảnh cho mọi scene có bối cảnh — scene kể chuyện thường vẫn là nền trắng/sáng.
+Compiler TỰ blur nhẹ + phủ scrim, TỰ đổi text sang trắng. Khi dùng ảnh, đặt **mèo ở y=0.72 (đứng dưới)** hoặc bỏ mèo.
 \`\`\`
 "gia đình / bữa ăn / hẹn hò ăn tối" → "backgrounds/family_dinner.jpg" | "backgrounds/restaurant.jpg"
 "quán cà phê / tâm sự"              → "backgrounds/coffee_shop.jpg"
@@ -1083,22 +1084,19 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 
 ---
 
-## CẤU TRÚC VIDEO CHUẨN (V3)
+## CẤU TRÚC VIDEO CHUẨN (V4 — khớp NGÔN NGỮ ĐIỆN ẢNH mục 2: 3 hồi, climax 60-75%)
 
 \`\`\`
-0–8%    INTRO:    SOLO — Cat lớn center + TITLE hook
-                  Background: phòng khách ấm, cat bounce
-8–20%   SETUP:    DIALOGUE — 2 mèo Q&A giới thiệu vấn đề
-                  Background: scene phù hợp (nhà hàng, phòng khách)
-20–35%  CONCEPT1: QA_REVEAL hoặc ICON_TRIPLE
-                  Background: phòng khách hoặc trắng, giải thích cấu trúc
-35–55%  CONCEPT2: DIALOGUE + DUAL_CONTRAST
-                  Background: thay đổi theo không gian câu chuyện
-55–70%  DRAMA:    STAT_DRAMA — cat exit, số liệu lớn
-                  Background: dark gradient, text trắng
-70–85%  RESOLUTION: DIALOGUE hoặc SIZE_HIERARCHY
-                  Background: countryside hoặc hy vọng gradient
-85–100% CTA:      SOLO — Cat returns + LINEUP nếu cần
+0–5%    COLD OPEN: SOLO — nền SÁNG, câu hỏi/số shock nhất làm TITLE (không fadeBlack)
+5–25%   HỒI 1:    Evidence paperCard (cú đấm ảnh 1) + DIALOGUE giới thiệu vấn đề
+                  Background: trắng/sáng mặc định
+25–60%  HỒI 2:    QA_REVEAL / ICON_TRIPLE / DUAL_CONTRAST — mỗi scene lật 1 góc nhìn mới
+                  Background: trắng; xen 1 cú đấm ảnh nếu beat cần (emotional/bối cảnh)
+60–75%  CLIMAX:   STAT_DRAMA — cat exit, số liệu lớn + khoảng thở 1.5-2s sau reveal
+                  Background: dark gradient (chỗ DUY NHẤT nên tối), text trắng
+75–90%  HỒI 3:    DIALOGUE hoặc SIZE_HIERARCHY — giải pháp/insight
+                  Background: sáng ấm trở lại (montage tương phản sau climax tối)
+90–100% CTA:      SOLO — cat quay lại + callback prop của cold open (Chekhov's gun)
                   Background: warm gradient hoặc "#FAFAF8"
 \`\`\`
 
@@ -1116,18 +1114,17 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
   "scenes": [
     {
       "id": "intro",
-      "label": "Hook — mèo solo giới thiệu",
+      "label": "Cold open — câu hỏi đau nhất, nền sáng, mèo to",
       "startFrame": 0,
       "durationFrames": 210,
       "layout": "SOLO",
-      "backgroundSrc": "backgrounds/living_room.jpg",
+      "backgroundSrc": "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)",
       "narration": "Tại sao người Hàn Quốc không chịu đẻ dù nhà nước cho tiền tỷ?",
       "entities": [
         {
           "assetId": "cat",
-          "src": "characters/cat",
+          "src": "characters/cat_shrug",
           "position": { "x": 0.50, "y": 0.52 },
-          "scale": 1.8,
           "enterAnimation": "popIn",
           "animationDuration": 20,
           "emphasize": { "animation": "bounce", "delay": 80, "duration": 25 }
@@ -1136,46 +1133,57 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
       "texts": [
         {
           "id": "title_hook",
-          "content": "Cho 1 tỷ vẫn không chịu đẻ — tại sao?",
+          "content": "Cho 1 tỷ vẫn không chịu đẻ?",
           "style": "TITLE",
           "slot": "TOP_TITLE",
           "delay": 15,
-          "duration": 180
-        },
-        {
-          "id": "body_hook",
-          "content": "Hàn Quốc đang chi hàng trăm tỷ USD nhưng tỷ lệ sinh vẫn thấp nhất thế giới",
-          "style": "BODY",
-          "slot": "BODY",
-          "delay": 40
+          "duration": 120
         }
       ],
-      "transition": { "style": "wipe", "duration": 15 },
       "clearPrevious": false
     },
     {
-      "id": "dialogue_setup",
-      "label": "2 mèo Q&A — vấn đề là gì",
+      "id": "evidence_policy",
+      "label": "Cú đấm 1 — card bằng chứng chính sách (không mèo che)",
       "startFrame": 210,
+      "durationFrames": 240,
+      "layout": "SOLO",
+      "backgroundSrc": "#FFFFFF",
+      "narration": "Hàn Quốc cho 40 triệu mỗi con. Hungary miễn thuế cả đời cho mẹ sinh 4 con.",
+      "entities": [],
+      "paperCards": [
+        {
+          "id": "ev1",
+          "variant": "evidence",
+          "body": "Hàn Quốc: trợ cấp 1 triệu won/tháng cho trẻ 0-11 tháng. Hungary: phụ nữ sinh 4 con được miễn thuế thu nhập suốt đời.",
+          "delay": 10
+        }
+      ],
+      "texts": [],
+      "transition": { "style": "wipe", "duration": 15 },
+      "clearPrevious": true
+    },
+    {
+      "id": "dialogue_setup",
+      "label": "2 mèo Q&A trên nền sáng — pose khớp cảm xúc, scale để trống",
+      "startFrame": 450,
       "durationFrames": 330,
       "layout": "DIALOGUE",
-      "backgroundSrc": "backgrounds/coffee_shop.jpg",
+      "backgroundSrc": "#FAFAF8",
       "narration": "Bạn bè: Ủa sao không đẻ? Mèo: Vì chi phí nuôi con quá cao, mà lương thì không tăng",
       "entities": [
         {
           "assetId": "cat_a",
-          "src": "characters/cat",
+          "src": "characters/cat_talk",
           "position": { "x": 0.28, "y": 0.52 },
-          "scale": 1.3,
           "enterAnimation": "slideRight",
           "animationDuration": 18,
           "emphasize": { "animation": "pulse", "delay": 30, "duration": 20 }
         },
         {
           "assetId": "cat_b",
-          "src": "people/person",
+          "src": "characters/cat_sad",
           "position": { "x": 0.72, "y": 0.52 },
-          "scale": 1.3,
           "enterAnimation": "slideLeft",
           "enterDelay": 15,
           "animationDuration": 18,
@@ -1194,19 +1202,12 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
         },
         {
           "id": "speech_b",
-          "content": "Chi phí nuôi con quá cao!",
+          "content": "Nuôi con quá đắt!",
           "style": "CALLOUT",
           "slot": "CALLOUT_RIGHT",
           "background": "#EB5757",
           "delay": 130,
           "duration": 100
-        },
-        {
-          "id": "caption_setup",
-          "content": "Hàn Quốc: tỷ lệ sinh 0.72 — thấp nhất thế giới",
-          "style": "CAPTION",
-          "slot": "CAPTION",
-          "delay": 240
         }
       ],
       "transition": { "style": "wipe", "duration": 15 },
@@ -1216,9 +1217,11 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 }
 \`\`\`
 
+**Vì sao ví dụ này chuẩn V4:** mở màn SÁNG + title ngắn (cold open, không fadeBlack); bằng chứng là scene RIÊNG có chủ đích (paperCard, không mèo che, không text thừa); dialogue trên nền sáng với pose khớp cảm xúc từng bên (cat_talk hỏi / cat_sad than); \`scale\` để trống cho compiler auto-set to; mọi text có \`duration\`; không BODY lặp narration (phụ đề tự sinh từ narration).
+
 ---
 
-## OUTPUT RULES (V3)
+## OUTPUT RULES (V4)
 
 0. **TIẾNG VIỆT ĐẦY ĐỦ DẤU** — TẤT CẢ text content PHẢI dùng tiếng Việt có dấu đầy đủ. TUYỆT ĐỐI không dùng ASCII không dấu. Ví dụ: "Người chơi" ✅ — "Nguoi choi" ❌ | "Lý thuyết" ✅ — "Ly thuyet" ❌
 1. Trả về **ONLY JSON thuần túy** — không markdown, không giải thích
@@ -1229,7 +1232,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 6. \`id\` của scene, assetId, text.id phải UNIQUE toàn timeline
 7. Tối thiểu ${Math.ceil(durationSeconds / 20)} scenes
 8. Mỗi scene: ít nhất 1 entity + \`backgroundSrc\` — **BẮT BUỘC có backgroundSrc mỗi scene**
-9. **BACKGROUND = ẢNH THẬT:** MẶC ĐỊNH mỗi scene kể chuyện phải dùng MỘT ẢNH NỀN THẬT (\`backgrounds/*.jpg\` trong danh sách). Ít nhất 5 ẢNH khác nhau/video. Gradient CHỈ cho STAT_DRAMA/ICON_TRIPLE/SIZE_HIERARCHY/CLOSE_UP. Toàn gradient = FAIL.
+9. **BACKGROUND V4 — TRẮNG MẶC ĐỊNH, ẢNH LÀ CÚ ĐẤM:** Đa số scene dùng nền trắng/sáng ("#FFFFFF", "#FAFAF8", gradient sáng) + nhân vật TO. Ảnh thật (\`backgrounds/*.jpg\`) CHỈ 2-4 lần/video, mỗi lần phải là evidence hoặc emotional beat khớp trực tiếp narration — khi đó mèo đứng y=0.70–0.78 hoặc vắng mặt, KHÔNG che chủ thể ảnh. Mèo to đè giữa ảnh mờ = FAIL.
 10. **LAYOUT VARIETY:** Ít nhất 5 layout khác nhau
 11. **DIALOGUE FIRST:** Giải thích quan trọng → DIALOGUE với 2 nhân vật, speech bubble, không BODY text dài
 12. **CAMERA MINIMAL:** Tối đa 1 ZOOM_IN/video, zoom max 1.15

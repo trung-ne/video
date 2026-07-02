@@ -59,6 +59,10 @@ function compileScene(
   const start = scene.startFrame;
   const sceneEnd = start + scene.durationFrames;
 
+  // Tracks the ACTUAL background rendered (may be forced bright on scene 1) so
+  // downstream text-color logic reads reality, not the AI's original request.
+  let effectiveBgSrc: string | undefined = scene.backgroundSrc;
+
   // The opening must be bright and readable within the first seconds — a fade
   // from black on scene 1 buries the hook, so those transitions are dropped.
   const openingFade =
@@ -97,10 +101,20 @@ function compileScene(
       !scene.backgroundSrc.startsWith("rgb") &&
       !scene.backgroundSrc.startsWith("linear-gradient") &&
       !scene.backgroundSrc.startsWith("radial-gradient");
+
+    // The opening 3 seconds must be bright and readable regardless of what
+    // the AI picked — a STAT_DRAMA-style dark gradient on scene 1 buries the
+    // hook just as badly as a fadeBlack transition does.
+    const bgSrc =
+      isFirstScene && !isPhoto && isDarkBackground(scene.backgroundSrc)
+        ? "#FAFAF8"
+        : scene.backgroundSrc;
+    effectiveBgSrc = bgSrc;
+
     events.push({
       frame: start,
       type: "background",
-      src: scene.backgroundSrc,
+      src: bgSrc,
       blur: scene.backgroundBlur ?? (isPhoto ? 10 : 0),
       overlay: clampOverlayAlpha(
         scene.backgroundOverlay ?? (isPhoto ? "rgba(0,0,0,0.28)" : undefined)
@@ -134,7 +148,7 @@ function compileScene(
 
   // ── 5. Texts ──────────────────────────────────────────────
   for (const text of scene.texts) {
-    compileText(text, scene, start, sceneEnd, events, totalFrames, transitionDur);
+    compileText(text, scene, start, sceneEnd, events, totalFrames, transitionDur, effectiveBgSrc);
   }
 
   // ── 5a. Auto subtitles from narration (the reference channel's signature) ──
@@ -242,7 +256,8 @@ function compileText(
   sceneEnd: number,
   events: TimelineEvent[],
   totalFrames: number,
-  transitionDur: number = 0
+  transitionDur: number = 0,
+  effectiveBgSrc?: string
 ): void {
   // Resolve position
   let position: { x: number; y: number };
@@ -272,20 +287,26 @@ function compileText(
     exitFrame = Math.min(sceneEnd - 5, totalFrames - 1);
   }
 
-  // Auto-adjust text color on dark backgrounds.
-  // Photo backgrounds get a dark scrim by default → treat as dark (light text).
-  const bgIsPhoto = scene.backgroundSrc
-    ? !scene.backgroundSrc.startsWith("#") &&
-      !scene.backgroundSrc.startsWith("rgb") &&
-      !scene.backgroundSrc.startsWith("linear-gradient") &&
-      !scene.backgroundSrc.startsWith("radial-gradient")
+  // Auto-adjust text color on dark backgrounds. Uses the EFFECTIVE background
+  // (post scene-1 brightness override), not the AI's original request, so a
+  // scene forced bright doesn't end up with white text on a white backdrop.
+  const bg = effectiveBgSrc ?? scene.backgroundSrc;
+  const bgIsPhoto = bg
+    ? !bg.startsWith("#") &&
+      !bg.startsWith("rgb") &&
+      !bg.startsWith("linear-gradient") &&
+      !bg.startsWith("radial-gradient")
     : false;
-  const isDarkBg = scene.backgroundSrc
-    ? isDarkBackground(scene.backgroundSrc) || bgIsPhoto
+  const isDarkBg = bg
+    ? isDarkBackground(bg) || bgIsPhoto
     : false;
   const autoColor = isDarkBg && text.style !== "STAT"
     ? (text.style === "BODY" ? "#E0E0E0" : text.style === "CAPTION" ? "#B0BEC5" : "#FFFFFF")
     : undefined;
+
+  // An explicit text.color from the scene JSON always wins — auto-color is
+  // only a fallback for dark backgrounds when the AI didn't pick one itself.
+  const resolvedColor = text.color ?? autoColor;
 
   events.push({
     frame: textFrame,
@@ -294,7 +315,7 @@ function compileText(
     content: text.content,
     position,
     style: text.style,
-    color: autoColor,
+    color: resolvedColor,
     background: text.background,
     align: text.align ?? "center",
     fontWeight: text.fontWeight,
@@ -384,12 +405,20 @@ function compilePaperCard(
       ? Math.min(frame + pc.duration, totalFrames - 1)
       : Math.min(sceneEnd - 5, totalFrames - 1);
 
+  // A long evidence body at the default width grows tall enough to collide
+  // with the character below it and with the auto-subtitle band at the
+  // bottom. Long bodies get a narrower card (taller-but-narrower reads fine
+  // for a "document" look) and are nudged up so they stay clear of y>0.74.
+  const bodyLen = (pc.body ?? "").length;
+  const autoWidth = bodyLen > 220 ? 860 : bodyLen > 120 ? 980 : 1100;
+  const autoY = bodyLen > 160 ? 0.34 : 0.42;
+
   events.push({
     frame,
     type: "paperCard",
     cardId: pc.id,
     variant: pc.variant,
-    position: pc.position ?? { x: 0.5, y: 0.42 },
+    position: pc.position ?? { x: 0.5, y: autoY },
     scale: pc.scale,
     title: pc.title,
     body: pc.body,
@@ -397,7 +426,7 @@ function compilePaperCard(
     rotation: pc.rotation,
     animation: "popIn",
     exitFrame,
-    width: pc.width,
+    width: pc.width ?? autoWidth,
   } as PaperCardEvent);
 }
 

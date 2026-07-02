@@ -26,7 +26,7 @@ export const AnimatedText: React.FC<Props> = ({
 
   const defaults: Record<string, { fontSize: number; color: string; fontWeight: number }> = {
     TITLE:   { fontSize: 72,  color: "#1a1a2e", fontWeight: 800 },
-    STAT:    { fontSize: 120, color: "#EB5757", fontWeight: 900 },
+    STAT:    { fontSize: 120, color: "#FF3B3B", fontWeight: 900 },
     CALLOUT: { fontSize: 44,  color: "#ffffff", fontWeight: 700 },
     SECTION: { fontSize: 54,  color: "#2D3748", fontWeight: 700 },
     BODY:    { fontSize: 44,  color: "#1a1a1a", fontWeight: 600 },
@@ -126,7 +126,10 @@ export const AnimatedText: React.FC<Props> = ({
           textAlign: "center",
           zIndex: 60,
           pointerEvents: "none",
-          textShadow: `0 0 40px ${color}55, 0 4px 16px rgba(0,0,0,0.15)`,
+          // Glow is white-hot + colored, not a plain drop shadow — a dark
+          // shadow does nothing on STAT_DRAMA's near-black gradient, where the
+          // number needs to visually "burn" against the backdrop to read.
+          textShadow: `0 0 50px ${color}, 0 0 90px ${color}88, 0 2px 4px rgba(0,0,0,0.4)`,
           lineHeight: 1.1,
           letterSpacing: "-2px",
         }}
@@ -199,7 +202,11 @@ export const AnimatedText: React.FC<Props> = ({
       >
         <span
           style={{
-            background: "rgba(30,30,30,0.78)",
+            // Solid near-black (not translucent) so the box stays legible even
+            // on STAT_DRAMA's dark gradient backgrounds — a translucent box
+            // there blends into the backdrop and the caption becomes unreadable.
+            background: "rgba(15,15,15,0.92)",
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.12)",
             color,
             fontSize,
             fontWeight,
