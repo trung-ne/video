@@ -4,9 +4,8 @@
 
 ## Thứ tự đọc
 1. Đọc `CLAUDE.md` trước tiên.
-2. Đọc `CLAUDE-UPDATED.md` để hiểu lịch sử và ngữ cảnh.
-3. Đọc `WORKFLOW.md` khi cần quy trình thực thi chi tiết.
-4. Nếu có mâu thuẫn, ưu tiên mục `V4 — DIRECTOR'S RULES` trong `CLAUDE.md`.
+2. Đọc `WORKFLOW.md` khi cần quy trình thực thi chi tiết.
+3. Nếu có mâu thuẫn, ưu tiên mục `V4 — DIRECTOR'S RULES` trong `CLAUDE.md`.
 
 ## Cách làm việc
 - Luôn bám workspace hiện tại: đọc file, sửa file, validate ngay trong repo.

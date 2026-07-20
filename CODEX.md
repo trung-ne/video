@@ -4,9 +4,8 @@
 
 ## Quy trình đọc
 1. Đọc `CLAUDE.md` trước.
-2. Đọc `CLAUDE-UPDATED.md` để lấy ngữ cảnh lịch sử.
-3. Đọc `WORKFLOW.md` khi cần thứ tự thao tác cụ thể.
-4. Nếu có xung đột, ưu tiên `V4 — DIRECTOR'S RULES` trong `CLAUDE.md`.
+2. Đọc `WORKFLOW.md` khi cần thứ tự thao tác cụ thể.
+3. Nếu có xung đột, ưu tiên `V4 — DIRECTOR'S RULES` trong `CLAUDE.md`.
 
 ## Cách làm việc
 - Bám workspace hiện tại, không làm việc trên giả định.

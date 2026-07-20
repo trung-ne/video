@@ -51,7 +51,7 @@ npx ts-node scripts/render.ts --project video-001
 
 ## 📚 Documentation
 
-- **[CLAUDE-UPDATED.md](./CLAUDE-UPDATED.md)** — Full system rules, commands, scene patterns
+- **[CLAUDE.md](./CLAUDE.md)** — Full system rules (V4 director rules), commands, pipeline, scene patterns
 - **[COPILOT.md](./COPILOT.md)** — Quick reference for Copilot integration
 
 ---
@@ -201,11 +201,10 @@ Each project's `metadata.json` tracks:
 
 ## 📖 Learn More
 
-Read **[CLAUDE-UPDATED.md](./CLAUDE-UPDATED.md)** for:
-- 8 scene patterns with examples
-- Text styling guide (6 preset styles)
-- Color palette
-- Position reference grid
+Read **[CLAUDE.md](./CLAUDE.md)** for:
+- V4 director's rules + scene layout patterns
+- Text styling guide (preset styles)
+- `projects/` folder convention
 - Full command options
 - Complete troubleshooting
 

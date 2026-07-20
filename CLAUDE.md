@@ -91,10 +91,39 @@ video/
 │       ├── finance/{bank,money,house,stock,interest_rate,inflation,chart_up}.svg
 │       ├── people/{person,company}.svg
 │       └── ui/{arrow_up,arrow_down}.svg
+├── projects/                     # 📁 MỖI VIDEO = 1 FOLDER (xem bên dưới)
 ├── timeline.json                 # Active timeline (input cho render)
 ├── output/                       # MP4 render ra đây
 └── CLAUDE.md                     # File này
 ```
+
+### Quy ước `projects/` — mỗi video một folder
+
+Mỗi video sống trong `projects/video-XXX-<slug>/` để dễ quản lý hàng trăm video. Tạo bằng [new-project.ts](scripts/new-project.ts):
+
+```bash
+npx ts-node scripts/new-project.ts --idea "Chủ đề"      # hoặc --transcript <file> | --url <youtube> | --name <slug> | --auto
+```
+
+Nội dung một folder (những file thực sự sinh ra qua pipeline):
+```
+projects/video-003-tai-sao-eng/
+├── idea.txt            # ý tưởng gốc (khi tạo bằng --idea)
+├── transcript.txt      # script/transcript
+├── timeline.json       # SceneTimeline (scenes[]) — nguồn authored duy nhất
+├── tts_scenes.json     # narration tách theo scene cho TTS
+├── sceneNN.wav         # audio từng scene (TTS) + voice.wav ghép
+├── durations.json      # thời lượng thực mỗi scene (patch durationFrames)
+└── metadata.json       # chỉ new-project.ts tạo lúc khởi tạo
+```
+
+Generate + render trỏ vào folder qua **path**, không có flag `--project`:
+```bash
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --out projects/<id>/timeline.json
+npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json --out output/<id>.mp4
+```
+
+⚠️ Lưu ý để tránh hiểu nhầm: **không tồn tại** flag `--project`; `timeline.json` ở root là file thường (không phải symlink); `metadata.json` chỉ được `new-project.ts` ghi lúc tạo — generate/render **không** tự cập nhật status/version.
 
 ---
 
