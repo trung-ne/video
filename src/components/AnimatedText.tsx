@@ -220,7 +220,9 @@ export const AnimatedText: React.FC<Props> = ({
             // on STAT_DRAMA's dark gradient backgrounds.
             background: "rgba(15,15,15,0.92)",
             boxShadow: "0 0 0 1px rgba(255,255,255,0.12)",
-            color,
+            // Hard-locked white: the band is always near-black, so any inherited
+            // color (engine defaults, auto-color) would risk invisible captions.
+            color: "#FFFFFF",
             fontSize,
             fontWeight,
             fontFamily: "'Segoe UI', 'Arial Rounded MT Bold', sans-serif",

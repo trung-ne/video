@@ -46,6 +46,7 @@ export type LayoutPreset =
   | "LINEUP"            // 3-4 characters in a row
   | "STAT_DRAMA"        // big stat center on dark background
   | "CLOSE_UP"          // character close-up, emotional
+  | "TABLEAU"           // V5: illustrated stage set + characters seated at anchors
 
   // Legacy layouts (still supported)
   | "INTRO"             // same as SOLO
@@ -83,6 +84,9 @@ export interface SceneEntity {
   // Position: use slot OR explicit {x, y} for CUSTOM layout
   slot?: SlotId;
   position?: { x: number; y: number };
+  // V5 TABLEAU: named spot on an illustrated stage set (see stageAnchors.ts) —
+  // e.g. "bed", "sofa_left". Wins over slot; requires stage backgroundSrc.
+  anchor?: string;
 
   role?: "host" | "hero" | "cause" | "effect" | "support";
   scale?: number;                      // default 1.0
@@ -158,6 +162,19 @@ export interface SceneFrameBox {
   width?: number;
 }
 
+// ─── Speech bubble attached to a character in a scene ────────
+// The reference video's primary dialogue device: nearly every conversational
+// scene shows the actual spoken line in a bubble above the speaker.
+export interface SceneSpeechBubble {
+  id: string;
+  anchorAssetId: string;     // assetId of the character speaking
+  text: string;              // the line itself — keep ≤ 8 words
+  style?: "speech" | "thought" | "shout"; // default: speech
+  direction?: "left" | "right" | "top";   // tail direction, default right
+  delay?: number;            // frames after scene start
+  duration?: number;         // frames visible; omit = until scene end
+}
+
 // ─── Transition between scenes ───────────────────────────────
 export type TransitionStyle = "flash" | "wipe" | "fadeBlack" | "fadeWhite" | "zoom";
 
@@ -185,6 +202,7 @@ export interface Scene {
 
   paperCards?: ScenePaperCard[]; // evidence / survey cards
   frameBoxes?: SceneFrameBox[];  // TV/monitor data frames
+  speechBubbles?: SceneSpeechBubble[]; // dialogue lines above characters
 
   camera?: SceneCameraHint;
   transition?: SceneTransition; // played at the START of this scene
@@ -239,6 +257,7 @@ export const TEXT_SLOT_POSITIONS: Record<TextSlotId, { x: number; y: number }> =
 export const LAYOUT_ENTITY_SLOTS: Record<LayoutPreset, SlotId[]> = {
   // V3 layouts
   SOLO:               ["CENTER_MID"],
+  TABLEAU:            ["LEFT", "RIGHT"], // fallback when entities have no anchor
   DIALOGUE:           ["LEFT", "RIGHT"],
   DUAL_CONTRAST:      ["LEFT_MID", "RIGHT_MID"],
   SIZE_HIERARCHY:     ["CENTER", "CENTER_MID"],

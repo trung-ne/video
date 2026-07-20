@@ -366,6 +366,143 @@ function checkStoryArc(scenes: any[]): CheckResult {
   return { name: "Story arc: có điểm neo thị giác + cao trào (V4.8)", passed: issues.length === 0, issues };
 }
 
+// Shared: does a background string read as dark?
+function bgLooksDark(bg: string): boolean {
+  const darkHexes = bg.match(/#[0-9a-fA-F]{6}\b/g) ?? [];
+  return (
+    darkHexes.length > 0 &&
+    darkHexes.every((h) => {
+      const r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16);
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.35;
+    })
+  );
+}
+
+// CHECK (V5): Ending must be bright — symmetric to OPENING_DARK. video-003
+// closed on consecutive near-black STAT scenes, so the video *ends* on a
+// black screen instead of a bright CTA.
+function checkEndingBright(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  for (const s of scenes.slice(-2)) {
+    const bg: string = s.backgroundSrc ?? "";
+    if (bgLooksDark(bg)) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "ENDING_DARK",
+        scene: s.id,
+        message: `${sceneLabel(s)} scene kết dùng nền tối ("${bg.slice(0, 40)}") — video kết thúc trong bóng đen thay vì CTA sáng`,
+        suggestion: "2 scene cuối phải nền sáng: chốt insight + CTA với mèo biểu cảm tích cực",
+      });
+    }
+  }
+  return { name: "Ending: kết sáng với CTA, không chìm trong nền tối (V5)", passed: issues.length === 0, issues };
+}
+
+// CHECK (V5): Direction hygiene — three concrete authoring defects found by
+// frame-comparing video-003 against the reference:
+//   TEXT_TRUNCATED — the AI wrote sentences cut off with "…" (156 in video-003);
+//   SCALE_ABUSE    — hand-written tiny scales on characters (compiler clamps,
+//                    but the source should stop emitting them);
+//   KEYWORD_MISSING— scenes quoting big numbers with no STAT/CALLOUT anchor
+//                    (the reference nails every number with big colored type).
+function checkV5Hygiene(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+
+  const truncated: string[] = [];
+  const tinyScales: string[] = [];
+  let numberScenes = 0;
+  let numberScenesWithoutKeyword = 0;
+
+  const numberRe = /\d[\d.,]*\s*(%|percent|triệu|tỷ|nghìn|million|billion|thousand|won|usd|đồng)|\b\d{4,}\b/i;
+
+  for (const s of scenes) {
+    for (const t of s.texts ?? []) {
+      const c: string = t.content ?? "";
+      if (/(\.\.\.|…)\s*$/.test(c)) truncated.push(s.id);
+    }
+    for (const e of s.entities ?? []) {
+      if (typeof e.scale === "number" && e.scale < 1.4 && String(e.src ?? "").startsWith("characters/")) {
+        tinyScales.push(s.id);
+      }
+    }
+    if (numberRe.test(s.narration ?? "")) {
+      numberScenes++;
+      const hasAnchor =
+        (s.texts ?? []).some((t: any) => t.style === "STAT" || t.style === "CALLOUT") ||
+        (s.paperCards?.length ?? 0) > 0 ||
+        (s.frameBoxes?.length ?? 0) > 0;
+      if (!hasAnchor) numberScenesWithoutKeyword++;
+    }
+  }
+
+  if (truncated.length > 0) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "TEXT_TRUNCATED",
+      scene: truncated[0],
+      message: `${truncated.length} text kết thúc bằng "…" — câu bị cắt cụt hiển thị như lỗi (vd scene ${truncated.slice(0, 3).join(", ")})`,
+      suggestion: "Viết lại text NGẮN TRỌN Ý (≤12 từ), không bao giờ chấm lửng do tràn",
+    });
+  }
+  if (tinyScales.length > 0) {
+    issues.push({
+      severity: "MINOR",
+      rule: "SCALE_ABUSE",
+      scene: tinyScales[0],
+      message: `${tinyScales.length} nhân vật bị set scale < 1.4 (mèo tí hon) — compiler sẽ clamp nhưng nguồn nên bỏ field scale`,
+      suggestion: "KHÔNG ghi field scale cho characters/* — để compiler auto-scale theo layout",
+    });
+  }
+  if (numberScenes >= 3 && numberScenesWithoutKeyword / numberScenes > 0.6) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "KEYWORD_MISSING",
+      message: `${numberScenesWithoutKeyword}/${numberScenes} scene nêu số liệu nhưng không có STAT/CALLOUT/paperCard đóng đinh con số — số chỉ được đọc, không được thấy`,
+      suggestion: "Mỗi con số quan trọng → 1 STAT/CALLOUT ≤4 từ chữ to có màu, hoặc paperCard highlight",
+    });
+  }
+
+  return { name: "V5 hygiene: không text cụt, không mèo tí hon, số liệu có anchor", passed: issues.length === 0, issues };
+}
+
+// CHECK (V5): Register variety — the reference rotates 5 visual registers
+// (tableau / evidence / diagram / beat / solo). Video-003 ran 100% slot-template
+// scenes: zero bubbles, zero paperCards, zero frameBoxes across 112 scenes.
+function checkV5Registers(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  if (scenes.length < 8) {
+    return { name: "V5 registers: bubble/evidence/beat có mặt đủ quota", passed: true, issues };
+  }
+
+  const bubbleScenes = scenes.filter((s) => (s.speechBubbles?.length ?? 0) > 0).length;
+  const evidenceScenes = scenes.filter(
+    (s) => (s.paperCards?.length ?? 0) > 0 || (s.frameBoxes?.length ?? 0) > 0
+  ).length;
+  const dialogueScenes = scenes.filter((s) => s.layout === "DIALOGUE").length;
+
+  // Dialogue without a single bubble anywhere = talking heads with no lines.
+  if (dialogueScenes >= 2 && bubbleScenes === 0) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "BUBBLE_MISSING",
+      message: `${dialogueScenes} scene DIALOGUE nhưng 0 speechBubble toàn video — hội thoại câm, mất thiết bị dạy chính của kênh mẫu`,
+      suggestion: "Mỗi scene DIALOGUE ≥1 speechBubbles[] với câu thoại thật ≤8 từ",
+    });
+  }
+
+  const expectedEvidence = Math.max(1, Math.floor(scenes.length / 12));
+  if (evidenceScenes < expectedEvidence) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "EVIDENCE_MISSING",
+      message: `${evidenceScenes} scene evidence (paperCard/frameBox) — cần ≥${expectedEvidence} cho ${scenes.length} scene. Video mẫu chiếu bằng chứng (bài báo highlight, TV frame) thay vì chỉ đọc`,
+      suggestion: "Số liệu/trích dẫn quan trọng → paperCard variant evidence; ảnh thật/stat → frameBox",
+    });
+  }
+
+  return { name: "V5 registers: bubble/evidence/beat có mặt đủ quota", passed: issues.length === 0, issues };
+}
+
 // CHECK 4: Scene duration
 // Ideal: 8-60s. Very short (<3s) is a BLOCKER (flickering). Very long (>120s)
 // is a MINOR — for long videos with narration audio, long scenes can be intentional.
@@ -1257,7 +1394,10 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkBackgroundVariety(scenes),
     checkLayoutVariety(scenes),
     checkOpeningBright(scenes),
+    checkEndingBright(scenes),
     checkStoryArc(scenes),
+    checkV5Hygiene(scenes),
+    checkV5Registers(scenes),
     checkSceneDuration(scenes),
     checkTextWordCap(scenes),
     checkTextOverlap(scenes),

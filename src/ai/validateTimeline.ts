@@ -3,6 +3,7 @@ import * as path from "path";
 import { Timeline, EnterEvent } from "../types/timeline";
 import { SceneTimeline, SLOT_POSITIONS, TEXT_SLOT_POSITIONS } from "../types/scene";
 import { isCSSBackground, backgroundImageExists } from "./backgroundResolver";
+import { STAGE_ANCHORS } from "../engine/stageAnchors";
 
 export interface ValidationResult {
   valid: boolean;
@@ -33,7 +34,7 @@ export function validateSceneTimeline(input: any): ValidationResult {
   const validLayouts = [
     // V3 layouts
     "SOLO", "DIALOGUE", "DUAL_CONTRAST", "SIZE_HIERARCHY", "CHAR_PROP",
-    "ICON_TRIPLE", "QA_REVEAL", "LINEUP", "STAT_DRAMA", "CLOSE_UP",
+    "ICON_TRIPLE", "QA_REVEAL", "LINEUP", "STAT_DRAMA", "CLOSE_UP", "TABLEAU",
     // Legacy layouts
     "INTRO", "SINGLE", "COMPARE", "CAUSE_EFFECT", "CAUSE_EFFECT_CHAIN",
     "ACCUMULATION", "STAT", "CONCLUSION", "CTA", "CUSTOM",
@@ -103,6 +104,14 @@ export function validateSceneTimeline(input: any): ValidationResult {
         if (e.slot && !validSlots.includes(e.slot)) {
           warnings.push(`${ep} unknown slot "${e.slot}"`);
         }
+        if (e.anchor) {
+          const anchors = STAGE_ANCHORS[scene.backgroundSrc ?? ""];
+          if (!anchors) {
+            errors.push(`${ep} anchor "${e.anchor}" nhưng backgroundSrc không phải stage set (assets/scenes/*)`);
+          } else if (!anchors[e.anchor]) {
+            errors.push(`${ep} anchor "${e.anchor}" không tồn tại trong stage — có: ${Object.keys(anchors).join(", ")}`);
+          }
+        }
         if (e.position) {
           if (typeof e.position.x !== "number" || e.position.x < 0 || e.position.x > 1) {
             warnings.push(`${ep} position.x out of [0,1]`);
@@ -110,6 +119,26 @@ export function validateSceneTimeline(input: any): ValidationResult {
           if (typeof e.position.y !== "number" || e.position.y < 0 || e.position.y > 1) {
             warnings.push(`${ep} position.y out of [0,1]`);
           }
+        }
+      }
+    }
+
+    if (Array.isArray(scene.speechBubbles)) {
+      const entityIds = new Set(
+        (Array.isArray(scene.entities) ? scene.entities : []).map((e: any) => e.assetId)
+      );
+      for (let bi = 0; bi < scene.speechBubbles.length; bi++) {
+        const b = scene.speechBubbles[bi];
+        const bp = `${sp} speechBubble[${bi}]:`;
+        if (!b.id) errors.push(`${bp} missing id`);
+        if (!b.text) errors.push(`${bp} missing text`);
+        if (!b.anchorAssetId) {
+          errors.push(`${bp} missing anchorAssetId`);
+        } else if (!entityIds.has(b.anchorAssetId)) {
+          errors.push(`${bp} anchorAssetId "${b.anchorAssetId}" không khớp entity nào trong scene`);
+        }
+        if (b.text && b.text.split(/\s+/).length > 12) {
+          warnings.push(`${bp} thoại ${b.text.split(/\s+/).length} từ — nên ≤8 từ cho dễ đọc`);
         }
       }
     }

@@ -63,6 +63,34 @@ export function buildSystemPrompt(assetList: string[], durationSeconds: number):
 - **PROP TRONG TAY/TẦM NHÌN:** khi narration nhắc danh từ có prop tương ứng (tiền, bằng cấp, cúp, nhà...) → prop xuất hiện ngay, mèo nhìn/chỉ vào prop (mèo x=0.38, prop x=0.65). Mèo đứng tay không suốt scene = SAI.
 - **MỞ MÀN PHẢI SÁNG:** scene 1 không dùng fadeBlack/nền tối; 3 giây đầu phải thấy rõ nhân vật + tiêu đề.
 
+## 🎭 V5 — 5 THANH GHI HÌNH ẢNH (từ phân tích 72 frame video mẫu — QUAN TRỌNG NHẤT SAU V4)
+
+Video mẫu không lặp 1 khuôn: nó LUÂN PHIÊN 5 "thanh ghi" (register). Mỗi 10 scene phải đủ quota:
+
+1. **TABLEAU (sân khấu — ưu tiên cao nhất khi có bối cảnh):** nhân vật THUỘC VỀ khung cảnh — ngồi bàn ăn, nằm giường, ngồi sofa — không đứng lơ lửng trước nền. Dùng \`layout: "TABLEAU"\` + stage set + \`anchor\` + ≥1 speechBubble thoại:
+   | backgroundSrc (stage) | anchors có sẵn | Dùng khi |
+   |---|---|---|
+   | \`assets/scenes/bedroom.svg\` | \`bed\` (nằm trên giường), \`floor\` | lười biếng, ngủ nướng, cô đơn, suy nghĩ đêm |
+   | \`assets/scenes/living_room.svg\` | \`sofa_left\`, \`sofa_right\`, \`floor_left\` | xem TV, tán gẫu, gia đình thư giãn |
+   | \`assets/scenes/dinner_table.svg\` | \`seat_left\`, \`seat_right\`, \`seat_center\` | bữa cơm gia đình, bị bố mẹ giục cưới, họp mặt |
+   Entity chỉ cần \`{ "assetId": "cat_a", "src": "characters/cat_sad", "anchor": "bed" }\` — hệ thống tự đặt vị trí + scale khớp nội thất. KHÔNG set position/scale khi đã có anchor.
+2. **EVIDENCE (≥1/10 scene):** số liệu/trích dẫn quan trọng → \`paperCards\` (variant "evidence" — bài báo có highlight) hoặc \`frameBoxes\` (khung TV chiếu ảnh/stat). KHÔNG chỉ đọc con số — phải CHIẾU nó.
+3. **DIAGRAM (≥1/10 scene):** quan hệ giữa các bên → ≥2 mèo badge số + mũi tên \`ui/arrow_*\` nối chúng, hoặc cặp icon ghép nghĩa. Diễn cấu trúc ý bằng hình, không bằng lời.
+4. **BEAT (≥1/10 scene):** khoảnh khắc cảm xúc → ảnh full-bleed chạy solo 3-5s KHÔNG mèo, KHÔNG text overlay (chỉ phụ đề). Để hình tự nói.
+5. **SOLO (≤4/10 scene):** mèo to độc thoại + 1 keyword text — CHỈ cho lời bình trực tiếp với khán giả.
+
+**CASTING TABLE (bắt buộc cho video có >1 vai):** trước khi viết scene, chọn dàn vai cố định — vai nào costume nào + badge số nào (vd: "chàng trai" = \`characters/cat\` badge "1", "cô gái lý tưởng" = \`characters/cat_mom\` badge "5"). GIỮ NGUYÊN suốt video — người xem nhận diện nhân vật qua costume+số.
+
+**SPEECH-BUBBLE-FIRST:** mọi câu narration là LỜI THOẠI của một nhân vật (hỏi, đáp, cà khịa) → dùng \`speechBubbles\` với chính câu đó rút gọn ≤8 từ. Scene DIALOGUE không có bubble = SAI.
+
+**KEYWORD TYPOGRAPHY:** mỗi con số/từ khóa shock trong narration → 1 text STAT hoặc CALLOUT ≤4 từ, chữ to có màu (vd "~600 triệu người", "x1000"). Số chỉ được đọc mà không được thấy = SAI.
+
+**CẤM TUYỆT ĐỐI (V5):**
+- KHÔNG ghi field \`scale\` cho \`characters/*\` — compiler tự scale theo layout. Tự set scale nhỏ = mèo tí hon trôi giữa khoảng trắng (lỗi nặng nhất của video hỏng).
+- KHÔNG viết text kết thúc bằng "…" — câu bị cắt cụt đọc như lỗi render. Viết ngắn TRỌN Ý.
+- KHÔNG đặt BODY text ở vùng đầu màn hình (y<0.3) — vùng đó là của TITLE/CALLOUT.
+- Brand/tổ chức có thật (Tinder, Samsung...) → KHÔNG bịa logo; dùng paperCard/frameBox ghi tên bằng chữ.
+
 ## 🎬 NGÔN NGỮ ĐIỆN ẢNH (nâng chất lượng VƯỢT video mẫu)
 1. **COLD OPEN (hook 0-5s):** câu ĐẦU TIÊN của video phải là con số shock nhất hoặc câu hỏi đau nhất của toàn bộ script — không chào hỏi, không giới thiệu kênh. Nếu script gốc mở đầu chậm → ĐẢO cấu trúc: lấy climax ra trước làm teaser 1 câu, rồi mới kể từ đầu.
 2. **CẤU TRÚC 3 HỒI:** Hồi 1 (0-25%) đặt vấn đề + nhân vật; Hồi 2 (25-70%) đào sâu, mỗi scene phải LẬT một góc nhìn mới; CLIMAX (STAT_DRAMA / twist) đặt ở 60-75% thời lượng; Hồi 3 chốt insight + CTA.
@@ -183,6 +211,9 @@ Trả về JSON theo cấu trúc **SceneTimeline**:
 
   "entities": [ ...SceneEntity[] ],
   "texts": [ ...SceneText[] ],
+  "speechBubbles": [ ...SceneSpeechBubble[] ],
+  "paperCards": [ ...ScenePaperCard[] ],
+  "frameBoxes": [ ...SceneFrameBox[] ],
 
   "camera": { ...SceneCameraHint? },
   "transition": { "style": "flash", "duration": 15 },
@@ -759,6 +790,18 @@ zoomIn      — CHỈ dùng cho STAT drama reveal (số liệu sốc)
   { "id": "tv1", "contentSrc": "data/world_birthrate.png", "caption": "Tỉ lệ sinh theo quốc gia", "delay": 10 }
 ]
 \`\`\`
+
+**Speech bubble (thoại — thiết bị dạy CHÍNH của kênh)** — thêm vào \`scene.speechBubbles\`:
+\`\`\`json
+"speechBubbles": [
+  { "id": "b1", "anchorAssetId": "cat_a", "text": "Mày có dây chăm con chưa?", "direction": "right", "delay": 10, "duration": 90 },
+  { "id": "b2", "anchorAssetId": "cat_b", "text": "Chưa. Sợ lắm.", "style": "speech", "direction": "left", "delay": 110, "duration": 80 }
+]
+\`\`\`
+- \`anchorAssetId\` = assetId của mèo đang nói (bubble tự bám theo nhân vật).
+- \`text\` ≤ 8 từ — là LỜI THOẠI, không phải tóm tắt.
+- 2 mèo đối đáp: bubble sau \`delay\` = khi bubble trước biến mất (tuần tự, không chồng).
+- \`style\`: "speech" (nói), "thought" (nghĩ), "shout" (hét — cho câu sốc).
 
 **Badge số trên nhân vật** — thêm \`badge\` vào entity (game theory ranking):
 \`\`\`json

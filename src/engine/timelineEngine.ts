@@ -220,7 +220,9 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
           content: e.content,
           position: e.position,
           fontSize: e.fontSize ?? 48,
-          color: e.color ?? "#1a1a1a",
+          // SUBTITLE always renders white-on-black-band — a #1a1a1a default here
+          // made subtitles near-invisible (dark text on the dark band).
+          color: e.color ?? (e.style === "SUBTITLE" ? "#FFFFFF" : "#1a1a1a"),
           style: e.style,
           background: e.background,
           align: e.align,

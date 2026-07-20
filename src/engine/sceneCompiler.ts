@@ -5,6 +5,7 @@ import {
   SceneText,
   ScenePaperCard,
   SceneFrameBox,
+  SceneSpeechBubble,
   LayoutPreset,
   SLOT_POSITIONS,
   TEXT_SLOT_POSITIONS,
@@ -23,7 +24,9 @@ import {
   BackgroundEvent,
   PaperCardEvent,
   FrameBoxEvent,
+  SpeechBubbleEvent,
 } from "../types/timeline";
+import { isStageBackground, resolveStageAnchor } from "./stageAnchors";
 
 // ============================================================
 // SceneCompiler — translates SceneTimeline → Timeline (events)
@@ -63,8 +66,12 @@ function compileScene(
   // planted dead-center over the subject turns the photo into meaningless
   // wallpaper. Detect photo backgrounds here so entity compilation can shove
   // characters into a small corner (scale-capped) instead of centering them.
+  // Illustrated stage sets (assets/scenes/*) are NOT photos: characters live
+  // INSIDE them at anchors, so no blur/scrim/corner-shove applies.
+  const sceneBgIsStage = isStageBackground(scene.backgroundSrc);
   const sceneBgIsPhoto =
     !!scene.backgroundSrc &&
+    !sceneBgIsStage &&
     !scene.backgroundSrc.startsWith("#") &&
     !scene.backgroundSrc.startsWith("rgb") &&
     !scene.backgroundSrc.startsWith("linear-gradient") &&
@@ -108,6 +115,7 @@ function compileScene(
     // Photo backgrounds (not a hex/gradient) get a gentle default blur + scrim so the
     // flat 2D characters pop and overlay text stays legible — matches the reference video.
     const isPhoto =
+      !sceneBgIsStage &&
       !scene.backgroundSrc.startsWith("#") &&
       !scene.backgroundSrc.startsWith("rgb") &&
       !scene.backgroundSrc.startsWith("linear-gradient") &&
@@ -183,6 +191,13 @@ function compileScene(
     }
   }
 
+  // ── 5d. Speech bubbles (dialogue lines above characters) ──
+  if (scene.speechBubbles) {
+    for (const sb of scene.speechBubbles) {
+      compileSpeechBubble(sb, start, sceneEnd, events, totalFrames, transitionDur);
+    }
+  }
+
   // ── 6. Camera ─────────────────────────────────────────────
   if (scene.camera) {
     compileCamera(scene.camera, scene, start, events);
@@ -199,9 +214,12 @@ function compileEntity(
   transitionDur: number = 0,
   bgIsPhoto: boolean = false
 ): void {
-  // Resolve position
+  // Resolve position. Priority: stage anchor > explicit position > slot > layout.
+  const stageAnchor = resolveStageAnchor(scene.backgroundSrc, entity.anchor);
   let position: { x: number; y: number };
-  if (entity.position) {
+  if (stageAnchor) {
+    position = { x: stageAnchor.x, y: stageAnchor.y };
+  } else if (entity.position) {
     position = entity.position;
   } else if (entity.slot) {
     position = SLOT_POSITIONS[entity.slot];
@@ -213,13 +231,31 @@ function compileEntity(
   }
 
   // Resolve scale up front so V4.1 photo-composition can cap it.
-  let scale = entity.scale ?? defaultScaleForLayout(scene.layout, entityIndex);
+  // A stage anchor carries its own tuned scale (cat must FIT the furniture).
+  let scale =
+    stageAnchor?.scale ?? entity.scale ?? defaultScaleForLayout(scene.layout, entityIndex);
+
+  // Anti-tiny-cat clamp: AI-generated timelines sometimes hand-write small
+  // scales (0.5–1.2) on characters, overriding auto-scale and leaving a
+  // thumbnail-sized cat adrift in whitespace (video-003 had 48 such fields).
+  // Characters must fill the frame like the reference — if the AI asks for
+  // less than 1.4 on a character, fall back to the layout's auto-scale.
+  if (
+    !stageAnchor &&
+    entity.scale !== undefined &&
+    entity.scale < 1.4 &&
+    entity.src.startsWith("characters/")
+  ) {
+    scale = defaultScaleForLayout(scene.layout, entityIndex);
+  }
 
   // V4.1 enforcement — on a full-bleed photo, characters must NOT cover the
   // subject. Unless the AI explicitly pinned this entity (entity.position set),
   // shove it into a bottom corner and cap its size so the photo reads first.
   // Corners alternate by index so two cats don't stack.
-  if (bgIsPhoto && !entity.position) {
+  if (stageAnchor) {
+    // Anchored to stage furniture — composition is pre-tuned, leave it alone.
+  } else if (bgIsPhoto && !entity.position) {
     const PHOTO_MAX_SCALE = 1.2;
     scale = Math.min(scale, PHOTO_MAX_SCALE);
     const corners = [
@@ -310,6 +346,15 @@ function compileText(
     position = { x: position.x, y: 0.72 };
   }
 
+  // Naked BODY sentences floating in the top band read as unstyled debris
+  // (video-003 opened scenes with bare "In reality, many people rush toward
+  // the top…" at y≈0.1). The top band is TITLE/CALLOUT territory — promote
+  // stray BODY text there to a CALLOUT pill so it gets real styling.
+  let style = text.style;
+  if (style === "BODY" && position.y < 0.3) {
+    style = "CALLOUT";
+  }
+
   const textFrame = sceneStart + transitionDur + (text.delay ?? 0);
 
   // Compute exitFrame
@@ -334,8 +379,8 @@ function compileText(
   const isDarkBg = bg
     ? isDarkBackground(bg) || bgIsPhoto
     : false;
-  const autoColor = isDarkBg && text.style !== "STAT"
-    ? (text.style === "BODY" ? "#E0E0E0" : text.style === "CAPTION" ? "#B0BEC5" : "#FFFFFF")
+  const autoColor = isDarkBg && style !== "STAT"
+    ? (style === "BODY" ? "#E0E0E0" : style === "CAPTION" ? "#B0BEC5" : "#FFFFFF")
     : undefined;
 
   // An explicit text.color from the scene JSON always wins — auto-color is
@@ -348,7 +393,7 @@ function compileText(
     textId: text.id,
     content: text.content,
     position,
-    style: text.style,
+    style,
     color: resolvedColor,
     background: text.background,
     align: text.align ?? "center",
@@ -418,6 +463,7 @@ function compileSubtitles(
       content: chunks[i],
       position: { x: 0.5, y: 0.9 },
       style: "SUBTITLE",
+      color: "#FFFFFF", // burned-in caption is ALWAYS white — never auto-colored
       align: "center",
       animation: "fadeIn",
       exitFrame,
@@ -462,6 +508,34 @@ function compilePaperCard(
     exitFrame,
     width: pc.width ?? autoWidth,
   } as PaperCardEvent);
+}
+
+// Dialogue lines above characters — the reference's primary teaching device.
+// Sequenced bubbles (delay/duration) let two cats trade lines within a scene.
+function compileSpeechBubble(
+  sb: SceneSpeechBubble,
+  sceneStart: number,
+  sceneEnd: number,
+  events: TimelineEvent[],
+  totalFrames: number,
+  transitionDur: number
+): void {
+  const frame = sceneStart + transitionDur + (sb.delay ?? 0);
+  const exitFrame =
+    sb.duration !== undefined
+      ? Math.min(frame + sb.duration, totalFrames - 1)
+      : Math.min(sceneEnd - 5, totalFrames - 1);
+
+  events.push({
+    frame,
+    type: "speechBubble",
+    bubbleId: sb.id,
+    anchorAssetId: sb.anchorAssetId,
+    text: sb.text,
+    style: sb.style ?? "speech",
+    direction: sb.direction ?? "right",
+    exitFrame,
+  } as SpeechBubbleEvent);
 }
 
 function compileFrameBox(
@@ -630,6 +704,8 @@ function defaultScaleForLayout(layout: LayoutPreset, entityIndex: number): numbe
     case "INTRO":
     case "CLOSE_UP":
       return 3.0;
+    case "TABLEAU":
+      return 1.5; // fits stage furniture; anchors carry their own tuned scale
     case "DIALOGUE":
     case "DUAL_CONTRAST":
     case "COMPARE":
