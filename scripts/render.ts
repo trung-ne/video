@@ -9,8 +9,8 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { compileScenes } from "../src/engine/sceneCompiler";
-import { injectLiveliness, printLivelinessReport } from "../src/engine/liveliness";
+import { loadTimeline } from "../src/engine/loadTimeline";
+import { printLivelinessReport } from "../src/engine/liveliness";
 
 const args = process.argv.slice(2);
 
@@ -30,9 +30,7 @@ if (!fs.existsSync(timelinePath)) {
 }
 
 const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
-const timeline = raw.scenes ? compileScenes(raw) : raw;
 
-// Inject continuous micro-variation so long holds never sit still (reference style).
 // Scan which cat poses actually exist so pose-swaps never reference a missing asset.
 const charDir = path.join(process.cwd(), "public", "assets", "characters");
 const availablePoses = new Set<string>();
@@ -41,8 +39,10 @@ if (fs.existsSync(charDir)) {
     if (f.endsWith(".svg")) availablePoses.add(`characters/${f.replace(".svg", "")}`);
   }
 }
-const livelinessReport = injectLiveliness(timeline, { availablePoses });
-printLivelinessReport(livelinessReport);
+
+// Single compile point — scenes → events + liveliness (shared with preview).
+const { timeline, liveliness } = loadTimeline(raw, availablePoses);
+printLivelinessReport(liveliness);
 
 console.log(`✅ Timeline loaded: ${timelinePath}`);
 console.log(`   Duration: ${timeline.durationInFrames} frames @ ${timeline.fps}fps`);

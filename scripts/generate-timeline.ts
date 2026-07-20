@@ -502,33 +502,18 @@ async function main() {
     printBackgroundFixReport(bgReport);
   }
 
-  // // [SCENE_COMPILER] Tạm comment — AI hiện generate raw events trực tiếp (video-002 pattern)
-  // // Mở lại nếu muốn dùng SceneTimeline → SceneCompiler pipeline
-  // let compiled = timeline;
-  // if (Array.isArray(timeline.scenes)) {
-  //   console.log(`\n⚙️  Compiling ${timeline.scenes.length} scenes → events...`);
-  //   try {
-  //     compiled = compileScenes(timeline);
-  //     console.log(`   ✅ Compiled: ${compiled.events.length} events`);
-  //   } catch (e: any) {
-  //     console.error(`❌ Scene compile failed: ${e.message}`);
-  //     process.exit(1);
-  //   }
-  // }
-  // // Save raw SceneTimeline for reference
-  // if (Array.isArray(timeline.scenes)) {
-  //   const scenePath = outPath.replace(".json", "_scenes.json");
-  //   fs.writeFileSync(scenePath, JSON.stringify(timeline, null, 2));
-  //   console.log(`   SceneTimeline lưu: ${scenePath}`);
-  // }
-  const compiled = timeline;
+  // NOTE: The persisted artifact is ALWAYS a SceneTimeline (`scenes[]`) — the
+  // single authored format. scenes → events compilation is NOT done here; it
+  // happens at exactly one shared point (src/engine/loadTimeline.ts) used by
+  // both preview (Root.tsx) and render (scripts/render.ts). Never write events.
+  const authored = timeline;
 
   // Step 6: Validate schema + quality check
-  const validation = validateTimeline(compiled);
+  const validation = validateTimeline(authored);
   printValidationResult(validation, outPath);
 
-  if (Array.isArray(compiled.scenes)) {
-    const qReport = runQualityCheck(compiled, outPath);
+  if (Array.isArray(authored.scenes)) {
+    const qReport = runQualityCheck(authored, outPath);
     printQualityReport(qReport);
   }
 
@@ -536,11 +521,11 @@ async function main() {
     console.error("\n⚠️  Timeline có lỗi nhưng vẫn lưu để bạn xem xét...");
   }
 
-  // Step 7: Save compiled timeline (ready for Remotion)
-  fs.writeFileSync(outPath, JSON.stringify(compiled, null, 2));
+  // Step 7: Save the SceneTimeline (loadTimeline compiles it at preview/render).
+  fs.writeFileSync(outPath, JSON.stringify(authored, null, 2));
   console.log(`\n💾 Timeline đã lưu: ${outPath}`);
-  console.log(`   Events: ${compiled.events?.length ?? 0}`);
-  console.log(`   Duration: ${compiled.durationInFrames} frames`);
+  console.log(`   Scenes: ${authored.scenes?.length ?? 0}`);
+  console.log(`   Duration: ${authored.durationInFrames} frames`);
 
   console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

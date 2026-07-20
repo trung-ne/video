@@ -133,11 +133,16 @@ $env:ANTHROPIC_API_KEY = "sk-ant-..."
 Transcript/Idea
     ↓
 Claude AI (systemPrompt.ts)
-    ↓ SceneTimeline JSON (scenes[])
-SceneCompiler (sceneCompiler.ts)
-    ↓ Timeline JSON (events[])
+    ↓ SceneTimeline JSON (scenes[])   ← ĐÂY LÀ FILE DUY NHẤT ĐƯỢC LƯU & CHỈNH SỬA
+loadTimeline() (src/engine/loadTimeline.ts)  ← điểm compile DUY NHẤT
+    ↓ Timeline (events[]) — TRANSIENT, chỉ tồn tại trong bộ nhớ, KHÔNG lưu ra file
 Remotion → MP4
 ```
+
+**⚠️ MỘT FLOW DUY NHẤT (bắt buộc):** `scenes[]` là định dạng authored duy nhất. Mọi thứ ngữ nghĩa (AI gen, layout presets, `validateTimeline`, `qualityCheck`, `/edit-timeline`) đều thao tác trên `scenes[]`. `events[]` chỉ là đích compile tạm thời.
+- Compile `scenes → events` xảy ra ở **đúng 1 nơi**: [loadTimeline.ts](src/engine/loadTimeline.ts) (gọi `compileScenes` + `injectLiveliness`).
+- Cả **preview** ([Root.tsx](src/Root.tsx)) lẫn **render** ([render.ts](scripts/render.ts)) đều đi qua `loadTimeline()` → xem đúng cái sẽ render.
+- **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. `generate-timeline.ts` chỉ ghi `scenes[]`.
 
 **SceneTimeline** (format AI tạo ra):
 - Mỗi `scene` có `backgroundSrc`, `layout`, `entities`, `texts`

@@ -2,9 +2,14 @@ import React from "react";
 import { Composition } from "remotion";
 import { CatExplainerVideo } from "./Video";
 import { Timeline } from "./types/timeline";
+import { loadTimeline } from "./engine/loadTimeline";
 import timelineJson from "../timeline.json";
 
-const DEFAULT_TIMELINE: Timeline = timelineJson as unknown as Timeline;
+// Preview goes through the SAME single compile point as scripts/render.ts.
+// timeline.json is a SceneTimeline (`scenes[]`) — loadTimeline compiles it to
+// events so Studio previews exactly what render produces. (No availablePoses in
+// the browser — liveliness allows any pose there.)
+const DEFAULT_TIMELINE: Timeline = loadTimeline(timelineJson).timeline;
 
 export const RemotionRoot: React.FC = () => {
   return (
