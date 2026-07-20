@@ -306,11 +306,12 @@ Gradient/màu phẳng CHỈ hợp lệ cho các scene KHÔNG có bối cảnh kh
 - **Khi dùng:** Nhiều loại người, nhiều trường hợp
 - **Auto scale:** 0.95 mỗi nhân vật, stagger 12 frames
 
-### STAT_DRAMA — Số liệu gây sốc
-- **Khi dùng:** Tiết lộ số liệu bất ngờ, climax argument
+### STAT_DRAMA — Số liệu gây sốc (DÙNG ÍT, CHỈ CHO CLIMAX THẬT SỰ)
+- **Khi dùng:** CHỈ 1 con số/cụm từ NGẮN (≤6 từ) gây sốc thật sự — "100 năm nữa", "0.78 con/phụ nữ". KHÔNG dùng cho scene liệt kê nhiều chính sách/số liệu (đó là EVIDENCE, xem template [EVIDENCE] — dùng paperCards nền trắng, KHÔNG phải STAT_DRAMA nền tối).
 - **clearPrevious:** true (clear màn hình trước)
-- **STAT text:** slot STAT_CENTER, text màu đỏ/trắng
-- **Background:** DARK gradient — SceneCompiler sẽ tự đổi text màu trắng
+- **STAT text:** slot STAT_CENTER, ≤6 từ, text màu đỏ/trắng. Câu dài trong STAT sẽ tự bị compiler thu nhỏ font để không tràn — nhưng ĐỪNG viết câu dài vào STAT, đó là dấu hiệu bạn nên dùng CAPTION/paperCard thay vì STAT.
+- **⚠️ KHÔNG đặt cat ở slot CENTER_MID cùng lúc với STAT_CENTER** — cả hai chiếm cùng vị trí giữa màn hình và sẽ đè lên nhau. Nếu scene có cat, đặt cat ở LEFT_MID hoặc RIGHT_MID, để STAT_CENTER đứng riêng.
+- **Background:** DARK gradient — SceneCompiler sẽ tự đổi text màu trắng. Đây là beat HIẾM (climax, không phải mọi lúc có số liệu) — video không nên đổi qua lại trắng↔tối mỗi scene, giữ trắng cho các đoạn giải thích liên tiếp.
 - **Auto scale cat:** 1.6
 
 ### CLOSE_UP — Cận cảnh cảm xúc
@@ -365,9 +366,9 @@ Một beat mới bắt đầu khi: đổi cảm xúc, đổi chủ đề con, đ
 **TRỤC B — CHỨC NĂNG (lời dẫn ĐANG LÀM GÌ):**
 | Chức năng | Dấu hiệu | → Treatment chính |
 |-----------|----------|-------------------|
-| EVIDENCE | trích dẫn cụ thể, số liệu chính sách, "theo báo cáo" | **CARD bằng chứng** (giấy xé) |
+| EVIDENCE | trích dẫn cụ thể, **NHIỀU** số liệu chính sách, "theo báo cáo" | **CARD bằng chứng** (giấy xé, nền TRẮNG) |
 | DEFINE | định nghĩa khái niệm, "X là..." | SOLO/QA_REVEAL + cat_teacher |
-| STAT | 1 con số gây sốc, "100 năm", "0.78" | STAT_DRAMA |
+| STAT | **ĐÚNG MỘT** con số gây sốc ngắn, "100 năm", "0.78" — KHÔNG phải câu liệt kê chính sách (đó là EVIDENCE ở trên) | STAT_DRAMA (nền tối) |
 | STORY | kể tình huống cụ thể, "giả sử anh A..." | STORY_SCENE (bg thật/ảnh) |
 | COMPARE | so sánh 2 thứ, "trong khi đó" | DUAL_CONTRAST |
 | ASK_AUDIENCE | hỏi khán giả, "giả sử bạn...", "bạn sẽ chọn" | **CARD khảo sát** (checkbox) |
@@ -450,17 +451,18 @@ Nhịp:       120–180 frames (4–6s) — giữ suspense đủ lâu
 ---
 
 ### [STAT_SHOCK] — Tiết lộ số liệu gây sốc
-**Bản chất:** Con số bất ngờ → người xem phải dừng lại, xử lý
+**Bản chất:** MỘT con số bất ngờ, NGẮN → người xem phải dừng lại, xử lý. KHÔNG dùng cho liệt kê nhiều số liệu/chính sách (đó là [EVIDENCE]).
 \`\`\`
 Layout:     STAT_DRAMA
 Background: tối — "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"
-Cat:        cat_surprised — x=0.50, y=0.65 (bottom), scale ĐỂ TRỐNG (auto 2.4)
-Text:       STAT (số lớn, đỏ #FF5252) + CAPTION giải thích ngắn (trắng #B0BEC5)
+Cat:        cat_surprised — slot LEFT_MID (x=0.28, KHÔNG phải x=0.50/CENTER — STAT_CENTER cần chỗ riêng giữa màn hình), scale ĐỂ TRỐNG (auto 2.4)
+Text:       STAT ngắn ≤6 từ (số lớn, đỏ #FF5252) ở STAT_CENTER + CAPTION giải thích ngắn (trắng #B0BEC5)
 Transition: flash hoặc fadeBlack TRƯỚC scene này
 clearPrevious: true (màn hình sạch để số liệu nổi)
 Nhịp:       150–210 frames (5–7s) — để sốc ngấm
 \`\`\`
-*Ví dụ: "0.78" | "100 năm" | "40 triệu người"*
+*Ví dụ ĐÚNG: STAT="0.78" | STAT="100 năm" | STAT="40 triệu người"*
+*Ví dụ SAI (đừng làm): STAT="Hungary: đẻ 4 con, miễn thuế TNCN cả đời" — đây là EVIDENCE dài, không phải STAT ngắn; nhét vào STAT_DRAMA sẽ tràn chữ đè lên cat.*
 
 ---
 

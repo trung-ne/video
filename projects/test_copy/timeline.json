@@ -2,1260 +2,238 @@
   "fps": 30,
   "width": 1920,
   "height": 1080,
-  "durationInFrames": 3000,
-  "audio": "audio/voice.mp3",
+  "durationInFrames": 4219,
   "background": "#FAFAF8",
-  "events": [
-    {
-      "frame": 0,
-      "type": "background",
-      "src": "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 0,
-      "type": "enter",
-      "assetId": "cat_hook",
-      "src": "characters/cat_shrug",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 3,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 0,
-      "type": "text",
-      "textId": "cold_open__sub_0",
-      "content": "Chính phủ cho tiền tỷ mà người ta vẫn",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 105
-    },
-    {
-      "frame": 15,
-      "type": "text",
-      "textId": "title_hook",
-      "content": "Cho tiền vẫn không đẻ?",
-      "position": {
-        "x": 0.5,
-        "y": 0.12
-      },
-      "style": "TITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 185
-    },
-    {
-      "frame": 90,
-      "type": "emphasize",
-      "assetId": "cat_hook",
-      "animation": "bounce",
-      "duration": 25
-    },
-    {
-      "frame": 105,
-      "type": "text",
-      "textId": "cold_open__sub_1",
-      "content": "không chịu đẻ. Tại sao?",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 210
-    },
-    {
-      "frame": 210,
-      "type": "background",
-      "src": "#FFFFFF",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 225,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 225,
-      "type": "enter",
-      "assetId": "cat_evidence",
-      "src": "characters/cat_explain",
-      "position": {
-        "x": 0.35,
-        "y": 0.75
-      },
-      "scale": 2.6,
-      "animation": "fadeIn",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 225,
-      "type": "text",
-      "textId": "evidence_policy__sub_0",
-      "content": "Ở Hàn Quốc, đẻ một đứa con được 40",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 278
-    },
-    {
-      "frame": 235,
-      "type": "paperCard",
-      "cardId": "ev1",
-      "variant": "evidence",
-      "position": {
-        "x": 0.5,
-        "y": 0.42
-      },
-      "body": "Hàn Quốc: trợ cấp 40 triệu VND/con. Hungary: miễn thuế thu nhập cả đời cho mẹ sinh 4 con. Nhật Bản: lập cơ quan riêng lo trẻ em và gia đình.",
-      "animation": "popIn",
-      "exitFrame": 535
-    },
-    {
-      "frame": 278,
-      "type": "text",
-      "textId": "evidence_policy__sub_1",
-      "content": "triệu tiền mình. Hungary còn chơi lớn hơn,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 330
-    },
-    {
-      "frame": 330,
-      "type": "text",
-      "textId": "evidence_policy__sub_2",
-      "content": "phụ nữ đẻ từ bốn đứa trở lên được",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 383
-    },
-    {
-      "frame": 383,
-      "type": "text",
-      "textId": "evidence_policy__sub_3",
-      "content": "miễn thuế thu nhập cá nhân suốt đời.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 435
-    },
-    {
-      "frame": 435,
-      "type": "text",
-      "textId": "evidence_policy__sub_4",
-      "content": "Nhật Bản thì lập hẳn một cơ quan chuyên",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 488
-    },
-    {
-      "frame": 488,
-      "type": "text",
-      "textId": "evidence_policy__sub_5",
-      "content": "lo trẻ em và gia đình.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 540
-    },
-    {
-      "frame": 540,
-      "type": "transition",
-      "style": "flash",
-      "duration": 15
-    },
-    {
-      "frame": 540,
-      "type": "background",
-      "src": "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 555,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 555,
-      "type": "enter",
-      "assetId": "cat_shock",
-      "src": "characters/cat_surprised",
-      "position": {
-        "x": 0.5,
-        "y": 0.65
-      },
-      "scale": 2.4,
-      "animation": "zoomIn",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 555,
-      "type": "text",
-      "textId": "paradox_reveal__sub_0",
-      "content": "Cơ mà ở mấy nước này,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 653
-    },
-    {
-      "frame": 575,
-      "type": "text",
-      "textId": "stat_paradox",
-      "content": "Tỉ lệ sinh vẫn giảm",
-      "position": {
-        "x": 0.5,
-        "y": 0.45
-      },
-      "style": "STAT",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 745
-    },
-    {
-      "frame": 653,
-      "type": "text",
-      "textId": "paradox_reveal__sub_1",
-      "content": "tỉ lệ sinh vẫn giảm.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 750
-    },
-    {
-      "frame": 750,
-      "type": "background",
-      "src": "#FFFFFF",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 765,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 765,
-      "type": "enter",
-      "assetId": "cat_curious",
-      "src": "characters/cat_think",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 2.8,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 765,
-      "type": "text",
-      "textId": "question_why__sub_0",
-      "content": "Tại sao cứ cho tiền mà người ta vẫn",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 810
-    },
-    {
-      "frame": 785,
-      "type": "enter",
-      "assetId": "thought1",
-      "src": "props/thought_bubble",
-      "position": {
-        "x": 0.72,
-        "y": 0.32
-      },
-      "scale": 0.9,
-      "animation": "fadeIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 810,
-      "type": "text",
-      "textId": "question_why__sub_1",
-      "content": "không chịu đẻ nhỉ? Logic bình thường thì chắc",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 855
-    },
-    {
-      "frame": 855,
-      "type": "text",
-      "textId": "question_why__sub_2",
-      "content": "tại nghèo mới không dám đẻ,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 900
-    },
-    {
-      "frame": 885,
-      "type": "emphasize",
-      "assetId": "cat_curious",
-      "animation": "pulse",
-      "duration": 20
-    },
-    {
-      "frame": 900,
-      "type": "text",
-      "textId": "question_why__sub_3",
-      "content": "có tiền rồi thì càng phải đẻ đúng không?",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 945
-    },
-    {
-      "frame": 945,
-      "type": "text",
-      "textId": "question_why__sub_4",
-      "content": "Ngày xưa nghèo còn đẻ nhiều thế cơ mà.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 990
-    },
-    {
-      "frame": 990,
-      "type": "background",
-      "src": "#FAFAF8",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 1005,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 1005,
-      "type": "enter",
-      "assetId": "cat_a2",
-      "src": "characters/cat_talk",
-      "position": {
-        "x": 0.28,
-        "y": 0.52
-      },
-      "scale": 2.3,
-      "animation": "slideRight",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 1005,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_0",
-      "content": "Để giải thích được cái này,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1046
-    },
-    {
-      "frame": 1020,
-      "type": "enter",
-      "assetId": "cat_b2",
-      "src": "characters/cat_shrug",
-      "position": {
-        "x": 0.72,
-        "y": 0.52
-      },
-      "scale": 2.3,
-      "animation": "slideLeft",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 1046,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_1",
-      "content": "chúng ta phải quay về bước đầu tiên của",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1086
-    },
-    {
-      "frame": 1065,
-      "type": "text",
-      "textId": "callout_dating",
-      "content": "App đầy mà vẫn ế?",
-      "position": {
-        "x": 0.75,
-        "y": 0.2
-      },
-      "style": "CALLOUT",
-      "background": "#F2994A",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1265
-    },
-    {
-      "frame": 1086,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_2",
-      "content": "lập gia đình là hẹn hò.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1127
-    },
-    {
-      "frame": 1127,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_3",
-      "content": "Chúng ta sẽ dùng lý thuyết trò chơi để",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1168
-    },
-    {
-      "frame": 1168,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_4",
-      "content": "giải thích vì sao hẹn hò ngày càng khó,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1209
-    },
-    {
-      "frame": 1170,
-      "type": "emphasize",
-      "assetId": "cat_b2",
-      "animation": "pulse",
-      "duration": 20
-    },
-    {
-      "frame": 1209,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_5",
-      "content": "tại sao app hẹn hò thì đầy mà người",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1249
-    },
-    {
-      "frame": 1249,
-      "type": "text",
-      "textId": "teaser_gametheory__sub_6",
-      "content": "ta vẫn ế.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1290
-    },
-    {
-      "frame": 1290,
-      "type": "transition",
-      "style": "flash",
-      "duration": 15
-    },
-    {
-      "frame": 1290,
-      "type": "background",
-      "src": "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 1305,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 1305,
-      "type": "enter",
-      "assetId": "cat_sad_stat",
-      "src": "characters/cat_sad",
-      "position": {
-        "x": 0.5,
-        "y": 0.65
-      },
-      "scale": 2.4,
-      "animation": "zoomIn",
-      "animationDuration": 18,
-      "zIndex": 2
-    },
-    {
-      "frame": 1305,
-      "type": "text",
-      "textId": "stakes_100years__sub_0",
-      "content": "Và với cái đà không ai cưới nhau,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1370
-    },
-    {
-      "frame": 1325,
-      "type": "text",
-      "textId": "stat_100y",
-      "content": "100 năm nữa",
-      "position": {
-        "x": 0.5,
-        "y": 0.45
-      },
-      "style": "STAT",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1495
-    },
-    {
-      "frame": 1370,
-      "type": "text",
-      "textId": "stakes_100years__sub_1",
-      "content": "không ai đẻ này thì nhiều quốc gia sẽ",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1435
-    },
-    {
-      "frame": 1435,
-      "type": "text",
-      "textId": "stakes_100years__sub_2",
-      "content": "biến mất trong vòng 100 năm nữa.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1500
-    },
-    {
-      "frame": 1500,
-      "type": "background",
-      "src": "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 1515,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 1515,
-      "type": "enter",
-      "assetId": "cat_welcome",
-      "src": "characters/cat_happy",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 3,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1515,
-      "type": "text",
-      "textId": "channel_intro__sub_0",
-      "content": "Chào mừng các bạn đến với series chuyển thể",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1568
-    },
-    {
-      "frame": 1535,
-      "type": "text",
-      "textId": "section_series",
-      "content": "Series: Lý thuyết trò chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.15
-      },
-      "style": "SECTION",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1815
-    },
-    {
-      "frame": 1568,
-      "type": "text",
-      "textId": "channel_intro__sub_1",
-      "content": "của Mèo giải thích. Chúng tôi chuyển thể những",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1620
-    },
-    {
-      "frame": 1615,
-      "type": "emphasize",
-      "assetId": "cat_welcome",
-      "animation": "bounce",
-      "duration": 25
-    },
-    {
-      "frame": 1620,
-      "type": "text",
-      "textId": "channel_intro__sub_2",
-      "content": "video hay của nước ngoài sang tiếng Việt cho",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1673
-    },
-    {
-      "frame": 1673,
-      "type": "text",
-      "textId": "channel_intro__sub_3",
-      "content": "anh em cùng tham khảo. Series đầu tiên là",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1725
-    },
-    {
-      "frame": 1725,
-      "type": "text",
-      "textId": "channel_intro__sub_4",
-      "content": "lý thuyết trò chơi, dựa theo kênh Predictive History,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1778
-    },
-    {
-      "frame": 1778,
-      "type": "text",
-      "textId": "channel_intro__sub_5",
-      "content": "thêm ý kiến phản biện của cá nhân.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1830
-    },
-    {
-      "frame": 1830,
-      "type": "background",
-      "src": "#FFFFFF",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 1845,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 1845,
-      "type": "enter",
-      "assetId": "cat_teach",
-      "src": "characters/cat_teacher",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 3,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 1845,
-      "type": "text",
-      "textId": "gametheory_intro__sub_0",
-      "content": "Bắt đầu thôi. Đầu tiên nói một chút về",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 1930
-    },
-    {
-      "frame": 1865,
-      "type": "text",
-      "textId": "title_gametheory",
-      "content": "Lý thuyết trò chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.12
-      },
-      "style": "TITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2095
-    },
-    {
-      "frame": 1930,
-      "type": "text",
-      "textId": "gametheory_intro__sub_1",
-      "content": "lý thuyết trò chơi. Bất kỳ trò chơi nào",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2015
-    },
-    {
-      "frame": 2015,
-      "type": "text",
-      "textId": "gametheory_intro__sub_2",
-      "content": "cũng có ba phần.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2100
-    },
-    {
-      "frame": 2100,
-      "type": "background",
-      "src": "#FFFFFF",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 2115,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 2115,
-      "type": "text",
-      "textId": "teach3_parts__sub_0",
-      "content": "Người chơi là đối tượng tham gia,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2184
-    },
-    {
-      "frame": 2125,
-      "type": "enter",
-      "assetId": "icon_players",
-      "src": "person/01-flat-bold-color",
-      "position": {
-        "x": 0.22,
-        "y": 0.42
-      },
-      "scale": 1.4,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "circle": "#E3F2FD",
-      "zIndex": 2
-    },
-    {
-      "frame": 2125,
-      "type": "text",
-      "textId": "header_3parts",
-      "content": "Ba phần của trò chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.15
-      },
-      "style": "SECTION",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2465
-    },
-    {
-      "frame": 2155,
-      "type": "text",
-      "textId": "label_players",
-      "content": "Người chơi",
-      "position": {
-        "x": 0.22,
-        "y": 0.62
-      },
-      "style": "CALLOUT",
-      "background": "#2D9CDB",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2465
-    },
-    {
-      "frame": 2184,
-      "type": "text",
-      "textId": "teach3_parts__sub_1",
-      "content": "luật chơi là những ràng buộc và giới hạn",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2253
-    },
-    {
-      "frame": 2185,
-      "type": "enter",
-      "assetId": "icon_rules",
-      "src": "props/concept_card",
-      "position": {
-        "x": 0.5,
-        "y": 0.42
-      },
-      "scale": 1.4,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "circle": "#FFF3E0",
-      "zIndex": 2
-    },
-    {
-      "frame": 2215,
-      "type": "text",
-      "textId": "label_rules",
-      "content": "Luật chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.62
-      },
-      "style": "CALLOUT",
-      "background": "#F2994A",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2465
-    },
-    {
-      "frame": 2245,
-      "type": "enter",
-      "assetId": "icon_reward",
-      "src": "props/trophy",
-      "position": {
-        "x": 0.78,
-        "y": 0.42
-      },
-      "scale": 1.4,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "circle": "#FFEBEE",
-      "zIndex": 2
-    },
-    {
-      "frame": 2253,
-      "type": "text",
-      "textId": "teach3_parts__sub_2",
-      "content": "được làm hay không được làm,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2322
-    },
-    {
-      "frame": 2275,
-      "type": "text",
-      "textId": "label_reward",
-      "content": "Phần thưởng",
-      "position": {
-        "x": 0.78,
-        "y": 0.62
-      },
-      "style": "CALLOUT",
-      "background": "#EB5757",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2465
-    },
-    {
-      "frame": 2322,
-      "type": "text",
-      "textId": "teach3_parts__sub_3",
-      "content": "còn phần thưởng chính là cái khiến người chơi",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2391
-    },
-    {
-      "frame": 2391,
-      "type": "text",
-      "textId": "teach3_parts__sub_4",
-      "content": "muốn chơi.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2460
-    },
-    {
-      "frame": 2460,
-      "type": "background",
-      "src": "#FFFFFF",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 2475,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 2475,
-      "type": "enter",
-      "assetId": "cat_recap",
-      "src": "characters/cat_think",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 2.8,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 2475,
-      "type": "text",
-      "textId": "recap_understanding__sub_0",
-      "content": "Để hiểu một trò chơi, chúng ta cần hiểu",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2532
-    },
-    {
-      "frame": 2515,
-      "type": "enter",
-      "assetId": "trophy_prop",
-      "src": "props/trophy",
-      "position": {
-        "x": 0.75,
-        "y": 0.68
-      },
-      "scale": 1,
-      "animation": "fadeIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 2532,
-      "type": "text",
-      "textId": "recap_understanding__sub_1",
-      "content": "ai đang chơi, luật chơi là gì,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2589
-    },
-    {
-      "frame": 2589,
-      "type": "text",
-      "textId": "recap_understanding__sub_2",
-      "content": "và phần thưởng là gì. Hiểu được ba cái",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2646
-    },
-    {
-      "frame": 2625,
-      "type": "emphasize",
-      "assetId": "cat_recap",
-      "animation": "pulse",
-      "duration": 20
-    },
-    {
-      "frame": 2646,
-      "type": "text",
-      "textId": "recap_understanding__sub_3",
-      "content": "đó thì sẽ đoán được điều gì sẽ xảy",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2703
-    },
-    {
-      "frame": 2703,
-      "type": "text",
-      "textId": "recap_understanding__sub_4",
-      "content": "ra.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2760
-    },
-    {
-      "frame": 2760,
-      "type": "background",
-      "src": "linear-gradient(135deg, #FAFAF8 0%, #F0F4FF 100%)",
-      "blur": 0,
-      "duration": 25
-    },
-    {
-      "frame": 2775,
-      "type": "clear",
-      "assetIds": []
-    },
-    {
-      "frame": 2775,
-      "type": "enter",
-      "assetId": "cat_cta",
-      "src": "characters/cat_happy",
-      "position": {
-        "x": 0.5,
-        "y": 0.52
-      },
-      "scale": 3,
-      "animation": "popIn",
-      "animationDuration": 20,
-      "zIndex": 2
-    },
-    {
-      "frame": 2775,
-      "type": "text",
-      "textId": "cta_close__sub_0",
-      "content": "Và với ba phần này, chúng ta sẽ hiểu",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2831
-    },
-    {
-      "frame": 2795,
-      "type": "text",
-      "textId": "title_cta",
-      "content": "Đón xem phần tiếp theo",
-      "position": {
-        "x": 0.5,
-        "y": 0.12
-      },
-      "style": "TITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2995
-    },
-    {
-      "frame": 2831,
-      "type": "text",
-      "textId": "cta_close__sub_1",
-      "content": "được vì sao hẹn hò ngày càng khó,",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2888
-    },
-    {
-      "frame": 2888,
-      "type": "text",
-      "textId": "cta_close__sub_2",
-      "content": "và vì sao cho tiền vẫn không ai chịu",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2944
-    },
-    {
-      "frame": 2925,
-      "type": "emphasize",
-      "assetId": "cat_cta",
-      "animation": "bounce",
-      "duration": 25
-    },
-    {
-      "frame": 2944,
-      "type": "text",
-      "textId": "cta_close__sub_3",
-      "content": "đẻ.",
-      "position": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "style": "SUBTITLE",
-      "align": "center",
-      "animation": "fadeIn",
-      "exitFrame": 2999
+  "audio": "audio/test_copy/voice.wav",
+  "scenes": [
+    {
+      "id": "scene01",
+      "startFrame": 0,
+      "durationFrames": 434,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
+      "narration": "Ở Hàn Quốc thì chính phủ bảo là đẻ một đứa con là được hai triệu, tức là đâu khoảng tầm bốn mươi triệu tiền mình ấy. Ông Hungary thì còn chơi lớn hơn, là phụ nữ mà đẻ từ bốn đứa trở lên là được miễn thuế thu nhập cá nhân suốt đời luôn.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_surprised", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 },
+        { "assetId": "money1", "src": "money/01-flat-bold-color", "slot": "RIGHT_MID", "enterAnimation": "popIn", "enterDelay": 60 }
+      ],
+      "texts": [
+        { "id": "s01_t1", "content": "Đẻ 1 con = 40 triệu tiền thưởng", "style": "TITLE", "slot": "TOP_TITLE", "delay": 8, "duration": 200 },
+        { "id": "s01_t2", "content": "Hungary: đẻ 4 con, miễn thuế TNCN cả đời", "style": "STAT", "slot": "STAT_CENTER", "delay": 220, "duration": 200 }
+      ]
+    },
+    {
+      "id": "scene02",
+      "startFrame": 434,
+      "durationFrames": 264,
+      "layout": "ICON_TRIPLE",
+      "backgroundSrc": "#FFFFFF",
+      "narration": "Còn Nhật Bản thì lập ra hẳn một cơ quan chuyên đi lo trẻ em với gia đình. Cơ mà ở mấy nước này thì tỉ lệ sinh nó vẫn giảm.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "family1", "src": "family/01-flat-bold-color", "slot": "LEFT_MID", "enterAnimation": "popIn", "enterDelay": 0, "circle": true },
+        { "assetId": "bank1", "src": "bank/01-flat-bold-color", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 30, "circle": true },
+        { "assetId": "trenddown1", "src": "trending_down/01-flat-bold-color", "slot": "RIGHT_MID", "enterAnimation": "popIn", "enterDelay": 60, "circle": true }
+      ],
+      "texts": [
+        { "id": "s02_t1", "content": "Nhật Bản", "style": "CALLOUT", "slot": "LABEL_UNDER_LEFT", "delay": 10, "duration": 240 },
+        { "id": "s02_t2", "content": "Cơ quan lo gia đình", "style": "CALLOUT", "slot": "LABEL_UNDER_CENTER", "delay": 40, "duration": 210 },
+        { "id": "s02_t3", "content": "Tỉ lệ sinh vẫn giảm", "style": "CALLOUT", "slot": "LABEL_UNDER_RIGHT", "delay": 70, "duration": 180 }
+      ]
+    },
+    {
+      "id": "scene03",
+      "startFrame": 698,
+      "durationFrames": 213,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Tôi ngồi đọc mấy cái số liệu xong rồi cũng thắc mắc phết, là tại sao cứ cho tiền mà người ta vẫn không chịu đẻ nhỉ.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_think", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s03_t1", "content": "Sao cho tiền vẫn không chịu đẻ?", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 180 }
+      ]
+    },
+    {
+      "id": "scene04",
+      "startFrame": 911,
+      "durationFrames": 348,
+      "layout": "ICON_TRIPLE",
+      "backgroundSrc": "#FFFFFF",
+      "narration": "Tại vì kiểu logic bình thường thì là chắc tại nghèo mới không dám đẻ. Thì bây giờ có tiền này thì càng phải đẻ đúng không? Ngày xưa nghèo còn đẻ nhiều thế cơ mà.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "loss1", "src": "loss/01-flat-bold-color", "slot": "LEFT_MID", "enterAnimation": "popIn", "enterDelay": 0, "circle": true },
+        { "assetId": "money1", "src": "money/01-flat-bold-color", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 60, "circle": true },
+        { "assetId": "family1", "src": "family/01-flat-bold-color", "slot": "RIGHT_MID", "enterAnimation": "popIn", "enterDelay": 120, "circle": true }
+      ],
+      "texts": [
+        { "id": "s04_t1", "content": "Nghèo", "style": "CALLOUT", "slot": "LABEL_UNDER_LEFT", "delay": 10, "duration": 320 },
+        { "id": "s04_t2", "content": "Cho tiền", "style": "CALLOUT", "slot": "LABEL_UNDER_CENTER", "delay": 70, "duration": 260 },
+        { "id": "s04_t3", "content": "Phải đẻ nhiều hơn?", "style": "CALLOUT", "slot": "LABEL_UNDER_RIGHT", "delay": 130, "duration": 200 }
+      ]
+    },
+    {
+      "id": "scene05",
+      "startFrame": 1259,
+      "durationFrames": 198,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Thì để giải thích được cái này, chúng ta sẽ phải quay về bước đầu tiên của lập gia đình, là hẹn hò.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_shrug", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s05_t1", "content": "Quay về bước đầu tiên: hẹn hò", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 160 }
+      ]
+    },
+    {
+      "id": "scene06",
+      "startFrame": 1457,
+      "durationFrames": 319,
+      "layout": "SOLO",
+      "backgroundSrc": "backgrounds/city_street.jpg",
+      "narration": "Và chúng ta sẽ dùng khung lý thuyết là lý thuyết trò chơi để giải thích vì sao mà hẹn hò ngày càng khó. Tại sao mà mấy cái app hẹn hò thì đầy mà người ta vẫn ế.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_explain", "slot": "LEFT_MID", "enterAnimation": "slideLeft", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s06_t1", "content": "Lý thuyết trò chơi: vì sao hẹn hò ngày càng khó?", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 280 }
+      ]
+    },
+    {
+      "id": "scene07",
+      "startFrame": 1776,
+      "durationFrames": 221,
+      "layout": "STAT_DRAMA",
+      "backgroundSrc": "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
+      "narration": "Và với cái đà mà không ai cưới nhau, không ai đẻ này, thì nhiều quốc gia sẽ biến mất trong vòng một trăm năm nữa.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_sad", "slot": "LEFT_MID", "enterAnimation": "fadeIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s07_t1", "content": "100 năm nữa", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 190 },
+        { "id": "s07_t2", "content": "nhiều quốc gia có thể biến mất", "style": "STAT", "slot": "STAT_CENTER", "delay": 60, "duration": 150 }
+      ]
+    },
+    {
+      "id": "scene08",
+      "startFrame": 1997,
+      "durationFrames": 287,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Chào mừng các bạn đến với series chuyển thể của Mèo Giải Thích. Chúng tôi chuyển thể những video hay của nước ngoài sang tiếng Việt cho anh em cùng tham khảo.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_happy", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s08_t1", "content": "Series Chuyển Thể — Mèo Giải Thích", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 260 }
+      ]
+    },
+    {
+      "id": "scene09",
+      "startFrame": 2284,
+      "durationFrames": 349,
+      "layout": "CHAR_PROP",
+      "backgroundSrc": "backgrounds/library.jpg",
+      "narration": "Thực ra là trước giờ chúng tôi vẫn làm thế cơ mà bây giờ sẽ làm một cách chính thức hơn. Và series đầu tiên chúng tôi làm là series lý thuyết trò chơi của kênh Predictive History.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_teacher", "slot": "LEFT_MID", "enterAnimation": "slideLeft", "enterDelay": 0 },
+        { "assetId": "chart1", "src": "chart_up/01-flat-bold-color", "slot": "RIGHT_MID", "enterAnimation": "popIn", "enterDelay": 90 }
+      ],
+      "texts": [
+        { "id": "s09_t1", "content": "Series đầu tiên: Lý thuyết trò chơi", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 300 },
+        { "id": "s09_t2", "content": "Nguồn: kênh Predictive History", "style": "CALLOUT", "slot": "CALLOUT_RIGHT", "delay": 100, "duration": 220 }
+      ]
+    },
+    {
+      "id": "scene10",
+      "startFrame": 2633,
+      "durationFrames": 351,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Video này thì chúng tôi sẽ dựa vào nội dung của những video đó, cũng như thêm những ý kiến tìm hiểu phản biện của cá nhân, để chúng ta có những bữa ăn, những giấc ngủ, những lần rửa bát năng suất hơn.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_talk", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s10_t1", "content": "+ Ý kiến phản biện cá nhân", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 320 }
+      ]
+    },
+    {
+      "id": "scene11",
+      "startFrame": 2984,
+      "durationFrames": 371,
+      "layout": "ICON_TRIPLE",
+      "backgroundSrc": "#FFFFFF",
+      "narration": "Ok, bắt đầu thôi. Đầu tiên chúng ta nói một chút về lý thuyết trò chơi đi. Thì bất kỳ trò chơi nào cũng sẽ có ba phần, là người chơi, tức là đối tượng tham gia.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "person1", "src": "person/01-flat-bold-color", "slot": "LEFT_MID", "enterAnimation": "popIn", "enterDelay": 0, "circle": true },
+        { "assetId": "check1", "src": "check/01-flat-bold-color", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 90, "circle": true },
+        { "assetId": "profit1", "src": "profit/01-flat-bold-color", "slot": "RIGHT_MID", "enterAnimation": "popIn", "enterDelay": 180, "circle": true }
+      ],
+      "texts": [
+        { "id": "s11_t1", "content": "3 phần của mọi trò chơi", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 340 },
+        { "id": "s11_t2", "content": "Người chơi", "style": "CALLOUT", "slot": "LABEL_UNDER_LEFT", "delay": 20, "duration": 330 },
+        { "id": "s11_t3", "content": "Luật chơi", "style": "CALLOUT", "slot": "LABEL_UNDER_CENTER", "delay": 110, "duration": 240 },
+        { "id": "s11_t4", "content": "Phần thưởng", "style": "CALLOUT", "slot": "LABEL_UNDER_RIGHT", "delay": 200, "duration": 150 }
+      ]
+    },
+    {
+      "id": "scene12",
+      "startFrame": 3355,
+      "durationFrames": 244,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Luật chơi, tức là những cái ràng buộc, những giới hạn, những gì được làm, không được làm. Và phần thưởng.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_explain", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s12_t1", "content": "Luật chơi = ràng buộc + giới hạn", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 220 }
+      ]
+    },
+    {
+      "id": "scene13",
+      "startFrame": 3599,
+      "durationFrames": 252,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Tại vì là chơi thì phải có thưởng chứ, không ai chơi không làm gì cả. Nó chính là cái khiến những người chơi muốn chơi.",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_happy", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 },
+        { "assetId": "profit1", "src": "profit/01-flat-bold-color", "slot": "RIGHT_MID", "enterAnimation": "popIn", "enterDelay": 60 }
+      ],
+      "texts": [
+        { "id": "s13_t1", "content": "Phần thưởng = lý do muốn chơi", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 230 }
+      ]
+    },
+    {
+      "id": "scene14",
+      "startFrame": 3851,
+      "durationFrames": 368,
+      "layout": "SOLO",
+      "backgroundSrc": "#FAFAF8",
+      "narration": "Thì để hiểu một trò chơi, chúng ta cần hiểu là ai đang chơi, hiểu luật chơi là gì, và phần thưởng là gì, thì sẽ hiểu được thôi. Và nếu hiểu được ba cái đấy thì chúng ta sẽ đoán được là...",
+      "clearPrevious": true,
+      "entities": [
+        { "assetId": "cat1", "src": "characters/cat_think", "slot": "CENTER_MID", "enterAnimation": "popIn", "enterDelay": 0 }
+      ],
+      "texts": [
+        { "id": "s14_t1", "content": "Hiểu 3 phần → đoán được kết quả", "style": "TITLE", "slot": "TOP_TITLE", "delay": 10, "duration": 340 }
+      ]
     }
   ]
 }

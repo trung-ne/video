@@ -1,172 +1,52 @@
-# Copilot Setup — Cat Explainer Video Generator
+# Copilot Runbook
 
-**This project uses a structured video generation system. See [CLAUDE-UPDATED.md](./CLAUDE-UPDATED.md) for full rules, commands, and workflows.**
+`CLAUDE.md` là nguồn luật tối cao. File này chỉ là bản rút gọn để Copilot chạy đúng quy trình, không thay thế luật gốc.
 
-## Quick Start
+## Thứ tự đọc
+1. Đọc `CLAUDE.md` trước tiên.
+2. Đọc `CLAUDE-UPDATED.md` để hiểu lịch sử và ngữ cảnh.
+3. Đọc `WORKFLOW.md` khi cần quy trình thực thi chi tiết.
+4. Nếu có mâu thuẫn, ưu tiên mục `V4 — DIRECTOR'S RULES` trong `CLAUDE.md`.
 
-### 1. Create a new video project
+## Cách làm việc
+- Luôn bám workspace hiện tại: đọc file, sửa file, validate ngay trong repo.
+- Dùng todo list cho task nhiều bước.
+- Không đoán dữ liệu còn thiếu; hãy đọc file liên quan hoặc nói rõ đang thiếu gì.
+- Giữ thay đổi tối thiểu và đúng phạm vi yêu cầu.
+
+## Luồng video chuẩn
 ```bash
-npx ts-node scripts/new-project.ts --idea "Your video topic here"
-```
-Creates: `projects/video-XXX-your-topic/`
+# 1. Tạo project
+npx ts-node scripts/new-project.ts --idea "Chủ đề video"
 
-### 2. Generate timeline from transcript
-```bash
-npx ts-node scripts/generate-timeline.ts --project video-001
-```
+# 2. Generate timeline từ transcript
+npx ts-node scripts/generate-timeline.ts --transcript projects/<project>/transcript.txt --out projects/<project>/timeline.json
 
-### 3. Preview in Remotion Studio
-```bash
+# 3. Validate
+npm run validate -- projects/<project>/timeline.json
+
+# 4. Preview
 npm start
-```
-Then open http://localhost:3000
 
-### 4. Render to MP4
-```bash
-npx ts-node scripts/render.ts --project video-001
+# 5. Render
+npx ts-node scripts/render.ts --timeline projects/<project>/timeline.json --out output/<project>.mp4
 ```
 
----
+## Quy tắc không được quên
+- Nền trắng là mặc định; ảnh thật chỉ dùng khi là evidence hoặc emotional beat.
+- Một frame không chồng quá nhiều text; tránh BODY/CAPTION đè subtitle.
+- Pose phải khớp cảm xúc từng câu; không dùng `cat_happy` cho nội dung tiêu cực/trung tính.
+- HOLD STATE: asset không tự biến mất; chỉ xoá bằng `exit` hoặc `clear`.
+- Luôn validate timeline trước khi render.
 
-## Project Structure
+## Khi Copilot hỗ trợ
+Nên yêu cầu Copilot:
+- phân tích transcript,
+- chọn scene layout và asset phù hợp,
+- kiểm tra rule V4,
+- tạo hoặc sửa `timeline.json`,
+- và đề xuất lệnh chạy cụ thể.
 
-Each video gets its own folder:
-```
-projects/video-001-your-topic/
-├── idea.txt            # Original idea
-├── transcript.txt      # Script/transcript
-├── timeline.json       # Generated timeline (editable)
-├── output.mp4          # Rendered video
-└── metadata.json       # Project metadata & status
-```
-
----
-
-## Available Assets
-
-### 30 Backgrounds (public/backgrounds/)
-office, family, city, classroom, etc. — use with `background` event type
-
-### 10+ Cat Characters (public/assets/characters/)
-cat, cat_business, cat_police, cat_teacher, cat_mom, cat_dad, cat_sunglasses, cat_worker, cat_child_school, cat_child_boy, cat_child_girl
-
-### 15+ Props (public/assets/props/)
-marshmallow, brain, muscle_arm, clover, round_table, dinner_table, computer_desk, speech_bubble, thought_bubble, photo_frame, concept_card, trophy, piggy_bank, hourglass, book, calendar
-
----
-
-## Timeline Event Types
-
-### Basic (Standard)
-- `enter` — Add asset to canvas
-- `exit` — Remove asset
-- `move` — Smooth transition to new position
-- `emphasize` — Pulse, shake, bounce, highlight
-- `camera` — Zoom & pan
-- `text` — Text overlay (6 styles: TITLE, STAT, CALLOUT, SECTION, BODY, CAPTION)
-- `clear` — Clear assets
-
-### Enhanced (For richer videos like the original)
-- `background` — Real photo background (with blur option)
-- `speechBubble` — Speech/thought bubble anchored to character
-- `card` — Concept card (colored box with icon + label)
-- `transition` — Flash/wipe/zoom between scenes
-
----
-
-## 6 Critical Rules
-
-1. **Hold State** — Assets don't disappear unless explicitly removed (exit/clear)
-2. **Position Grid** — Use x=0.25/0.5/0.75, y=0.35/0.55/0.72 for consistency
-3. **Timing** — 1 Vietnamese word ≈ 7 frames; assets enter 10-15 frames before voice
-4. **Animation** — popIn/slideLeft/slideRight/zoomIn based on semantic meaning
-5. **Camera** — Zoom 1.2-1.5 to focus, reset to 1.0 between topics
-6. **Scene** — Structure: 0-10% intro, 10-40% concept, 40-75% buildup, 75-90% climax, 90-100% CTA
-
----
-
-## Full Documentation
-
-See **[CLAUDE-UPDATED.md](./CLAUDE-UPDATED.md)** for:
-- Complete commands & options
-- All 8 scene patterns
-- Text styling guide (6 preset styles)
-- Color palette
-- Position reference grid
-- Troubleshooting
-
----
-
-## Example Workflow
-
-```bash
-# 1. Create project
-npx ts-node scripts/new-project.ts --idea "Marshmallow test of Walter Mischel"
-
-# Output: projects/video-001-marshmallow-test/ created
-
-# 2. Edit transcript (if needed)
-# vim projects/video-001-marshmallow-test/transcript.txt
-
-# 3. Generate timeline
-npx ts-node scripts/generate-timeline.ts --project video-001-marshmallow-test
-
-# 4. Preview & edit
-npm start  # http://localhost:3000 → scrub timeline, adjust as needed
-
-# 5. Render to MP4
-npx ts-node scripts/render.ts --project video-001-marshmallow-test
-
-# Done! Video saved to: projects/video-001-marshmallow-test/output.mp4
-```
-
----
-
-## Using with Copilot
-
-When working with Copilot:
-
-1. **Create project** — Ask Copilot to help write transcript or idea
-2. **Generate timeline** — Copilot can suggest scene patterns & asset usage
-3. **Edit timeline** — Copilot can adjust timing, add camera moves, optimize pacing
-4. **Analyze results** — Copilot can review and suggest improvements
-
-Example Copilot prompts:
-```
-"I have a video about [topic]. Help me write a compelling 2-minute script."
-
-"Generate a timeline using the marshmallow test assets (cat_child_*, props/marshmallow, round_table)"
-
-"Add more emotional pacing to this timeline — more camera zooms and speech bubbles when characters interact"
-
-"Check if this timeline follows the hold-state rule and scene structure pattern"
-```
-
----
-
-## Environment Setup
-
-```bash
-# Install dependencies (if not done)
-npm install
-
-# Set Anthropic API key (required for timeline generation)
-$env:ANTHROPIC_API_KEY = "sk-ant-..."
-
-# Or in .env file
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
-```
-
----
-
-## Troubleshooting
-
-- **Project not created?** — Check `/projects` folder exists
-- **Timeline generation fails?** — Validate API key & transcript format
-- **Asset not showing?** — Verify asset path matches available SVGs (run `npx ts-node scripts/list-assets.ts`)
-- **Video render fails?** — Ensure `timeline.json` is valid, check `/output` folder exists
-- **TypeScript errors?** — Run `npx tsc --noEmit` for detailed errors
-
----
-
-**Questions?** See [CLAUDE-UPDATED.md](./CLAUDE-UPDATED.md) for complete reference.
+## Ghi nhớ
+- Nếu task liên quan `/generate`, `/new-video`, timeline hoặc render, hãy làm theo `CLAUDE.md` trước rồi mới thao tác.
+- Nếu cần tài liệu đầy đủ hơn, mở `CLAUDE.md` thay vì thêm rule mới vào đây.

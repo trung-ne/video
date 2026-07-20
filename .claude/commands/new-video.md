@@ -26,27 +26,33 @@ Phân tích `$ARGUMENTS` để xác định mode:
 
 Kiểm tra nếu có `--audio <path>` trong arguments, lưu lại audio path.
 
-Kiểm tra `ANTHROPIC_API_KEY` đã set chưa. Nếu chưa, hỏi user.
-
 ### Bước 2 — Generate timeline
 
 Xác định output filename từ input:
 - Từ ý tưởng: dùng slug của ý tưởng (ví dụ: `lai-suat.json`)
 - Mặc định: `timeline.json`
 
+Chọn cách generate — **mặc định dùng Mode A (in-session, không cần API key)** trừ khi user nói "chạy script" hoặc muốn dùng API key riêng:
+
+**Mode A — In-session (mặc định, dùng quota chat này, KHÔNG cần API key)**
+Làm theo đúng quy trình 8 bước của [/generate](generate.md) (đọc transcript/viết script từ idea → cắt scene → TTS → viết `scenes[]` → validate). Dùng chính session chat này để sinh script + timeline, chỉ gọi Python cho phần TTS.
+
+**Mode B — Script (cần `ANTHROPIC_API_KEY` trong env)**
+Kiểm tra `ANTHROPIC_API_KEY` đã set chưa; nếu chưa, hỏi user hoặc quay lại Mode A.
+
 Chạy lệnh phù hợp:
 
-**Mode Idea:**
+Mode Idea:
 ```bash
 npx ts-node scripts/generate-timeline.ts --idea "<idea>" [--audio <audio>] --out timeline.json
 ```
 
-**Mode URL:**
+Mode URL:
 ```bash
 npx ts-node scripts/generate-timeline.ts --url "<url>" [--audio <audio>] --out timeline.json
 ```
 
-**Mode Transcript:**
+Mode Transcript:
 ```bash
 npx ts-node scripts/generate-timeline.ts --transcript <file> [--audio <audio>] --out timeline.json
 ```

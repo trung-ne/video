@@ -109,8 +109,14 @@ export const AnimatedText: React.FC<Props> = ({
     );
   }
 
-  // STAT: massive number with accent glow
+  // STAT: massive number with accent glow. This style is meant for a SHORT
+  // number/phrase ("100 năm", "0.78") at fontSize 120 — a full sentence at
+  // that size overflows the frame and covers whatever else is on screen (the
+  // exact "assets đè lên nhau" defect). Long content auto-shrinks so it never
+  // grows past ~85% of the canvas width regardless of what the AI wrote.
   if (style === "STAT") {
+    const wordCount = text.content.trim().split(/\s+/).length;
+    const statFontSize = wordCount > 6 ? fontSize * 0.4 : wordCount > 3 ? fontSize * 0.6 : fontSize;
     return (
       <div
         style={{
@@ -119,13 +125,14 @@ export const AnimatedText: React.FC<Props> = ({
           top: pixelY,
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
-          fontSize,
+          fontSize: statFontSize,
           color,
           fontWeight,
           fontFamily: "'Segoe UI', 'Arial Rounded MT Bold', sans-serif",
           textAlign: "center",
           zIndex: 60,
           pointerEvents: "none",
+          maxWidth: canvasWidth * 0.85,
           // Glow is white-hot + colored, not a plain drop shadow — a dark
           // shadow does nothing on STAT_DRAMA's near-black gradient, where the
           // number needs to visually "burn" against the backdrop to read.

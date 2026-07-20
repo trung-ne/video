@@ -630,6 +630,7 @@ function checkPaperCardCollision(scenes: any[]): CheckResult {
 // CHECK 11: STAT_DRAMA must have dark background + clearPrevious
 function checkStatDrama(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
+  const CENTER_SLOTS = new Set(["CENTER_MID", "CENTER"]);
 
   for (const s of scenes.filter((s) => s.layout === "STAT_DRAMA" || s.layout === "STAT")) {
     const bg = s.backgroundSrc ?? "";
@@ -658,8 +659,8 @@ function checkStatDrama(scenes: any[]): CheckResult {
     }
 
     // STAT text must exist
-    const hasStat = (s.texts ?? []).some((t: any) => t.style === "STAT");
-    if (!hasStat) {
+    const statTexts = (s.texts ?? []).filter((t: any) => t.style === "STAT");
+    if (statTexts.length === 0) {
       issues.push({
         severity: "MAJOR",
         rule: "STAT_DRAMA",
@@ -668,9 +669,108 @@ function checkStatDrama(scenes: any[]): CheckResult {
         suggestion: "Thêm text với style: \"STAT\" chứa con số drama vào scene",
       });
     }
+
+    // STAT is for a short number/phrase, not a full sentence — long content
+    // at 120px overflows and collides with whatever else is on screen (the
+    // "Hungary: đẻ 4 con, miễn thuế TNCN cả đời" defect over the cat's face).
+    for (const t of statTexts) {
+      const words = wordCount(t.content ?? "");
+      if (words > 6) {
+        issues.push({
+          severity: "MAJOR",
+          rule: "STAT_DRAMA",
+          scene: s.id,
+          message: `${sceneLabel(s)} STAT text "${t.id}" dài ${words} từ — STAT chỉ dành cho số/cụm từ ngắn (≤6 từ), câu dài sẽ tràn và đè lên nhân vật`,
+          suggestion: 'Rút ngắn còn 1 con số hoặc cụm ngắn (vd "100 năm"); phần diễn giải đưa vào CAPTION hoặc narration',
+        });
+      }
+    }
+
+    // A character standing dead-center at the same time as a centered STAT
+    // number is the other half of the collision — the two occupy the same
+    // pixels. STAT_CENTER wants the frame to itself (compiler forces
+    // clearPrevious for this reason, but the AI still often re-adds a cat).
+    const centerCats = (s.entities ?? []).filter(
+      (e: any) => e.src?.startsWith("characters/") && CENTER_SLOTS.has(e.slot ?? "")
+    );
+    const centerStat = statTexts.some((t: any) => (t.slot ?? "") === "STAT_CENTER" || !t.slot);
+    if (centerCats.length > 0 && centerStat) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "STAT_DRAMA",
+        scene: s.id,
+        message: `${sceneLabel(s)} mèo ở slot CENTER cùng lúc với STAT_CENTER text — hai thứ chồng lên nhau giữa màn hình`,
+        suggestion: "Đặt mèo ở LEFT_MID/RIGHT_MID (không phải CENTER_MID) khi scene có STAT_CENTER text",
+      });
+    }
   }
 
-  return { name: "STAT_DRAMA: dark bg + clearPrevious + STAT text", passed: issues.length === 0, issues };
+  return { name: "STAT_DRAMA: dark bg + clearPrevious + STAT ngắn + không đè nhân vật", passed: issues.length === 0, issues };
+}
+
+// CHECK (V4): background "mood" churn. Every scene changing white ↔ dark ↔
+// photo back-to-back reads as flicker even if each individual background is
+// valid — the reference video holds white for stretches and only cuts to
+// dark/photo for a deliberate beat. Alternating every single scene is the
+// literal complaint "màu nền thay đổi quá nhiều".
+function bgMood(bg: string): "white" | "dark" | "photo" | "other" {
+  if (!bg) return "other";
+  const isPhoto = !isCSSBackground(bg);
+  if (isPhoto) return "photo";
+  if (/^#(fff|ffffff|fafaf8|f5f5f5)$/i.test(bg.trim())) return "white";
+  const hexes = bg.match(/#[0-9a-fA-F]{3,6}\b/g) ?? [];
+  const lums = hexes
+    .map((h) => {
+      let s = h.replace("#", "");
+      if (s.length === 3) s = s.split("").map((c) => c + c).join("");
+      const r = parseInt(s.slice(0, 2), 16), g = parseInt(s.slice(2, 4), 16), b = parseInt(s.slice(4, 6), 16);
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    })
+    .filter((n) => !isNaN(n));
+  const avg = lums.length ? lums.reduce((a, b) => a + b, 0) / lums.length : 0.5;
+  return avg < 0.35 ? "dark" : "other";
+}
+
+function checkBackgroundChurn(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  if (scenes.length < 4) return { name: "Background: không đổi mood liên tục", passed: true, issues };
+
+  const moods = scenes.map((s) => bgMood(s.backgroundSrc ?? ""));
+  let churnCount = 0;
+  for (let i = 1; i < moods.length; i++) {
+    if (moods[i] !== moods[i - 1] && moods[i] !== "other" && moods[i - 1] !== "other") churnCount++;
+  }
+  const churnRatio = churnCount / (moods.length - 1);
+
+  if (churnRatio > 0.6) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "BACKGROUND_CHURN",
+      message: `Nền đổi mood (trắng/tối/ảnh) ở ${churnCount}/${moods.length - 1} lần chuyển scene — nhấp nháy liên tục`,
+      suggestion: "Giữ nền trắng cho các scene giải thích liên tiếp; chỉ chuyển dark/photo cho 1 beat có chủ đích (climax, evidence, cảm xúc), không đổi mood mỗi scene",
+    });
+  }
+
+  // STAT_DRAMA (dark) used for something that is really just an evidence/fact
+  // scene (no drama climax) is the root cause seen in practice: scene 1 opens
+  // on a dark STAT_DRAMA reciting policy numbers, not a shock reveal.
+  const darkNonClimax = scenes.filter((s, i) => {
+    if (bgMood(s.backgroundSrc ?? "") !== "dark") return false;
+    if (s.layout !== "STAT_DRAMA" && s.layout !== "STAT") return false;
+    const statTexts = (s.texts ?? []).filter((t: any) => t.style === "STAT");
+    // A real climax has ONE short stat; multiple facts/policies read as evidence.
+    return statTexts.length === 0 || statTexts.some((t: any) => wordCount(t.content ?? "") > 6);
+  });
+  if (darkNonClimax.length > 0) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "BACKGROUND_CHURN",
+      message: `${darkNonClimax.length} scene STAT_DRAMA (nền tối) chứa nội dung liệt kê/evidence dài thay vì 1 con số climax`,
+      suggestion: 'Đổi các scene này sang layout SOLO/CHAR_PROP nền trắng + paperCards variant "evidence" — STAT_DRAMA nền tối chỉ dành cho climax 1 con số ngắn',
+    });
+  }
+
+  return { name: "Background: không đổi mood liên tục, STAT_DRAMA không lạm dụng", passed: issues.length === 0, issues };
 }
 
 // CHECK 12: DIALOGUE scenes have 2 entities, CALLOUT_LEFT/RIGHT
@@ -1118,6 +1218,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkIconTriple(scenes),
     checkPaperCardCollision(scenes),
     checkStatDrama(scenes),
+    checkBackgroundChurn(scenes),
     checkDialogue(scenes),
     checkStagger(scenes),
     checkNoEmoji(scenes),
