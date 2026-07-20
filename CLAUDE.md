@@ -173,6 +173,12 @@ Remotion → MP4
 - Cả **preview** ([Root.tsx](src/Root.tsx)) lẫn **render** ([render.ts](scripts/render.ts)) đều đi qua `loadTimeline()` → xem đúng cái sẽ render.
 - **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. `generate-timeline.ts` chỉ ghi `scenes[]`.
 
+**Hai tầng biến đổi (cố ý, đừng nhầm):**
+- **Authoring-time** (chạy lúc generate, GHI ĐÈ scenes trên đĩa): `autoFixBackgrounds` ([backgroundResolver.ts](src/ai/backgroundResolver.ts)) sửa nền lười → được *persist* vào file scenes. Muốn chạy lại thủ công: `quality-check --fix`.
+- **Load-time** (chạy mỗi lần preview/render, TRANSIENT): `compileScenes` + `injectLiveliness` trong `loadTimeline()`.
+- Hệ quả: sửa tay file scenes rồi render thẳng thì **không** được `autoFixBackgrounds` (chỉ compile + liveliness). Đây là chủ đích — muốn fix nền, chạy generate hoặc `quality-check --fix`.
+- **Render có cổng schema:** [render.ts](scripts/render.ts) gọi `validateTimeline` trước khi render, sai schema → dừng ngay (bỏ qua bằng `--skip-validate`).
+
 **SceneTimeline** (format AI tạo ra):
 - Mỗi `scene` có `backgroundSrc`, `layout`, `entities`, `texts`
 - SceneCompiler tự chuyển thành events: BackgroundEvent, EnterEvent, TextEvent...

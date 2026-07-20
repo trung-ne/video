@@ -33,7 +33,6 @@ import { buildSystemPrompt, buildScriptFromIdea, listAvailableAssets } from "../
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
-// import { compileScenes } from "../src/engine/sceneCompiler"; // [SCENE_COMPILER]
 
 // --- Parse CLI args ---
 const args = process.argv.slice(2);

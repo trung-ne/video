@@ -11,6 +11,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
+import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 
 const args = process.argv.slice(2);
 
@@ -30,6 +31,17 @@ if (!fs.existsSync(timelinePath)) {
 }
 
 const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+
+// Schema gate — fail fast with a clear message instead of crashing deep inside
+// Remotion on a malformed/hand-edited timeline. Pass --skip-validate to bypass.
+if (!args.includes("--skip-validate")) {
+  const validation = validateTimeline(raw);
+  printValidationResult(validation, timelinePath);
+  if (!validation.valid) {
+    console.error("\n❌ Timeline không hợp lệ — dừng render. (dùng --skip-validate để bỏ qua)");
+    process.exit(1);
+  }
+}
 
 // Scan which cat poses actually exist so pose-swaps never reference a missing asset.
 const charDir = path.join(process.cwd(), "public", "assets", "characters");

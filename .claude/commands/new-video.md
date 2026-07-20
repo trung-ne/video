@@ -1,6 +1,7 @@
 # /new-video — Full Pipeline: Idea/URL/Transcript → MP4
 
 Chạy toàn bộ pipeline tạo video tự động từ đầu đến cuối.
+**Mọi artifact của một video sống trong `projects/<id>/`** (theo quy ước trong CLAUDE.md) — KHÔNG ghi ra `timeline.json` ở root.
 
 ## Cách dùng
 ```
@@ -17,7 +18,7 @@ Input có thể là:
 
 Khi user gọi `/new-video $ARGUMENTS`, thực hiện theo thứ tự sau:
 
-### Bước 1 — Nhận dạng input
+### Bước 1 — Nhận dạng input + tạo project folder
 
 Phân tích `$ARGUMENTS` để xác định mode:
 - Nếu bắt đầu bằng `http://` hoặc `https://` → Mode URL
@@ -26,48 +27,42 @@ Phân tích `$ARGUMENTS` để xác định mode:
 
 Kiểm tra nếu có `--audio <path>` trong arguments, lưu lại audio path.
 
-### Bước 2 — Generate timeline
+**Tạo project folder** — mỗi video 1 folder `projects/video-XXX-<slug>/`:
+```bash
+npx ts-node scripts/new-project.ts --idea "<idea>"          # Mode Idea
+npx ts-node scripts/new-project.ts --transcript <file>       # Mode Transcript
+npx ts-node scripts/new-project.ts --url "<url>"             # Mode URL
+```
+`new-project.ts` in ra đường dẫn folder vừa tạo — ghi nhớ nó làm `projects/<id>/` cho các bước sau. Mọi file (transcript, tts_scenes, timeline, audio, output) đều nằm trong folder này.
 
-Xác định output filename từ input:
-- Từ ý tưởng: dùng slug của ý tưởng (ví dụ: `lai-suat.json`)
-- Mặc định: `timeline.json`
+### Bước 2 — Generate timeline (ghi vào `projects/<id>/timeline.json`)
 
 Chọn cách generate — **mặc định dùng Mode A (in-session, không cần API key)** trừ khi user nói "chạy script" hoặc muốn dùng API key riêng:
 
 **Mode A — In-session (mặc định, dùng quota chat này, KHÔNG cần API key)**
-Làm theo đúng quy trình 8 bước của [/generate](generate.md) (đọc transcript/viết script từ idea → cắt scene → TTS → viết `scenes[]` → validate). Dùng chính session chat này để sinh script + timeline, chỉ gọi Python cho phần TTS.
+Làm theo đúng quy trình 8 bước của [/generate](generate.md) với `<proj>` = `projects/<id>/` (đọc transcript/viết script từ idea → cắt scene → TTS → viết `scenes[]` → validate). Toàn bộ output của /generate đã ghi vào `projects/<proj>/`. Dùng chính session chat này để sinh script + timeline, chỉ gọi Python cho TTS.
 
 **Mode B — Script (cần `ANTHROPIC_API_KEY` trong env)**
-Kiểm tra `ANTHROPIC_API_KEY` đã set chưa; nếu chưa, hỏi user hoặc quay lại Mode A.
-
-Chạy lệnh phù hợp:
-
-Mode Idea:
+Kiểm tra `ANTHROPIC_API_KEY`; nếu chưa có, hỏi user hoặc quay lại Mode A. Chạy (thêm cờ TTS như generate.md Mode B):
 ```bash
-npx ts-node scripts/generate-timeline.ts --idea "<idea>" [--audio <audio>] --out timeline.json
-```
-
-Mode URL:
-```bash
-npx ts-node scripts/generate-timeline.ts --url "<url>" [--audio <audio>] --out timeline.json
-```
-
-Mode Transcript:
-```bash
-npx ts-node scripts/generate-timeline.ts --transcript <file> [--audio <audio>] --out timeline.json
+# Kokoro (tiếng Anh)
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --tts-kokoro --tts-voice af_heart --tts-lang a --out projects/<id>/timeline.json
+# Edge (tiếng Việt)
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --tts --tts-voice vi-VN-HoaiMyNeural --out projects/<id>/timeline.json
+# Từ idea / url: thay --transcript bằng --idea "<idea>" hoặc --url "<url>"
 ```
 
 Chờ lệnh hoàn thành. Nếu lỗi, báo cáo lỗi cụ thể cho user.
 
 ### Bước 3 — Validate tự động
 
-Đọc `timeline.json` vừa tạo và kiểm tra:
-- File tồn tại và là JSON hợp lệ
+Đọc `projects/<id>/timeline.json` và kiểm tra:
+- File tồn tại và là JSON hợp lệ (format `scenes[]`)
 - Tất cả assets được dùng có file SVG tương ứng trong `public/assets/`
-- `durationInFrames` > 0
-- Không có frame number vượt quá `durationInFrames`
+- `durationInFrames` > 0; mỗi scene `startFrame`/`durationFrames` khớp `durations.json`
 
 Nếu có lỗi assets không tồn tại: liệt kê assets bị thiếu và hỏi user có muốn tiếp tục không.
+(Lưu ý: `render.ts` cũng tự chạy `validateTimeline` như cổng schema fail-fast trước khi render.)
 
 ### Bước 4 — Preview (hỏi user)
 
@@ -78,14 +73,12 @@ Nếu yes:
 npm start
 ```
 Thông báo: "Studio đang chạy tại http://localhost:3000. Nhấn Enter khi muốn render..."
+(Studio preview lấy timeline mặc định từ root — để xem đúng project này, render trực tiếp ở Bước 5 hoặc trỏ preview vào `projects/<id>/timeline.json`.)
 
-### Bước 5 — Render
+### Bước 5 — Render (ghi vào `output/<id>.mp4`)
 
-Tạo output filename: `output/<slug>-<timestamp>.mp4`
-
-Chạy:
 ```bash
-npx ts-node scripts/render.ts --timeline timeline.json --out output/<filename>.mp4
+npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json --out output/<id>.mp4
 ```
 
 Hiển thị progress. Sau khi xong, thông báo path của MP4.
@@ -96,15 +89,16 @@ Hiển thị:
 ```
 ✅ Video hoàn chỉnh!
 
-📹 File: output/<filename>.mp4
-⏱️  Duration: X giây
-🎬 Frames: N events
-📁 Timeline: timeline.json
+📹 File:      output/<id>.mp4
+⏱️  Duration:  X giây
+🎬 Scenes:    N scenes
+📁 Project:   projects/<id>/  (timeline.json, transcript.txt, voice.wav, durations.json)
 ```
 
 ## Rules quan trọng khi chạy
 
-1. Luôn validate trước khi render — không render timeline có lỗi nghiêm trọng
-2. Nếu asset thiếu, gợi ý placeholder hoặc hỏi user
-3. Lưu timeline.json sau khi generate để user có thể chỉnh sửa
-4. Nếu render thất bại, kiểm tra: output/ directory tồn tại, TypeScript compile được
+1. **Mọi thứ vào `projects/<id>/`** — không ghi `timeline.json` ở root (nhất quán với /generate và quy ước folder trong CLAUDE.md).
+2. Luôn validate trước khi render — không render timeline có lỗi nghiêm trọng.
+3. Nếu asset thiếu, gợi ý placeholder hoặc hỏi user.
+4. Lưu `projects/<id>/timeline.json` sau khi generate để user có thể chỉnh sửa.
+5. Nếu render thất bại, kiểm tra: `output/` tồn tại, TypeScript compile được (`npx tsc --noEmit`).

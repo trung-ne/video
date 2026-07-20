@@ -33,7 +33,7 @@ npx ts-node scripts/new-project.ts --idea "Your topic"
 
 ### Generate timeline from transcript
 ```bash
-npx ts-node scripts/generate-timeline.ts --project video-001
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --out projects/<id>/timeline.json
 ```
 
 ### Preview in Remotion Studio
@@ -44,7 +44,7 @@ npm start
 
 ### Render to MP4
 ```bash
-npx ts-node scripts/render.ts --project video-001
+npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json --out output/<id>.mp4
 ```
 
 ---
@@ -100,15 +100,15 @@ $ npx ts-node scripts/new-project.ts --idea "Marshmallow test"
 $ vim projects/video-001-marshmallow-test/transcript.txt
 
 # 3. Generate timeline
-$ npx ts-node scripts/generate-timeline.ts --project video-001-marshmallow-test
+$ npx ts-node scripts/generate-timeline.ts --transcript projects/video-001-marshmallow-test/transcript.txt --out projects/video-001-marshmallow-test/timeline.json
 
 # 4. Preview
 $ npm start
 # → http://localhost:3000 (edit timeline if needed)
 
 # 5. Render
-$ npx ts-node scripts/render.ts --project video-001-marshmallow-test
-✅ Done: projects/video-001-marshmallow-test/output.mp4
+$ npx ts-node scripts/render.ts --timeline projects/video-001-marshmallow-test/timeline.json --out output/video-001-marshmallow-test.mp4
+✅ Done: output/video-001-marshmallow-test.mp4
 ```
 
 ---
@@ -163,9 +163,9 @@ npx ts-node scripts/new-project.ts --idea "..."
 npx ts-node scripts/new-project.ts --transcript "file.txt"
 npx ts-node scripts/new-project.ts --url "https://youtube.com/watch?v=..."
 
-# Timeline & Render
-npx ts-node scripts/generate-timeline.ts --project video-001
-npx ts-node scripts/render.ts --project video-001
+# Timeline & Render (trỏ vào project qua path — KHÔNG có flag --project)
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --out projects/<id>/timeline.json
+npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json --out output/<id>.mp4
 
 # Studio
 npm start
