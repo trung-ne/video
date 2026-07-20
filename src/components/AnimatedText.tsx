@@ -197,36 +197,49 @@ export const AnimatedText: React.FC<Props> = ({
       <div
         style={{
           position: "absolute",
-          left: pixelX,
+          left: "50%",
+          // Anchor the band by its BOTTOM edge so the baseline never jumps
+          // when a chunk wraps from one line to two.
           bottom: canvasHeight - (text.position.y * canvasHeight + 40),
           transform: `translateX(-50%)`,
           opacity,
           zIndex: 80,
           pointerEvents: "none",
-          maxWidth: canvasWidth * 0.66,
-          textAlign: "center",
+          // Wide enough to hold ~42 chars/line without wrapping to 3 lines,
+          // narrow enough to stay clear of the frame edges (no clipped text).
+          maxWidth: canvasWidth * 0.8,
+          display: "flex",
+          justifyContent: "center",
         }}
       >
-        <span
+        {/* Single continuous band (block, not inline) → one solid rectangle
+            behind both lines instead of two mismatched per-line boxes. */}
+        <div
           style={{
-            // Solid near-black (not translucent) so the box stays legible even
-            // on STAT_DRAMA's dark gradient backgrounds — a translucent box
-            // there blends into the backdrop and the caption becomes unreadable.
+            // Solid near-black (not translucent) so the band stays legible even
+            // on STAT_DRAMA's dark gradient backgrounds.
             background: "rgba(15,15,15,0.92)",
             boxShadow: "0 0 0 1px rgba(255,255,255,0.12)",
             color,
             fontSize,
             fontWeight,
             fontFamily: "'Segoe UI', 'Arial Rounded MT Bold', sans-serif",
-            lineHeight: 1.5,
-            padding: "6px 14px",
-            borderRadius: 6,
-            boxDecorationBreak: "clone",
-            WebkitBoxDecorationBreak: "clone",
+            lineHeight: 1.35,
+            padding: "10px 28px",
+            borderRadius: 10,
+            textAlign: "center",
+            // Cap at 2 lines; extra content is ellipsised rather than
+            // spilling into a third line or off-frame.
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            wordBreak: "normal",
+            overflowWrap: "break-word",
           }}
         >
           {text.content}
-        </span>
+        </div>
       </div>
     );
   }

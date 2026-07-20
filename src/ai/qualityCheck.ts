@@ -314,6 +314,58 @@ function checkOpeningBright(scenes: any[]): CheckResult {
   return { name: "Opening: mở màn sáng, không fadeBlack (V4)", passed: issues.length === 0, issues };
 }
 
+// CHECK: Story arc & focal anchor (V4.8) — a video is boring when every scene
+// is "cat reads the next sentence" with nothing on screen to hold the eye and
+// no dramatic peak. Flags two concrete failure modes seen in flat output:
+//   1. EMPTY_FRAME  — scene has no visual anchor beyond the bottom subtitle
+//                     (texts empty AND no speechBubble/card/frameBox) → eye drifts.
+//   2. NO_CLIMAX    — no STAT_DRAMA/CLOSE_UP peak in the 55-80% region → no arc.
+function checkStoryArc(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  if (scenes.length < 5) {
+    return { name: "Story arc: có điểm neo thị giác + cao trào (V4.8)", passed: true, issues };
+  }
+
+  const hasAnchor = (s: any): boolean => {
+    const texts = Array.isArray(s.texts) ? s.texts : [];
+    if (texts.some((t: any) => (t.content ?? "").trim().length > 0)) return true;
+    if (Array.isArray(s.speechBubbles) && s.speechBubbles.length > 0) return true;
+    if (Array.isArray(s.paperCards) && s.paperCards.length > 0) return true;
+    if (Array.isArray(s.frameBoxes) && s.frameBoxes.length > 0) return true;
+    // A multi-entity scene (dialogue/contrast) is itself an anchor.
+    if ((s.entities?.length ?? 0) >= 2) return true;
+    return false;
+  };
+
+  const emptyScenes = scenes.filter((s) => !hasAnchor(s));
+  const emptyRatio = emptyScenes.length / scenes.length;
+  if (emptyRatio > 0.4) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "EMPTY_FRAME",
+      scene: emptyScenes[0]?.id,
+      message: `${emptyScenes.length}/${scenes.length} scene (${Math.round(emptyRatio * 100)}%) không có điểm neo thị giác — chỉ có mèo + phụ đề, mắt người xem trôi`,
+      suggestion: "Mỗi scene kể-chuyện cần ≥1: speechBubble, CALLOUT/CAPTION ngắn, prop mèo nhìn vào, hoặc nhân vật thứ 2 (V4.8.10)",
+    });
+  }
+
+  // Climax: at least one dramatic peak in the back half (55-80%).
+  const climaxLayouts = new Set(["STAT_DRAMA", "STAT", "CLOSE_UP"]);
+  const lo = Math.floor(scenes.length * 0.55);
+  const hi = Math.ceil(scenes.length * 0.8);
+  const hasClimax = scenes.slice(lo, hi + 1).some((s) => climaxLayouts.has(s.layout));
+  if (!hasClimax) {
+    issues.push({
+      severity: "MINOR",
+      rule: "NO_CLIMAX",
+      message: `Không có cao trào (STAT_DRAMA/CLOSE_UP) ở vùng 55-80% thời lượng — câu chuyện phẳng, thiếu đỉnh`,
+      suggestion: "Đặt beat số-liệu-sốc hoặc cận cảnh cảm xúc ở ~2/3 video làm climax (V4.8.2)",
+    });
+  }
+
+  return { name: "Story arc: có điểm neo thị giác + cao trào (V4.8)", passed: issues.length === 0, issues };
+}
+
 // CHECK 4: Scene duration
 // Ideal: 8-60s. Very short (<3s) is a BLOCKER (flickering). Very long (>120s)
 // is a MINOR — for long videos with narration audio, long scenes can be intentional.
@@ -1205,6 +1257,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkBackgroundVariety(scenes),
     checkLayoutVariety(scenes),
     checkOpeningBright(scenes),
+    checkStoryArc(scenes),
     checkSceneDuration(scenes),
     checkTextWordCap(scenes),
     checkTextOverlap(scenes),

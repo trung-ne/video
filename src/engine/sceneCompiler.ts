@@ -59,6 +59,17 @@ function compileScene(
   const start = scene.startFrame;
   const sceneEnd = start + scene.durationFrames;
 
+  // V4.1 — a full-bleed photo is a "punch": it must tell its own story. A cat
+  // planted dead-center over the subject turns the photo into meaningless
+  // wallpaper. Detect photo backgrounds here so entity compilation can shove
+  // characters into a small corner (scale-capped) instead of centering them.
+  const sceneBgIsPhoto =
+    !!scene.backgroundSrc &&
+    !scene.backgroundSrc.startsWith("#") &&
+    !scene.backgroundSrc.startsWith("rgb") &&
+    !scene.backgroundSrc.startsWith("linear-gradient") &&
+    !scene.backgroundSrc.startsWith("radial-gradient");
+
   // Tracks the ACTUAL background rendered (may be forced bright on scene 1) so
   // downstream text-color logic reads reality, not the AI's original request.
   let effectiveBgSrc: string | undefined = scene.backgroundSrc;
@@ -143,7 +154,7 @@ function compileScene(
   // entities don't pop in while transition is still playing
   for (let i = 0; i < scene.entities.length; i++) {
     const entity = scene.entities[i];
-    compileEntity(entity, scene, i, start, sceneEnd, events, transitionDur);
+    compileEntity(entity, scene, i, start, sceneEnd, events, transitionDur, sceneBgIsPhoto);
   }
 
   // ── 5. Texts ──────────────────────────────────────────────
@@ -185,7 +196,8 @@ function compileEntity(
   sceneStart: number,
   sceneEnd: number,
   events: TimelineEvent[],
-  transitionDur: number = 0
+  transitionDur: number = 0,
+  bgIsPhoto: boolean = false
 ): void {
   // Resolve position
   let position: { x: number; y: number };
@@ -198,6 +210,28 @@ function compileEntity(
     const layoutSlots = LAYOUT_ENTITY_SLOTS[scene.layout];
     const slot = layoutSlots[entityIndex] ?? "CENTER";
     position = SLOT_POSITIONS[slot];
+  }
+
+  // Resolve scale up front so V4.1 photo-composition can cap it.
+  let scale = entity.scale ?? defaultScaleForLayout(scene.layout, entityIndex);
+
+  // V4.1 enforcement — on a full-bleed photo, characters must NOT cover the
+  // subject. Unless the AI explicitly pinned this entity (entity.position set),
+  // shove it into a bottom corner and cap its size so the photo reads first.
+  // Corners alternate by index so two cats don't stack.
+  if (bgIsPhoto && !entity.position) {
+    const PHOTO_MAX_SCALE = 1.2;
+    scale = Math.min(scale, PHOTO_MAX_SCALE);
+    const corners = [
+      { x: 0.16, y: 0.74 },
+      { x: 0.84, y: 0.74 },
+    ];
+    position = corners[entityIndex % corners.length];
+  } else if (!entity.position && scene.entities.length >= 2 && position.x > 0.45 && position.x < 0.55) {
+    // V4.8.4 rule-of-thirds safety net — two elements should never share the
+    // dead-center axis (the eye can't pick a focus). Only dead-center a single
+    // entity addressing the viewer directly.
+    position = { x: entityIndex % 2 === 0 ? 0.34 : 0.66, y: position.y };
   }
 
   // Enter after transition finishes so entities don't pop in mid-wipe
@@ -215,7 +249,7 @@ function compileEntity(
     assetId: entity.assetId,
     src: entity.src,
     position,
-    scale: entity.scale ?? defaultScaleForLayout(scene.layout, entityIndex),
+    scale,
     animation: entity.enterAnimation ?? defaultEnterAnimation(entity.role),
     animationDuration: entity.animationDuration ?? 20,
     label: entity.label,
