@@ -120,6 +120,16 @@ npx ts-node scripts/generate-timeline.ts --transcript "<file>" --tts --tts-voice
 ```
 Script tự chạy TTS + patch duration + set audio. KHÔNG chạy thiếu cờ `--tts-kokoro`/`--tts`/`--audio`.
 
+### MODE B+ — Storyboard (thêm cờ `--storyboard`) — KHUYẾN NGHỊ
+Thêm `--storyboard` để chạy pipeline 2 tầng (tầng ý đồ → biên dịch xác định) thay vì bắt AI viết thẳng scenes[]:
+```bash
+npx ts-node scripts/generate-timeline.ts --transcript "<file>" --storyboard --tts-kokoro --tts-voice af_heart --tts-lang a --out "<proj>/timeline.json"
+```
+- AI chỉ sinh **Storyboard** (purpose/emotion/visualGrammar/slots/beats) — nhẹ, ít lỗi schema.
+- `storyboardCompiler` bung grammar → scenes[]; lưu kèm `<proj>/storyboard.json` để sửa tay.
+- Sau TTS, tự **re-compile với timing khoá cứng**; nếu có `<proj>/words.json` (từ `align_words.py`) thì beat-emphasis (nhấn con số) landing đúng khoảnh khắc, nếu không thì xấp xỉ theo tỉ lệ.
+- Sửa storyboard rồi biên dịch lại thủ công: `npx ts-node scripts/compile-storyboard.ts --storyboard <proj>/storyboard.json --durations <proj>/durations.json --words <proj>/words.json --out <proj>/timeline.json`.
+
 ---
 
 ## Bước tiếp theo (cả 2 mode)

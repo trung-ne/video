@@ -43,12 +43,12 @@ Chọn cách generate — **mặc định dùng Mode A (in-session, không cần
 Làm theo đúng quy trình 8 bước của [/generate](generate.md) với `<proj>` = `projects/<id>/` (đọc transcript/viết script từ idea → cắt scene → TTS → viết `scenes[]` → validate). Toàn bộ output của /generate đã ghi vào `projects/<proj>/`. Dùng chính session chat này để sinh script + timeline, chỉ gọi Python cho TTS.
 
 **Mode B — Script (cần `ANTHROPIC_API_KEY` trong env)**
-Kiểm tra `ANTHROPIC_API_KEY`; nếu chưa có, hỏi user hoặc quay lại Mode A. Chạy (thêm cờ TTS như generate.md Mode B):
+Kiểm tra `ANTHROPIC_API_KEY`; nếu chưa có, hỏi user hoặc quay lại Mode A. Chạy (thêm `--storyboard` để dùng pipeline 2 tầng — khuyến nghị; xem generate.md Mode B+):
 ```bash
 # Kokoro (tiếng Anh)
-npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --tts-kokoro --tts-voice af_heart --tts-lang a --out projects/<id>/timeline.json
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --storyboard --tts-kokoro --tts-voice af_heart --tts-lang a --out projects/<id>/timeline.json
 # Edge (tiếng Việt)
-npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --tts --tts-voice vi-VN-HoaiMyNeural --out projects/<id>/timeline.json
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --storyboard --tts --tts-voice vi-VN-HoaiMyNeural --out projects/<id>/timeline.json
 # Từ idea / url: thay --transcript bằng --idea "<idea>" hoặc --url "<url>"
 ```
 

@@ -30,6 +30,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import { buildSystemPrompt, buildScriptFromIdea, listAvailableAssets } from "../src/ai/systemPrompt";
+import { buildStoryboardPrompt } from "../src/ai/storyboardPrompt";
+import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
@@ -46,6 +48,7 @@ const urlInput = getArg("--url");
 const transcriptInput = getArg("--transcript");
 const audioInput = getArg("--audio");
 const durationOverride = getArg("--duration");
+const storyboardMode = args.includes("--storyboard");
 const ttsFlag = args.includes("--tts") || args.includes("--tts-kokoro");
 const ttsBackend = args.includes("--tts-kokoro") ? "kokoro" : "edge";
 // kokoro voices: af_heart af_bella am_adam am_michael bf_emma bm_george
@@ -371,6 +374,38 @@ ${transcript}
   });
 }
 
+// --- Step 2 (storyboard mode): transcript → Storyboard JSON ---
+async function generateStoryboard(transcript: string, durationSeconds: number): Promise<any> {
+  console.log("🎬 AI đang tạo STORYBOARD (tầng ý đồ)...\n");
+  return await callWithFallback<any>({
+    system: buildStoryboardPrompt(durationSeconds),
+    user: `Tạo STORYBOARD JSON cho transcript sau (video ~${durationSeconds}s). Trả JSON thuần.\n\nTRANSCRIPT:\n---\n${transcript}\n---`,
+    maxTokens: 32000,
+    modelType: "timeline",
+    parse: (raw) => {
+      const m = raw.match(/\{[\s\S]+\}/);
+      try { return JSON.parse(m ? m[0] : raw); }
+      catch { throw new Error("Storyboard JSON parse failed"); }
+    },
+  });
+}
+
+// Read a durations.json (written by TTS) → SceneTiming[] for re-compile.
+function readDurations(projectDir: string): SceneTiming[] | undefined {
+  const p = path.join(projectDir, "durations.json");
+  if (!fs.existsSync(p)) return undefined;
+  const d = JSON.parse(fs.readFileSync(p, "utf-8"));
+  return (d.scenes ?? []).map((s: any) => ({ id: s.id, startFrame: s.startFrame, frames: s.frames }));
+}
+
+// Read a words.json (written by align_words.py) → AlignedWord[] for beats.
+function readWords(projectDir: string): any[] | undefined {
+  const p = path.join(projectDir, "words.json");
+  if (!fs.existsSync(p)) return undefined;
+  const w = JSON.parse(fs.readFileSync(p, "utf-8"));
+  return Array.isArray(w) ? w : w.words;
+}
+
 // --- TTS: generate audio per scene, patch timeline durations ---
 async function runTTS(timeline: any, projectDir: string): Promise<void> {
   if (!Array.isArray(timeline.scenes) || timeline.scenes.length === 0) {
@@ -477,13 +512,35 @@ async function main() {
     console.log(`📝 Transcript: ~${wordCount} words → estimated ${durationSeconds}s`);
   }
 
-  // Step 3: Generate timeline
-  const timeline = await generateTimeline(transcript, durationSeconds);
+  const projectDir = path.dirname(outPath);
+
+  // Step 3: Generate timeline.
+  // storyboard mode: transcript → Storyboard (AI) → scenes[] (deterministic compile).
+  // classic mode:    transcript → scenes[] (AI writes scenes directly).
+  let storyboard: any = null;
+  let timeline: any;
+  if (storyboardMode) {
+    storyboard = await generateStoryboard(transcript, durationSeconds);
+    if (audioInput && !ttsFlag) storyboard.audio = audioInput;
+    timeline = compileStoryboard(storyboard, {});
+    fs.writeFileSync(path.join(projectDir, "storyboard.json"), JSON.stringify(storyboard, null, 2));
+    console.log(`🎬 Storyboard: ${storyboard.scenes?.length ?? 0} briefs → ${timeline.scenes.length} scenes`);
+  } else {
+    timeline = await generateTimeline(transcript, durationSeconds);
+  }
 
   // Step 3.5: TTS — generate audio and patch durations (same folder as timeline)
   if (ttsFlag && Array.isArray(timeline.scenes)) {
-    const projectDir = path.dirname(outPath);  // Same folder as timeline.json
     await runTTS(timeline, projectDir);
+    // Storyboard mode: re-compile with LOCKED TTS timing (+ word alignment if
+    // align_words.py has produced words.json) so beat-emphasis lands exactly.
+    if (storyboardMode && storyboard) {
+      const durations = readDurations(projectDir);
+      const words = readWords(projectDir);
+      timeline = compileStoryboard(storyboard, { durations, words, background: timeline.background });
+      timeline.audio = `audio/${path.basename(projectDir)}/voice.wav`;
+      console.log(`🎬 Storyboard re-compiled with locked timing${words ? " + word alignment" : " (approx beats)"}.`);
+    }
   }
 
   // Step 4: Add audio if provided (non-TTS mode)
