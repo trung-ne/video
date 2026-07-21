@@ -75,7 +75,29 @@ fs.writeFileSync(propsTmpFile, propsJson);
 console.log(`\n🎬 Rendering: ${compositionId}`);
 console.log(`   Output: ${outPath}\n`);
 
+// This sandbox has no outbound network access, so Remotion can't download its
+// own Chrome Headless Shell. Point it at a compatible binary already cached
+// locally by Playwright instead (same underlying Chromium browser).
+function findCachedChromeHeadlessShell(): string | null {
+  const base = path.join(
+    process.env.LOCALAPPDATA || path.join(process.env.USERPROFILE || "", "AppData", "Local"),
+    "ms-playwright"
+  );
+  if (!fs.existsSync(base)) return null;
+  const candidates = fs
+    .readdirSync(base)
+    .filter((d) => d.startsWith("chromium_headless_shell-"))
+    .sort()
+    .reverse();
+  for (const dir of candidates) {
+    const exe = path.join(base, dir, "chrome-headless-shell-win64", "chrome-headless-shell.exe");
+    if (fs.existsSync(exe)) return exe;
+  }
+  return null;
+}
+
 try {
+  const browserExecutable = findCachedChromeHeadlessShell();
   const cmd = [
     "npx remotion render",
     `src/index.ts`,
@@ -83,7 +105,10 @@ try {
     `"${outPath}"`,
     `--props="${propsTmpFile}"`,
     "--log=verbose",
-  ].join(" ");
+    browserExecutable ? `--browser-executable="${browserExecutable}"` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
