@@ -9,7 +9,7 @@
 // layers beat-emphasis on top. Browser-safe: no fs, no Date/random.
 // ============================================================
 
-import { Scene, SceneEntity, SceneText, SceneSpeechBubble, ScenePaperCard, LayoutPreset } from "../types/scene";
+import { Scene, SceneEntity, SceneText, SceneSpeechBubble, ScenePaperCard, SceneFrameBox, LayoutPreset } from "../types/scene";
 import { SceneBrief, Storyboard, Shot, Emotion } from "../types/storyboard";
 import { STAGE_ANCHORS } from "./stageAnchors";
 
@@ -45,6 +45,7 @@ export interface GrammarResult {
   texts: SceneText[];
   speechBubbles?: SceneSpeechBubble[];
   paperCards?: ScenePaperCard[];
+  frameBoxes?: SceneFrameBox[];
   // The assetId the eye should land on — compiler anchors beat-emphasis here.
   focusAssetId?: string;
   // The text id that carries the key number/keyword, if any.
@@ -222,6 +223,117 @@ function grammarSolo(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   };
 }
 
+// ── FRAMEBOX (TV/screen device) ─────────────────────────────
+// An image or data panel inside a drawn TV frame + a cat reacting beside it.
+// The reference channel's signature "show it on a screen" device.
+function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const content = b.slots?.content ?? b.slots?.image ?? "#1b2a3a";
+  const caption = b.slots?.caption;
+  return {
+    layout: "SOLO",
+    backgroundSrc: WHITE,
+    entities: [
+      { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "RIGHT_BOTTOM", scale: 1.2, enterAnimation: "popIn", enterDelay: 14 },
+    ],
+    texts: [],
+    focusAssetId: `${b.id}-cat`,
+    frameBoxes: [{ id: `${b.id}-tv`, contentSrc: content, caption, position: { x: 0.42, y: 0.42 }, delay: 8 }],
+  };
+}
+
+// ── CHAR_PROP (Kuleshov: cat + object) ──────────────────────
+// Cat on the left looking right at a prop on the right; optional label.
+function grammarCharProp(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const prop = b.slots?.prop ?? "finance/money";
+  const label = b.slots?.label;
+  return {
+    layout: "CHAR_PROP",
+    backgroundSrc: WHITE,
+    entities: [
+      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, "characters/cat_explain").src : "characters/cat_explain", slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
+      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 1.3, label, enterAnimation: "popIn", enterDelay: 24,
+        emphasize: { animation: "pulse", delay: 30, duration: 20 } },
+    ],
+    texts: [],
+    focusAssetId: `${b.id}-prop`,
+  };
+}
+
+// ── DIAGRAM (left→right flow) ───────────────────────────────
+// items "A|B|C" laid across, connected by right-arrows: A → B → C.
+function grammarDiagram(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const items = (b.slots?.items ?? "").split("|").map((s) => s.trim()).filter(Boolean).slice(0, 3);
+  const n = items.length || 2;
+  const xs = n === 3 ? [0.2, 0.5, 0.8] : [0.28, 0.72];
+  const entities: SceneEntity[] = [];
+  const texts: SceneText[] = [];
+  items.forEach((label, i) => {
+    entities.push({ assetId: `${b.id}-n${i}`, src: "characters/cat", position: { x: xs[i], y: 0.5 }, badge: String(i + 1), scale: 1.3, enterAnimation: "popIn", enterDelay: 8 + i * 16 });
+    texts.push({ id: `${b.id}-t${i}`, content: label, style: "CAPTION", position: { x: xs[i], y: 0.68 }, delay: 12 + i * 16, duration: 120 });
+    if (i < items.length - 1) {
+      entities.push({ assetId: `${b.id}-a${i}`, src: "ui/arrow_right", position: { x: (xs[i] + xs[i + 1]) / 2, y: 0.5 }, scale: 0.9, enterAnimation: "fadeIn", enterDelay: 16 + i * 16 });
+    }
+  });
+  return { layout: "CUSTOM", backgroundSrc: WHITE, entities, texts, focusAssetId: `${b.id}-n0` };
+}
+
+// ── CAUSE_EFFECT (cause → arrow → effect) ───────────────────
+function grammarCauseEffect(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const cause = b.slots?.cause ?? "Cause";
+  const effect = b.slots?.effect ?? "Effect";
+  const causeIcon = b.slots?.causeIcon;
+  const effectIcon = b.slots?.effectIcon;
+  const entities: SceneEntity[] = [
+    { assetId: `${b.id}-c`, src: causeIcon ?? "characters/cat_think", position: { x: 0.22, y: 0.48 }, scale: causeIcon ? 1.4 : 1.6, enterAnimation: "slideLeft", enterDelay: 8 },
+    { assetId: `${b.id}-arrow`, src: "ui/arrow_right", position: { x: 0.5, y: 0.48 }, scale: 1.1, enterAnimation: "fadeIn", enterDelay: 26 },
+    { assetId: `${b.id}-e`, src: effectIcon ?? "characters/cat_surprised", position: { x: 0.78, y: 0.48 }, scale: effectIcon ? 1.4 : 1.6, enterAnimation: "slideRight", enterDelay: 40,
+      emphasize: { animation: "pulse", delay: 20, duration: 20 } },
+  ];
+  return {
+    layout: "CUSTOM", backgroundSrc: WHITE, entities,
+    texts: [
+      { id: `${b.id}-ct`, content: cause, style: "CAPTION", position: { x: 0.22, y: 0.7 }, delay: 12, duration: 130 },
+      { id: `${b.id}-et`, content: effect, style: "CAPTION", position: { x: 0.78, y: 0.7 }, delay: 44, duration: 120 },
+    ],
+    focusAssetId: `${b.id}-e`,
+  };
+}
+
+// ── QA_REVEAL (question → answer later) ─────────────────────
+function grammarQaReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const q = b.slots?.question ?? b.slots?.q ?? "";
+  const a = b.slots?.answer ?? b.slots?.a ?? "";
+  return {
+    layout: "QA_REVEAL",
+    backgroundSrc: WHITE,
+    entities: [
+      { assetId: `${b.id}-cat`, src: "characters/cat_think", slot: "CENTER_MID", enterAnimation: "popIn", enterDelay: 8,
+        emphasize: { animation: "bounce", delay: 60, duration: 20 } },
+    ],
+    texts: [
+      ...(q ? [{ id: `${b.id}-q`, content: q, style: "CALLOUT" as const, slot: "CALLOUT_CENTER" as const, delay: 10, duration: 70 }] : []),
+      ...(a ? [{ id: `${b.id}-a`, content: a, style: "STAT" as const, slot: "STAT_CENTER" as const, delay: 80, duration: 100 }] : []),
+    ],
+    focusAssetId: `${b.id}-cat`,
+    focusTextId: a ? `${b.id}-a` : undefined,
+  };
+}
+
+// ── ICON_TRIPLE (3 concepts in colored circles) ─────────────
+function grammarIconTriple(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const items = (b.slots?.items ?? "").split("|").map((s) => s.trim()).filter(Boolean).slice(0, 3);
+  const icons = (b.slots?.icons ?? "").split("|").map((s) => s.trim()).filter(Boolean);
+  const circles = ["#8E44AD", "#2E86C1", "#E67E22"];
+  const xs = [0.2, 0.5, 0.8];
+  const entities: SceneEntity[] = [];
+  const texts: SceneText[] = [];
+  items.forEach((label, i) => {
+    entities.push({ assetId: `${b.id}-i${i}`, src: icons[i] ?? "props/concept_card", position: { x: xs[i], y: 0.45 }, scale: 1.1, circle: circles[i], enterAnimation: "popIn", enterDelay: 8 + i * 14 });
+    texts.push({ id: `${b.id}-t${i}`, content: label, style: "CAPTION", position: { x: xs[i], y: 0.66 }, delay: 12 + i * 14, duration: 120 });
+  });
+  return { layout: "ICON_TRIPLE", backgroundSrc: WHITE, entities, texts, focusAssetId: `${b.id}-i0` };
+}
+
 type GrammarFn = (b: SceneBrief, ctx: GrammarContext) => GrammarResult;
 
 export const VISUAL_GRAMMARS: Record<string, GrammarFn> = {
@@ -231,6 +343,12 @@ export const VISUAL_GRAMMARS: Record<string, GrammarFn> = {
   DIALOGUE_QA: grammarDialogueQA,
   TABLEAU: grammarTableau,
   EVIDENCE: grammarEvidence,
+  FRAMEBOX: grammarFrameBox,
+  CHAR_PROP: grammarCharProp,
+  DIAGRAM: grammarDiagram,
+  CAUSE_EFFECT: grammarCauseEffect,
+  QA_REVEAL: grammarQaReveal,
+  ICON_TRIPLE: grammarIconTriple,
   BEAT: grammarBeat,
   SOLO: grammarSolo,
 };

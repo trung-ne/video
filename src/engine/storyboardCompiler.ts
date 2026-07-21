@@ -109,6 +109,7 @@ function compileBrief(
     texts: result.texts,
     speechBubbles: result.speechBubbles,
     paperCards: result.paperCards,
+    frameBoxes: result.frameBoxes,
   };
 }
 

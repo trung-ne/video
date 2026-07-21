@@ -22,6 +22,12 @@ export type VisualGrammar =
   | "DIALOGUE_QA"   // two cats trade lines via speech bubbles
   | "TABLEAU"       // characters seated inside an illustrated stage set
   | "EVIDENCE"      // a paper card / TV frame showing a quote or data
+  | "FRAMEBOX"      // image/data inside a drawn TV frame + a reacting cat
+  | "CHAR_PROP"     // a cat looking at / pointing to an object (Kuleshov)
+  | "DIAGRAM"       // a left→right flow of items connected by arrows
+  | "CAUSE_EFFECT"  // cause → arrow → effect
+  | "QA_REVEAL"     // a question, then the answer revealed later
+  | "ICON_TRIPLE"   // three concepts in colored circles
   | "BEAT"          // full-bleed emotional image, no character, no overlay
   | "SOLO"          // one expressive cat addressing the viewer + a keyword
   | "FREEFORM";     // escape hatch: an author-written Scene is embedded as-is

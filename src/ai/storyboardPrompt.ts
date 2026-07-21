@@ -26,9 +26,17 @@ Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "
 | POLICY_LIST | liệt kê 2-4 mục/nhân vật | { "items": "A|B|C" } |
 | DIALOGUE_QA | hỏi–đáp giữa 2 nhân vật | { "asker": "<role>", "answerer": "<role>", "askerText": "≤8 từ", "answererText": "≤8 từ" } |
 | TABLEAU | nhân vật NGỒI trong bối cảnh | { "stage": "<stage src>", "who": "<role>", "seatB": "<role?>", "anchorA": "...", "anchorB": "...", "lineA": "≤8 từ?", "lineB": "≤8 từ?" } |
-| EVIDENCE | trích dẫn/khảo sát/số liệu | { "title": "?", "body": "nguyên văn ngắn" } |
+| EVIDENCE | trích dẫn/khảo sát/số liệu | { "title": "?", "body": "nguyên văn ngắn", "choices": "A|B|C?" } |
+| FRAMEBOX | chiếu ảnh/dữ liệu trong khung TV | { "content": "backgrounds/x.jpg | #hex", "caption": "?" } |
+| CHAR_PROP | mèo nhìn/chỉ vào đồ vật | { "prop": "finance/money", "label": "?" } |
+| DIAGRAM | luồng A→B→C (mũi tên) | { "items": "A|B|C" } |
+| CAUSE_EFFECT | nguyên nhân → hệ quả | { "cause": "...", "effect": "...", "causeIcon": "finance/x?", "effectIcon": "?" } |
+| QA_REVEAL | hỏi rồi hé lộ đáp | { "question": "...", "answer": "..." } |
+| ICON_TRIPLE | 3 khái niệm vòng tròn màu | { "items": "A|B|C", "icons": "finance/x|props/y|...?" } |
 | BEAT | khoảnh khắc cảm xúc, không nhân vật | { "image": "backgrounds/....jpg | #hex" } |
 | SOLO | mèo độc thoại + 1 keyword | { "who": "<role>", "keyword": "≤4 từ" } |
+
+Icon/prop dùng cho CHAR_PROP/CAUSE_EFFECT/ICON_TRIPLE: finance/* (money, house, stock, inflation, chart_up, wallet, piggy_bank, debt, loan...), props/* (trophy, book, brain, hourglass, calendar, marshmallow...).
 
 STAGE cho TABLEAU (backgroundSrc + anchor khả dụng):
 ${stageLines}

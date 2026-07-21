@@ -518,6 +518,12 @@ const GRAMMAR_REQUIRED_SLOTS: Record<string, string[][]> = {
   DIALOGUE_QA: [["askerText", "answererText"]],
   TABLEAU: [["stage"]],
   EVIDENCE: [], // body falls back to narration
+  FRAMEBOX: [["content", "image"]],
+  CHAR_PROP: [["prop"]],
+  DIAGRAM: [["items"]],
+  CAUSE_EFFECT: [["cause"], ["effect"]],
+  QA_REVEAL: [["question", "q"]],
+  ICON_TRIPLE: [["items"]],
   BEAT: [],     // image falls back
   SOLO: [],
   FREEFORM: [],
