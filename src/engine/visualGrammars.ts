@@ -10,8 +10,28 @@
 // ============================================================
 
 import { Scene, SceneEntity, SceneText, SceneSpeechBubble, ScenePaperCard, LayoutPreset } from "../types/scene";
-import { SceneBrief, Storyboard, Shot } from "../types/storyboard";
+import { SceneBrief, Storyboard, Shot, Emotion } from "../types/storyboard";
 import { STAGE_ANCHORS } from "./stageAnchors";
+
+// Emotion → cat pose. The storyboard authors an emotion per scene; without
+// this the compiler ignored it and every narrator cat used the same hardcoded
+// pose (flat expression on every video — a system-wide defect, breaks V4.3).
+// Only poses that exist under public/assets/characters are referenced.
+const EMOTION_POSE: Record<Emotion, string> = {
+  neutral: "characters/cat_explain",
+  surprise: "characters/cat_surprised",
+  concern: "characters/cat_think",
+  sad: "characters/cat_sad",
+  hopeful: "characters/cat_happy",
+  sarcastic: "characters/cat_explain",
+  curious: "characters/cat_think",
+  urgent: "characters/cat_surprised",
+  happy: "characters/cat_happy",
+};
+
+function emotionPose(emotion: Emotion | undefined): string {
+  return (emotion && EMOTION_POSE[emotion]) || "characters/cat_explain";
+}
 
 export interface GrammarContext {
   cast: Storyboard["cast"];
@@ -70,7 +90,7 @@ function grammarCompare(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 // compiler) pulses the STAT on the number's word.
 function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const stat = b.slots?.stat ?? b.slots?.number ?? "";
-  const cat = castSrc(ctx, b.slots?.who, "characters/cat_surprised");
+  const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
   return {
     layout: "STAT_DRAMA",
     backgroundSrc: "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
@@ -141,7 +161,7 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const entities: SceneEntity[] = [];
   const bubbles: SceneSpeechBubble[] = [];
 
-  const a = castSrc(ctx, b.slots?.who ?? b.slots?.seatA, "characters/cat");
+  const a = castSrc(ctx, b.slots?.who ?? b.slots?.seatA, emotionPose(b.emotion));
   const anchorA = b.slots?.anchorA ?? anchorKeys[0];
   if (anchorA) entities.push({ assetId: `${b.id}-a`, src: a.src, badge: a.badge, anchor: anchorA, enterAnimation: "fadeIn", enterDelay: 6 });
 
@@ -163,15 +183,18 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const body = b.slots?.body ?? b.narration;
   const title = b.slots?.title;
+  const choices = (b.slots?.choices ?? "").split("|").map((s) => s.trim()).filter(Boolean);
+  const isSurvey = !!title || choices.length > 0;
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: "characters/cat_explain", slot: "LEFT_MID", enterAnimation: "popIn", enterDelay: 8 },
+      { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "LEFT_MID", enterAnimation: "popIn", enterDelay: 8 },
     ],
     texts: [],
     paperCards: [
-      { id: `${b.id}-ev`, variant: title ? "survey" : "evidence", title, body, position: { x: 0.66, y: 0.4 }, delay: 12 },
+      { id: `${b.id}-ev`, variant: isSurvey ? "survey" : "evidence", title, body,
+        choices: choices.length ? choices : undefined, position: { x: 0.66, y: 0.4 }, delay: 12 },
     ],
     focusAssetId: `${b.id}-cat`,
   };
@@ -187,7 +210,7 @@ function grammarBeat(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 // ── SOLO ────────────────────────────────────────────────────
 // One expressive cat addressing the viewer + a single keyword.
 function grammarSolo(b: SceneBrief, ctx: GrammarContext): GrammarResult {
-  const cat = castSrc(ctx, b.slots?.who, "characters/cat_explain");
+  const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
   const kw = b.slots?.keyword;
   return {
     layout: "SOLO",
