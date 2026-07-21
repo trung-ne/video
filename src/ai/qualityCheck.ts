@@ -1,6 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
+import { STAGE_ANCHORS } from "../engine/stageAnchors";
+
+const STAGE_ANCHORS_KEYS = new Set(Object.keys(STAGE_ANCHORS));
 
 // ============================================================
 // qualityCheck.ts — comprehensive quality gate for SceneTimeline
@@ -501,6 +504,86 @@ function checkV5Registers(scenes: any[]): CheckResult {
   }
 
   return { name: "V5 registers: bubble/evidence/beat có mặt đủ quota", passed: issues.length === 0, issues };
+}
+
+// ── Storyboard-level gates (run BEFORE compile, on the storyboard) ──
+// Intent lives in the storyboard; once compiled to scenes[] the grammar/beat
+// info is baked away. So these two gates operate on the Storyboard object.
+
+// Required slot keys per visual grammar (at least one of each group).
+const GRAMMAR_REQUIRED_SLOTS: Record<string, string[][]> = {
+  COMPARE: [["left"], ["right"]],
+  STAT_REVEAL: [["stat", "number"]],
+  POLICY_LIST: [["items"]],
+  DIALOGUE_QA: [["askerText", "answererText"]],
+  TABLEAU: [["stage"]],
+  EVIDENCE: [], // body falls back to narration
+  BEAT: [],     // image falls back
+  SOLO: [],
+  FREEFORM: [],
+};
+const GRAMMARS_WITHOUT_FOCAL = new Set(["BEAT"]); // no entity → beats can't anchor
+
+export function runStoryboardCheck(storyboard: any): QualityReport {
+  const briefs: any[] = Array.isArray(storyboard?.scenes) ? storyboard.scenes : [];
+  const intentIssues: QualityIssue[] = [];
+  const beatIssues: QualityIssue[] = [];
+
+  for (const b of briefs) {
+    const g = b.visualGrammar;
+    // INTENT_REALIZED — grammar known + required slots filled.
+    if (!g || !(g in GRAMMAR_REQUIRED_SLOTS)) {
+      intentIssues.push({
+        severity: "BLOCKER", rule: "INTENT_REALIZED", scene: b.id,
+        message: `${b.id}: visualGrammar "${g}" không hợp lệ`,
+        suggestion: `Dùng 1 trong: ${Object.keys(GRAMMAR_REQUIRED_SLOTS).join(", ")}`,
+      });
+      continue;
+    }
+    const slots = b.slots ?? {};
+    for (const group of GRAMMAR_REQUIRED_SLOTS[g]) {
+      if (!group.some((k) => (slots[k] ?? "").toString().trim().length > 0)) {
+        intentIssues.push({
+          severity: "MAJOR", rule: "INTENT_REALIZED", scene: b.id,
+          message: `${b.id} (${g}): thiếu slot bắt buộc "${group.join("|")}"`,
+          suggestion: `Grammar ${g} cần slot ${group.join(" hoặc ")} để bung đúng`,
+        });
+      }
+    }
+    // TABLEAU stage must be a known stage set.
+    if (g === "TABLEAU" && slots.stage && !STAGE_ANCHORS_KEYS.has(slots.stage)) {
+      intentIssues.push({
+        severity: "MAJOR", rule: "INTENT_REALIZED", scene: b.id,
+        message: `${b.id}: stage "${slots.stage}" không tồn tại`,
+        suggestion: `Stage hợp lệ: ${[...STAGE_ANCHORS_KEYS].join(", ")}`,
+      });
+    }
+
+    // BEAT_UNANCHORED — a strong beat that can't land an emphasis.
+    for (const beat of b.beats ?? []) {
+      if ((beat.importance ?? 0) < 0.8) continue;
+      const inNarration = (b.narration ?? "").toLowerCase().includes((beat.text ?? "").toLowerCase().trim());
+      if (!inNarration) {
+        beatIssues.push({
+          severity: "MAJOR", rule: "BEAT_UNANCHORED", scene: b.id,
+          message: `${b.id}: beat "${beat.text}" (importance ${beat.importance}) KHÔNG phải substring của narration → không định vị được frame`,
+          suggestion: "beat.text phải là đoạn chữ CHÍNH XÁC trong narration",
+        });
+      } else if (GRAMMARS_WITHOUT_FOCAL.has(g)) {
+        beatIssues.push({
+          severity: "MINOR", rule: "BEAT_UNANCHORED", scene: b.id,
+          message: `${b.id}: grammar ${g} không có nhân vật/tiêu điểm để nhấn beat "${beat.text}"`,
+          suggestion: "Beat quan trọng nên đặt ở grammar có focal (STAT_REVEAL/SOLO/DIALOGUE...) chứ không phải BEAT",
+        });
+      }
+    }
+  }
+
+  const checks: CheckResult[] = [
+    { name: "Storyboard: intent realized (grammar + slots hợp lệ)", passed: intentIssues.length === 0, issues: intentIssues },
+    { name: "Storyboard: beat quan trọng có thể nhấn đúng chỗ", passed: beatIssues.length === 0, issues: beatIssues },
+  ];
+  return assembleReport(checks, "(storyboard)");
 }
 
 // CHECK 4: Scene duration
@@ -1420,16 +1503,17 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkSceneDensity(timeline, scenes),
   ];
 
-  // Count issues
+  return assembleReport(checks, timelinePath);
+}
+
+// Score + grade a set of checks (shared by timeline + storyboard reports).
+// blockers = -15pt, majors = -6pt, minors = -1pt; capped at 100.
+function assembleReport(checks: CheckResult[], label: string): QualityReport {
   const allIssues = checks.flatMap((c) => c.issues);
   const blockers = allIssues.filter((i) => i.severity === "BLOCKER").length;
   const majors = allIssues.filter((i) => i.severity === "MAJOR").length;
   const minors = allIssues.filter((i) => i.severity === "MINOR").length;
-  const passed = checks.filter((c) => c.passed).length;
 
-  // Score: weighted by checks passed + severity of failures.
-  // blockers = -15pt each, majors = -6pt each, minors = -1pt each.
-  // Cap deductions at 100 so score stays 0-100.
   const deductions = Math.min(100, 15 * blockers + 6 * majors + 1 * minors);
   const scorePercent = Math.max(0, 100 - deductions);
 
@@ -1440,13 +1524,12 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     scorePercent >= 55 ? "C" :
     scorePercent >= 35 ? "D" : "F";
 
-  // Top action items (blockers first, then majors)
   const summary = allIssues
     .filter((i) => i.severity === "BLOCKER" || i.severity === "MAJOR")
     .slice(0, 8)
     .map((i) => `[${i.severity}] ${i.message}`);
 
-  return { timelinePath, scorePercent, grade, blockers, majors, minors, checks, summary };
+  return { timelinePath: label, scorePercent, grade, blockers, majors, minors, checks, summary };
 }
 
 // ─── Pretty printer ───────────────────────────────────────────

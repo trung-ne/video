@@ -34,7 +34,7 @@ import { buildStoryboardPrompt } from "../src/ai/storyboardPrompt";
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
-import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
+import { runQualityCheck, printQualityReport, runStoryboardCheck } from "../src/ai/qualityCheck";
 
 // --- Parse CLI args ---
 const args = process.argv.slice(2);
@@ -398,6 +398,21 @@ function readDurations(projectDir: string): SceneTiming[] | undefined {
   return (d.scenes ?? []).map((s: any) => ({ id: s.id, startFrame: s.startFrame, frames: s.frames }));
 }
 
+// Word-align voice.wav → words.json (best-effort; beats fall back to
+// char-proportion if whisper isn't installed or fails).
+function runWordAlignment(projectDir: string): void {
+  const wav = path.join(projectDir, "voice.wav");
+  if (!fs.existsSync(wav)) return;
+  try {
+    console.log("🎯 Word alignment (whisper)...");
+    execSync(`py -3.11 scripts/align_words.py --wav "${wav}" --outdir "${projectDir}" --model base`, {
+      stdio: "inherit", cwd: process.cwd(),
+    });
+  } catch {
+    console.warn("⚠️  align_words thất bại (thiếu faster-whisper?) — beat dùng xấp xỉ theo tỉ lệ.");
+  }
+}
+
 // Read a words.json (written by align_words.py) → AlignedWord[] for beats.
 function readWords(projectDir: string): any[] | undefined {
   const p = path.join(projectDir, "words.json");
@@ -522,6 +537,7 @@ async function main() {
   if (storyboardMode) {
     storyboard = await generateStoryboard(transcript, durationSeconds);
     if (audioInput && !ttsFlag) storyboard.audio = audioInput;
+    printQualityReport(runStoryboardCheck(storyboard)); // INTENT_REALIZED / BEAT_UNANCHORED
     timeline = compileStoryboard(storyboard, {});
     fs.writeFileSync(path.join(projectDir, "storyboard.json"), JSON.stringify(storyboard, null, 2));
     console.log(`🎬 Storyboard: ${storyboard.scenes?.length ?? 0} briefs → ${timeline.scenes.length} scenes`);
@@ -532,9 +548,10 @@ async function main() {
   // Step 3.5: TTS — generate audio and patch durations (same folder as timeline)
   if (ttsFlag && Array.isArray(timeline.scenes)) {
     await runTTS(timeline, projectDir);
-    // Storyboard mode: re-compile with LOCKED TTS timing (+ word alignment if
-    // align_words.py has produced words.json) so beat-emphasis lands exactly.
+    // Storyboard mode: word-align the voice, then re-compile with LOCKED TTS
+    // timing + word alignment so beat-emphasis lands on the exact spoken word.
     if (storyboardMode && storyboard) {
+      runWordAlignment(projectDir);
       const durations = readDurations(projectDir);
       const words = readWords(projectDir);
       timeline = compileStoryboard(storyboard, { durations, words, background: timeline.background });

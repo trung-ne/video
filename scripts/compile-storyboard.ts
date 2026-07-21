@@ -8,6 +8,7 @@
 import * as fs from "fs";
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { AlignedWord } from "../src/types/storyboard";
+import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 
 const args = process.argv.slice(2);
 const getArg = (f: string) => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : undefined; };
@@ -18,6 +19,9 @@ if (!sbPath || !fs.existsSync(sbPath)) { console.error(`❌ storyboard not found
 
 const sb = JSON.parse(fs.readFileSync(sbPath, "utf-8"));
 if (getArg("--audio")) sb.audio = getArg("--audio");
+
+// Storyboard-level gates (INTENT_REALIZED, BEAT_UNANCHORED) before compiling.
+printQualityReport(runStoryboardCheck(sb));
 
 let durations: SceneTiming[] | undefined;
 const dPath = getArg("--durations");
