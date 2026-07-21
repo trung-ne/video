@@ -30,8 +30,9 @@ Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "
 | BEAT | khoảnh khắc cảm xúc, không nhân vật | { "image": "backgrounds/....jpg | #hex" } |
 | SOLO | mèo độc thoại + 1 keyword | { "who": "<role>", "keyword": "≤4 từ" } |
 
-STAGE cho TABLEAU:
+STAGE cho TABLEAU (backgroundSrc + anchor khả dụng):
 ${stageLines}
+Nếu KHÔNG stage nào khớp bối cảnh → có thể tạo stage mới bằng skill **gen-stage** (vẽ SVG đồng bộ style + đăng ký anchor), rồi dùng \`stage\` = path mới. Đừng cố nhét bối cảnh sai vào stage sẵn có.
 
 ## CASTING (bắt buộc nếu >1 vai)
 Khai báo "cast": role → { src, badge }. Giữ nguyên xuyên video (người xem nhận diện qua costume+số). Ví dụ: "guy": { "src": "characters/cat", "badge": "1" }.

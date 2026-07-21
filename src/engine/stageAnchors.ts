@@ -37,6 +37,38 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
     seat_right: { x: 0.67, y: 0.50, scale: 1.5 },
     seat_center:{ x: 0.50, y: 0.48, scale: 1.55 },
   },
+  "assets/scenes/office_desk.svg": {
+    // seated at the desk, torso above the desk line (~y 0.72 in art)
+    desk:       { x: 0.42, y: 0.52, scale: 1.5 },
+    desk_right: { x: 0.58, y: 0.52, scale: 1.4 },
+  },
+  "assets/scenes/cafe.svg": {
+    // leaning at the counter (counter top ~y 0.68)
+    counter_left:  { x: 0.34, y: 0.52, scale: 1.45 },
+    counter_right: { x: 0.62, y: 0.52, scale: 1.45 },
+  },
+  "assets/scenes/park.svg": {
+    // sitting on the bench (seat ~y 0.67)
+    bench_left:  { x: 0.44, y: 0.52, scale: 1.4 },
+    bench_right: { x: 0.58, y: 0.52, scale: 1.4 },
+    stand:       { x: 0.5,  y: 0.6,  scale: 1.6 },
+  },
+  "assets/scenes/classroom.svg": {
+    // seated at the desk in front of the blackboard
+    desk:  { x: 0.5,  y: 0.52, scale: 1.5 },
+    board: { x: 0.28, y: 0.5,  scale: 1.6 }, // standing to the side, presenting
+  },
+  "assets/scenes/street.svg": {
+    // standing on the sidewalk (walk level ~y 0.62)
+    sidewalk:       { x: 0.5,  y: 0.56, scale: 1.6 },
+    sidewalk_left:  { x: 0.32, y: 0.56, scale: 1.5 },
+    sidewalk_right: { x: 0.68, y: 0.56, scale: 1.5 },
+  },
+  "assets/scenes/shop_counter.svg": {
+    // customer/clerk at the counter
+    counter_left:  { x: 0.36, y: 0.52, scale: 1.45 },
+    counter_right: { x: 0.64, y: 0.52, scale: 1.45 },
+  },
 };
 
 // Is this backgroundSrc an illustrated stage set (vs a real photo)?
