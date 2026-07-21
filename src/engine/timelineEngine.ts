@@ -220,9 +220,12 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
           content: e.content,
           position: e.position,
           fontSize: e.fontSize ?? 48,
-          // SUBTITLE always renders white-on-black-band — a #1a1a1a default here
-          // made subtitles near-invisible (dark text on the dark band).
-          color: e.color ?? (e.style === "SUBTITLE" ? "#FFFFFF" : "#1a1a1a"),
+          // Per-style default when the compiler didn't set an explicit color.
+          // A blanket #1a1a1a here silently overrode the component's own style
+          // defaults: SUBTITLE was invisible on its dark band, and STAT (meant
+          // to be a bright #FF3B3B number) rendered dark-gray on STAT_DRAMA's
+          // near-black background. Give those two their intended bright colors.
+          color: e.color ?? (e.style === "SUBTITLE" ? "#FFFFFF" : e.style === "STAT" ? "#FF3B3B" : "#1a1a1a"),
           style: e.style,
           background: e.background,
           align: e.align,
