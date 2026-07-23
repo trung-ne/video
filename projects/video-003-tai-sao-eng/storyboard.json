@@ -1,69 +1,874 @@
 {
-  "fps": 30, "width": 1920, "height": 1080,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
   "audio": "audio/video-003-tai-sao-eng/voice.wav",
-  "cast": { "host": { "src": "characters/cat_explain" } },
+  "cast": {
+    "host": {
+      "src": "characters/cat_explain"
+    }
+  },
   "scenes": [
-    { "id": "scene01", "narration": "In South Korea, the government says that having one child earns you two million won, which is about forty million dong in our currency. Hungary goes even further, granting women with four or more children a lifetime exemption from personal income tax. Japan has even established an agency dedicated to caring for children and families.", "purpose": "Governments pay people to have kids", "emotion": "surprise", "viewerFocus": "cash incentives", "visualGrammar": "EVIDENCE", "slots": { "title": "Baby bonuses", "body": "Korea: 2 million won / child.  Hungary: 4+ kids = lifetime tax exemption.  Japan: a child-care agency." }, "beats": [ { "text": "two million won", "importance": 0.85, "kind": "number" } ] },
-    { "id": "scene02", "narration": "Yet, in these countries, the birth rate is still declining. I was reading these statistics and wondering why people still refuse to have children even with money.", "purpose": "But it did not work", "emotion": "concern", "viewerFocus": "the paradox", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "STILL FALLING" }, "beats": [ { "text": "still declining", "importance": 0.9, "kind": "turn" } ] },
-    { "id": "scene03", "narration": "The normal logic is that they're probably too poor to have children. But now that they have money, they should have more children, right? People used to have many children even when they were poor.", "purpose": "Poor had many, rich have few", "emotion": "curious", "viewerFocus": "contrast", "visualGrammar": "COMPARE", "slots": { "left": "Poor = many kids", "right": "Rich = few kids" } },
-    { "id": "scene04", "narration": "To explain this, we have to go back to the first step of starting a family: dating. And we'll use the theoretical framework of game theory to explain why dating is becoming increasingly difficult.", "purpose": "Framework: game theory", "emotion": "curious", "viewerFocus": "host", "visualGrammar": "SOLO", "slots": { "who": "host", "keyword": "Game Theory" } },
-    { "id": "scene05", "narration": "Why are there so many dating apps, yet people are still single? And with this trend of no one getting married or having children, many countries will disappear within one hundred years.", "purpose": "Stakes: countries vanish", "emotion": "urgent", "viewerFocus": "100 years", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "100 YEARS" }, "beats": [ { "text": "one hundred years", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene06", "narration": "Welcome to our cat-themed adaptation series. We're adapting great foreign videos for you to refer to. Actually, we've always done this, but now we're going to do it more officially. And our first series is the game theory series from the Predictive History channel. In this video, we'll base our content on those videos, as well as add our own research and counter-arguments. Okay, let's begin.", "purpose": "Channel intro", "emotion": "happy", "viewerFocus": "host greeting", "visualGrammar": "SOLO", "slots": { "who": "host", "keyword": "Let's begin" } },
-    { "id": "scene07", "narration": "First, let's talk a little about game theory. Any game will have three parts: the players, which are the participants; the rules, which are the constraints, the limitations, what can and cannot be done; and the rewards.", "purpose": "3 parts of a game", "emotion": "neutral", "viewerFocus": "the three parts", "visualGrammar": "ICON_TRIPLE", "slots": { "items": "Players|Rules|Rewards", "icons": "props/brain|props/book|props/trophy" } },
-    { "id": "scene08", "narration": "Because there must be rewards in a game; no one plays for no reason. It's what makes players want to play. To understand a game, we need to understand who is playing, what the rules are, and what the rewards are. And if we understand those three things, we can guess where the game will go.", "purpose": "Rewards drive players", "emotion": "neutral", "viewerFocus": "the reward", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/trophy", "label": "The reward" } },
-    { "id": "scene09", "narration": "Okay, now let's apply this theoretical framework to the dating story. Now imagine a society with ten people, five men, five women, and all of them want to date and get married. These five men will belong to five different social classes and will be ranked from one to five based on criteria such as appearance, health, wealth, and social status.", "purpose": "Rank 1-5", "emotion": "curious", "viewerFocus": "the ranking", "visualGrammar": "POLICY_LIST", "slots": { "items": "Rank 1|Rank 2|Rank 3|Rank 4" } },
-    { "id": "scene10", "narration": "Number five will be the ultimate catch, while number one will be the lowest. Instinctively, all women will want to marry number five, and all five men will want to marry all five women at the same time. This is because women want a partner who is capable of protecting and providing for them, while men want to maximize their fertility, so they want to date many women. However, if all the women only chase after number five, it won't work.", "purpose": "Everyone chases #5", "emotion": "sarcastic", "viewerFocus": "the mismatch", "visualGrammar": "COMPARE", "slots": { "left": "Women want #5", "right": "Men want everyone" } },
-    { "id": "scene11", "narration": "Because the other four men will team up to deal with number five. If number five decides to date all five women at the same time, then number five will realize that number five is no longer the most desirable person, because this guy is too promiscuous and doesn't guarantee a future for himself. The best option for girl number five at this point would be guy number four. At this point, girl number four will lose her best option, so she'll have to choose guy number three. Then girl number three will have to marry guy number two. And girl number two will marry guy number one.", "purpose": "The cascade", "emotion": "curious", "viewerFocus": "the debate", "visualGrammar": "DIALOGUE_QA", "slots": { "askerText": "Ai lấy ai bây giờ?", "answererText": "Đổ dồn xuống hết!" } },
-    { "id": "scene12", "narration": "And the result is that guy number five, the most eager one, ends up stuck with girl number one. Actually, girl number three could still marry guy number five because the difference between five and two is quite large, but to simplify, let's just assume the above. And the final result is that guy number five, who should have gotten the best result, gets the worst result. All the girls get worse results than they should have, except for girl number one. The only good thing is that all the guys benefit.", "purpose": "The greedy loses", "emotion": "sarcastic", "viewerFocus": "ironic result", "visualGrammar": "DIALOGUE_QA", "slots": { "askerText": "Số 5 được gì?", "answererText": "Cuối cùng ế nhất." } },
-    { "id": "scene13", "narration": "Actually, this is just a small assumption to illustrate the point: in a game, the strongest person who is too greedy will suffer a bitter end, and their rivals will be the ones who benefit directly. From this, we can deduce that the strongest person isn't the one who can steal everything from everyone else, but the one who can coordinate so that everyone benefits the most. Because if they just steal, the strongest person might win in the short term, but in the long term, everyone will lose. Therefore, the best solution is cooperation. Guy five takes girl five, guy four takes girl four, guy three takes girl three — everyone finds a partner, everyone has children, and society develops.", "purpose": "Cooperation wins", "emotion": "hopeful", "viewerFocus": "cooperation", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/trophy", "label": "Cooperation" } },
-    { "id": "scene14", "narration": "This state in game theory calls it Nash equilibrium. This is a state where no one benefits more from unilaterally changing strategies. It's like everyone is happy, and any change would only lead to more losses. So, let's just keep things as they are.", "purpose": "Name it", "emotion": "neutral", "viewerFocus": "the term", "visualGrammar": "SOLO", "slots": { "who": "host", "keyword": "Nash Equilibrium" } },
-    { "id": "scene15", "narration": "Okay, that theory is perfectly fine. But there's a problem: society doesn't just have ten people, but eight billion people.", "purpose": "Scale up", "emotion": "surprise", "viewerFocus": "8 billion", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "8 BILLION" }, "beats": [ { "text": "eight billion", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene16", "narration": "So, a fun survey asks: If you're thirty years old, your parents are pressuring you to get married, you've been dating for ten years and haven't found anyone you like, and now you're forced to get married, what are your minimum requirements for agreeing to marry someone?", "purpose": "Survey question", "emotion": "curious", "viewerFocus": "the survey", "visualGrammar": "EVIDENCE", "slots": { "title": "Survey", "body": "Minimum requirement to marry?", "choices": "Looks|Money|Comfort" } },
-    { "id": "scene17", "narration": "I think it would be simpler for guys. Like, any girl will do, even girl number one would be fine. Some girls say that if I don't find him attractive, then at least he must be earning around two hundred million a month. According to Nash equilibrium, number three should marry number three and live happily. But in reality, number three will look at number three and think, it's better to stay single. Unless I meet number five or he earns two hundred million a month, then I won't consider it.", "purpose": "Different bars", "emotion": "sarcastic", "viewerFocus": "the gap", "visualGrammar": "COMPARE", "slots": { "left": "Guys: anyone", "right": "Girls: #5 or 200M" } },
-    { "id": "scene18", "narration": "In reality, many people rush into the top one to two percent, and most end up being left behind. For example, Elon Musk — he has a ton of children and many wives. Billionaires and celebrities have no shortage of people lining up for them. Meanwhile, many young people around the world are also experiencing the situation of being involuntarily single. That is, they want a partner, they want to get married, but they can't.", "purpose": "Winner take all", "emotion": "concern", "viewerFocus": "top 1%", "visualGrammar": "CHAR_PROP", "slots": { "prop": "finance/money", "label": "Top 1%" } },
-    { "id": "scene19", "narration": "So gradually, they give up. As for the guys, they'd rather stay home playing games, browsing the internet, and watching movies. So, many young men in their twenties and thirties have never dated, never had a relationship, and don't want to try anymore. It's not because they're ugly or incompetent, but simply because the dating game now is too tiring. The competition is fierce, and the probability of winning is low.", "purpose": "Giving up", "emotion": "sad", "viewerFocus": "resignation", "visualGrammar": "SOLO", "slots": { "keyword": "Given up" } },
-    { "id": "scene20", "narration": "Why? As I said, in a game there are three parts: the players — this hasn't changed much. The rules of the game are competition, and that hasn't changed much either.", "purpose": "Two parts unchanged", "emotion": "neutral", "viewerFocus": "players & rules", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/brain", "label": "Players & rules" } },
-    { "id": "scene21", "narration": "The final thing is the reward. It seems that the rewards of dating in modern times have changed somewhat. Usually, we think of dating rewards as love, sex, marriage, and having children. But now there's another very important element. It's social status, meaning your reputation and your position in the eyes of others.", "purpose": "Reward changed", "emotion": "curious", "viewerFocus": "status", "visualGrammar": "SOLO", "slots": { "keyword": "Status" } },
-    { "id": "scene22", "narration": "Simply put, if you love this person and marry this person, can you show them off? Can you be proud in the eyes of others? Can you show them off on Facebook, on Instagram, at a class reunion? Now, the story has added an extremely important element: reputation. And it doesn't just stop at marriage — it also manifests in things like the latest iPhone, luxurious travel, and buying designer goods. Marriage is also part of this game. If you marry someone who isn't worthy, it will be embarrassing. So it's better to be single than to marry someone who doesn't meet the standards.", "purpose": "Show-off game", "emotion": "sarcastic", "viewerFocus": "flexing", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/photo_frame", "label": "Show off" } },
-    { "id": "scene23", "narration": "The scary thing is that the game of showing off is a zero-sum game. That means there will always be people better off and people worse off. If everyone could show off, then no one would be able to show off.", "purpose": "Zero-sum", "emotion": "concern", "viewerFocus": "zero-sum", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "ZERO-SUM" } },
-    { "id": "scene24", "narration": "There are many opinions that the government of various countries giving money to people to encourage having children is ineffective, because the problem isn't a lack of money. Nowadays, finding a job is easier. But the important thing is that people lack face. And face can't necessarily be bought with money. If you give people one billion to force them to marry someone their friends look down on, what meaning does that one billion have?", "purpose": "Money != face", "emotion": "concern", "viewerFocus": "money vs face", "visualGrammar": "CHAR_PROP", "slots": { "prop": "finance/money", "label": "Money can't buy face" } },
-    { "id": "scene25", "narration": "Actually, it does have meaning, but in the end, in those cases, some people would rather not marry with a billion dollars than have to get married.", "purpose": "Rather stay single", "emotion": "neutral", "viewerFocus": "the choice", "visualGrammar": "SOLO", "slots": { "keyword": "Rather not" } },
-    { "id": "scene26", "narration": "Here's a question: why do humans always chase after this kind of face, while our species has survived for tens of thousands of years, remaining very numerous and not becoming extinct? The answer is: humans didn't behave like that before, because the game has changed over time.", "purpose": "Why now?", "emotion": "curious", "viewerFocus": "the answer", "visualGrammar": "QA_REVEAL", "slots": { "question": "Why chase face now?", "answer": "THE GAME CHANGED" } },
-    { "id": "scene27", "narration": "Game theory has a concept called the overall picture of society, that is, the big context surrounding the game. Specifically, it's the population size, whether society is rich or poor, whether there are external enemies, how advanced the technology is. These factors combine to determine which game is played. When the context changes, the game changes too. Now, let's divide human history into three stages for easier understanding.", "purpose": "Context sets the game", "emotion": "neutral", "viewerFocus": "3 stages", "visualGrammar": "SOLO", "slots": { "keyword": "3 stages of history" } },
-    { "id": "scene28", "narration": "The first stage is the primitive era. A small village at that time had only about two hundred people. Everything was inconvenient and scarce. People had to defecate in the fields, sometimes even getting bitten by snakes. And to get clean water, they had to carry it home and boil it before drinking. Having children in such circumstances was like stepping into a death trap.", "purpose": "Primitive era", "emotion": "concern", "viewerFocus": "harsh village", "visualGrammar": "BEAT", "slots": { "image": "backgrounds/countryside.jpg" } },
-    { "id": "scene29", "narration": "In that context, there was no concept of love or dating; women and men would have many lovers at the same time, firstly to increase the chances of reproduction for everyone, and secondly to avoid knowing whose child was whose. When the men in the village all thought the child might be theirs, everyone would flock together to protect and care for it. And the reward would be ensuring the entire village didn't become extinct.", "purpose": "Communal reproduction", "emotion": "neutral", "viewerFocus": "the village logic", "visualGrammar": "DIALOGUE_QA", "slots": { "askerText": "Con của ai?", "answererText": "Của cả làng!" } },
-    { "id": "scene30", "narration": "Let's move on to the second stage, when the small village started to expand into a society of tens of thousands of people. At this point, villages, communes, and tribes began fighting each other incessantly to compete for territory and resources. Because there was a need for soldiers to go to war, and people to work in the fields, in such a chaotic situation, where would they find the time for courtship and romantic dates?", "purpose": "War era needs people", "emotion": "urgent", "viewerFocus": "war → need people", "visualGrammar": "CAUSE_EFFECT", "slots": { "cause": "War & farming", "effect": "No time to date" } },
-    { "id": "scene31", "narration": "And so, arranged marriages took center stage. Parents decided where their children were, with no room for argument. At this point, whether they liked it or not, didn't matter, as long as they got married and had many children.", "purpose": "Arranged marriage", "emotion": "neutral", "viewerFocus": "parents decide", "visualGrammar": "DIALOGUE_QA", "slots": { "askerText": "Con không thích!", "answererText": "Cứ cưới, đẻ nhiều vào." } },
-    { "id": "scene32", "narration": "And finally, the third stage is the present day. Now the world is crowded, with eight billion people. Look at China or India, each country has over one billion people, very crowded. And there's much more money too. But some people have more than enough while others struggle to make ends meet, which is very unequal.", "purpose": "Modern crowded unequal", "emotion": "neutral", "viewerFocus": "crowded vs unequal", "visualGrammar": "COMPARE", "slots": { "left": "8 billion, crowded", "right": "Very unequal" } },
-    { "id": "scene33", "narration": "The upside is that healthcare is better, technology is more advanced, so women who give birth are almost guaranteed to survive, reducing the risk of childbirth being a death sentence. And the world is relatively peaceful in a certain way. The superpowers no longer directly shoot each other with guns, but instead wage proxy wars.", "purpose": "Peace & tech upside", "emotion": "hopeful", "viewerFocus": "the upside", "visualGrammar": "SOLO", "slots": { "keyword": "Peace & tech" } },
-    { "id": "scene34", "narration": "But because life is better, people expect dating to be good too. While dating, falling in love, and marriage, like everything else, must have both good and bad aspects. So if you have to endure hardship, why date someone from the same social class and suffer together? Why not choose someone from a higher social class? So now, dating is pretty much like a jump-starting platform.", "purpose": "Dating = climbing", "emotion": "curious", "viewerFocus": "jump up", "visualGrammar": "SOLO", "slots": { "keyword": "Jump-start" } },
-    { "id": "scene35", "narration": "Low-level people try to climb to higher levels. Apps like Tinder, Bumble, or Facebook Dating are essentially platforms where people try to find a better match to jump to. But the problem is, if everyone wants to jump to a higher level, who will want to marry someone at their own level? So, marriage and childbirth are plummeting.", "purpose": "Dating apps", "emotion": "urgent", "viewerFocus": "the apps", "visualGrammar": "FRAMEBOX", "slots": { "content": "#12131a", "caption": "Tinder · Bumble · FB Dating" } },
-    { "id": "scene36", "narration": "If this trend continues, society will collapse sooner or later. And history has already proven it. The clearest sign of a collapsing civilization is when women with money and education start refusing to have children. The Roman Empire, when it collapsed, faced the same scenario.", "purpose": "Collapse sign", "emotion": "concern", "viewerFocus": "collapse", "visualGrammar": "SOLO", "slots": { "keyword": "Collapse" } },
-    { "id": "scene37", "narration": "The Romans at that time were both rich and skilled, so they decided not to have children or to have very few. And the situation became so serious that Emperor Augustus had to enact the Lex Iulia law to punish those who were lazy to marry and reward those who had many children. That means more than two thousand years ago, people tried using money and policies to solve the problem. But the results were not very effective. Rome still collapsed as usual, though.", "purpose": "Rome tried policy", "emotion": "neutral", "viewerFocus": "ancient law", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/book", "label": "Rome: Lex Iulia" } },
-    { "id": "scene38", "narration": "I think it wasn't just because of the lack of births that Rome collapsed, but there were many other reasons as well. Speaking of collapse, let's look at the numbers.", "purpose": "To the numbers", "emotion": "neutral", "viewerFocus": "the numbers", "visualGrammar": "SOLO", "slots": { "keyword": "The numbers" } },
-    { "id": "scene39", "narration": "Currently, the replacement birth rate is two point one children per woman. That means a mother has to give birth to at least two children for the population to remain at its current level. Below two point one, we start seeing a shortage of people. Below one point five, the decline is rapid. If it drops below one point zero, then society is essentially self-destructing.", "purpose": "Replacement rate", "emotion": "concern", "viewerFocus": "2.1", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "2.1" }, "beats": [ { "text": "two point one", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene40", "narration": "Looking at the world map, we see it's divided into two states: in Africa, people still have very high birth rates. In some regions, each mother gives birth to five to seven children, because there, they are still in the stage where they need people to survive and fight for territory, so they just have as many children as possible to compensate.", "purpose": "Africa high", "emotion": "neutral", "viewerFocus": "Africa", "visualGrammar": "COMPARE", "slots": { "left": "Africa: 5-7 kids", "right": "Survival stage" } },
-    { "id": "scene41", "narration": "Meanwhile, in the wealthy regions of North America, Europe, and East Asia, the birth rate is plummeting. In North America and Europe, there are still immigrants — if native women don't want to have children, they will open their doors to foreigners to work, pay taxes, and contribute to the economy. But it also causes a lot of headaches in terms of culture and politics. And in East Asia, we're really sitting on a powder keg.", "purpose": "Rich regions falling", "emotion": "concern", "viewerFocus": "NA/EU vs Asia", "visualGrammar": "COMPARE", "slots": { "left": "NA/EU: immigrants", "right": "East Asia: powder keg" } },
-    { "id": "scene42", "narration": "Because here, there's no such thing as easily opening the doors to immigrants, because East Asian culture is quite closed — it's very difficult to accept complete strangers and have them sit at the same table. South Korea is a prime example; their birth rate has now dropped to around zero point six to zero point eight, the lowest in the world.", "purpose": "Korea lowest", "emotion": "concern", "viewerFocus": "0.6-0.8", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "0.6-0.8" }, "beats": [ { "text": "zero point six", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene43", "narration": "With this population, South Korea will probably only survive for a few more generations before disappearing from the map. Now, there are even restaurants there with signs saying no kids allowed, a so-called no kid zone. It's as if they consider children to be a nuisance, noisy, and ruining the experience for other customers.", "purpose": "No kid zone", "emotion": "sarcastic", "viewerFocus": "cafe scene", "visualGrammar": "TABLEAU", "slots": { "stage": "assets/scenes/cafe.svg", "who": "host", "anchorA": "counter_left", "lineA": "No kids allowed." } },
-    { "id": "scene44", "narration": "South Korea is like that because it's a society that values appearances to an extreme degree. Everything has to be beautiful, high-quality, and expensive. The proof is in the Korean showbiz industry — everyone has to be perfectly beautiful. And because of that, the path to success there is quite narrow. Either you get into a prestigious university and work for Samsung or some other big corporation, or you have no decent options at all.", "purpose": "Narrow success", "emotion": "concern", "viewerFocus": "Samsung or nothing", "visualGrammar": "CHAR_PROP", "slots": { "prop": "finance/house", "label": "Samsung or nothing" } },
-    { "id": "scene45", "narration": "So, if you're a middle-class family in Korea, you'll hear this economic argument: if you have three children, you need more than three times the money and resources. So just pour everything into one child and send them to extra classes from early morning until late at night — hopefully, they'll pass and change their lives. And this logic forces people to only dare to have one child, or to just stop having children altogether.", "purpose": "All-in on one child", "emotion": "concern", "viewerFocus": "the argument", "visualGrammar": "DIALOGUE_QA", "slots": { "askerText": "Đẻ ba đứa nhé?", "answererText": "Dồn hết cho một đứa." } },
-    { "id": "scene46", "narration": "Currently, the Korean population seems relatively stable, but by around twenty forty, the imbalance will start. The elderly population will skyrocket while the number of children will dwindle. By twenty sixty, the workforce will be halved. At that point, no one will work, and no one will serve in the military — leading to a national economic collapse.", "purpose": "2060 collapse", "emotion": "urgent", "viewerFocus": "2060", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "2060: HALF" }, "beats": [ { "text": "workforce will be halved", "importance": 0.85, "kind": "number" } ] },
-    { "id": "scene47", "narration": "China is the same. Now the birth rate is only about one point zero, whereas five years ago it was still one point seven, but now it's plummeting. At this rate, by the end of the century, China's population will probably only be half — that's around six hundred million.", "purpose": "China halving", "emotion": "surprise", "viewerFocus": "600 million", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "-600 MILLION" }, "beats": [ { "text": "six hundred million", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene48", "narration": "Speaking of birth rates, there's a rather interesting comparison: usually, the richer a country is, the fewer children it has. But there are exceptions — this country is also rich and has very advanced technology, yet each family still has more than two children. If we explain it using game theory, the reward in Israel is different because of its history and religion. Having children is linked to community consciousness and national identity — it's seen as a way to enhance one's prestige, not a burden.", "purpose": "Israel exception", "emotion": "curious", "viewerFocus": "the exception", "visualGrammar": "COMPARE", "slots": { "left": "Rich = few kids", "right": "Israel: rich + many" } },
-    { "id": "scene49", "narration": "Or in the oil-rich country, people still have many children because they have oil, and the state provides everything from healthcare to housing, all for free. Plus, religious factors encourage having many children. You might ask if this model will survive if the oil runs out in the future. Only the future will tell.", "purpose": "Oil states", "emotion": "neutral", "viewerFocus": "free everything", "visualGrammar": "CHAR_PROP", "slots": { "prop": "finance/money", "label": "Oil pays for all" } },
-    { "id": "scene50", "narration": "The key point here is that, from a game theory perspective, societies that consider having children as a way to enhance prestige will have high birth rates. Conversely, if having children means losing freedom, money, time, and opportunities for advancement, then people will choose not to have children. So now the question is, what about Vietnam?", "purpose": "Bridge to Vietnam", "emotion": "curious", "viewerFocus": "Vietnam?", "visualGrammar": "QA_REVEAL", "slots": { "question": "What about Vietnam?", "answer": "LET'S SEE" } },
-    { "id": "scene51", "narration": "In twenty twenty-four, our birth rate will fall to one point nine one per woman, the lowest in history. This is the third consecutive year we've been below two point one. The downward trend is very clear.", "purpose": "Vietnam 1.91", "emotion": "concern", "viewerFocus": "1.91", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "1.91" }, "beats": [ { "text": "one point nine one", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene52", "narration": "We lose a little each year, but it's worth noting that twenty twenty-four is the Year of the Dragon, and according to our culture, the Year of the Dragon is a very auspicious year to have children. But even with such strong spiritual beliefs, they can't win against the game of saving face in modern society. People just give up on having children.", "purpose": "Even dragon year", "emotion": "sad", "viewerFocus": "giving up", "visualGrammar": "SOLO", "slots": { "keyword": "Even Dragon Year" } },
-    { "id": "scene53", "narration": "In big cities, the birth rate is only one point six seven. Ho Chi Minh City has the lowest rate in the country at only one point three nine, while the age of first marriage continues to rise. Men now have to be around thirty to get married, and women around twenty-five.", "purpose": "City low", "emotion": "concern", "viewerFocus": "1.39", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "HCMC: 1.39" }, "beats": [ { "text": "one point three nine", "importance": 0.9, "kind": "number" } ] },
-    { "id": "scene54", "narration": "This aligns quite well with the theoretical framework of the game: the more educated and wealthier people are, the fewer children they have. Many experts predict that after twenty thirty-five, Vietnam's population will start experiencing negative growth — the number of deaths will exceed the number of births. Seven provinces have already begun experiencing this situation.", "purpose": "2035 negative", "emotion": "concern", "viewerFocus": "2035", "visualGrammar": "STAT_REVEAL", "slots": { "stat": "2035: NEGATIVE" } },
-    { "id": "scene55", "narration": "Although Vietnam isn't as dire as South Korea or China, we are still on the same path. And we are also heavily influenced by social media.", "purpose": "Same path", "emotion": "concern", "viewerFocus": "same path", "visualGrammar": "SOLO", "slots": { "keyword": "Same path" } },
-    { "id": "scene56", "narration": "In the old days, people lived in a small village or neighborhood of only a few hundred people. They only compared themselves to the people around them. The probability of becoming the top person in the neighborhood was quite high, so they were still happy to get married, with less comparison.", "purpose": "Small pond", "emotion": "hopeful", "viewerFocus": "old village", "visualGrammar": "TABLEAU", "slots": { "stage": "assets/scenes/street.svg", "who": "host", "anchorA": "sidewalk", "lineA": "Chỉ so với hàng xóm." } },
-    { "id": "scene57", "narration": "Now it's completely different. On TikTok, you see guys with six-pack abs driving Porsches. On Instagram, you see girls with white skin and slim waists carrying handbags. Anyone successful is known to the whole society. So, naturally, you start comparing yourself to millions of people online.", "purpose": "Endless comparison", "emotion": "sarcastic", "viewerFocus": "social feeds", "visualGrammar": "FRAMEBOX", "slots": { "content": "#0e1622", "caption": "TikTok · Instagram" } },
-    { "id": "scene58", "narration": "And then, the people around you don't seem good enough anymore. Social media expanded the playing field from a few hundred people to millions, pushing the standards up unreasonably. Dating apps are the same — swiping through hundreds of people every day tricks your brain into thinking you have too many choices.", "purpose": "Too many choices", "emotion": "concern", "viewerFocus": "the apps", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/thought_bubble", "label": "Too many choices" } },
-    { "id": "scene59", "narration": "There's no need to rush, you'll start meeting better people — and the result is that you end up not choosing anyone. From a game theory perspective, social media has increased the number of players a thousandfold, while the number of prizes at the top remains the same — the winning rate is practically zero. But people still play because they see everyone else playing.", "purpose": "Winning rate zero", "emotion": "urgent", "viewerFocus": "x1000 players", "visualGrammar": "QA_REVEAL", "slots": { "question": "Winning rate?", "answer": "ALMOST ZERO" }, "beats": [ { "text": "a thousandfold", "importance": 0.85, "kind": "number" } ] },
-    { "id": "scene60", "narration": "Actually, after watching the video and writing the script, we realized that this game theory doesn't help us answer the question immediately; it only helps us know how to ask the right question. You should ask yourself who the players are, what the rules are, and what the rewards are. From there, you can see the overall picture.", "purpose": "Ask right question", "emotion": "hopeful", "viewerFocus": "the method", "visualGrammar": "SOLO", "slots": { "who": "host", "keyword": "Ask the right question" } },
-    { "id": "scene61", "narration": "Dating is just one example. We can apply this to everything, from the tense situation between the US and Iran to the war in Ukraine, or why this is an opportunity for Vietnam to break through.", "purpose": "Apply everywhere", "emotion": "curious", "viewerFocus": "broader uses", "visualGrammar": "CHAR_PROP", "slots": { "prop": "props/brain", "label": "Applies everywhere" } },
-    { "id": "scene62", "narration": "Okay, that's enough for now, let's stop here. Is the game of saving face affecting your dating and marriage decisions, or are there other factors? Please comment below. Don't forget to subscribe so you don't miss any videos.", "purpose": "CTA", "emotion": "happy", "viewerFocus": "subscribe", "visualGrammar": "SOLO", "slots": { "who": "host", "keyword": "Subscribe!" } }
+    {
+      "id": "scene01",
+      "narration": "In South Korea, the government says that having one child earns you two million won, which is about forty million dong in our currency. Hungary goes even further, granting women with four or more children a lifetime exemption from personal income tax. Japan has even established an agency dedicated to caring for children and families.",
+      "purpose": "Governments pay people to have kids",
+      "emotion": "surprise",
+      "viewerFocus": "cash incentives",
+      "visualGrammar": "EVIDENCE",
+      "slots": {
+        "title": "Baby bonuses",
+        "body": "Korea: 2 million won / child.  Hungary: 4+ kids = lifetime tax exemption.  Japan: a child-care agency."
+      },
+      "beats": [
+        {
+          "text": "two million won",
+          "importance": 0.85,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene02",
+      "narration": "Yet, in these countries, the birth rate is still declining. I was reading these statistics and wondering why people still refuse to have children even with money.",
+      "purpose": "But it did not work",
+      "emotion": "concern",
+      "viewerFocus": "the paradox",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "STILL FALLING"
+      },
+      "beats": [
+        {
+          "text": "still declining",
+          "importance": 0.9,
+          "kind": "turn"
+        }
+      ]
+    },
+    {
+      "id": "scene03",
+      "narration": "The normal logic is that they're probably too poor to have children. But now that they have money, they should have more children, right? People used to have many children even when they were poor.",
+      "purpose": "Poor had many, rich have few",
+      "emotion": "curious",
+      "viewerFocus": "contrast",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "Poor = many kids",
+        "right": "Rich = few kids"
+      }
+    },
+    {
+      "id": "scene04",
+      "narration": "To explain this, we have to go back to the first step of starting a family: dating. And we'll use the theoretical framework of game theory to explain why dating is becoming increasingly difficult.",
+      "purpose": "Framework: game theory",
+      "emotion": "curious",
+      "viewerFocus": "host",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "host",
+        "anchorA": "sofa_left",
+        "caption": "Game Theory"
+      }
+    },
+    {
+      "id": "scene05",
+      "narration": "Why are there so many dating apps, yet people are still single? And with this trend of no one getting married or having children, many countries will disappear within one hundred years.",
+      "purpose": "Stakes: countries vanish",
+      "emotion": "urgent",
+      "viewerFocus": "100 years",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "100 YEARS"
+      },
+      "beats": [
+        {
+          "text": "one hundred years",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene06",
+      "narration": "Welcome to our cat-themed adaptation series. We're adapting great foreign videos for you to refer to. Actually, we've always done this, but now we're going to do it more officially. And our first series is the game theory series from the Predictive History channel. In this video, we'll base our content on those videos, as well as add our own research and counter-arguments. Okay, let's begin.",
+      "purpose": "Channel intro",
+      "emotion": "happy",
+      "viewerFocus": "host greeting",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk",
+        "caption": "Cat Adaptations"
+      }
+    },
+    {
+      "id": "scene07",
+      "narration": "First, let's talk a little about game theory. Any game will have three parts: the players, which are the participants; the rules, which are the constraints, the limitations, what can and cannot be done; and the rewards.",
+      "purpose": "3 parts of a game",
+      "emotion": "neutral",
+      "viewerFocus": "the three parts",
+      "visualGrammar": "ICON_TRIPLE",
+      "slots": {
+        "items": "Players|Rules|Rewards",
+        "icons": "props/brain|props/book|props/trophy"
+      }
+    },
+    {
+      "id": "scene08",
+      "narration": "Because there must be rewards in a game; no one plays for no reason. It's what makes players want to play. To understand a game, we need to understand who is playing, what the rules are, and what the rewards are. And if we understand those three things, we can guess where the game will go.",
+      "purpose": "Rewards drive players",
+      "emotion": "neutral",
+      "viewerFocus": "the reward",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/cafe.svg",
+        "who": "host",
+        "anchorA": "counter_left",
+        "caption": "The reward"
+      }
+    },
+    {
+      "id": "scene09",
+      "narration": "Okay, now let's apply this theoretical framework to the dating story. Now imagine a society with ten people, five men, five women, and all of them want to date and get married. These five men will belong to five different social classes and will be ranked from one to five based on criteria such as appearance, health, wealth, and social status.",
+      "purpose": "Rank 1-5",
+      "emotion": "curious",
+      "viewerFocus": "the ranking",
+      "visualGrammar": "POLICY_LIST",
+      "slots": {
+        "items": "Rank 1|Rank 2|Rank 3|Rank 4"
+      }
+    },
+    {
+      "id": "scene10",
+      "narration": "Number five will be the ultimate catch, while number one will be the lowest. Instinctively, all women will want to marry number five, and all five men will want to marry all five women at the same time. This is because women want a partner who is capable of protecting and providing for them, while men want to maximize their fertility, so they want to date many women. However, if all the women only chase after number five, it won't work.",
+      "purpose": "Everyone chases #5",
+      "emotion": "sarcastic",
+      "viewerFocus": "the mismatch",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "Women want #5",
+        "right": "Men want everyone"
+      }
+    },
+    {
+      "id": "scene11",
+      "narration": "Because the other four men will team up to deal with number five. If number five decides to date all five women at the same time, then number five will realize that number five is no longer the most desirable person, because this guy is too promiscuous and doesn't guarantee a future for himself. The best option for girl number five at this point would be guy number four. At this point, girl number four will lose her best option, so she'll have to choose guy number three. Then girl number three will have to marry guy number two. And girl number two will marry guy number one.",
+      "purpose": "The cascade",
+      "emotion": "curious",
+      "viewerFocus": "the debate",
+      "visualGrammar": "DIALOGUE_QA",
+      "slots": {
+        "askerText": "Ai lấy ai bây giờ?",
+        "answererText": "Đổ dồn xuống hết!"
+      }
+    },
+    {
+      "id": "scene12",
+      "narration": "And the result is that guy number five, the most eager one, ends up stuck with girl number one. Actually, girl number three could still marry guy number five because the difference between five and two is quite large, but to simplify, let's just assume the above. And the final result is that guy number five, who should have gotten the best result, gets the worst result. All the girls get worse results than they should have, except for girl number one. The only good thing is that all the guys benefit.",
+      "purpose": "The greedy loses",
+      "emotion": "sarcastic",
+      "viewerFocus": "ironic result",
+      "visualGrammar": "DIALOGUE_QA",
+      "slots": {
+        "askerText": "Số 5 được gì?",
+        "answererText": "Cuối cùng ế nhất."
+      }
+    },
+    {
+      "id": "scene13",
+      "narration": "Actually, this is just a small assumption to illustrate the point: in a game, the strongest person who is too greedy will suffer a bitter end, and their rivals will be the ones who benefit directly. From this, we can deduce that the strongest person isn't the one who can steal everything from everyone else, but the one who can coordinate so that everyone benefits the most. Because if they just steal, the strongest person might win in the short term, but in the long term, everyone will lose. Therefore, the best solution is cooperation. Guy five takes girl five, guy four takes girl four, guy three takes girl three — everyone finds a partner, everyone has children, and society develops.",
+      "purpose": "Cooperation wins",
+      "emotion": "hopeful",
+      "viewerFocus": "cooperation",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "host",
+        "anchorA": "bench_left",
+        "caption": "Cooperation"
+      }
+    },
+    {
+      "id": "scene14",
+      "narration": "This state in game theory calls it Nash equilibrium. This is a state where no one benefits more from unilaterally changing strategies. It's like everyone is happy, and any change would only lead to more losses. So, let's just keep things as they are.",
+      "purpose": "Name it",
+      "emotion": "neutral",
+      "viewerFocus": "the term",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "host",
+        "anchorA": "sofa_right",
+        "caption": "Nash Equilibrium"
+      }
+    },
+    {
+      "id": "scene15",
+      "narration": "Okay, that theory is perfectly fine. But there's a problem: society doesn't just have ten people, but eight billion people.",
+      "purpose": "Scale up",
+      "emotion": "surprise",
+      "viewerFocus": "8 billion",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "8 BILLION"
+      },
+      "beats": [
+        {
+          "text": "eight billion",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene16",
+      "narration": "So, a fun survey asks: If you're thirty years old, your parents are pressuring you to get married, you've been dating for ten years and haven't found anyone you like, and now you're forced to get married, what are your minimum requirements for agreeing to marry someone?",
+      "purpose": "Survey question",
+      "emotion": "curious",
+      "viewerFocus": "the survey",
+      "visualGrammar": "EVIDENCE",
+      "slots": {
+        "title": "Survey",
+        "body": "Minimum requirement to marry?",
+        "choices": "Looks|Money|Comfort"
+      }
+    },
+    {
+      "id": "scene17",
+      "narration": "I think it would be simpler for guys. Like, any girl will do, even girl number one would be fine. Some girls say that if I don't find him attractive, then at least he must be earning around two hundred million a month. According to Nash equilibrium, number three should marry number three and live happily. But in reality, number three will look at number three and think, it's better to stay single. Unless I meet number five or he earns two hundred million a month, then I won't consider it.",
+      "purpose": "Different bars",
+      "emotion": "sarcastic",
+      "viewerFocus": "the gap",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "Guys: anyone",
+        "right": "Girls: #5 or 200M"
+      }
+    },
+    {
+      "id": "scene18",
+      "narration": "In reality, many people rush into the top one to two percent, and most end up being left behind. For example, Elon Musk — he has a ton of children and many wives. Billionaires and celebrities have no shortage of people lining up for them. Meanwhile, many young people around the world are also experiencing the situation of being involuntarily single. That is, they want a partner, they want to get married, but they can't.",
+      "purpose": "Winner take all",
+      "emotion": "concern",
+      "viewerFocus": "top 1%",
+      "visualGrammar": "CHAR_PROP",
+      "slots": {
+        "prop": "finance/money",
+        "label": "Top 1%"
+      }
+    },
+    {
+      "id": "scene19",
+      "narration": "So gradually, they give up. As for the guys, they'd rather stay home playing games, browsing the internet, and watching movies. So, many young men in their twenties and thirties have never dated, never had a relationship, and don't want to try anymore. It's not because they're ugly or incompetent, but simply because the dating game now is too tiring. The competition is fierce, and the probability of winning is low.",
+      "purpose": "Giving up",
+      "emotion": "sad",
+      "viewerFocus": "resignation",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/bedroom.svg",
+        "who": "host",
+        "anchorA": "bed",
+        "caption": "Given up"
+      }
+    },
+    {
+      "id": "scene20",
+      "narration": "Why? As I said, in a game there are three parts: the players — this hasn't changed much. The rules of the game are competition, and that hasn't changed much either.",
+      "purpose": "Two parts unchanged",
+      "emotion": "neutral",
+      "viewerFocus": "players & rules",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk",
+        "caption": "Players & rules"
+      }
+    },
+    {
+      "id": "scene21",
+      "narration": "The final thing is the reward. It seems that the rewards of dating in modern times have changed somewhat. Usually, we think of dating rewards as love, sex, marriage, and having children. But now there's another very important element. It's social status, meaning your reputation and your position in the eyes of others.",
+      "purpose": "Reward changed",
+      "emotion": "curious",
+      "viewerFocus": "status",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk_right",
+        "caption": "Status"
+      }
+    },
+    {
+      "id": "scene22",
+      "narration": "Simply put, if you love this person and marry this person, can you show them off? Can you be proud in the eyes of others? Can you show them off on Facebook, on Instagram, at a class reunion? Now, the story has added an extremely important element: reputation. And it doesn't just stop at marriage — it also manifests in things like the latest iPhone, luxurious travel, and buying designer goods. Marriage is also part of this game. If you marry someone who isn't worthy, it will be embarrassing. So it's better to be single than to marry someone who doesn't meet the standards.",
+      "purpose": "Show-off game",
+      "emotion": "sarcastic",
+      "viewerFocus": "flexing",
+      "visualGrammar": "CHAR_PROP",
+      "slots": {
+        "prop": "props/photo_frame",
+        "label": "Show off"
+      }
+    },
+    {
+      "id": "scene23",
+      "narration": "The scary thing is that the game of showing off is a zero-sum game. That means there will always be people better off and people worse off. If everyone could show off, then no one would be able to show off.",
+      "purpose": "Zero-sum",
+      "emotion": "concern",
+      "viewerFocus": "zero-sum",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "ZERO-SUM"
+      }
+    },
+    {
+      "id": "scene24",
+      "narration": "There are many opinions that the government of various countries giving money to people to encourage having children is ineffective, because the problem isn't a lack of money. Nowadays, finding a job is easier. But the important thing is that people lack face. And face can't necessarily be bought with money. If you give people one billion to force them to marry someone their friends look down on, what meaning does that one billion have?",
+      "purpose": "Money != face",
+      "emotion": "concern",
+      "viewerFocus": "money vs face",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "host",
+        "anchorA": "sofa_left",
+        "caption": "Money ≠ face"
+      }
+    },
+    {
+      "id": "scene25",
+      "narration": "Actually, it does have meaning, but in the end, in those cases, some people would rather not marry with a billion dollars than have to get married.",
+      "purpose": "Rather stay single",
+      "emotion": "neutral",
+      "viewerFocus": "the choice",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/cafe.svg",
+        "who": "host",
+        "anchorA": "counter_right",
+        "caption": "Rather not"
+      }
+    },
+    {
+      "id": "scene26",
+      "narration": "Here's a question: why do humans always chase after this kind of face, while our species has survived for tens of thousands of years, remaining very numerous and not becoming extinct? The answer is: humans didn't behave like that before, because the game has changed over time.",
+      "purpose": "Why now?",
+      "emotion": "curious",
+      "viewerFocus": "the answer",
+      "visualGrammar": "QA_REVEAL",
+      "slots": {
+        "question": "Why chase face now?",
+        "answer": "THE GAME CHANGED"
+      }
+    },
+    {
+      "id": "scene27",
+      "narration": "Game theory has a concept called the overall picture of society, that is, the big context surrounding the game. Specifically, it's the population size, whether society is rich or poor, whether there are external enemies, how advanced the technology is. These factors combine to determine which game is played. When the context changes, the game changes too. Now, let's divide human history into three stages for easier understanding.",
+      "purpose": "Context sets the game",
+      "emotion": "neutral",
+      "viewerFocus": "3 stages",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/classroom.svg",
+        "who": "host",
+        "anchorA": "board",
+        "caption": "3 stages of history"
+      }
+    },
+    {
+      "id": "scene28",
+      "narration": "The first stage is the primitive era. A small village at that time had only about two hundred people. Everything was inconvenient and scarce. People had to defecate in the fields, sometimes even getting bitten by snakes. And to get clean water, they had to carry it home and boil it before drinking. Having children in such circumstances was like stepping into a death trap.",
+      "purpose": "Primitive era",
+      "emotion": "concern",
+      "viewerFocus": "harsh village",
+      "visualGrammar": "BEAT",
+      "slots": {
+        "image": "backgrounds/countryside.jpg"
+      }
+    },
+    {
+      "id": "scene29",
+      "narration": "In that context, there was no concept of love or dating; women and men would have many lovers at the same time, firstly to increase the chances of reproduction for everyone, and secondly to avoid knowing whose child was whose. When the men in the village all thought the child might be theirs, everyone would flock together to protect and care for it. And the reward would be ensuring the entire village didn't become extinct.",
+      "purpose": "Communal reproduction",
+      "emotion": "neutral",
+      "viewerFocus": "the village logic",
+      "visualGrammar": "DIALOGUE_QA",
+      "slots": {
+        "askerText": "Con của ai?",
+        "answererText": "Của cả làng!"
+      }
+    },
+    {
+      "id": "scene30",
+      "narration": "Let's move on to the second stage, when the small village started to expand into a society of tens of thousands of people. At this point, villages, communes, and tribes began fighting each other incessantly to compete for territory and resources. Because there was a need for soldiers to go to war, and people to work in the fields, in such a chaotic situation, where would they find the time for courtship and romantic dates?",
+      "purpose": "War era needs people",
+      "emotion": "urgent",
+      "viewerFocus": "war → need people",
+      "visualGrammar": "CAUSE_EFFECT",
+      "slots": {
+        "cause": "War & farming",
+        "effect": "No time to date"
+      }
+    },
+    {
+      "id": "scene31",
+      "narration": "And so, arranged marriages took center stage. Parents decided where their children were, with no room for argument. At this point, whether they liked it or not, didn't matter, as long as they got married and had many children.",
+      "purpose": "Arranged marriage",
+      "emotion": "neutral",
+      "viewerFocus": "parents decide",
+      "visualGrammar": "DIALOGUE_QA",
+      "slots": {
+        "askerText": "Con không thích!",
+        "answererText": "Cứ cưới, đẻ nhiều vào."
+      }
+    },
+    {
+      "id": "scene32",
+      "narration": "And finally, the third stage is the present day. Now the world is crowded, with eight billion people. Look at China or India, each country has over one billion people, very crowded. And there's much more money too. But some people have more than enough while others struggle to make ends meet, which is very unequal.",
+      "purpose": "Modern crowded unequal",
+      "emotion": "neutral",
+      "viewerFocus": "crowded vs unequal",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "8 billion, crowded",
+        "right": "Very unequal"
+      }
+    },
+    {
+      "id": "scene33",
+      "narration": "The upside is that healthcare is better, technology is more advanced, so women who give birth are almost guaranteed to survive, reducing the risk of childbirth being a death sentence. And the world is relatively peaceful in a certain way. The superpowers no longer directly shoot each other with guns, but instead wage proxy wars.",
+      "purpose": "Peace & tech upside",
+      "emotion": "hopeful",
+      "viewerFocus": "the upside",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "host",
+        "anchorA": "bench_right",
+        "caption": "Peace & tech"
+      }
+    },
+    {
+      "id": "scene34",
+      "narration": "But because life is better, people expect dating to be good too. While dating, falling in love, and marriage, like everything else, must have both good and bad aspects. So if you have to endure hardship, why date someone from the same social class and suffer together? Why not choose someone from a higher social class? So now, dating is pretty much like a jump-starting platform.",
+      "purpose": "Dating = climbing",
+      "emotion": "curious",
+      "viewerFocus": "jump up",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/cafe.svg",
+        "who": "host",
+        "anchorA": "counter_left",
+        "caption": "Jump-start"
+      }
+    },
+    {
+      "id": "scene35",
+      "narration": "Low-level people try to climb to higher levels. Apps like Tinder, Bumble, or Facebook Dating are essentially platforms where people try to find a better match to jump to. But the problem is, if everyone wants to jump to a higher level, who will want to marry someone at their own level? So, marriage and childbirth are plummeting.",
+      "purpose": "Dating apps",
+      "emotion": "urgent",
+      "viewerFocus": "the apps",
+      "visualGrammar": "FRAMEBOX",
+      "slots": {
+        "content": "#12131a",
+        "caption": "Tinder · Bumble · FB Dating"
+      }
+    },
+    {
+      "id": "scene36",
+      "narration": "If this trend continues, society will collapse sooner or later. And history has already proven it. The clearest sign of a collapsing civilization is when women with money and education start refusing to have children. The Roman Empire, when it collapsed, faced the same scenario.",
+      "purpose": "Collapse sign",
+      "emotion": "concern",
+      "viewerFocus": "collapse",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "host",
+        "anchorA": "sidewalk",
+        "caption": "Collapse"
+      }
+    },
+    {
+      "id": "scene37",
+      "narration": "The Romans at that time were both rich and skilled, so they decided not to have children or to have very few. And the situation became so serious that Emperor Augustus had to enact the Lex Iulia law to punish those who were lazy to marry and reward those who had many children. That means more than two thousand years ago, people tried using money and policies to solve the problem. But the results were not very effective. Rome still collapsed as usual, though.",
+      "purpose": "Rome tried policy",
+      "emotion": "neutral",
+      "viewerFocus": "ancient law",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/classroom.svg",
+        "who": "host",
+        "anchorA": "desk",
+        "caption": "Rome: Lex Iulia"
+      }
+    },
+    {
+      "id": "scene38",
+      "narration": "I think it wasn't just because of the lack of births that Rome collapsed, but there were many other reasons as well. Speaking of collapse, let's look at the numbers.",
+      "purpose": "To the numbers",
+      "emotion": "neutral",
+      "viewerFocus": "the numbers",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk",
+        "caption": "The numbers"
+      }
+    },
+    {
+      "id": "scene39",
+      "narration": "Currently, the replacement birth rate is two point one children per woman. That means a mother has to give birth to at least two children for the population to remain at its current level. Below two point one, we start seeing a shortage of people. Below one point five, the decline is rapid. If it drops below one point zero, then society is essentially self-destructing.",
+      "purpose": "Replacement rate",
+      "emotion": "concern",
+      "viewerFocus": "2.1",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "2.1"
+      },
+      "beats": [
+        {
+          "text": "two point one",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene40",
+      "narration": "Looking at the world map, we see it's divided into two states: in Africa, people still have very high birth rates. In some regions, each mother gives birth to five to seven children, because there, they are still in the stage where they need people to survive and fight for territory, so they just have as many children as possible to compensate.",
+      "purpose": "Africa high",
+      "emotion": "neutral",
+      "viewerFocus": "Africa",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "Africa: 5-7 kids",
+        "right": "Survival stage"
+      }
+    },
+    {
+      "id": "scene41",
+      "narration": "Meanwhile, in the wealthy regions of North America, Europe, and East Asia, the birth rate is plummeting. In North America and Europe, there are still immigrants — if native women don't want to have children, they will open their doors to foreigners to work, pay taxes, and contribute to the economy. But it also causes a lot of headaches in terms of culture and politics. And in East Asia, we're really sitting on a powder keg.",
+      "purpose": "Rich regions falling",
+      "emotion": "concern",
+      "viewerFocus": "NA/EU vs Asia",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "NA/EU: immigrants",
+        "right": "East Asia: powder keg"
+      }
+    },
+    {
+      "id": "scene42",
+      "narration": "Because here, there's no such thing as easily opening the doors to immigrants, because East Asian culture is quite closed — it's very difficult to accept complete strangers and have them sit at the same table. South Korea is a prime example; their birth rate has now dropped to around zero point six to zero point eight, the lowest in the world.",
+      "purpose": "Korea lowest",
+      "emotion": "concern",
+      "viewerFocus": "0.6-0.8",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "0.6-0.8"
+      },
+      "beats": [
+        {
+          "text": "zero point six",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene43",
+      "narration": "With this population, South Korea will probably only survive for a few more generations before disappearing from the map. Now, there are even restaurants there with signs saying no kids allowed, a so-called no kid zone. It's as if they consider children to be a nuisance, noisy, and ruining the experience for other customers.",
+      "purpose": "No kid zone",
+      "emotion": "sarcastic",
+      "viewerFocus": "cafe scene",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/cafe.svg",
+        "who": "host",
+        "anchorA": "counter_left",
+        "lineA": "No kids allowed."
+      }
+    },
+    {
+      "id": "scene44",
+      "narration": "South Korea is like that because it's a society that values appearances to an extreme degree. Everything has to be beautiful, high-quality, and expensive. The proof is in the Korean showbiz industry — everyone has to be perfectly beautiful. And because of that, the path to success there is quite narrow. Either you get into a prestigious university and work for Samsung or some other big corporation, or you have no decent options at all.",
+      "purpose": "Narrow success",
+      "emotion": "concern",
+      "viewerFocus": "Samsung or nothing",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk_right",
+        "caption": "Samsung or nothing"
+      }
+    },
+    {
+      "id": "scene45",
+      "narration": "So, if you're a middle-class family in Korea, you'll hear this economic argument: if you have three children, you need more than three times the money and resources. So just pour everything into one child and send them to extra classes from early morning until late at night — hopefully, they'll pass and change their lives. And this logic forces people to only dare to have one child, or to just stop having children altogether.",
+      "purpose": "All-in on one child",
+      "emotion": "concern",
+      "viewerFocus": "the argument",
+      "visualGrammar": "DIALOGUE_QA",
+      "slots": {
+        "askerText": "Đẻ ba đứa nhé?",
+        "answererText": "Dồn hết cho một đứa."
+      }
+    },
+    {
+      "id": "scene46",
+      "narration": "Currently, the Korean population seems relatively stable, but by around twenty forty, the imbalance will start. The elderly population will skyrocket while the number of children will dwindle. By twenty sixty, the workforce will be halved. At that point, no one will work, and no one will serve in the military — leading to a national economic collapse.",
+      "purpose": "2060 collapse",
+      "emotion": "urgent",
+      "viewerFocus": "2060",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "2060: HALF"
+      },
+      "beats": [
+        {
+          "text": "workforce will be halved",
+          "importance": 0.85,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene47",
+      "narration": "China is the same. Now the birth rate is only about one point zero, whereas five years ago it was still one point seven, but now it's plummeting. At this rate, by the end of the century, China's population will probably only be half — that's around six hundred million.",
+      "purpose": "China halving",
+      "emotion": "surprise",
+      "viewerFocus": "600 million",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "5y ago: 1.7",
+        "right": "Now: 1.0"
+      },
+      "beats": [
+        {
+          "text": "six hundred million",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene48",
+      "narration": "Speaking of birth rates, there's a rather interesting comparison: usually, the richer a country is, the fewer children it has. But there are exceptions — this country is also rich and has very advanced technology, yet each family still has more than two children. If we explain it using game theory, the reward in Israel is different because of its history and religion. Having children is linked to community consciousness and national identity — it's seen as a way to enhance one's prestige, not a burden.",
+      "purpose": "Israel exception",
+      "emotion": "curious",
+      "viewerFocus": "the exception",
+      "visualGrammar": "COMPARE",
+      "slots": {
+        "left": "Rich = few kids",
+        "right": "Israel: rich + many"
+      }
+    },
+    {
+      "id": "scene49",
+      "narration": "Or in the oil-rich country, people still have many children because they have oil, and the state provides everything from healthcare to housing, all for free. Plus, religious factors encourage having many children. You might ask if this model will survive if the oil runs out in the future. Only the future will tell.",
+      "purpose": "Oil states",
+      "emotion": "neutral",
+      "viewerFocus": "free everything",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/shop_counter.svg",
+        "who": "host",
+        "anchorA": "counter_left",
+        "caption": "Oil pays for all"
+      }
+    },
+    {
+      "id": "scene50",
+      "narration": "The key point here is that, from a game theory perspective, societies that consider having children as a way to enhance prestige will have high birth rates. Conversely, if having children means losing freedom, money, time, and opportunities for advancement, then people will choose not to have children. So now the question is, what about Vietnam?",
+      "purpose": "Bridge to Vietnam",
+      "emotion": "curious",
+      "viewerFocus": "Vietnam?",
+      "visualGrammar": "QA_REVEAL",
+      "slots": {
+        "question": "What about Vietnam?",
+        "answer": "LET'S SEE"
+      }
+    },
+    {
+      "id": "scene51",
+      "narration": "In twenty twenty-four, our birth rate will fall to one point nine one per woman, the lowest in history. This is the third consecutive year we've been below two point one. The downward trend is very clear.",
+      "purpose": "Vietnam 1.91",
+      "emotion": "concern",
+      "viewerFocus": "1.91",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "1.91"
+      },
+      "beats": [
+        {
+          "text": "one point nine one",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene52",
+      "narration": "We lose a little each year, but it's worth noting that twenty twenty-four is the Year of the Dragon, and according to our culture, the Year of the Dragon is a very auspicious year to have children. But even with such strong spiritual beliefs, they can't win against the game of saving face in modern society. People just give up on having children.",
+      "purpose": "Even dragon year",
+      "emotion": "sad",
+      "viewerFocus": "giving up",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "host",
+        "anchorA": "sofa_left",
+        "caption": "Even Dragon Year"
+      }
+    },
+    {
+      "id": "scene53",
+      "narration": "In big cities, the birth rate is only one point six seven. Ho Chi Minh City has the lowest rate in the country at only one point three nine, while the age of first marriage continues to rise. Men now have to be around thirty to get married, and women around twenty-five.",
+      "purpose": "City low",
+      "emotion": "concern",
+      "viewerFocus": "1.39",
+      "visualGrammar": "STAT_REVEAL",
+      "slots": {
+        "stat": "HCMC: 1.39"
+      },
+      "beats": [
+        {
+          "text": "one point three nine",
+          "importance": 0.9,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene54",
+      "narration": "This aligns quite well with the theoretical framework of the game: the more educated and wealthier people are, the fewer children they have. Many experts predict that after twenty thirty-five, Vietnam's population will start experiencing negative growth — the number of deaths will exceed the number of births. Seven provinces have already begun experiencing this situation.",
+      "purpose": "2035 negative",
+      "emotion": "concern",
+      "viewerFocus": "2035",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk",
+        "caption": "2035: negative"
+      }
+    },
+    {
+      "id": "scene55",
+      "narration": "Although Vietnam isn't as dire as South Korea or China, we are still on the same path. And we are also heavily influenced by social media.",
+      "purpose": "Same path",
+      "emotion": "concern",
+      "viewerFocus": "same path",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "host",
+        "anchorA": "stand",
+        "caption": "Same path"
+      }
+    },
+    {
+      "id": "scene56",
+      "narration": "In the old days, people lived in a small village or neighborhood of only a few hundred people. They only compared themselves to the people around them. The probability of becoming the top person in the neighborhood was quite high, so they were still happy to get married, with less comparison.",
+      "purpose": "Small pond",
+      "emotion": "hopeful",
+      "viewerFocus": "old village",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "host",
+        "anchorA": "sidewalk",
+        "lineA": "Chỉ so với hàng xóm."
+      }
+    },
+    {
+      "id": "scene57",
+      "narration": "Now it's completely different. On TikTok, you see guys with six-pack abs driving Porsches. On Instagram, you see girls with white skin and slim waists carrying handbags. Anyone successful is known to the whole society. So, naturally, you start comparing yourself to millions of people online.",
+      "purpose": "Endless comparison",
+      "emotion": "sarcastic",
+      "viewerFocus": "social feeds",
+      "visualGrammar": "FRAMEBOX",
+      "slots": {
+        "content": "#0e1622",
+        "caption": "TikTok · Instagram"
+      }
+    },
+    {
+      "id": "scene58",
+      "narration": "And then, the people around you don't seem good enough anymore. Social media expanded the playing field from a few hundred people to millions, pushing the standards up unreasonably. Dating apps are the same — swiping through hundreds of people every day tricks your brain into thinking you have too many choices.",
+      "purpose": "Too many choices",
+      "emotion": "concern",
+      "viewerFocus": "the apps",
+      "visualGrammar": "CHAR_PROP",
+      "slots": {
+        "prop": "props/thought_bubble",
+        "label": "Too many choices"
+      }
+    },
+    {
+      "id": "scene59",
+      "narration": "There's no need to rush, you'll start meeting better people — and the result is that you end up not choosing anyone. From a game theory perspective, social media has increased the number of players a thousandfold, while the number of prizes at the top remains the same — the winning rate is practically zero. But people still play because they see everyone else playing.",
+      "purpose": "Winning rate zero",
+      "emotion": "urgent",
+      "viewerFocus": "x1000 players",
+      "visualGrammar": "QA_REVEAL",
+      "slots": {
+        "question": "Winning rate?",
+        "answer": "ALMOST ZERO"
+      },
+      "beats": [
+        {
+          "text": "a thousandfold",
+          "importance": 0.85,
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "id": "scene60",
+      "narration": "Actually, after watching the video and writing the script, we realized that this game theory doesn't help us answer the question immediately; it only helps us know how to ask the right question. You should ask yourself who the players are, what the rules are, and what the rewards are. From there, you can see the overall picture.",
+      "purpose": "Ask right question",
+      "emotion": "hopeful",
+      "viewerFocus": "the method",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "anchorA": "desk",
+        "caption": "Ask the right question"
+      }
+    },
+    {
+      "id": "scene61",
+      "narration": "Dating is just one example. We can apply this to everything, from the tense situation between the US and Iran to the war in Ukraine, or why this is an opportunity for Vietnam to break through.",
+      "purpose": "Apply everywhere",
+      "emotion": "curious",
+      "viewerFocus": "broader uses",
+      "visualGrammar": "CHAR_PROP",
+      "slots": {
+        "prop": "props/brain",
+        "label": "Applies everywhere"
+      }
+    },
+    {
+      "id": "scene62",
+      "narration": "Okay, that's enough for now, let's stop here. Is the game of saving face affecting your dating and marriage decisions, or are there other factors? Please comment below. Don't forget to subscribe so you don't miss any videos.",
+      "purpose": "CTA",
+      "emotion": "happy",
+      "viewerFocus": "subscribe",
+      "visualGrammar": "TABLEAU",
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "host",
+        "anchorA": "sofa_right",
+        "caption": "Subscribe!"
+      }
+    }
   ]
 }

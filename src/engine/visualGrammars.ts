@@ -176,7 +176,14 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   if (b.slots?.lineB && entities[1])
     bubbles.push({ id: `${b.id}-lb`, anchorAssetId: `${b.id}-b`, text: b.slots.lineB, direction: "left", delay: 90, duration: 60 });
 
-  return { layout: "TABLEAU", backgroundSrc: stage, entities, texts: [], speechBubbles: bubbles, focusAssetId: entities[0]?.assetId };
+  // Optional keyword/caption pill (lets a staged narrator scene still punch a
+  // keyword, like SOLO does) — sits in the top band, clear of the subtitle.
+  const caption = b.slots?.caption ?? b.slots?.keyword;
+  const texts: SceneText[] = caption
+    ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, duration: 110 }]
+    : [];
+
+  return { layout: "TABLEAU", backgroundSrc: stage, entities, texts, speechBubbles: bubbles, focusAssetId: entities[0]?.assetId };
 }
 
 // ── EVIDENCE ────────────────────────────────────────────────
