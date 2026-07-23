@@ -113,6 +113,36 @@ function compileBrief(
   };
 }
 
+// Soft, high-luminance tints (dark text + orange cat both stay legible). No two
+// are close, so rotating them makes consecutive "talking" scenes visibly differ
+// instead of a stack of identical white voids — the #1 scale defect.
+const SOFT_BGS = [
+  "#FBF3E9", // cream
+  "#EAF2F8", // light blue
+  "#F0F7EC", // light green
+  "#FBEFF3", // light pink
+  "#F4EFFA", // light lavender
+  "#FEF6E7", // light amber
+  "#EAF6F5", // light teal
+  "#F3ECF7", // light violet
+];
+
+// Background-variety pass (fix a): plain-white grammar scenes get a rotating
+// soft tint; illustrated stages, photos, BEAT images, and dark STAT_DRAMA
+// gradients are left untouched. Applies to EVERY video via the storyboard route
+// (which — unlike the classic generate path — never ran autoFixBackgrounds).
+function enrichBackgrounds(scenes: Scene[]): void {
+  let tint = 0;
+  for (const s of scenes) {
+    const bg = s.backgroundSrc ?? "";
+    const isPlainWhite = bg === "" || bg === "#FFFFFF" || bg === "#FAFAF8";
+    if (isPlainWhite) {
+      s.backgroundSrc = SOFT_BGS[tint % SOFT_BGS.length];
+      tint++;
+    }
+  }
+}
+
 export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = {}): SceneTimeline {
   const fps = sb.fps || 30;
   const fpw = opts.fallbackFramesPerWord ?? 8;
@@ -137,6 +167,8 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
   const scenes: Scene[] = sb.scenes.map((brief, i) =>
     compileBrief(brief, timings[i], { ...ctx, index: i }, fps, opts.words)
   );
+
+  enrichBackgrounds(scenes);
 
   const totalFrames = scenes.length ? scenes[scenes.length - 1].startFrame + scenes[scenes.length - 1].durationFrames : 0;
 

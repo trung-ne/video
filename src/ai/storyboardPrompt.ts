@@ -47,6 +47,8 @@ Khai báo "cast": role → { src, badge }. Giữ nguyên xuyên video (người 
 
 ## QUY TẮC
 - Số scene ~1 mỗi 8-15 giây narration (video ${durationSeconds}s → ~${Math.max(6, Math.round(durationSeconds / 12))} scene).
+- **ƯU TIÊN TABLEAU / bối cảnh (QUAN TRỌNG — chống "mèo trên nền trắng"):** mọi scene có KHÔNG GIAN VẬT LÝ (ở nhà, quán, phố, lớp học, công viên, văn phòng, cửa hàng, bàn ăn, phòng ngủ) PHẢI dùng TABLEAU với stage. **≥40% scene phải là TABLEAU hoặc BEAT (ảnh).** SOLO chỉ dùng khi thực sự là lời bình trực tiếp với khán giả — **SOLO ≤ 25% số scene**. Đừng để quá nửa video là mèo đứng nền trơn.
+- **MONTAGE tương phản:** KHÔNG 2 STAT_DRAMA liền nhau; sau 1 scene tối (STAT_DRAMA) nên là scene sáng. Xen kẽ năng lượng.
 - narration = ĐÚNG câu transcript của scene (nguồn phụ đề) — không tóm tắt cụt.
 - Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE, ≥1 TABLEAU/DIALOGUE_QA, ≥1 BEAT. SOLO ≤ 40%.
 - beats[]: đánh dấu con số/từ khoá quan trọng = substring CHÍNH XÁC của narration + importance 0..1 + kind (number/keyword/turn). Hệ thống sẽ nhấn mạnh đúng khoảnh khắc từ đó được đọc.
