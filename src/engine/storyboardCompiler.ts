@@ -14,6 +14,7 @@
 import { Scene, SceneTimeline, SceneEntity } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext } from "./visualGrammars";
+import { STAGE_ANCHORS } from "./stageAnchors";
 
 export interface SceneTiming {
   id: string;
@@ -56,6 +57,20 @@ function resolveBeatOffset(
   return Math.round(frac * sceneFrames);
 }
 
+// Per-emotion pose cycle for sentence-level re-posing. Only registers with ≥2
+// poses swap; sad/surprise/urgent keep a single pose to preserve the emotion.
+const POSE_CYCLE: Record<string, string[]> = {
+  neutral:   ["characters/cat_explain", "characters/cat_talk"],
+  curious:   ["characters/cat_think", "characters/cat_talk"],
+  sarcastic: ["characters/cat_explain", "characters/cat_talk"],
+  happy:     ["characters/cat_happy", "characters/cat_talk"],
+  hopeful:   ["characters/cat_happy", "characters/cat_explain"],
+  concern:   ["characters/cat_think", "characters/cat_sad"],
+  sad:       [],
+  surprise:  [],
+  urgent:    [],
+};
+
 function importanceToEmphasis(imp: number): { animation: "pulse" | "shake" | "bounce"; duration: number; value?: number } {
   if (imp >= 0.85) return { animation: "shake", duration: 24 };
   if (imp >= 0.6) return { animation: "pulse", duration: 22 };
@@ -96,6 +111,32 @@ function compileBrief(
     focal.emphasize = { animation: emph.animation, delay: Math.max(0, offset - enterDelay), duration: emph.duration };
   }
 
+  // Per-sentence pose swaps (V4.3) — the narrator cat should re-pose on each
+  // sentence instead of freezing. Only for a single-character narrator scene;
+  // poses stay inside the scene's EMOTION register so a sad cat never suddenly
+  // grins. Each swap re-enters the same assetId (sceneCompiler treats a repeat
+  // assetId as an in-place pose change).
+  const charEntities = entities.filter((e) => e.src.startsWith("characters/"));
+  if (focal && charEntities.length === 1 && focal === charEntities[0]) {
+    const cycle = POSE_CYCLE[brief.emotion ?? "neutral"] ?? [];
+    if (cycle.length >= 2) {
+      const sentences = brief.narration.split(/(?<=[.?!])\s+/).map((s) => s.trim()).filter((s) => s.length > 8);
+      const swaps: SceneEntity[] = [];
+      for (let si = 1; si < sentences.length; si++) {
+        const offset = resolveBeatOffset(sentences[si], brief.narration, timing.startFrame, timing.frames, fps, words);
+        if (offset < 20 || offset > timing.frames - 20) continue;
+        swaps.push({
+          assetId: focal.assetId,
+          src: cycle[si % cycle.length],
+          slot: focal.slot, position: focal.position, anchor: focal.anchor, scale: focal.scale,
+          badge: focal.badge, enterAnimation: "none", enterDelay: offset,
+          clearPrevious: [focal.assetId],
+        });
+      }
+      entities.push(...swaps);
+    }
+  }
+
   return {
     id: brief.id,
     label: brief.purpose,
@@ -126,6 +167,38 @@ const SOFT_BGS = [
   "#EAF6F5", // light teal
   "#F3ECF7", // light violet
 ];
+
+// No-repeat stage enforcement: every TABLEAU in a video must use a DISTINCT
+// stage set (user rule: tuyệt đối không lặp stage). If a stage was already used,
+// reassign the scene to an unused stage and remap its anchors; if the whole
+// pool is exhausted, drop the stage (character falls back onto a tint) rather
+// than repeat. All stages from STAGE_ANCHORS participate — including any added
+// on-demand via the gen-stage skill.
+function enforceDistinctStages(scenes: Scene[]): void {
+  const pool = Object.keys(STAGE_ANCHORS);
+  const used = new Set<string>();
+  for (const s of scenes) {
+    const bg = s.backgroundSrc ?? "";
+    if (!STAGE_ANCHORS[bg]) continue; // not a stage
+    if (!used.has(bg)) { used.add(bg); continue; }
+    // Repeat → find an unused stage.
+    const free = pool.find((p) => !used.has(p));
+    if (free) {
+      const newAnchors = Object.keys(STAGE_ANCHORS[free]);
+      s.backgroundSrc = free;
+      let ai = 0;
+      for (const e of s.entities) {
+        if (e.anchor) { e.anchor = newAnchors[Math.min(ai, newAnchors.length - 1)]; ai++; }
+      }
+      used.add(free);
+    } else {
+      // Pool exhausted — no repeats allowed, so drop to a plain bg (enrich tints
+      // it) and let entities fall back to layout slots.
+      s.backgroundSrc = "#FFFFFF";
+      for (const e of s.entities) delete e.anchor;
+    }
+  }
+}
 
 // Background-variety pass (fix a): plain-white grammar scenes get a rotating
 // soft tint; illustrated stages, photos, BEAT images, and dark STAT_DRAMA
@@ -168,6 +241,7 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     compileBrief(brief, timings[i], { ...ctx, index: i }, fps, opts.words)
   );
 
+  enforceDistinctStages(scenes);
   enrichBackgrounds(scenes);
 
   const totalFrames = scenes.length ? scenes[scenes.length - 1].startFrame + scenes[scenes.length - 1].durationFrames : 0;

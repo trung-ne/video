@@ -39,8 +39,8 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
   },
   "assets/scenes/office_desk.svg": {
     // seated at the desk, torso above the desk line (~y 0.72 in art)
-    desk:       { x: 0.42, y: 0.52, scale: 1.5 },
-    desk_right: { x: 0.58, y: 0.52, scale: 1.4 },
+    desk:       { x: 0.42, y: 0.48, scale: 1.7 },
+    desk_right: { x: 0.58, y: 0.48, scale: 1.6 },
   },
   "assets/scenes/cafe.svg": {
     // leaning at the counter (counter top ~y 0.68)
@@ -55,8 +55,8 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
   },
   "assets/scenes/classroom.svg": {
     // seated at the desk in front of the blackboard
-    desk:  { x: 0.5,  y: 0.52, scale: 1.5 },
-    board: { x: 0.28, y: 0.5,  scale: 1.6 }, // standing to the side, presenting
+    desk:  { x: 0.5,  y: 0.48, scale: 1.7 },
+    board: { x: 0.28, y: 0.46, scale: 1.7 }, // standing to the side, presenting
   },
   "assets/scenes/street.svg": {
     // standing on the sidewalk (walk level ~y 0.62)
@@ -68,6 +68,30 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
     // customer/clerk at the counter
     counter_left:  { x: 0.36, y: 0.52, scale: 1.45 },
     counter_right: { x: 0.64, y: 0.52, scale: 1.45 },
+  },
+  "assets/scenes/kitchen.svg": {
+    counter_left:  { x: 0.4,  y: 0.52, scale: 1.5 },
+    counter_right: { x: 0.62, y: 0.52, scale: 1.5 },
+  },
+  "assets/scenes/library.svg": {
+    table:      { x: 0.5,  y: 0.48, scale: 1.65 },
+    table_left: { x: 0.4,  y: 0.48, scale: 1.6 },
+  },
+  "assets/scenes/bank_interior.svg": {
+    counter_left:  { x: 0.38, y: 0.5, scale: 1.6 },
+    counter_right: { x: 0.62, y: 0.5, scale: 1.6 },
+  },
+  "assets/scenes/restaurant.svg": {
+    seat_left:  { x: 0.34, y: 0.5, scale: 1.5 },
+    seat_right: { x: 0.66, y: 0.5, scale: 1.5 },
+  },
+  "assets/scenes/gym.svg": {
+    bench:  { x: 0.5,  y: 0.54, scale: 1.55 },
+    stand:  { x: 0.3,  y: 0.58, scale: 1.6 },
+  },
+  "assets/scenes/hospital.svg": {
+    bed:   { x: 0.5,  y: 0.5,  scale: 1.5 },
+    stand: { x: 0.72, y: 0.58, scale: 1.55 },
   },
 };
 

@@ -257,8 +257,8 @@ function grammarCharProp(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "CHAR_PROP",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, "characters/cat_explain").src : "characters/cat_explain", slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
-      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 1.3, label, enterAnimation: "popIn", enterDelay: 24,
+      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
+      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 1.7, label, enterAnimation: "popIn", enterDelay: 24,
         emphasize: { animation: "pulse", delay: 30, duration: 20 } },
     ],
     texts: [],

@@ -31,11 +31,10 @@ export const FrameBox: React.FC<Props> = ({
   const w = frameBox.width * frameBox.scale;
   const h = w * 0.62; // monitor aspect
 
-  // Resolve content image: hex/css stays, otherwise treat as public/ path
-  const src =
-    frameBox.contentSrc.startsWith("#") || frameBox.contentSrc.startsWith("rgb")
-      ? frameBox.contentSrc
-      : staticFile(frameBox.contentSrc);
+  // A hex/rgb content = a "screen panel" (no real image) → show the caption
+  // large ON the screen. Otherwise it's an image path to display.
+  const isColor = frameBox.contentSrc.startsWith("#") || frameBox.contentSrc.startsWith("rgb");
+  const src = isColor ? frameBox.contentSrc : staticFile(frameBox.contentSrc);
 
   return (
     <div
@@ -69,22 +68,43 @@ export const FrameBox: React.FC<Props> = ({
           style={{
             width: "100%",
             height: "100%",
-            background: "#FFFFFF",
+            background: isColor ? src : "#FFFFFF",
             borderRadius: 10,
             overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: isColor ? "6% 8%" : 0,
+            boxSizing: "border-box",
           }}
         >
-          <img
-            src={src}
-            style={{ width: "100%", height: "100%", objectFit: "contain", background: "#FFFFFF" }}
-          />
+          {isColor ? (
+            frameBox.caption && (
+              <div
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: w * 0.06,
+                  fontWeight: 800,
+                  textAlign: "center",
+                  lineHeight: 1.2,
+                  fontFamily: "'Segoe UI', 'Arial Rounded MT Bold', sans-serif",
+                  textShadow: "0 2px 10px rgba(0,0,0,0.4)",
+                }}
+              >
+                {frameBox.caption}
+              </div>
+            )
+          ) : (
+            <img src={src} style={{ width: "100%", height: "100%", objectFit: "contain", background: "#FFFFFF" }} />
+          )}
         </div>
       </div>
       {/* Stand */}
       <div style={{ width: w * 0.18, height: h * 0.16, background: "#1a1a1a" }} />
       <div style={{ width: w * 0.42, height: h * 0.05, background: "#1a1a1a", borderRadius: 6 }} />
 
-      {frameBox.caption && (
+      {/* Caption below only for real-image screens (color screens caption inside) */}
+      {frameBox.caption && !isColor && (
         <div
           style={{
             marginTop: 18,

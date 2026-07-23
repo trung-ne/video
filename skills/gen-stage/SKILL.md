@@ -51,6 +51,36 @@ Read one before authoring so the new stage looks like a sibling, not a stranger.
    anchor (compile-storyboard → render → extract a frame) and confirm the cat
    rests naturally on the furniture and nothing overlaps the subtitle band (y>0.82).
 
+## When the SVG stage pool is exhausted (no-repeat rule)
+
+A video must never reuse a stage (enforced in `storyboardCompiler.enforceDistinctStages`).
+When a storyboard needs more distinct stages than exist, create a new one — two ways:
+
+### Option A — hand-authored SVG (default; fully offline)
+Follow the workflow above. Preferred for a reusable, on-brand location.
+
+### Option B — raster stage via `imagegen` (when you need a rich/one-off place)
+1. Use the `imagegen` skill to generate a **16:9 flat-vector illustrated room/place**
+   (prompt it for the same flat editorial style, warm palette, empty center-lower
+   for the character, no text). Save the PNG to `public/assets/scenes/<name>.png`.
+2. Register anchors in `stageAnchors.ts` exactly as for an SVG (the key is the
+   `assets/scenes/<name>.png` path; the renderer shows a raster background for any
+   non-CSS `backgroundSrc`). Tune each anchor's x/y/scale so the cat rests on the
+   furniture in the generated image.
+3. Test-render a TABLEAU using it.
+
+### Option C — fetch a real photo/illustration from the web
+Only when running with network access. Download to `public/assets/scenes/<name>.jpg`,
+then register anchors as above (treat like a photo stage — a light scrim may help
+legibility). NOTE: the current sandbox has **no outbound network**, so web fetch
+cannot run here; use Option A or B in this environment.
+
+## During storyboard authoring
+When authoring a storyboard (Mode A), if no existing stage fits a scene's location,
+invoke this skill to create one BEFORE writing the brief, then reference the new
+`stage` path. Because `STAGE_ANCHORS` drives the prompt list, the compiler, and
+validation, a newly added stage is immediately usable everywhere.
+
 ## Checklist before done
 - [ ] viewBox 1920×1080, flat fills, no `<text>`, no gradients.
 - [ ] Palette from the families above; reads as a sibling of the 3 existing stages.
