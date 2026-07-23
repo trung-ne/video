@@ -1245,8 +1245,10 @@ function checkAssetPaths(scenes: any[]): CheckResult {
     for (const e of (s.entities ?? [])) {
       if (!e.src || checked.has(e.src)) continue;
       checked.add(e.src);
-      const svgPath = path.join(assetsDir, `${e.src}.svg`);
-      if (!fs.existsSync(svgPath)) {
+      const assetPath = /\.(?:png|jpe?g|webp|gif|svg)$/i.test(e.src)
+        ? path.join(process.cwd(), "public", e.src)
+        : path.join(assetsDir, `${e.src}.svg`);
+      if (!fs.existsSync(assetPath)) {
         issues.push({
           severity: "BLOCKER",
           rule: "ASSET_EXISTS",

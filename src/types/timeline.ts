@@ -25,7 +25,7 @@ export interface Position {
 
 export interface AssetState {
   assetId: string;
-  src: string;           // path relative to public/assets/ (no extension)
+  src: string;           // legacy ID relative to public/assets/ (no extension), or public-relative image path with extension
   position: Position;
   scale: number;         // 1.0 = default size
   opacity: number;

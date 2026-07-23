@@ -28,6 +28,11 @@ export const ConceptCard: React.FC<Props> = ({
   const y = card.position.y * canvasHeight;
   const w = card.width * card.scale;
   const h = card.height * card.scale;
+  const iconPath = card.iconSrc && /\.(?:png|jpe?g|webp|gif|svg)$/i.test(card.iconSrc)
+    ? card.iconSrc
+    : card.iconSrc
+      ? `assets/${card.iconSrc}.svg`
+      : "";
 
   return (
     <div
@@ -76,7 +81,7 @@ export const ConceptCard: React.FC<Props> = ({
           {/* Icon */}
           {card.iconSrc && (
             <img
-              src={staticFile(`assets/${card.iconSrc}.svg`)}
+              src={staticFile(iconPath)}
               style={{
                 width: h * 0.45,
                 height: h * 0.45,

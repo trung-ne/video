@@ -73,6 +73,9 @@ export const AnimatedAsset: React.FC<Props> = ({
   const totalScale = resolved.scale * emphasisScale;
   const totalTX = resolved.translateX + emphasisTranslateX;
   const totalTY = resolved.translateY + emphasisTranslateY;
+  const assetPath = /\.(?:png|jpe?g|webp|gif|svg)$/i.test(asset.src)
+    ? asset.src
+    : `assets/${asset.src}.svg`;
 
   return (
     <div
@@ -106,7 +109,7 @@ export const AnimatedAsset: React.FC<Props> = ({
         />
       )}
       <Img
-        src={staticFile(`assets/${asset.src}.svg`)}
+        src={staticFile(assetPath)}
         style={{
           width: "100%",
           height: "100%",

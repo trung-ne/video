@@ -11,6 +11,12 @@ export interface ValidationResult {
   warnings: string[];
 }
 
+function resolveAssetPath(src: string, assetsDir: string): string {
+  return /\.(?:png|jpe?g|webp|gif|svg)$/i.test(src)
+    ? path.join(process.cwd(), "public", src)
+    : path.join(assetsDir, `${src}.svg`);
+}
+
 // ─── Scene-level validation ──────────────────────────────────
 
 export function validateSceneTimeline(input: any): ValidationResult {
@@ -95,9 +101,9 @@ export function validateSceneTimeline(input: any): ValidationResult {
         if (!e.src) {
           errors.push(`${ep} missing src`);
         } else {
-          const svgPath = path.join(assetsDir, `${e.src}.svg`);
-          if (!fs.existsSync(svgPath)) {
-            errors.push(`${ep} asset not found: public/assets/${e.src}.svg`);
+          const assetPath = resolveAssetPath(e.src, assetsDir);
+          if (!fs.existsSync(assetPath)) {
+            errors.push(`${ep} asset not found: ${path.relative(process.cwd(), assetPath)}`);
           }
         }
 
@@ -244,9 +250,9 @@ export function validateTimeline(timeline: any, assetDir?: string): ValidationRe
         if (!event.src) {
           errors.push(`${prefix} enter event missing src`);
         } else {
-          const svgPath = path.join(assetsDir, `${event.src}.svg`);
-          if (!fs.existsSync(svgPath)) {
-            errors.push(`${prefix} asset not found: public/assets/${event.src}.svg`);
+          const assetPath = resolveAssetPath(event.src, assetsDir);
+          if (!fs.existsSync(assetPath)) {
+            errors.push(`${prefix} asset not found: ${path.relative(process.cwd(), assetPath)}`);
           }
         }
         if (!event.position || typeof event.position.x !== "number") {
