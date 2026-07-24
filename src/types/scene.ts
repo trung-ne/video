@@ -1,4 +1,5 @@
 import { AnimationType, EmphasizeType, ExitType, TextStyle } from "./timeline";
+import { SourceRange, VisualRegister } from "./storyboard";
 
 // ============================================================
 // SCENE DSL — High-level schema that AI generates
@@ -193,6 +194,13 @@ export interface Scene {
 
   layout: LayoutPreset;
   narration?: string;      // the words being spoken (helps compiler time things)
+  sourceRange?: SourceRange;
+  visualRegister?: VisualRegister;
+  semanticTakeaway?: string;
+  semanticAssetIds?: string[];
+  claimIds?: string[];
+  heroVisual?: boolean;
+  unresolvedAssets?: string[];
   backgroundSrc?: string;  // CSS color/gradient or image path for background event
   backgroundBlur?: number;    // blur px for photo bg (8-14 recommended so flat 2D cat pops)
   backgroundOverlay?: string; // scrim over photo bg for legibility (e.g. "rgba(0,0,0,0.35)")

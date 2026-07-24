@@ -39,6 +39,44 @@ export type Emotion =
 // Camera shot size — drives character scale + optional gentle zoom.
 export type Shot = "wide" | "medium" | "close";
 
+export type VisualRegister =
+  | "character_action"
+  | "infographic"
+  | "evidence"
+  | "photo_broll"
+  | "framebox"
+  | "visual_gag"
+  | "full_tableau";
+
+export interface SourceRange {
+  startWord: number;
+  endWord: number;
+  quoteChecksum: string;
+}
+
+export interface SemanticVisual {
+  subject: string;
+  action: string;
+  object?: string;
+  relation?: string;
+  setting?: string;
+  takeaway: string;
+}
+
+export interface AssetRequest {
+  role: "character" | "prop" | "stage" | "photo" | "chart" | "ui";
+  query: string;
+  requiredTags: string[];
+  preferredAssetId?: string;
+  allowGenerate: boolean;
+}
+
+export interface SceneContinuity {
+  locationId?: string;
+  castIds: string[];
+  callbackId?: string;
+}
+
 export interface Beat {
   // A verbatim substring of the brief's narration that this beat covers.
   // The word-alignment step maps it to a frame so emphasis lands on the word.
@@ -58,6 +96,14 @@ export interface SceneBrief {
   emotion: Emotion;
   viewerFocus: string;    // the ONE thing the eye should land on
   visualGrammar: VisualGrammar;
+  sectionId?: string;
+  sourceRange?: SourceRange;
+  visualRegister?: VisualRegister;
+  semanticVisual?: SemanticVisual;
+  claimIds?: string[];
+  heroVisual?: boolean;
+  assetRequests?: AssetRequest[];
+  continuity?: SceneContinuity;
   shot?: Shot;            // default: medium
 
   // Concept fills for the chosen grammar. Keys depend on grammar, e.g.
@@ -73,6 +119,9 @@ export interface SceneBrief {
 }
 
 export interface Storyboard {
+  schemaVersion?: 1 | 2;
+  transcriptChecksum?: string;
+  promptVersion?: string;
   fps: number;
   width: number;
   height: number;
@@ -80,13 +129,39 @@ export interface Storyboard {
   // Casting table — role name → { src costume, badge }. Kept stable so a
   // character reads as the same person across scenes (reference-video style).
   cast?: Record<string, { src: string; badge?: string }>;
+  sections?: StorySection[];
+  claims?: StoryClaim[];
+  generation?: {
+    provider?: string;
+    model?: string;
+    passIds?: string[];
+    repairs?: Array<{ sceneId: string; reason: string }>;
+  };
   scenes: SceneBrief[];
+}
+
+export interface StorySection {
+  id: string;
+  sourceRange: SourceRange;
+  thesis: string;
+  emotionalTurn: string;
+  targetDurationSeconds?: number;
+}
+
+export interface StoryClaim {
+  id: string;
+  text: string;
+  sourceRange: SourceRange;
+  evidencePolicy: "none" | "quote" | "data" | "source_card";
+  sceneIds?: string[];
 }
 
 // One aligned word (from scripts/align_words.py → words.json).
 export interface AlignedWord {
   scene?: string;
+  wordIndex?: number;
   word: string;
   startSec: number;
   endSec: number;
+  confidence?: number;
 }
