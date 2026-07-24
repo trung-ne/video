@@ -6,7 +6,7 @@
  *   npx ts-node scripts/render.ts --timeline timeline.json --out output/video.mp4
  */
 
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { loadTimeline } from "../src/engine/loadTimeline";
@@ -24,6 +24,42 @@ function getArg(flag: string, defaultVal: string): string {
 const timelinePath = getArg("--timeline", "timeline.json");
 const outPath = getArg("--out", "output/video.mp4");
 const compositionId = getArg("--composition", "CatExplainer");
+
+function runEncodingAudit(videoPath: string): void {
+  const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
+  const rawReport = execFileSync(ffprobePath, [
+    "-v", "error", "-show_streams", "-show_format", "-of", "json", videoPath,
+  ], { encoding: "utf8" });
+  const probe = JSON.parse(rawReport);
+  const video = (probe.streams ?? []).find((stream: any) => stream.codec_type === "video");
+  const audio = (probe.streams ?? []).find((stream: any) => stream.codec_type === "audio");
+  const failures: string[] = [];
+  if (!video || video.width !== 1920 || video.height !== 1080) failures.push("Video must be 1920x1080.");
+  if (video && video.codec_name !== "h264") failures.push(`Video codec must be h264, got ${video.codec_name}.`);
+  const rateParts = String(video?.avg_frame_rate ?? "0/1").split("/").map(Number);
+  const fps = rateParts[1] ? rateParts[0] / rateParts[1] : 0;
+  if (Math.abs(fps - 30) > 0.1) failures.push(`Frame rate must be 30fps, got ${fps}.`);
+  const videoBitrate = Number(video?.bit_rate ?? 0);
+  const totalBitrate = Number(probe.format?.bit_rate ?? 0);
+  if (Math.max(videoBitrate, totalBitrate) < 1_000_000) failures.push("1080p bitrate is below 1 Mbps.");
+  if (!audio) failures.push("Rendered file has no audio stream.");
+  const report = {
+    videoPath: path.resolve(videoPath),
+    codec: video?.codec_name,
+    width: video?.width,
+    height: video?.height,
+    fps,
+    videoBitrate,
+    totalBitrate,
+    audioCodec: audio?.codec_name,
+    audioBitrate: Number(audio?.bit_rate ?? 0),
+    failures,
+    passed: failures.length === 0,
+  };
+  const reportPath = videoPath.replace(/\.mp4$/i, ".encoding-audit.json");
+  fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  if (failures.length) throw new Error(`Encoding audit failed: ${failures.join(" ")}`);
+}
 
 // Validate timeline file
 if (!fs.existsSync(timelinePath)) {
@@ -121,6 +157,10 @@ try {
     `"${outPath}"`,
     `--props="${propsTmpFile}"`,
     "--log=verbose",
+    "--codec=h264",
+    "--crf=18",
+    "--audio-bitrate=192k",
+    "--pixel-format=yuv420p",
     browserExecutable ? `--browser-executable="${browserExecutable}"` : "",
   ]
     .filter(Boolean)
@@ -129,6 +169,7 @@ try {
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
   console.log(`\n✅ Render complete: ${outPath}`);
+  runEncodingAudit(outPath);
 
   // Pixel-level regression gate. Timeline quotas cannot detect semantically
   // empty or visually repetitive frames, so sample the actual encoded MP4.
@@ -137,7 +178,7 @@ try {
     const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
     if (fs.existsSync(auditScript)) {
       execSync(
-        `python "${auditScript}" --video "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}"`,
+        `python "${auditScript}" --video "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}"`,
         { stdio: "inherit", cwd: process.cwd() }
       );
     }

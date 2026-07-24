@@ -4,7 +4,7 @@ import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
-import { runStoryboardCheck } from "../src/ai/qualityCheck";
+import { runQualityCheck, runStoryboardCheck } from "../src/ai/qualityCheck";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -166,6 +166,29 @@ test("word alignment controls schema v2 scene timing and subtitle cues", () => {
   assert.strictEqual(timeline.scenes[0].durationFrames, 30);
   assert.strictEqual(timeline.scenes[1].startFrame, 30);
   assert.ok((timeline.scenes[1].subtitleCues?.length ?? 0) > 0);
+});
+
+test("schema v2 timeline gate rejects flat generic character pairs", () => {
+  const timeline = {
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080, durationInFrames: 2400,
+    scenes: Array.from({ length: 8 }, (_, index) => ({
+      id: `s${index}`, startFrame: index * 300, durationFrames: 300,
+      layout: "DIALOGUE", narration: "generic", backgroundSrc: "#ffffff",
+      visualRegister: "character_action", semanticTakeaway: "two cats exist",
+      semanticAssetIds: ["generated-assets/characters/cat.png"],
+      entities: [
+        { assetId: `a${index}`, src: "generated-assets/characters/cat.png" },
+        { assetId: `b${index}`, src: "generated-assets/characters/cat.png" },
+      ],
+      texts: [],
+    })),
+  };
+  const report = runQualityCheck(timeline);
+  const semantic = report.checks.find((check) => check.name.includes("Semantic production"));
+  const rules = semantic?.issues.map((issue) => issue.rule) ?? [];
+  assert.ok(rules.includes("GENERIC_CHARACTER_PAIR"));
+  assert.ok(rules.includes("SOLID_BACKGROUND_RATIO"));
+  assert.ok(rules.includes("REGISTER_DIVERSITY"));
 });
 
 let failures = 0;

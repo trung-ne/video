@@ -36,6 +36,9 @@ export function validateSceneTimeline(input: any): ValidationResult {
   if (!input.durationInFrames || input.durationInFrames < 1) {
     errors.push("durationInFrames must be > 0");
   }
+  if (input.schemaVersion !== undefined && ![1, 2].includes(input.schemaVersion)) {
+    errors.push(`Unsupported schemaVersion ${input.schemaVersion}`);
+  }
 
   const validLayouts = [
     // V3 layouts
@@ -76,6 +79,15 @@ export function validateSceneTimeline(input: any): ValidationResult {
 
     if (!validLayouts.includes(scene.layout)) {
       errors.push(`${sp} invalid layout "${scene.layout}". Valid: ${validLayouts.join(", ")}`);
+    }
+    if (input.schemaVersion === 2) {
+      if (!scene.sourceRange || !Number.isInteger(scene.sourceRange.startWord) || !Number.isInteger(scene.sourceRange.endWord)) {
+        errors.push(`${sp} schema v2 scene requires sourceRange`);
+      }
+      if (!scene.visualRegister) errors.push(`${sp} schema v2 scene requires visualRegister`);
+      if (!scene.semanticTakeaway) errors.push(`${sp} schema v2 scene requires semanticTakeaway`);
+      if (!Array.isArray(scene.semanticAssetIds)) errors.push(`${sp} schema v2 scene requires semanticAssetIds`);
+      if ((scene.unresolvedAssets?.length ?? 0) > 0) errors.push(`${sp} has unresolvedAssets`);
     }
 
     // Background sanity: track real images vs gradients, catch broken image paths
@@ -152,7 +164,10 @@ export function validateSceneTimeline(input: any): ValidationResult {
     if (!Array.isArray(scene.texts)) {
       errors.push(`${sp} texts must be an array`);
     } else {
-      if (scene.texts.length === 0) {
+      if (scene.texts.length === 0 &&
+          (scene.entities?.length ?? 0) === 0 &&
+          (scene.paperCards?.length ?? 0) === 0 &&
+          (scene.frameBoxes?.length ?? 0) === 0) {
         warnings.push(`${sp} has no texts — screen will be empty`);
       }
       for (let ti = 0; ti < scene.texts.length; ti++) {

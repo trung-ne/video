@@ -1651,6 +1651,106 @@ function checkOverlayNarrationDuplication(scenes: any[]): CheckResult {
   return { name: "Text: overlay không lặp phụ đề", passed: issues.length === 0, issues };
 }
 
+function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  if (timeline?.schemaVersion !== 2 || scenes.length === 0) {
+    return { name: "Semantic production gates (schema v2)", passed: true, issues };
+  }
+  const isCharacter = (source: string): boolean =>
+    source.startsWith("characters/") || source.startsWith("generated-assets/characters/");
+  const genericPairs = scenes.filter((scene) => {
+    const entities = scene.entities ?? [];
+    const characters = entities.filter((entity: any) => isCharacter(String(entity.src ?? "")));
+    const semanticProps = entities.filter((entity: any) => !isCharacter(String(entity.src ?? "")));
+    const relation = String(scene.semanticTakeaway ?? "");
+    return characters.length >= 2 &&
+      semanticProps.length === 0 &&
+      (scene.speechBubbles?.length ?? 0) === 0 &&
+      (scene.paperCards?.length ?? 0) === 0 &&
+      (scene.frameBoxes?.length ?? 0) === 0 &&
+      !/\b(versus|vs|gives|takes|asks|answers|helps|blocks|follows|chases|hands|compares)\b/i.test(relation);
+  });
+  if (genericPairs.length) {
+    issues.push({
+      severity: "MAJOR", rule: "GENERIC_CHARACTER_PAIR", scene: genericPairs[0].id,
+      message: `${genericPairs.length}/${scenes.length} scenes contain generic character pairs without a visible relation.`,
+    });
+  }
+
+  const flatScenes = scenes.filter((scene) => {
+    const background = String(scene.backgroundSrc ?? "");
+    return !background || /^#|^rgba?\(|gradient\(/i.test(background);
+  });
+  if (flatScenes.length / scenes.length > 0.50) {
+    issues.push({
+      severity: "MAJOR", rule: "SOLID_BACKGROUND_RATIO", scene: flatScenes[0]?.id,
+      message: `${flatScenes.length}/${scenes.length} scenes use a flat CSS background; maximum is 50%.`,
+    });
+  }
+
+  const emptyFocal = scenes.filter((scene) =>
+    !String(scene.semanticTakeaway ?? "").trim() ||
+    ((scene.semanticAssetIds?.length ?? 0) === 0 &&
+      (scene.paperCards?.length ?? 0) === 0 &&
+      (scene.frameBoxes?.length ?? 0) === 0)
+  );
+  if (emptyFocal.length) {
+    issues.push({
+      severity: "BLOCKER", rule: "EMPTY_SEMANTIC_FOCAL", scene: emptyFocal[0].id,
+      message: `${emptyFocal.length}/${scenes.length} scenes have no compiled semantic focal point.`,
+    });
+  }
+
+  const unresolved = scenes.filter((scene) => (scene.unresolvedAssets?.length ?? 0) > 0);
+  if (unresolved.length) {
+    issues.push({
+      severity: "BLOCKER", rule: "UNRESOLVED_ASSET", scene: unresolved[0].id,
+      message: `${unresolved.length} scenes contain unresolved semantic assets.`,
+    });
+  }
+
+  const registerCounts = new Map<string, number>();
+  for (const scene of scenes) {
+    if (scene.visualRegister) registerCounts.set(scene.visualRegister, (registerCounts.get(scene.visualRegister) ?? 0) + 1);
+  }
+  if (scenes.length >= 8 && registerCounts.size < 5) {
+    issues.push({
+      severity: "MAJOR", rule: "REGISTER_DIVERSITY",
+      message: `Timeline uses ${registerCounts.size} visual registers; minimum is 5.`,
+    });
+  }
+  for (const [register, count] of registerCounts) {
+    if (scenes.length >= 8 && count / scenes.length > 0.35) {
+      issues.push({
+        severity: "MAJOR", rule: "REGISTER_DOMINANCE",
+        message: `${register} occupies ${Math.round(count / scenes.length * 100)}% of the timeline.`,
+      });
+    }
+  }
+
+  const durationSeconds = Number(timeline.durationInFrames ?? 0) / Number(timeline.fps ?? 30);
+  const heroFrames = scenes.filter((scene) => scene.heroVisual).map((scene) => scene.startFrame);
+  const boundaries = [0, ...heroFrames, timeline.durationInFrames ?? 0].sort((a, b) => a - b);
+  const longestHeroGap = boundaries.slice(1).reduce((max, frame, index) => Math.max(max, frame - boundaries[index]), 0);
+  if (durationSeconds >= 45 && longestHeroGap / 30 > 45) {
+    issues.push({
+      severity: "MAJOR", rule: "HERO_VISUAL_GAP",
+      message: `Longest hero-visual gap is ${(longestHeroGap / 30).toFixed(1)}s; maximum is 45s.`,
+    });
+  }
+
+  const uniqueAssets = new Set<string>(scenes.flatMap((scene) => scene.semanticAssetIds ?? []));
+  const minimumVariants = durationSeconds > 600 ? 20 : durationSeconds >= 300 ? 16 : 12;
+  if (durationSeconds >= 60 && uniqueAssets.size < minimumVariants) {
+    issues.push({
+      severity: "MAJOR", rule: "SEMANTIC_ASSET_DIVERSITY",
+      message: `${uniqueAssets.size} unique semantic assets; minimum for this duration is ${minimumVariants}.`,
+    });
+  }
+
+  return { name: "Semantic production gates (schema v2)", passed: issues.length === 0, issues };
+}
+
 // CHECK 25: Narration coverage → subtitle track exists
 function checkSubtitleCoverage(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
@@ -1708,6 +1808,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkSubtitleCoverage(scenes),
     checkSceneDensity(timeline, scenes),
     checkReferenceComposition(timeline, scenes),
+    checkSemanticTimeline(timeline, scenes),
     checkOverlayNarrationDuplication(scenes),
   ];
 
