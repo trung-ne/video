@@ -44,6 +44,13 @@ export function sourceText(words: IndexedWord[], range: SourceRange): string {
   return words.slice(range.startWord, range.endWord + 1).map((w) => w.text).join(" ");
 }
 
+export function sourceExcerpt(transcript: string, words: IndexedWord[], range: SourceRange): string {
+  const first = words[range.startWord];
+  const last = words[range.endWord];
+  if (!first || !last) return "";
+  return transcript.normalize("NFC").slice(first.start, last.end).trim();
+}
+
 export function makeSourceRange(words: IndexedWord[], startWord: number, endWord: number): SourceRange {
   const text = sourceText(words, { startWord, endWord, quoteChecksum: "" });
   return { startWord, endWord, quoteChecksum: checksumText(text) };

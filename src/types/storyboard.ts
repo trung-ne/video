@@ -65,6 +65,7 @@ export interface SemanticVisual {
 
 export interface AssetRequest {
   role: "character" | "prop" | "stage" | "photo" | "chart" | "ui";
+  slot: string;
   query: string;
   requiredTags: string[];
   preferredAssetId?: string;
@@ -103,6 +104,8 @@ export interface SceneBrief {
   claimIds?: string[];
   heroVisual?: boolean;
   assetRequests?: AssetRequest[];
+  resolvedAssets?: Record<string, string>;
+  unresolvedAssetRequests?: string[];
   continuity?: SceneContinuity;
   shot?: Shot;            // default: medium
 

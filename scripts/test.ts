@@ -3,6 +3,8 @@ import { indexTranscript, makeSourceRange, validateStoryboardCoverage } from "..
 import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
+import { compileStoryboard } from "../src/engine/storyboardCompiler";
+import { runStoryboardCheck } from "../src/ai/qualityCheck";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -72,7 +74,7 @@ test("semantic asset resolver prefers the original lead character", () => {
     ],
   };
   const result = resolveAssetRequest({
-    role: "character", query: "lead cat explain", requiredTags: ["explain"], allowGenerate: false,
+    role: "character", slot: "who", query: "lead cat explain", requiredTags: ["explain"], allowGenerate: false,
   }, manifest);
   assert.strictEqual(result.asset?.id, "lead.explain");
 });
@@ -80,10 +82,58 @@ test("semantic asset resolver prefers the original lead character", () => {
 test("semantic asset resolver never silently falls back", () => {
   const manifest: AssetManifest = { schemaVersion: 1, generatedAt: "test", entries: [] };
   const result = resolveAssetRequest({
-    role: "prop", query: "population map", requiredTags: ["population"], allowGenerate: true,
+    role: "prop", slot: "prop", query: "population map", requiredTags: ["population"], allowGenerate: true,
   }, manifest);
   assert.strictEqual(result.asset, undefined);
   assert.match(result.unresolvedReason ?? "", /generation queue/);
+});
+
+test("schema v2 compiler preserves semantic background and resolved assets", () => {
+  const storyboard: Storyboard = {
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080,
+    scenes: [{
+      id: "compare", narration: "one versus two", purpose: "contrast", emotion: "neutral",
+      viewerFocus: "difference", visualGrammar: "COMPARE", visualRegister: "infographic",
+      semanticVisual: { subject: "two values", action: "contrast", takeaway: "the values differ" },
+      slots: {
+        left: "one", right: "two",
+        leftAsset: "finance/money", rightAsset: "finance/house",
+      },
+      resolvedAssets: { leftAsset: "finance/money", rightAsset: "finance/house" },
+      unresolvedAssetRequests: [],
+    }],
+  };
+  const timeline = compileStoryboard(storyboard);
+  assert.strictEqual(timeline.scenes[0].backgroundSrc, "#FFFFFF");
+  assert.deepStrictEqual(timeline.scenes[0].semanticAssetIds, ["finance/money", "finance/house"]);
+});
+
+test("schema v2 compiler rejects missing semantic assets instead of using cats", () => {
+  const storyboard: Storyboard = {
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080,
+    scenes: [{
+      id: "bad", narration: "cause and effect", purpose: "mechanism", emotion: "neutral",
+      viewerFocus: "effect", visualGrammar: "CAUSE_EFFECT",
+      slots: { cause: "cause", effect: "effect" },
+    }],
+  };
+  assert.throws(() => compileStoryboard(storyboard), /Missing semantic asset/);
+});
+
+test("semantic storyboard gate rejects generic or unresolved planning", () => {
+  const report = runStoryboardCheck({
+    schemaVersion: 2,
+    scenes: [{
+      id: "bad", narration: "two cats", visualGrammar: "SOLO", slots: {},
+      sourceRange: { startWord: 0, endWord: 1, quoteChecksum: "x" },
+      visualRegister: "character_action",
+      semanticVisual: { subject: "cat", action: "", takeaway: "" },
+      assetRequests: [],
+      unresolvedAssetRequests: ["who: missing"],
+    }],
+  });
+  assert.ok(report.blockers > 0);
+  assert.ok(report.majors > 0);
 });
 
 let failures = 0;

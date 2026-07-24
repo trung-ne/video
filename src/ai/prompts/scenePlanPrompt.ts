@@ -21,6 +21,8 @@ Create visual shots averaging 5-9 seconds. Every scene must include sourceRange,
 semanticVisual, visualRegister, visualGrammar, assetRequests, continuity, and
 heroVisual. Narration will be reconstructed by code from sourceRange; do not
 paraphrase it.
+Every assetRequest must include the exact grammar slot it fills, for example
+{"role":"prop","slot":"prop","query":"pay envelope","requiredTags":["money"],"allowGenerate":true}.
 
 ${grammarPromptTable()}
 

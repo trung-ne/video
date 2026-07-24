@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
+import { getGrammarDefinition } from "../engine/grammarRegistry";
 
 const STAGE_ANCHORS_KEYS = new Set(Object.keys(STAGE_ANCHORS));
 
@@ -329,13 +330,12 @@ function checkStoryArc(scenes: any[]): CheckResult {
   }
 
   const hasAnchor = (s: any): boolean => {
-    const texts = Array.isArray(s.texts) ? s.texts : [];
-    if (texts.some((t: any) => (t.content ?? "").trim().length > 0)) return true;
+    if ((s.semanticTakeaway ?? "").trim().length > 0 && (s.semanticAssetIds?.length ?? 0) > 0) return true;
     if (Array.isArray(s.speechBubbles) && s.speechBubbles.length > 0) return true;
     if (Array.isArray(s.paperCards) && s.paperCards.length > 0) return true;
     if (Array.isArray(s.frameBoxes) && s.frameBoxes.length > 0) return true;
-    // A multi-entity scene (dialogue/contrast) is itself an anchor.
-    if ((s.entities?.length ?? 0) >= 2) return true;
+    const props = (s.entities ?? []).filter((e: any) => !String(e.src ?? "").includes("cat"));
+    if (props.length > 0) return true;
     return false;
   };
 
@@ -529,6 +529,105 @@ const GRAMMAR_REQUIRED_SLOTS: Record<string, string[][]> = {
 };
 const GRAMMARS_WITHOUT_FOCAL = new Set(["BEAT"]); // no entity → beats can't anchor
 
+function checkSemanticStoryboard(storyboard: any): CheckResult[] {
+  if (storyboard?.schemaVersion !== 2) return [];
+  const briefs: any[] = Array.isArray(storyboard?.scenes) ? storyboard.scenes : [];
+  const semanticIssues: QualityIssue[] = [];
+  const registerIssues: QualityIssue[] = [];
+
+  for (const brief of briefs) {
+    const definition = getGrammarDefinition(brief.visualGrammar);
+    if (!definition && brief.visualGrammar !== "FREEFORM") continue;
+    if (!brief.sourceRange || !Number.isInteger(brief.sourceRange.startWord) || !Number.isInteger(brief.sourceRange.endWord)) {
+      semanticIssues.push({
+        severity: "BLOCKER", rule: "SOURCE_RANGE", scene: brief.id,
+        message: `${brief.id}: missing stable transcript sourceRange`,
+      });
+    }
+    if (!brief.semanticVisual?.subject || !brief.semanticVisual?.action || !brief.semanticVisual?.takeaway) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "SEMANTIC_VISUAL", scene: brief.id,
+        message: `${brief.id}: semanticVisual needs subject, action, and silent-viewer takeaway`,
+        suggestion: "Describe what visibly happens; a pose or layout name is not an action.",
+      });
+    }
+    if (!Array.isArray(brief.assetRequests) || brief.assetRequests.length === 0) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "ASSET_REQUEST", scene: brief.id,
+        message: `${brief.id}: no semantic asset request; compiler would have to guess`,
+      });
+    }
+    if ((brief.unresolvedAssetRequests?.length ?? 0) > 0) {
+      semanticIssues.push({
+        severity: "BLOCKER", rule: "UNRESOLVED_ASSET", scene: brief.id,
+        message: `${brief.id}: unresolved assets: ${brief.unresolvedAssetRequests.join("; ")}`,
+        suggestion: "Generate or add the requested semantic asset, rebuild the manifest, then retry.",
+      });
+    }
+    if (definition) {
+      for (const slot of definition.requiredSlots) {
+        if (!String(brief.slots?.[slot] ?? "").trim()) {
+          semanticIssues.push({
+            severity: "MAJOR", rule: "SEMANTIC_SLOT", scene: brief.id,
+            message: `${brief.id} (${brief.visualGrammar}) is missing required semantic slot "${slot}"`,
+          });
+        }
+      }
+      if (!brief.visualRegister) {
+        registerIssues.push({
+          severity: "MAJOR", rule: "VISUAL_REGISTER", scene: brief.id,
+          message: `${brief.id}: missing visualRegister`,
+        });
+      } else if (!definition.supportedRegisters.includes(brief.visualRegister)) {
+        registerIssues.push({
+          severity: "MAJOR", rule: "VISUAL_REGISTER", scene: brief.id,
+          message: `${brief.id}: ${brief.visualGrammar} does not support ${brief.visualRegister}`,
+        });
+      }
+    }
+    const beatImage = String(brief.slots?.image ?? brief.slots?.background ?? "");
+    if (brief.visualGrammar === "BEAT" && (/^#|^rgba?\(|gradient\(/i.test(beatImage) || !beatImage)) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "BEAT_COLOR_ONLY", scene: brief.id,
+        message: `${brief.id}: BEAT needs a real full-frame asset, not a CSS fill`,
+      });
+    }
+  }
+
+  const counts = new Map<string, number>();
+  for (const brief of briefs) {
+    if (brief.visualRegister) counts.set(brief.visualRegister, (counts.get(brief.visualRegister) ?? 0) + 1);
+  }
+  if (briefs.length >= 8 && counts.size < 5) {
+    registerIssues.push({
+      severity: "MAJOR", rule: "REGISTER_DIVERSITY",
+      message: `Storyboard uses ${counts.size} visual registers; minimum is 5.`,
+    });
+  }
+  for (const [register, count] of counts) {
+    if (briefs.length >= 8 && count / briefs.length > 0.35) {
+      registerIssues.push({
+        severity: "MAJOR", rule: "REGISTER_DOMINANCE",
+        message: `${register} occupies ${Math.round(count / briefs.length * 100)}% of scenes; maximum is 35%.`,
+      });
+    }
+  }
+  for (let index = 2; index < briefs.length; index++) {
+    if (briefs[index].visualRegister &&
+        briefs[index].visualRegister === briefs[index - 1].visualRegister &&
+        briefs[index].visualRegister === briefs[index - 2].visualRegister) {
+      registerIssues.push({
+        severity: "MAJOR", rule: "REGISTER_STREAK", scene: briefs[index].id,
+        message: `${briefs[index].id}: third consecutive ${briefs[index].visualRegister} scene.`,
+      });
+    }
+  }
+  return [
+    { name: "Storyboard: semantic visual and asset requests", passed: semanticIssues.length === 0, issues: semanticIssues },
+    { name: "Storyboard: visual register scheduling", passed: registerIssues.length === 0, issues: registerIssues },
+  ];
+}
+
 export function runStoryboardCheck(storyboard: any): QualityReport {
   const briefs: any[] = Array.isArray(storyboard?.scenes) ? storyboard.scenes : [];
   const intentIssues: QualityIssue[] = [];
@@ -585,6 +684,7 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
   }
 
   const checks: CheckResult[] = [
+    ...checkSemanticStoryboard(storyboard),
     { name: "Storyboard: intent realized (grammar + slots hợp lệ)", passed: intentIssues.length === 0, issues: intentIssues },
     { name: "Storyboard: beat quan trọng có thể nhấn đúng chỗ", passed: beatIssues.length === 0, issues: beatIssues },
   ];

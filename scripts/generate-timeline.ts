@@ -30,11 +30,21 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import { buildSystemPrompt, buildScriptFromIdea, listAvailableAssets } from "../src/ai/systemPrompt";
-import { buildStoryboardPrompt } from "../src/ai/storyboardPrompt";
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
 import { runQualityCheck, printQualityReport, runStoryboardCheck } from "../src/ai/qualityCheck";
+import { buildStoryMapPrompt } from "../src/ai/prompts/storyMapPrompt";
+import { buildScenePlanPrompt } from "../src/ai/prompts/scenePlanPrompt";
+import { buildRepairPrompt } from "../src/ai/prompts/repairPrompt";
+import {
+  checksumText, indexTranscript, makeSourceRange, sourceExcerpt, validateStoryboardCoverage,
+} from "../src/ai/transcriptCoverage";
+import { AssetManifest, AssetManifestEntry } from "../src/types/assets";
+import { SceneBrief, StorySection, Storyboard } from "../src/types/storyboard";
+import { createDefaultProjectManifest, ProjectManifest } from "../src/types/project";
+import { DIRECTOR_POLICY_VERSION } from "../src/ai/directorPolicy";
+import { resolveAssetRequests } from "../src/engine/assetResolver";
 
 // --- Parse CLI args ---
 const args = process.argv.slice(2);
@@ -45,7 +55,8 @@ function getArg(flag: string): string | undefined {
 
 const ideaInput = getArg("--idea");
 const urlInput = getArg("--url");
-const transcriptInput = getArg("--transcript");
+const projectInput = getArg("--project");
+const transcriptInput = getArg("--transcript") ?? (projectInput ? path.join(projectInput, "transcript.txt") : undefined);
 const audioInput = getArg("--audio");
 const durationOverride = getArg("--duration");
 // Production default: always author intent first, then compile deterministically.
@@ -62,7 +73,9 @@ const ttsLang = getArg("--tts-lang") ?? "a"; // kokoro only: a=US English, b=Bri
 
 // Auto output path: cùng folder với transcript nếu không có --out
 const outPath = getArg("--out") ?? (
-  transcriptInput
+  projectInput
+    ? path.join(projectInput, "timeline.json")
+    : transcriptInput
     ? path.join(path.dirname(transcriptInput), "timeline.json")
     : "timeline.json"
 );
@@ -379,19 +392,200 @@ ${transcript}
 }
 
 // --- Step 2 (storyboard mode): transcript → Storyboard JSON ---
-async function generateStoryboard(transcript: string, durationSeconds: number): Promise<any> {
-  console.log("🎬 AI đang tạo STORYBOARD (tầng ý đồ)...\n");
-  return await callWithFallback<any>({
-    system: buildStoryboardPrompt(durationSeconds),
-    user: `Tạo STORYBOARD JSON cho transcript sau (video ~${durationSeconds}s). Trả JSON thuần.\n\nTRANSCRIPT:\n---\n${transcript}\n---`,
-    maxTokens: 32000,
-    modelType: "timeline",
-    parse: (raw) => {
-      const m = raw.match(/\{[\s\S]+\}/);
-      try { return JSON.parse(m ? m[0] : raw); }
-      catch { throw new Error("Storyboard JSON parse failed"); }
-    },
+function parseJsonObject(raw: string): any {
+  const match = raw.match(/\{[\s\S]+\}/);
+  try {
+    return JSON.parse(match ? match[0] : raw);
+  } catch {
+    throw new Error("JSON parse failed or response was truncated");
+  }
+}
+
+function readAssetManifest(): AssetManifest {
+  const manifestPath = path.join(process.cwd(), "public", "assets.manifest.json");
+  if (!fs.existsSync(manifestPath)) {
+    throw new Error("Missing public/assets.manifest.json. Run `npm run build-assets`.");
+  }
+  return JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+}
+
+function selectAssetCandidates(text: string, manifest: AssetManifest, limit = 30): AssetManifestEntry[] {
+  const tokens = new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((token) => token.length > 2));
+  return manifest.entries
+    .map((entry) => {
+      const haystack = [
+        entry.id, entry.path, entry.characterId,
+        ...(entry.topics ?? []), ...(entry.action ?? []), ...(entry.emotion ?? []), ...(entry.props ?? []),
+      ].join(" ").toLowerCase();
+      let score = entry.styleFamily === "legacy" ? -5 : 0;
+      if (entry.characterId === "lead-teal-cat") score += 4;
+      for (const token of tokens) if (haystack.includes(token)) score += 2;
+      return { entry, score };
+    })
+    .sort((a, b) => b.score - a.score || a.entry.id.localeCompare(b.entry.id))
+    .slice(0, limit)
+    .map(({ entry }) => entry);
+}
+
+function normalizeSections(raw: any, transcript: string): StorySection[] {
+  const words = indexTranscript(transcript);
+  const sections = Array.isArray(raw?.sections) ? raw.sections : [];
+  if (sections.length === 0) throw new Error("Story map returned no sections");
+  return sections.map((section: any, index: number) => {
+    const startWord = Number(section.sourceRange?.startWord);
+    const endWord = Number(section.sourceRange?.endWord);
+    if (!Number.isInteger(startWord) || !Number.isInteger(endWord) || startWord < 0 || endWord < startWord || endWord >= words.length) {
+      throw new Error(`Invalid story-map sourceRange for section ${section.id ?? index}`);
+    }
+    return {
+      id: section.id ?? `section-${index + 1}`,
+      sourceRange: makeSourceRange(words, startWord, endWord),
+      thesis: String(section.thesis ?? ""),
+      emotionalTurn: String(section.emotionalTurn ?? ""),
+      targetDurationSeconds: section.targetDurationSeconds,
+    };
   });
+}
+
+function finalizeSectionScenes(rawScenes: any[], section: StorySection, transcript: string): SceneBrief[] {
+  const words = indexTranscript(transcript);
+  return rawScenes.map((raw, index) => {
+    const startWord = Number(raw.sourceRange?.startWord);
+    const endWord = Number(raw.sourceRange?.endWord);
+    if (!Number.isInteger(startWord) || !Number.isInteger(endWord)) {
+      throw new Error(`${section.id} scene ${index + 1} is missing a numeric sourceRange`);
+    }
+    const range = makeSourceRange(words, startWord, endWord);
+    return {
+      ...raw,
+      id: raw.id ?? `${section.id}-scene-${index + 1}`,
+      sectionId: section.id,
+      sourceRange: range,
+      narration: sourceExcerpt(transcript, words, range),
+      claimIds: Array.isArray(raw.claimIds) ? raw.claimIds : [],
+      assetRequests: Array.isArray(raw.assetRequests) ? raw.assetRequests : [],
+      continuity: raw.continuity ?? { castIds: ["narrator"] },
+      slots: raw.slots ?? {},
+      beats: raw.beats ?? [],
+    } as SceneBrief;
+  });
+}
+
+function sectionCoverageIssues(section: StorySection, scenes: SceneBrief[]): string[] {
+  const issues: string[] = [];
+  let cursor = section.sourceRange.startWord;
+  for (const scene of scenes) {
+    if (!scene.sourceRange) {
+      issues.push(`${scene.id}: missing sourceRange`);
+      continue;
+    }
+    if (scene.sourceRange.startWord !== cursor) {
+      issues.push(`${scene.id}: expected startWord ${cursor}, got ${scene.sourceRange.startWord}`);
+    }
+    if (scene.sourceRange.endWord > section.sourceRange.endWord) {
+      issues.push(`${scene.id}: range exceeds section end ${section.sourceRange.endWord}`);
+    }
+    cursor = scene.sourceRange.endWord + 1;
+  }
+  if (cursor !== section.sourceRange.endWord + 1) {
+    issues.push(`${section.id}: coverage ends at ${cursor - 1}, expected ${section.sourceRange.endWord}`);
+  }
+  return issues;
+}
+
+function resolveSceneAssets(scenes: SceneBrief[], manifest: AssetManifest): void {
+  for (const scene of scenes) {
+    const resolutions = resolveAssetRequests(scene.assetRequests ?? [], manifest);
+    scene.resolvedAssets = {};
+    scene.unresolvedAssetRequests = [];
+    for (const resolution of resolutions) {
+      if (resolution.asset) {
+        scene.resolvedAssets[resolution.request.slot] = resolution.asset.path;
+        scene.slots = { ...(scene.slots ?? {}), [resolution.request.slot]: resolution.asset.path };
+      } else {
+        scene.unresolvedAssetRequests.push(
+          `${resolution.request.slot}: ${resolution.request.query} (${resolution.unresolvedReason})`,
+        );
+      }
+    }
+  }
+}
+
+async function generateStoryboard(transcript: string, durationSeconds: number, projectDir: string): Promise<Storyboard> {
+  console.log("🎬 Multipass director: global story map → section scene plans\n");
+  const words = indexTranscript(transcript);
+  const manifest = readAssetManifest();
+  const storyMap = await callWithFallback<any>({
+    user: buildStoryMapPrompt(transcript, words, durationSeconds),
+    maxTokens: 12000,
+    modelType: "timeline",
+    parse: parseJsonObject,
+  });
+  const sections = normalizeSections(storyMap, transcript);
+  fs.writeFileSync(path.join(projectDir, "story-map.json"), JSON.stringify({ ...storyMap, sections }, null, 2));
+
+  const scenes: SceneBrief[] = [];
+  let previousRegisters: string[] = [];
+  for (const [sectionIndex, section] of sections.entries()) {
+    const excerpt = sourceExcerpt(transcript, words, section.sourceRange);
+    const candidates = selectAssetCandidates(excerpt, manifest);
+    console.log(`   Section ${sectionIndex + 1}/${sections.length}: ${section.id}`);
+    let response = await callWithFallback<any>({
+      user: buildScenePlanPrompt({
+        transcriptExcerpt: words
+          .slice(section.sourceRange.startWord, section.sourceRange.endWord + 1)
+          .map((word) => `[${word.index}] ${word.text}`).join(" "),
+        section,
+        storyMap,
+        assetCandidates: candidates,
+        previousRegisters,
+      }),
+      maxTokens: 12000,
+      modelType: "timeline",
+      parse: parseJsonObject,
+    });
+    let sectionScenes = finalizeSectionScenes(response.scenes ?? [], section, transcript);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const issues = sectionCoverageIssues(section, sectionScenes);
+      if (issues.length === 0) break;
+      response = await callWithFallback<any>({
+        user: buildRepairPrompt({
+          failedScenes: sectionScenes,
+          issues,
+          neighbors: scenes.slice(-2),
+          assetCandidates: candidates,
+        }),
+        maxTokens: 12000,
+        modelType: "timeline",
+        parse: parseJsonObject,
+      });
+      sectionScenes = finalizeSectionScenes(response.scenes ?? [], section, transcript);
+    }
+    const remaining = sectionCoverageIssues(section, sectionScenes);
+    if (remaining.length) throw new Error(`Section ${section.id} failed coverage repair: ${remaining.join("; ")}`);
+    resolveSceneAssets(sectionScenes, manifest);
+    scenes.push(...sectionScenes);
+    previousRegisters = scenes.slice(-2).map((scene) => scene.visualRegister ?? "");
+  }
+
+  const storyboard: Storyboard = {
+    schemaVersion: 2,
+    transcriptChecksum: checksumText(transcript),
+    promptVersion: DIRECTOR_POLICY_VERSION,
+    fps: 30,
+    width: 1920,
+    height: 1080,
+    cast: { narrator: { src: "generated-assets/characters/cat_explain.png" } },
+    sections,
+    claims: Array.isArray(storyMap.claims) ? storyMap.claims : [],
+    generation: { passIds: ["story-map", ...sections.map((section) => `scene-plan:${section.id}`)] },
+    scenes,
+  };
+  const coverage = validateStoryboardCoverage(transcript, storyboard);
+  if (!coverage.valid) {
+    throw new Error(`Global storyboard coverage failed: ${coverage.issues.map((issue) => issue.message).join("; ")}`);
+  }
+  return storyboard;
 }
 
 // Read a durations.json (written by TTS) → SceneTiming[] for re-compile.
@@ -539,9 +733,15 @@ async function main() {
   let storyboard: any = null;
   let timeline: any;
   if (storyboardMode) {
-    storyboard = await generateStoryboard(transcript, durationSeconds);
+    fs.mkdirSync(projectDir, { recursive: true });
+    storyboard = await generateStoryboard(transcript, durationSeconds, projectDir);
     if (audioInput && !ttsFlag) storyboard.audio = audioInput;
-    printQualityReport(runStoryboardCheck(storyboard)); // INTENT_REALIZED / BEAT_UNANCHORED
+    const storyboardReport = runStoryboardCheck(storyboard);
+    printQualityReport(storyboardReport);
+    if (!args.includes("--diagnostic") && (storyboardReport.blockers > 0 || storyboardReport.majors > 0)) {
+      fs.writeFileSync(path.join(projectDir, "storyboard.failed.json"), JSON.stringify(storyboard, null, 2));
+      throw new Error("Storyboard failed production gate; use --diagnostic only to inspect invalid output.");
+    }
     timeline = compileStoryboard(storyboard, {});
     fs.writeFileSync(path.join(projectDir, "storyboard.json"), JSON.stringify(storyboard, null, 2));
     console.log(`🎬 Storyboard: ${storyboard.scenes?.length ?? 0} briefs → ${timeline.scenes.length} scenes`);
@@ -602,6 +802,15 @@ async function main() {
 
   // Step 7: Save the SceneTimeline (loadTimeline compiles it at preview/render).
   fs.writeFileSync(outPath, JSON.stringify(authored, null, 2));
+  if (projectInput) {
+    const manifestPath = path.join(projectDir, "project.json");
+    const manifest: ProjectManifest = fs.existsSync(manifestPath)
+      ? JSON.parse(fs.readFileSync(manifestPath, "utf8"))
+      : createDefaultProjectManifest(path.basename(path.resolve(projectDir)));
+    manifest.transcriptPath = path.relative(projectDir, transcriptInput ?? path.join(projectDir, "transcript.txt")) || "transcript.txt";
+    manifest.timelinePath = path.basename(outPath);
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  }
   console.log(`\n💾 Timeline đã lưu: ${outPath}`);
   console.log(`   Scenes: ${authored.scenes?.length ?? 0}`);
   console.log(`   Duration: ${authored.durationInFrames} frames`);

@@ -95,7 +95,10 @@ function compileBrief(
     };
   }
 
-  const grammarFn = VISUAL_GRAMMARS[brief.visualGrammar] ?? VISUAL_GRAMMARS.SOLO;
+  const grammarFn = VISUAL_GRAMMARS[brief.visualGrammar];
+  if (!grammarFn) {
+    throw new Error(`Unknown or unsupported visual grammar "${brief.visualGrammar}" in ${brief.id}`);
+  }
   const result = grammarFn(brief, ctx);
   applyShot(result, brief.shot);
 
@@ -117,7 +120,7 @@ function compileBrief(
   // grins. Each swap re-enters the same assetId (sceneCompiler treats a repeat
   // assetId as an in-place pose change).
   const charEntities = entities.filter((e) => e.src.startsWith("characters/"));
-  if (focal && charEntities.length === 1 && focal === charEntities[0]) {
+  if (!ctx.strict && focal && charEntities.length === 1 && focal === charEntities[0]) {
     const cycle = POSE_CYCLE[brief.emotion ?? "neutral"] ?? [];
     if (cycle.length >= 2) {
       const sentences = brief.narration.split(/(?<=[.?!])\s+/).map((s) => s.trim()).filter((s) => s.length > 8);
@@ -144,6 +147,13 @@ function compileBrief(
     durationFrames: timing.frames,
     layout: result.layout,
     narration: brief.narration,
+    sourceRange: brief.sourceRange,
+    visualRegister: brief.visualRegister,
+    semanticTakeaway: brief.semanticVisual?.takeaway,
+    semanticAssetIds: Object.values(brief.resolvedAssets ?? {}),
+    claimIds: brief.claimIds,
+    heroVisual: brief.heroVisual,
+    unresolvedAssets: brief.unresolvedAssetRequests,
     backgroundSrc: result.backgroundSrc,
     clearPrevious: true,
     entities,
@@ -236,19 +246,22 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     return t;
   });
 
-  const ctx: GrammarContext = { cast: sb.cast, index: 0 };
+  const ctx: GrammarContext = { cast: sb.cast, index: 0, strict: sb.schemaVersion === 2 };
   const scenes: Scene[] = sb.scenes.map((brief, i) =>
     compileBrief(brief, timings[i], { ...ctx, index: i }, fps, opts.words)
   );
 
-  enforceDistinctStages(scenes);
-  enrichBackgrounds(scenes);
+  if (sb.schemaVersion !== 2) {
+    enforceDistinctStages(scenes);
+    enrichBackgrounds(scenes);
+  }
 
   const totalFrames = scenes.length ? scenes[scenes.length - 1].startFrame + scenes[scenes.length - 1].durationFrames : 0;
 
   // SceneTimeline pins fps/width/height to literal types (30/1920/1080); this
   // project only ever renders at that spec, so assert rather than widen.
   return {
+    schemaVersion: sb.schemaVersion ?? 1,
     fps: 30,
     width: 1920,
     height: 1080,

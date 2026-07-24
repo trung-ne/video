@@ -222,6 +222,7 @@ export interface Scene {
 
 // ─── Top-level SceneTimeline (what AI produces) ──────────────
 export interface SceneTimeline {
+  schemaVersion?: 1 | 2;
   fps: 30;
   width: 1920;
   height: 1080;
