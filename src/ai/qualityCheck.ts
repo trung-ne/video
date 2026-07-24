@@ -3,6 +3,7 @@ import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
 import { getGrammarDefinition } from "../engine/grammarRegistry";
+import { stageMatchesSetting } from "../engine/stageRegistry";
 
 const STAGE_ANCHORS_KEYS = new Set(Object.keys(STAGE_ANCHORS));
 
@@ -585,6 +586,21 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         });
       }
     }
+    if (brief.visualGrammar === "TABLEAU" &&
+        !stageMatchesSetting(String(brief.slots?.stage ?? ""), brief.semanticVisual?.setting)) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "STAGE_SETTING_MISMATCH", scene: brief.id,
+        message: `${brief.id}: stage "${brief.slots?.stage}" does not match setting "${brief.semanticVisual?.setting}".`,
+      });
+    }
+    if ((brief.continuity?.castIds?.length ?? 0) >= 2 &&
+        !brief.semanticVisual?.relation &&
+        !brief.semanticVisual?.object) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "GENERIC_CHARACTER_PAIR", scene: brief.id,
+        message: `${brief.id}: multiple cast members require a visible relation or shared object.`,
+      });
+    }
     const beatImage = String(brief.slots?.image ?? brief.slots?.background ?? "");
     if (brief.visualGrammar === "BEAT" && (/^#|^rgba?\(|gradient\(/i.test(beatImage) || !beatImage)) {
       semanticIssues.push({
@@ -645,6 +661,22 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         severity: "MAJOR", rule: "EVIDENCE_SOURCE_MISSING",
         scene: supporting[0].id,
         message: `Claim ${claim.id} requires a source card but no source is supplied.`,
+      });
+    }
+  }
+  const finalWord = Math.max(-1, ...briefs.map((brief) => brief.sourceRange?.endWord ?? -1));
+  if (finalWord >= 112) {
+    const heroWords = briefs
+      .filter((brief) => brief.heroVisual)
+      .map((brief) => brief.sourceRange?.startWord)
+      .filter((word): word is number => Number.isInteger(word));
+    const boundaries = [0, ...heroWords, finalWord + 1].sort((a, b) => a - b);
+    const longestGapWords = boundaries.slice(1)
+      .reduce((maximum, word, index) => Math.max(maximum, word - boundaries[index]), 0);
+    if (longestGapWords / 2.5 > 45) {
+      registerIssues.push({
+        severity: "MAJOR", rule: "HERO_VISUAL_GAP",
+        message: `Estimated hero-visual gap is ${(longestGapWords / 2.5).toFixed(1)}s; maximum is 45s.`,
       });
     }
   }

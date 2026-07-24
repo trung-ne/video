@@ -5,6 +5,7 @@ import { resolveAssetRequest } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
 import { runQualityCheck, runStoryboardCheck } from "../src/ai/qualityCheck";
+import { stageMatchesSetting } from "../src/engine/stageRegistry";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -189,6 +190,12 @@ test("schema v2 timeline gate rejects flat generic character pairs", () => {
   assert.ok(rules.includes("GENERIC_CHARACTER_PAIR"));
   assert.ok(rules.includes("SOLID_BACKGROUND_RATIO"));
   assert.ok(rules.includes("REGISTER_DIVERSITY"));
+});
+
+test("stage registry validates narration settings without banning continuity reuse", () => {
+  assert.strictEqual(stageMatchesSetting("assets/scenes/office_desk.svg", "corporate office"), true);
+  assert.strictEqual(stageMatchesSetting("assets/scenes/beach.svg", "corporate office"), false);
+  assert.strictEqual(stageMatchesSetting("assets/scenes/office_desk.svg", undefined), true);
 });
 
 let failures = 0;
