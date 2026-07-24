@@ -18,7 +18,7 @@ export function buildStoryboardPrompt(durationSeconds: number): string {
 
 Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "visual grammar", điền concept slot, đánh dấu con số/từ khoá quan trọng. Hệ thống sẽ tự dựng entity/vị trí/animation/frame — bạn KHÔNG cần nghĩ những thứ đó.
 
-## 8 VISUAL GRAMMAR (chọn 1/scene, LUÂN PHIÊN — đừng lặp 1 kiểu)
+## VISUAL GRAMMAR (chọn 1/scene, LUÂN PHIÊN — đừng lặp 1 kiểu)
 | grammar | dùng khi | slots cần điền |
 |---|---|---|
 | STAT_REVEAL | 1 con số gây sốc | { "stat": "0.72", "who": "characters/cat_surprised" } |
@@ -46,11 +46,14 @@ Nếu KHÔNG stage nào khớp bối cảnh → có thể tạo stage mới bằ
 Khai báo "cast": role → { src, badge }. Giữ nguyên xuyên video (người xem nhận diện qua costume+số). Ví dụ: "guy": { "src": "characters/cat", "badge": "1" }.
 
 ## QUY TẮC
-- Số scene ~1 mỗi 8-15 giây narration (video ${durationSeconds}s → ~${Math.max(6, Math.round(durationSeconds / 12))} scene).
-- **ƯU TIÊN TABLEAU / bối cảnh (QUAN TRỌNG — chống "mèo trên nền trắng"):** mọi scene có KHÔNG GIAN VẬT LÝ (ở nhà, quán, phố, lớp học, công viên, văn phòng, cửa hàng, bàn ăn, phòng ngủ) PHẢI dùng TABLEAU với stage. **≥40% scene phải là TABLEAU hoặc BEAT (ảnh).** SOLO chỉ dùng khi thực sự là lời bình trực tiếp với khán giả — **SOLO ≤ 25% số scene**. Đừng để quá nửa video là mèo đứng nền trơn.
+- Số scene ~1 mỗi 5-9 giây narration (video ${durationSeconds}s → ~${Math.max(8, Math.round(durationSeconds / 7))} scene). Một scene là một VISUAL SHOT, không phải một đoạn văn dài.
+- Mỗi scene chỉ nên chứa 1-2 câu ngắn, khoảng 12-35 từ. Nếu narration dài hơn 45 từ, BẮT BUỘC tách thành nhiều scene/shot liên tiếp.
+- **ƯU TIÊN TABLEAU / bối cảnh (QUAN TRỌNG — chống "mèo trên nền trắng"):** mọi scene có KHÔNG GIAN VẬT LÝ (ở nhà, quán, phố, lớp học, công viên, văn phòng, cửa hàng, bàn ăn, phòng ngủ) PHẢI dùng TABLEAU với stage. **≥35% scene phải là TABLEAU; TABLEAU + BEAT ≥45%.** SOLO chỉ dùng khi thực sự là lời bình trực tiếp với khán giả — **SOLO ≤20% số scene**.
 - **MONTAGE tương phản:** KHÔNG 2 STAT_DRAMA liền nhau; sau 1 scene tối (STAT_DRAMA) nên là scene sáng. Xen kẽ năng lượng.
 - narration = ĐÚNG câu transcript của scene (nguồn phụ đề) — không tóm tắt cụt.
-- Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE, ≥1 TABLEAU/DIALOGUE_QA, ≥1 BEAT. SOLO ≤ 40%.
+- Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE/FRAMEBOX, ≥2 TABLEAU/DIALOGUE_QA, ≥1 BEAT. Không lặp cùng grammar quá 2 scene. SOLO ≤20%.
+- Mỗi claim có số liệu/chính sách/khảo sát phải dùng EVIDENCE hoặc FRAMEBOX; không được thay bằng icon trang trí.
+- Title/keyword KHÔNG được copy 6+ từ đầu narration. Text overlay phải bổ sung ý, không lặp phụ đề.
 - beats[]: đánh dấu con số/từ khoá quan trọng = substring CHÍNH XÁC của narration + importance 0..1 + kind (number/keyword/turn). Hệ thống sẽ nhấn mạnh đúng khoảnh khắc từ đó được đọc.
 - cold open: scene 1 = câu sốc/hỏi nhất, không chào hỏi. Scene cuối: chốt + sáng.
 

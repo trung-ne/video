@@ -8,6 +8,8 @@
     "render": "npx ts-node scripts/render.ts",
     "generate": "npx ts-node scripts/generate-timeline.ts",
     "validate": "npx ts-node -e \"const {validateTimeline,printValidationResult}=require('./src/ai/validateTimeline');const fs=require('fs');const tl=JSON.parse(fs.readFileSync(process.argv[2]||'timeline.json','utf-8'));printValidationResult(validateTimeline(tl),process.argv[2]||'timeline.json');\"",
+    "quality": "npx ts-node scripts/quality-check.ts",
+    "visual-audit": "python scripts/visual-audit.py",
     "list-assets": "npx ts-node scripts/list-assets.ts",
     "typecheck": "npx tsc --noEmit"
   },

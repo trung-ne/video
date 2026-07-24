@@ -199,10 +199,9 @@ function checkBackgroundReal(scenes: any[]): CheckResult {
 // >5 distinct photos means they've become background noise.
 function checkBackgroundVariety(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
-  const distinctImages = new Set(
-    scenes.map((s) => s.backgroundSrc).filter((b) => b && backgroundImageExists(b))
-  );
-  const photoScenes = scenes.filter((s) => s.backgroundSrc && backgroundImageExists(s.backgroundSrc)).length;
+  const isPhoto = (b: any) => b && backgroundImageExists(b) && !STAGE_ANCHORS_KEYS.has(b);
+  const distinctImages = new Set(scenes.map((s) => s.backgroundSrc).filter(isPhoto));
+  const photoScenes = scenes.filter((s) => isPhoto(s.backgroundSrc)).length;
 
   if (scenes.length >= 5 && distinctImages.size === 0) {
     issues.push({
@@ -593,7 +592,9 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
 }
 
 // CHECK 4: Scene duration
-// Ideal: 8-60s. Very short (<3s) is a BLOCKER (flickering). Very long (>120s)
+// Ideal: 5-12s. Very short (<1.8s) is a BLOCKER (flickering); 1.8-2.5s is a
+// fast-cut MINOR because the reference uses occasional rapid reaction shots.
+// Very long (>120s)
 // is a MINOR — for long videos with narration audio, long scenes can be intentional.
 function checkSceneDuration(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
@@ -604,7 +605,7 @@ function checkSceneDuration(scenes: any[]): CheckResult {
     if (typeof s.durationFrames !== "number") continue;
     const secs = s.durationFrames / 30;
 
-    if (secs < 3) {
+    if (secs < 1.8) {
       issues.push({
         severity: "BLOCKER",
         rule: "SCENE_DURATION",
@@ -612,7 +613,7 @@ function checkSceneDuration(scenes: any[]): CheckResult {
         message: `${sceneLabel(s)} ${secs.toFixed(1)}s — quá ngắn, sẽ chớp nháy`,
         suggestion: "Scene nên tối thiểu 4-5 giây (120-150 frames)",
       });
-    } else if (secs < 6) {
+    } else if (secs < 2.5) {
       issues.push({
         severity: "MINOR",
         rule: "SCENE_DURATION",
@@ -1071,7 +1072,8 @@ function checkDialogue(scenes: any[]): CheckResult {
 
     const hasCalloutSpeech =
       texts.some((t: any) => t.slot === "CALLOUT_LEFT") ||
-      texts.some((t: any) => t.slot === "CALLOUT_RIGHT");
+      texts.some((t: any) => t.slot === "CALLOUT_RIGHT") ||
+      (s.speechBubbles ?? []).length > 0;
     if (!hasCalloutSpeech) {
       issues.push({
         severity: "MINOR",
@@ -1435,22 +1437,118 @@ function checkSceneDensity(timeline: any, scenes: any[]): CheckResult {
   const secsPerScene = scenes.length > 0 ? totalSecs / scenes.length : Infinity;
   const idealScenes = Math.round(totalSecs / 11);
 
-  if (secsPerScene > 45) {
+  if (secsPerScene > 18) {
     issues.push({
       severity: "MAJOR",
       rule: "SCENE_DENSITY",
-      message: `${scenes.length} scenes cho ${(totalSecs / 60).toFixed(1)} phút = TB ${secsPerScene.toFixed(0)}s/scene — quá ít, video sẽ nhàm chán`,
-      suggestion: `Cắt nhỏ thành ~${idealScenes} scenes (mỗi 8-15s đổi beat/layout/background)`,
+      message: `${scenes.length} scenes cho ${(totalSecs / 60).toFixed(1)} phút = TB ${secsPerScene.toFixed(1)}s/scene — quá ít visual shot`,
+      suggestion: `Cắt narration thành visual shot 5-9s; mục tiêu tối thiểu ~${Math.round(totalSecs / 9)} scenes`,
     });
-  } else if (secsPerScene > 25) {
+  } else if (secsPerScene > 12) {
     issues.push({
       severity: "MINOR",
       rule: "SCENE_DENSITY",
-      message: `TB ${secsPerScene.toFixed(0)}s/scene — hơi dài (lý tưởng 8-15s)`,
-      suggestion: `Cân nhắc cắt thêm để đạt ~${idealScenes} scenes`,
+      message: `TB ${secsPerScene.toFixed(1)}s/scene — nhịp hình còn chậm (mục tiêu 5-9s)`,
+      suggestion: `Cân nhắc cắt thêm visual shot; không cần tạo TTS gap dài giữa các shot`,
     });
   }
   return { name: "Scene density: đủ scene cho thời lượng", passed: issues.length === 0, issues };
+}
+
+// Production-composition gates derived from refer/meo.mp4 contact-sheet audits.
+// These catch quota-gaming timelines that are schema-perfect but still render as
+// a repeated sticker on a near-empty background.
+function checkReferenceComposition(timeline: any, scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  if (scenes.length < 8) {
+    return { name: "Reference composition: stage/evidence/register đủ dày", passed: true, issues };
+  }
+
+  const totalSecs = (timeline.durationInFrames ?? 0) / 30;
+  const tableaux = scenes.filter((s) => s.layout === "TABLEAU" || STAGE_ANCHORS_KEYS.has(s.backgroundSrc)).length;
+  const beats = scenes.filter((s) => {
+    const bg = s.backgroundSrc ?? "";
+    return s.layout === "BEAT" || (!isCSSBackground(bg) && !STAGE_ANCHORS_KEYS.has(bg) && (s.entities?.length ?? 0) === 0);
+  }).length;
+  const evidence = scenes.filter((s) => (s.paperCards?.length ?? 0) > 0 || (s.frameBoxes?.length ?? 0) > 0).length;
+  const frameBoxes = scenes.reduce((n, s) => n + (s.frameBoxes?.length ?? 0), 0);
+  const scenicRatio = (tableaux + beats) / scenes.length;
+
+  if (tableaux / scenes.length < 0.2) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "TABLEAU_DENSITY",
+      message: `Chỉ ${tableaux}/${scenes.length} scene có illustrated stage — nhân vật dễ thành sticker nổi trên nền`,
+      suggestion: "Dùng TABLEAU cho mọi không gian vật lý; mục tiêu ≥35% scene",
+    });
+  }
+  if (scenicRatio < 0.35) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "SCENIC_REGISTER",
+      message: `TABLEAU + BEAT chỉ chiếm ${(scenicRatio * 100).toFixed(0)}% — thiếu cảnh sống và emotional/real anchor`,
+      suggestion: "Mục tiêu TABLEAU + BEAT ≥45%, xen kẽ evidence/diagram thay vì nền phẳng liên tục",
+    });
+  }
+  if (evidence / scenes.length < 0.08) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "EVIDENCE_DENSITY",
+      message: `Chỉ ${evidence}/${scenes.length} scene chiếu evidence/data — claim chủ yếu đang được đọc thay vì được thấy`,
+      suggestion: "Mỗi claim số liệu/chính sách/khảo sát → paperCard hoặc frameBox; mục tiêu ≥10%",
+    });
+  }
+  if (totalSecs >= 300 && frameBoxes === 0) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "FRAMEBOX_MISSING",
+      message: `Video ${(totalSecs / 60).toFixed(1)} phút không có frameBox/TV data nào`,
+      suggestion: "Dùng frameBox cho bản đồ, chart, screenshot hoặc data panel ít nhất 1 lần",
+    });
+  }
+
+  let streak = 1;
+  for (let i = 1; i < scenes.length; i++) {
+    streak = scenes[i].layout === scenes[i - 1].layout ? streak + 1 : 1;
+    if (streak === 3) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "REGISTER_STREAK",
+        scene: scenes[i].id,
+        message: `${sceneLabel(scenes[i])} là layout ${scenes[i].layout} thứ 3 liên tiếp`,
+        suggestion: "Đổi register: tableau → evidence → diagram/dialogue/beat",
+      });
+    }
+  }
+
+  return { name: "Reference composition: stage/evidence/register đủ dày", passed: issues.length === 0, issues };
+}
+
+function normalizeWords(value: string): string[] {
+  return (value ?? "").toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).filter(Boolean);
+}
+
+function checkOverlayNarrationDuplication(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  for (const s of scenes) {
+    const narration = normalizeWords(s.narration ?? "");
+    if (narration.length < 6) continue;
+    const prefix = narration.slice(0, 6).join(" ");
+    for (const t of (s.texts ?? [])) {
+      const overlay = normalizeWords(t.content ?? "");
+      if (overlay.length >= 6 && overlay.slice(0, 6).join(" ") === prefix) {
+        issues.push({
+          severity: "MINOR",
+          rule: "TEXT_NARRATION_DUPLICATE",
+          scene: s.id,
+          message: `${sceneLabel(s)} overlay "${t.id}" lặp nguyên phần đầu narration`,
+          suggestion: "Overlay chỉ giữ keyword/con số/đối lập; phụ đề đã mang lời nói",
+        });
+        break;
+      }
+    }
+  }
+  return { name: "Text: overlay không lặp phụ đề", passed: issues.length === 0, issues };
 }
 
 // CHECK 25: Narration coverage → subtitle track exists
@@ -1509,6 +1607,8 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkSignatureComponents(timeline, scenes),
     checkSubtitleCoverage(scenes),
     checkSceneDensity(timeline, scenes),
+    checkReferenceComposition(timeline, scenes),
+    checkOverlayNarrationDuplication(scenes),
   ];
 
   return assembleReport(checks, timelinePath);

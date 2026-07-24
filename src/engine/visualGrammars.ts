@@ -240,7 +240,7 @@ function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "SOLO",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "RIGHT_BOTTOM", scale: 1.2, enterAnimation: "popIn", enterDelay: 14 },
+      { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "RIGHT_BOTTOM", scale: 1.4, enterAnimation: "popIn", enterDelay: 14 },
     ],
     texts: [],
     focusAssetId: `${b.id}-cat`,

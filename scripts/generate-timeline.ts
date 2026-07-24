@@ -48,7 +48,11 @@ const urlInput = getArg("--url");
 const transcriptInput = getArg("--transcript");
 const audioInput = getArg("--audio");
 const durationOverride = getArg("--duration");
-const storyboardMode = args.includes("--storyboard");
+// Production default: always author intent first, then compile deterministically.
+// The old direct-to-timeline route remains only as an explicit diagnostic escape
+// hatch because it is easy for an LLM to satisfy schema quotas while producing
+// repetitive "cat + icon on white" frames.
+const storyboardMode = !args.includes("--legacy-direct");
 const ttsFlag = args.includes("--tts") || args.includes("--tts-kokoro");
 const ttsBackend = args.includes("--tts-kokoro") ? "kokoro" : "edge";
 // kokoro voices: af_heart af_bella am_adam am_michael bf_emma bm_george
@@ -585,9 +589,11 @@ async function main() {
   const validation = validateTimeline(authored);
   printValidationResult(validation, outPath);
 
+  let qualityFailed = false;
   if (Array.isArray(authored.scenes)) {
     const qReport = runQualityCheck(authored, outPath);
     printQualityReport(qReport);
+    qualityFailed = qReport.blockers > 0 || qReport.majors > 0 || !["A", "B"].includes(qReport.grade);
   }
 
   if (!validation.valid) {
@@ -599,6 +605,15 @@ async function main() {
   console.log(`\n💾 Timeline đã lưu: ${outPath}`);
   console.log(`   Scenes: ${authored.scenes?.length ?? 0}`);
   console.log(`   Duration: ${authored.durationInFrames} frames`);
+
+  if (!validation.valid || qualityFailed) {
+    console.error(
+      "\n❌ Artifact đã lưu để debug nhưng CHƯA production-ready. " +
+      "Sửa storyboard/timeline cho tới khi schema hợp lệ và quality gate có 0 blocker, 0 major."
+    );
+    process.exitCode = 2;
+    return;
+  }
 
   console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

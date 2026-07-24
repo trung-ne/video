@@ -35,9 +35,10 @@ TTS mặc định: **Kokoro** `af_heart` (tiếng Anh, `--lang a`). Tiếng Vi�
 ### Bước 1 — Đọc transcript đầy đủ
 Đọc hết file transcript. Xác định ngôn ngữ (Anh/Việt) → chọn voice phù hợp.
 
-### Bước 2 — Cắt scene phủ FULL transcript
+### Bước 2 — Cắt visual shot phủ FULL transcript
 Chia transcript thành các beat tự nhiên (theo "Scene N:" nếu có, hoặc theo ý/đoạn).
-- Mỗi scene 1 beat = 1-4 câu transcript.
+- Mỗi scene là một visual shot 5-9 giây, thường 1-2 câu ngắn (12-35 từ).
+- Đoạn >45 từ bắt buộc tách thành nhiều shot.
 - `narration` của scene = ĐÚNG nội dung transcript đoạn đó, làm sạch cho TTS (bỏ timestamp "0:00", viết số ra chữ nếu cần, bỏ ký tự lạ). **KHÔNG cắt bớt ý** — đây là giọng đọc của video.
 - Transcript dài (10-20 phút) → 15-40 scenes là bình thường. ĐỪNG nén còn 5-7 scene.
 
@@ -60,10 +61,13 @@ Sinh ra: `voice.wav` + `durations.json` (+ sceneNN.wav từng scene) trong proje
 mkdir -p "public/audio/<proj>" && cp "projects/<proj>/voice.wav" "public/audio/<proj>/voice.wav"
 ```
 
-### Bước 6 — Đọc durations.json → viết SceneTimeline (scenes[], KHÔNG viết events tay)
-Đọc `projects/<proj>/durations.json`. Với MỖI scene lấy `startFrame` + `frames`.
+### Bước 6 — Viết Storyboard → compile SceneTimeline
+Ghi `projects/<proj>/storyboard.json` theo schema `src/types/storyboard.ts`, rồi
+compile bằng `scripts/compile-storyboard.ts` với `durations.json`.
 
-⚠️ **LUÔN viết format `scenes[]`** (SceneTimeline) — KHÔNG tự dựng `events[]`.
+⚠️ **Production luôn author `storyboard.json` trước.** Không dùng helper
+keyword/modulo để dựng scenes. `scenes[]` là output deterministic của compiler;
+KHÔNG tự dựng `events[]`.
 `sceneCompiler` (chạy lúc render) sẽ tự: đặt slot, auto blur+scrim cho ảnh nền, auto màu chữ trên nền tối, tính exitFrame, auto-scale nhân vật, clearPrevious. Viết events tay = mất hết các xử lý này (đè text, nền ảnh không blur).
 
 Mỗi scene là 1 object:
@@ -120,10 +124,11 @@ npx ts-node scripts/generate-timeline.ts --transcript "<file>" --tts --tts-voice
 ```
 Script tự chạy TTS + patch duration + set audio. KHÔNG chạy thiếu cờ `--tts-kokoro`/`--tts`/`--audio`.
 
-### MODE B+ — Storyboard (thêm cờ `--storyboard`) — KHUYẾN NGHỊ
-Thêm `--storyboard` để chạy pipeline 2 tầng (tầng ý đồ → biên dịch xác định) thay vì bắt AI viết thẳng scenes[]:
+### Storyboard là mặc định production
+Pipeline 2 tầng tự bật; không còn cần `--storyboard`. `--legacy-direct` chỉ
+dành cho debug output cũ:
 ```bash
-npx ts-node scripts/generate-timeline.ts --transcript "<file>" --storyboard --tts-kokoro --tts-voice af_heart --tts-lang a --out "<proj>/timeline.json"
+npx ts-node scripts/generate-timeline.ts --transcript "<file>" --tts-kokoro --tts-voice af_heart --tts-lang a --out "<proj>/timeline.json"
 ```
 - AI chỉ sinh **Storyboard** (purpose/emotion/visualGrammar/slots/beats) — nhẹ, ít lỗi schema.
 - `storyboardCompiler` bung grammar → scenes[]; lưu kèm `<proj>/storyboard.json` để sửa tay.

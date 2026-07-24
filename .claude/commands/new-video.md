@@ -40,21 +40,26 @@ npx ts-node scripts/new-project.ts --url "<url>"             # Mode URL
 Chọn cách generate — **mặc định dùng Mode A (in-session, không cần API key)** trừ khi user nói "chạy script" hoặc muốn dùng API key riêng:
 
 **Mode A — In-session (mặc định, dùng quota chat này, KHÔNG cần API key)**
-Làm theo đúng quy trình 8 bước của [/generate](generate.md) với `<proj>` = `projects/<id>/` (đọc transcript/viết script từ idea → cắt scene → TTS → viết `scenes[]` → validate). Toàn bộ output của /generate đã ghi vào `projects/<proj>/`. Dùng chính session chat này để sinh script + timeline, chỉ gọi Python cho TTS.
+Làm theo đúng quy trình của [/generate](generate.md), nhưng **BẮT BUỘC tạo
+`storyboard.json` trước `timeline.json`**. Không được viết helper keyword/modulo
+để sinh thẳng scenes và không dùng một visual cho cả đoạn narration dài. Mỗi
+visual shot 5-9 giây; compile storyboard bằng `scripts/compile-storyboard.ts`,
+sau đó mới TTS-lock timing và validate.
 
 **Mode B — Script (cần `ANTHROPIC_API_KEY` trong env)**
-Kiểm tra `ANTHROPIC_API_KEY`; nếu chưa có, hỏi user hoặc quay lại Mode A. Chạy (thêm `--storyboard` để dùng pipeline 2 tầng — khuyến nghị; xem generate.md Mode B+):
+Kiểm tra API key; nếu chưa có, hỏi user hoặc quay lại Mode A. Storyboard pipeline
+tự bật:
 ```bash
 # Kokoro (tiếng Anh)
-npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --storyboard --tts-kokoro --tts-voice af_heart --tts-lang a --out projects/<id>/timeline.json
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --tts-kokoro --tts-voice af_heart --tts-lang a --out projects/<id>/timeline.json
 # Edge (tiếng Việt)
-npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --storyboard --tts --tts-voice vi-VN-HoaiMyNeural --out projects/<id>/timeline.json
+npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --tts --tts-voice vi-VN-HoaiMyNeural --out projects/<id>/timeline.json
 # Từ idea / url: thay --transcript bằng --idea "<idea>" hoặc --url "<url>"
 ```
 
 Chờ lệnh hoàn thành. Nếu lỗi, báo cáo lỗi cụ thể cho user.
 
-### Bước 3 — Validate tự động
+### Bước 3 — Validate + quality gate tự động
 
 Đọc `projects/<id>/timeline.json` và kiểm tra:
 - File tồn tại và là JSON hợp lệ (format `scenes[]`)
@@ -63,6 +68,13 @@ Chờ lệnh hoàn thành. Nếu lỗi, báo cáo lỗi cụ thể cho user.
 
 Nếu có lỗi assets không tồn tại: liệt kê assets bị thiếu và hỏi user có muốn tiếp tục không.
 (Lưu ý: `render.ts` cũng tự chạy `validateTimeline` như cổng schema fail-fast trước khi render.)
+
+Chạy thêm:
+```bash
+npx ts-node scripts/quality-check.ts projects/<id>/timeline.json
+```
+Chỉ render khi **0 blocker, 0 major, grade A/B**. `render.ts` enforce cổng này;
+`--skip-quality` chỉ dùng cho debug.
 
 ### Bước 4 — Preview (hỏi user)
 
@@ -82,6 +94,9 @@ npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json --out outpu
 ```
 
 Hiển thị progress. Sau khi xong, thông báo path của MP4.
+Render tự chạy pixel-level visual audit và ghi
+`output/<id>.visual-audit.json`. Nếu audit fail, không được báo video
+production-ready.
 
 ### Bước 6 — Tóm tắt
 
@@ -102,3 +117,5 @@ Hiển thị:
 3. Nếu asset thiếu, gợi ý placeholder hoặc hỏi user.
 4. Lưu `projects/<id>/timeline.json` sau khi generate để user có thể chỉnh sửa.
 5. Nếu render thất bại, kiểm tra: `output/` tồn tại, TypeScript compile được (`npx tsc --noEmit`).
+6. Không dùng `--legacy-direct`, `--skip-quality`, `--skip-visual-audit` trong
+   production; các flag này chỉ dành cho chẩn đoán.

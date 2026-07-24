@@ -12,6 +12,7 @@ import * as path from "path";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
+import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 
 const args = process.argv.slice(2);
 
@@ -39,6 +40,21 @@ if (!args.includes("--skip-validate")) {
   printValidationResult(validation, timelinePath);
   if (!validation.valid) {
     console.error("\n❌ Timeline không hợp lệ — dừng render. (dùng --skip-validate để bỏ qua)");
+    process.exit(1);
+  }
+}
+
+// Director gate — schema-valid is not the same as production-ready. Refuse to
+// spend minutes rendering a timeline with blockers/majors unless the caller
+// explicitly opts out for debugging.
+if (!args.includes("--skip-quality")) {
+  const quality = runQualityCheck(raw, timelinePath);
+  printQualityReport(quality);
+  if (quality.blockers > 0 || quality.majors > 0 || !["A", "B"].includes(quality.grade)) {
+    console.error(
+      "\n❌ Timeline chưa đạt quality gate — dừng render. " +
+      "(dùng --skip-quality chỉ cho render chẩn đoán)"
+    );
     process.exit(1);
   }
 }
@@ -113,6 +129,19 @@ try {
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
   console.log(`\n✅ Render complete: ${outPath}`);
+
+  // Pixel-level regression gate. Timeline quotas cannot detect semantically
+  // empty or visually repetitive frames, so sample the actual encoded MP4.
+  if (!args.includes("--skip-visual-audit")) {
+    const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path as string;
+    const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
+    if (fs.existsSync(auditScript)) {
+      execSync(
+        `python "${auditScript}" --video "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}"`,
+        { stdio: "inherit", cwd: process.cwd() }
+      );
+    }
+  }
 } catch (err) {
   console.error("\n❌ Render failed:", err);
   process.exit(1);
