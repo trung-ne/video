@@ -1,6 +1,8 @@
 import * as assert from "assert";
 import { indexTranscript, makeSourceRange, validateStoryboardCoverage } from "../src/ai/transcriptCoverage";
 import { Storyboard } from "../src/types/storyboard";
+import { resolveAssetRequest } from "../src/engine/assetResolver";
+import { AssetManifest } from "../src/types/assets";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -51,6 +53,37 @@ test("rejects gaps, overlaps and modified source checksums", () => {
   assert.ok(codes.includes("CHECKSUM_MISMATCH"));
   assert.ok(codes.includes("OVERLAP"));
   assert.ok(codes.includes("GAP"));
+});
+
+test("semantic asset resolver prefers the original lead character", () => {
+  const manifest: AssetManifest = {
+    schemaVersion: 1,
+    generatedAt: "test",
+    entries: [
+      {
+        id: "legacy.cat", path: "characters/cat", sha256: "1", kind: "character",
+        styleFamily: "legacy", action: ["explain"],
+      },
+      {
+        id: "lead.explain", path: "generated-assets/characters/cat_explain.png", sha256: "2",
+        kind: "character", styleFamily: "editorial_cat_v1", characterId: "lead-teal-cat",
+        action: ["explain"],
+      },
+    ],
+  };
+  const result = resolveAssetRequest({
+    role: "character", query: "lead cat explain", requiredTags: ["explain"], allowGenerate: false,
+  }, manifest);
+  assert.strictEqual(result.asset?.id, "lead.explain");
+});
+
+test("semantic asset resolver never silently falls back", () => {
+  const manifest: AssetManifest = { schemaVersion: 1, generatedAt: "test", entries: [] };
+  const result = resolveAssetRequest({
+    role: "prop", query: "population map", requiredTags: ["population"], allowGenerate: true,
+  }, manifest);
+  assert.strictEqual(result.asset, undefined);
+  assert.match(result.unresolvedReason ?? "", /generation queue/);
 });
 
 let failures = 0;

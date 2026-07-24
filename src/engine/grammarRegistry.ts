@@ -1,0 +1,113 @@
+import { VisualGrammar, VisualRegister } from "../types/storyboard";
+
+export interface GrammarDefinition {
+  id: Exclude<VisualGrammar, "FREEFORM">;
+  purpose: string;
+  requiredSlots: string[];
+  optionalSlots: string[];
+  supportedRegisters: VisualRegister[];
+  semanticRequirements: string[];
+}
+
+export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
+  {
+    id: "COMPARE", purpose: "Contrast two meaningfully different concepts",
+    requiredSlots: ["left", "right", "leftAsset", "rightAsset"], optionalSlots: [],
+    supportedRegisters: ["infographic", "character_action"],
+    semanticRequirements: ["Both sides need distinct labels and distinct semantic assets."],
+  },
+  {
+    id: "STAT_REVEAL", purpose: "Reveal one transcript-supported number",
+    requiredSlots: ["stat"], optionalSlots: ["who"],
+    supportedRegisters: ["infographic", "evidence"],
+    semanticRequirements: ["The number must occur in the source range."],
+  },
+  {
+    id: "POLICY_LIST", purpose: "Show two to four distinct actors or items",
+    requiredSlots: ["items", "icons"], optionalSlots: [],
+    supportedRegisters: ["infographic"],
+    semanticRequirements: ["Each item needs a distinct icon or character role."],
+  },
+  {
+    id: "DIALOGUE_QA", purpose: "Show an actual question-answer relationship",
+    requiredSlots: ["asker", "answerer", "askerText", "answererText"], optionalSlots: ["stage"],
+    supportedRegisters: ["character_action", "full_tableau"],
+    semanticRequirements: ["The two characters need different roles and dialogue functions."],
+  },
+  {
+    id: "TABLEAU", purpose: "Stage an action in a narration-relevant physical setting",
+    requiredSlots: ["stage", "who", "anchorA"], optionalSlots: ["seatB", "anchorB", "lineA", "lineB", "prop"],
+    supportedRegisters: ["full_tableau", "character_action", "visual_gag"],
+    semanticRequirements: ["Stage tags must match semanticVisual.setting."],
+  },
+  {
+    id: "EVIDENCE", purpose: "Show a quote, claim, survey, or data source",
+    requiredSlots: ["body"], optionalSlots: ["title", "source", "date", "choices"],
+    supportedRegisters: ["evidence"],
+    semanticRequirements: ["Do not invent a source, date, statistic, or quote."],
+  },
+  {
+    id: "FRAMEBOX", purpose: "Show a photo, chart, map, or screenshot in a screen",
+    requiredSlots: ["content"], optionalSlots: ["caption", "source"],
+    supportedRegisters: ["framebox", "photo_broll", "evidence"],
+    semanticRequirements: ["Content must resolve to a real manifest asset."],
+  },
+  {
+    id: "CHAR_PROP", purpose: "Show a character acting on or reacting to a meaningful prop",
+    requiredSlots: ["who", "prop"], optionalSlots: ["label"],
+    supportedRegisters: ["character_action", "visual_gag"],
+    semanticRequirements: ["The prop must express the object in semanticVisual."],
+  },
+  {
+    id: "DIAGRAM", purpose: "Explain a directional multi-step mechanism",
+    requiredSlots: ["items", "icons", "relations"], optionalSlots: [],
+    supportedRegisters: ["infographic"],
+    semanticRequirements: ["Nodes need semantic icons and arrows need relation labels."],
+  },
+  {
+    id: "CAUSE_EFFECT", purpose: "Explain one cause and one effect",
+    requiredSlots: ["cause", "effect", "causeIcon", "effectIcon"], optionalSlots: ["relation"],
+    supportedRegisters: ["infographic"],
+    semanticRequirements: ["Cause and effect need distinct resolved visual assets."],
+  },
+  {
+    id: "QA_REVEAL", purpose: "Pose a question and reveal a concise answer",
+    requiredSlots: ["question", "answer"], optionalSlots: ["answerAsset"],
+    supportedRegisters: ["infographic", "character_action"],
+    semanticRequirements: ["The reveal must answer the question from the source range."],
+  },
+  {
+    id: "ICON_TRIPLE", purpose: "Group exactly three related concepts",
+    requiredSlots: ["items", "icons"], optionalSlots: [],
+    supportedRegisters: ["infographic"],
+    semanticRequirements: ["All three icons must be resolved and semantically distinct."],
+  },
+  {
+    id: "BEAT", purpose: "Use a real full-frame visual for a short emotional pause",
+    requiredSlots: ["image"], optionalSlots: [],
+    supportedRegisters: ["photo_broll", "visual_gag"],
+    semanticRequirements: ["A CSS color is not a valid BEAT image."],
+  },
+  {
+    id: "SOLO", purpose: "Use one character for direct address with a meaningful action",
+    requiredSlots: ["who", "action"], optionalSlots: ["keyword", "prop"],
+    supportedRegisters: ["character_action"],
+    semanticRequirements: ["A neutral pose plus keyword alone is not sufficient."],
+  },
+];
+
+export function getGrammarDefinition(grammar: VisualGrammar): GrammarDefinition | undefined {
+  return GRAMMAR_REGISTRY.find((definition) => definition.id === grammar);
+}
+
+export function grammarPromptTable(): string {
+  const lines = GRAMMAR_REGISTRY.map((definition) => {
+    const required = definition.requiredSlots.join(", ");
+    return `| ${definition.id} | ${definition.purpose} | ${required} | ${definition.supportedRegisters.join(", ")} |`;
+  });
+  return [
+    "| grammar | purpose | required slots | registers |",
+    "|---|---|---|---|",
+    ...lines,
+  ].join("\n");
+}
