@@ -8,6 +8,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
+import { createDefaultProjectManifest } from "../src/types/project";
 
 const args = process.argv.slice(2);
 function getArg(flag: string) { const i = args.indexOf(flag); return i !== -1 ? args[i + 1] : undefined; }
@@ -28,8 +29,10 @@ if (!fs.existsSync(projectsDir)) {
 
 // Generate folder name & ID
 function generateFolderName(): string {
-  const timestamp = Date.now();
-  const videoNum = String(fs.readdirSync(projectsDir).length + 1).padStart(3, "0");
+  const existingNumbers = fs.readdirSync(projectsDir)
+    .map((name) => Number(/^video-(\d+)/.exec(name)?.[1] ?? 0))
+    .filter((number) => Number.isFinite(number));
+  const videoNum = String(Math.max(0, ...existingNumbers) + 1).padStart(3, "0");
   const slug = nameInput
     ? nameInput.toLowerCase().replace(/[^a-z0-9]+/g, "-")
     : (idea || "untitled")
@@ -75,6 +78,12 @@ const metadata = {
 
 fs.writeFileSync(path.join(projectPath, "metadata.json"), JSON.stringify(metadata, null, 2));
 console.log("✓ Created metadata.json");
+fs.writeFileSync(
+  path.join(projectPath, "project.json"),
+  `${JSON.stringify(createDefaultProjectManifest(videoId), null, 2)}\n`,
+  "utf8",
+);
+console.log("✓ Created project.json");
 
 // Create idea.txt
 if (idea) {
@@ -144,6 +153,7 @@ console.log(`\n✅ Project created: ${projectPath}`);
 console.log(`\n📋 Project structure:`);
 console.log(`   ${projectPath}/`);
 console.log(`   ├── metadata.json`);
+console.log(`   ├── project.json`);
 if (idea) console.log(`   ├── idea.txt`);
 if (transcript || url) console.log(`   ├── transcript.txt`);
 console.log(`   ├── timeline.json (generated later)`);
@@ -156,7 +166,7 @@ if (!transcript && !url && idea) {
 } else {
   console.log(`   1. npx ts-node scripts/generate-timeline.ts --project ${videoId}`);
 }
-console.log(`   2. npm start (preview in Remotion Studio)`);
+console.log(`   2. npm run preview:project -- --project ${videoId}`);
 console.log(`   3. npx ts-node scripts/render.ts --project ${videoId}`);
 
 if (auto) {
@@ -164,7 +174,7 @@ if (auto) {
   // Auto-generate timeline (call generate-timeline.ts)
   try {
     execSync(`npx ts-node scripts/generate-timeline.ts --project ${videoId}`, { stdio: "inherit" });
-    console.log(`\n✅ Timeline generated. Next: npm start (preview) or npx ts-node scripts/render.ts --project ${videoId}`);
+    console.log(`\n✅ Timeline generated. Next: npm run preview:project -- --project ${videoId} or npx ts-node scripts/render.ts --project ${videoId}`);
   } catch (e) {
     console.error(`❌ Auto-generation failed. Generate manually: npx ts-node scripts/generate-timeline.ts --project ${videoId}`);
   }

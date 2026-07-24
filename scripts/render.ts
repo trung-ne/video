@@ -21,7 +21,13 @@ function getArg(flag: string, defaultVal: string): string {
   return idx !== -1 && args[idx + 1] ? args[idx + 1] : defaultVal;
 }
 
-const timelinePath = getArg("--timeline", "timeline.json");
+const projectArg = getArg("--project", "");
+const projectPath = projectArg
+  ? (fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
+      ? projectArg
+      : path.join("projects", projectArg))
+  : "";
+const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "timeline.json");
 const outPath = getArg("--out", "output/video.mp4");
 const compositionId = getArg("--composition", "CatExplainer");
 
