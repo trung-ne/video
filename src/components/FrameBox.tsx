@@ -95,7 +95,7 @@ export const FrameBox: React.FC<Props> = ({
               </div>
             )
           ) : (
-            <img src={src} style={{ width: "100%", height: "100%", objectFit: "contain", background: "#FFFFFF" }} />
+            <img src={src} style={{ width: "100%", height: "100%", objectFit: frameBox.objectFit, background: "#FFFFFF" }} />
           )}
         </div>
       </div>
@@ -116,6 +116,20 @@ export const FrameBox: React.FC<Props> = ({
           }}
         >
           {frameBox.caption}
+        </div>
+      )}
+      {frameBox.source && (
+        <div
+          style={{
+            marginTop: 8,
+            fontSize: w * 0.02,
+            fontWeight: 600,
+            color: "#5A5A5A",
+            fontFamily: "'Segoe UI', Arial, sans-serif",
+            textAlign: "center",
+          }}
+        >
+          {frameBox.source}
         </div>
       )}
     </div>

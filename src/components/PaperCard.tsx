@@ -73,6 +73,24 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
           </div>
         )}
 
+        {card.highlight && (
+          <div
+            style={{
+              display: "inline-block",
+              marginBottom: 22,
+              padding: "8px 14px",
+              background: "#FFE08A",
+              border: "3px solid #1a1a1a",
+              borderRadius: 8,
+              fontSize: w * 0.028,
+              fontWeight: 900,
+              color: "#1a1a1a",
+            }}
+          >
+            {card.highlight}
+          </div>
+        )}
+
         <div
           style={{
             fontSize: isSurvey ? w * 0.042 : w * 0.036,
@@ -121,6 +139,23 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
                 {choice}
               </div>
             ))}
+          </div>
+        )}
+
+        {(card.source || card.date) && (
+          <div
+            style={{
+              marginTop: 26,
+              paddingTop: 16,
+              borderTop: "2px solid #D8D2C8",
+              fontSize: w * 0.022,
+              fontWeight: 700,
+              color: "#625B52",
+              textAlign: "left",
+              fontStyle: "normal",
+            }}
+          >
+            {[card.source, card.date].filter(Boolean).join(" · ")}
           </div>
         )}
       </div>

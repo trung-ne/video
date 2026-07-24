@@ -68,6 +68,9 @@ export interface PaperCardState {
   enterFrame: number;
   exitFrame: number | null;
   width: number;
+  source?: string;
+  date?: string;
+  highlight?: string;
 }
 
 export interface FrameBoxState {
@@ -80,6 +83,8 @@ export interface FrameBoxState {
   enterFrame: number;
   exitFrame: number | null;
   width: number;
+  source?: string;
+  objectFit: "contain" | "cover";
 }
 
 export interface TransitionState {
@@ -351,6 +356,9 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         enterFrame: e.frame,
         exitFrame: e.exitFrame ?? null,
         width: e.width ?? 1100,
+        source: e.source,
+        date: e.date,
+        highlight: e.highlight,
       });
       if (e.exitFrame !== null && currentFrame >= (e.exitFrame ?? 0)) {
         state.paperCards.delete(e.cardId);
@@ -369,6 +377,8 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         enterFrame: e.frame,
         exitFrame: e.exitFrame ?? null,
         width: e.width ?? 1000,
+        source: e.source,
+        objectFit: e.objectFit ?? "contain",
       });
       if (e.exitFrame !== null && currentFrame >= (e.exitFrame ?? 0)) {
         state.frameBoxes.delete(e.frameId);

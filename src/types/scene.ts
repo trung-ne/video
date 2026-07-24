@@ -150,6 +150,9 @@ export interface ScenePaperCard {
   delay?: number;            // frames after scene start
   duration?: number;         // frames visible; omit = until scene end
   width?: number;
+  source?: string;
+  date?: string;
+  highlight?: string;
 }
 
 // ─── TV/monitor frame with data content inside a scene ───────
@@ -162,6 +165,8 @@ export interface SceneFrameBox {
   delay?: number;
   duration?: number;
   width?: number;
+  source?: string;
+  objectFit?: "contain" | "cover";
 }
 
 // ─── Speech bubble attached to a character in a scene ────────

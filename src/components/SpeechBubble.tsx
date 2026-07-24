@@ -32,8 +32,9 @@ export const SpeechBubble: React.FC<Props> = ({
   const assetSize = 160 * anchor.scale;
 
   // Position bubble relative to anchor character
-  const bubbleWidth = Math.max(200, bubble.text.length * (bubble.fontSize * 0.55) + 40);
-  const bubbleHeight = Math.ceil(bubble.text.length / 20) * (bubble.fontSize + 10) + 40;
+  const bubbleWidth = Math.min(canvasWidth * 0.38, Math.max(200, bubble.text.length * (bubble.fontSize * 0.55) + 40));
+  const charsPerLine = Math.max(10, Math.floor((bubbleWidth - 40) / (bubble.fontSize * 0.55)));
+  const bubbleHeight = Math.ceil(bubble.text.length / charsPerLine) * (bubble.fontSize + 10) + 40;
 
   let bubbleX = anchorX + assetSize * 0.3;
   let bubbleY = anchorY - assetSize * 0.6 - bubbleHeight;
@@ -44,6 +45,8 @@ export const SpeechBubble: React.FC<Props> = ({
     bubbleX = anchorX - bubbleWidth / 2;
     bubbleY = anchorY - assetSize * 0.8 - bubbleHeight;
   }
+  bubbleX = Math.max(24, Math.min(canvasWidth - bubbleWidth - 24, bubbleX));
+  bubbleY = Math.max(24, Math.min(canvasHeight * 0.72 - bubbleHeight, bubbleY));
 
   const isThought = bubble.style === "thought";
 

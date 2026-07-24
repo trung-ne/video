@@ -622,6 +622,32 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
       });
     }
   }
+  for (const claim of storyboard.claims ?? []) {
+    if (claim.evidencePolicy === "none") continue;
+    const supporting = briefs.filter((brief) => (brief.claimIds ?? []).includes(claim.id));
+    if (supporting.length === 0) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "CLAIM_WITHOUT_SCENE",
+        message: `Claim ${claim.id} has evidencePolicy=${claim.evidencePolicy} but no supporting scene.`,
+      });
+      continue;
+    }
+    if (!supporting.some((brief) => ["EVIDENCE", "FRAMEBOX", "STAT_REVEAL"].includes(brief.visualGrammar))) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "CLAIM_WITHOUT_EVIDENCE",
+        scene: supporting[0].id,
+        message: `Claim ${claim.id} is not rendered as evidence, framebox, or stat reveal.`,
+      });
+    }
+    if (claim.evidencePolicy === "source_card" &&
+        !supporting.some((brief) => String(brief.slots?.source ?? "").trim())) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "EVIDENCE_SOURCE_MISSING",
+        scene: supporting[0].id,
+        message: `Claim ${claim.id} requires a source card but no source is supplied.`,
+      });
+    }
+  }
   return [
     { name: "Storyboard: semantic visual and asset requests", passed: semanticIssues.length === 0, issues: semanticIssues },
     { name: "Storyboard: visual register scheduling", passed: registerIssues.length === 0, issues: registerIssues },

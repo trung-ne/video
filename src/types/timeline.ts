@@ -189,6 +189,9 @@ export interface PaperCardEvent {
   animation?: AnimationType;      // default popIn
   exitFrame?: number;
   width?: number;                 // px, default 1100
+  source?: string;
+  date?: string;
+  highlight?: string;
 }
 
 // NEW: TV/monitor frame containing a data image (map, chart) — matches t700s
@@ -203,6 +206,8 @@ export interface FrameBoxEvent {
   animation?: AnimationType;      // default popIn
   exitFrame?: number;
   width?: number;                 // px, default 1000
+  source?: string;
+  objectFit?: "contain" | "cover";
 }
 
 // NEW: Scene flash/wipe transition

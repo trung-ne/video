@@ -216,6 +216,7 @@ function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     texts: [],
     paperCards: [
       { id: `${b.id}-ev`, variant: isSurvey ? "survey" : "evidence", title, body,
+        source: b.slots?.source, date: b.slots?.date, highlight: b.slots?.highlight,
         choices: choices.length ? choices : undefined, position: { x: 0.66, y: 0.4 }, delay: 12 },
     ],
     focusAssetId: ctx.strict ? undefined : `${b.id}-cat`,
@@ -258,7 +259,9 @@ function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     ],
     texts: [],
     focusAssetId: ctx.strict && !b.slots?.who ? undefined : `${b.id}-cat`,
-    frameBoxes: [{ id: `${b.id}-tv`, contentSrc: content, caption, position: { x: 0.42, y: 0.42 }, delay: 8 }],
+    frameBoxes: [{ id: `${b.id}-tv`, contentSrc: content, caption, source: b.slots?.source,
+      objectFit: b.slots?.objectFit === "cover" ? "cover" : "contain",
+      position: { x: 0.42, y: 0.42 }, delay: 8 }],
   };
 }
 
