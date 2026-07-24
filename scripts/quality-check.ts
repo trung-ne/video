@@ -42,7 +42,11 @@ const report = runQualityCheck(timeline, timelinePath);
 printQualityReport(report);
 
 // Print grade summary
-if (report.grade === "A") {
+if (report.blockers > 0) {
+  console.log("❌ Video quality: BLOCKED — fix all blockers before render.\n");
+} else if (report.majors > 0) {
+  console.log("❌ Video quality: NOT PRODUCTION-READY — fix all major issues before render.\n");
+} else if (report.grade === "A") {
   console.log("🏆 Video quality: EXCELLENT — sẵn sàng render!\n");
 } else if (report.grade === "B") {
   console.log("👍 Video quality: GOOD — có thể render, cân nhắc fix MAJOR issues.\n");
