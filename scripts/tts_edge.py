@@ -31,7 +31,7 @@ import sys
 import wave
 
 FPS = 30
-GAP_SEC = 0.30      # silence inserted between scenes for natural pacing
+GAP_SEC = 0.08      # short section boundary only; visual shots are not TTS chunks
 
 
 def wav_to_samples(path: str):
@@ -154,7 +154,7 @@ async def main_async(args):
     os.makedirs(args.outdir, exist_ok=True)
 
     TARGET_SR = 24000
-    gap = [0.0] * int(TARGET_SR * GAP_SEC)
+    gap = [0.0] * int(TARGET_SR * max(0.0, args.gap))
 
     all_samples = []
     manifest = {"fps": FPS, "sampleRate": TARGET_SR, "voice": args.voice, "scenes": []}
@@ -184,9 +184,10 @@ async def main_async(args):
 
         write_wav(wav_path, clip_samples, TARGET_SR)
         all_samples.extend(clip_samples)
-        all_samples.extend(gap)
+        if idx < len(scenes) - 1:
+            all_samples.extend(gap)
 
-        clip_frames = len(clip_samples) + len(gap)
+        clip_frames = len(clip_samples) + (len(gap) if idx < len(scenes) - 1 else 0)
         sec = clip_frames / TARGET_SR
         frames = max(1, round(sec * FPS))
 
@@ -224,6 +225,8 @@ def main():
     ap.add_argument("--outdir", required=True)
     ap.add_argument("--voice", default="en-US-AvaNeural",
                     help="Edge TTS voice name (default: en-US-AvaNeural)")
+    ap.add_argument("--gap", type=float, default=GAP_SEC,
+                    help="silence between natural TTS sections")
     args = ap.parse_args()
     asyncio.run(main_async(args))
 

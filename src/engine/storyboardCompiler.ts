@@ -29,6 +29,43 @@ export interface CompileStoryboardOpts {
   fallbackFramesPerWord?: number; // when no TTS timing (default 8)
 }
 
+function buildAlignedSceneTimings(
+  storyboard: Storyboard,
+  words: AlignedWord[] | undefined,
+  fps: number,
+): Map<string, SceneTiming> {
+  const result = new Map<string, SceneTiming>();
+  if (!words?.some((word) => Number.isInteger(word.wordIndex))) return result;
+  const bounds = storyboard.scenes.map((scene) => {
+    if (!scene.sourceRange) return undefined;
+    const matched = words.filter((word) =>
+      Number.isInteger(word.wordIndex) &&
+      word.wordIndex! >= scene.sourceRange!.startWord &&
+      word.wordIndex! <= scene.sourceRange!.endWord
+    );
+    if (matched.length === 0) return undefined;
+    return {
+      startFrame: Math.round(matched[0].startSec * fps),
+      endFrame: Math.round(matched[matched.length - 1].endSec * fps),
+    };
+  });
+  if (bounds.some((bound) => !bound)) return result;
+  const starts = bounds.map((bound) => bound!.startFrame);
+  starts[0] = 0;
+  for (let index = 0; index < storyboard.scenes.length; index++) {
+    const startFrame = starts[index];
+    const endFrame = index + 1 < starts.length
+      ? starts[index + 1]
+      : bounds[index]!.endFrame;
+    result.set(storyboard.scenes[index].id, {
+      id: storyboard.scenes[index].id,
+      startFrame,
+      frames: Math.max(1, endFrame - startFrame),
+    });
+  }
+  return result;
+}
+
 // Resolve frame offset (from scene start) where a beat's word is spoken.
 // Prefers word-alignment; falls back to char-proportion within the scene.
 function resolveBeatOffset(
@@ -75,6 +112,34 @@ function importanceToEmphasis(imp: number): { animation: "pulse" | "shake" | "bo
   if (imp >= 0.85) return { animation: "shake", duration: 24 };
   if (imp >= 0.6) return { animation: "pulse", duration: 22 };
   return { animation: "bounce", duration: 20 };
+}
+
+function buildSubtitleCues(
+  brief: SceneBrief,
+  timing: SceneTiming,
+  words: AlignedWord[] | undefined,
+  fps: number,
+): Array<{ text: string; startFrame: number; endFrame: number }> | undefined {
+  if (!brief.sourceRange || !words?.some((word) => Number.isInteger(word.wordIndex))) return undefined;
+  const aligned = words.filter((word) =>
+    Number.isInteger(word.wordIndex) &&
+    word.wordIndex! >= brief.sourceRange!.startWord &&
+    word.wordIndex! <= brief.sourceRange!.endWord
+  );
+  if (aligned.length === 0) return undefined;
+  const narrationWords = brief.narration.replace(/\s+/g, " ").trim().split(/\s+/);
+  const cues: Array<{ text: string; startFrame: number; endFrame: number }> = [];
+  for (let offset = 0; offset < narrationWords.length; offset += 9) {
+    const chunk = narrationWords.slice(offset, offset + 9);
+    const first = aligned[Math.min(offset, aligned.length - 1)];
+    const last = aligned[Math.min(offset + chunk.length - 1, aligned.length - 1)];
+    cues.push({
+      text: chunk.join(" "),
+      startFrame: Math.max(0, Math.round(first.startSec * fps) - timing.startFrame),
+      endFrame: Math.min(timing.frames, Math.max(1, Math.round(last.endSec * fps) - timing.startFrame)),
+    });
+  }
+  return cues;
 }
 
 function compileBrief(
@@ -154,6 +219,7 @@ function compileBrief(
     claimIds: brief.claimIds,
     heroVisual: brief.heroVisual,
     unresolvedAssets: brief.unresolvedAssetRequests,
+    subtitleCues: buildSubtitleCues(brief, timing, words, fps),
     backgroundSrc: result.backgroundSrc,
     clearPrevious: true,
     entities,
@@ -230,11 +296,12 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
   const fps = sb.fps || 30;
   const fpw = opts.fallbackFramesPerWord ?? 8;
   const timingById = new Map((opts.durations ?? []).map((d) => [d.id, d]));
+  const alignedTimingById = buildAlignedSceneTimings(sb, opts.words, fps);
 
   // Build per-scene timing: prefer TTS durations; else estimate from word count.
   let cursor = 0;
   const timings: SceneTiming[] = sb.scenes.map((brief) => {
-    const known = timingById.get(brief.id);
+    const known = timingById.get(brief.id) ?? alignedTimingById.get(brief.id);
     if (known) {
       cursor = known.startFrame + known.frames;
       return known;

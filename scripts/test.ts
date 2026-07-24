@@ -136,6 +136,38 @@ test("semantic storyboard gate rejects generic or unresolved planning", () => {
   assert.ok(report.majors > 0);
 });
 
+test("word alignment controls schema v2 scene timing and subtitle cues", () => {
+  const storyboard: Storyboard = {
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080,
+    scenes: [
+      {
+        id: "one", narration: "one two", purpose: "first", emotion: "neutral",
+        viewerFocus: "money", visualGrammar: "CHAR_PROP",
+        sourceRange: { startWord: 0, endWord: 1, quoteChecksum: "x" },
+        slots: { who: "generated-assets/characters/cat_explain.png", prop: "finance/money" },
+      },
+      {
+        id: "two", narration: "three four", purpose: "second", emotion: "neutral",
+        viewerFocus: "house", visualGrammar: "CHAR_PROP",
+        sourceRange: { startWord: 2, endWord: 3, quoteChecksum: "y" },
+        slots: { who: "generated-assets/characters/cat_explain.png", prop: "finance/house" },
+      },
+    ],
+  };
+  const timeline = compileStoryboard(storyboard, {
+    words: [
+      { wordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 },
+      { wordIndex: 1, word: "two", startSec: 0.4, endSec: 0.6 },
+      { wordIndex: 2, word: "three", startSec: 1.0, endSec: 1.2 },
+      { wordIndex: 3, word: "four", startSec: 1.3, endSec: 1.6 },
+    ],
+  });
+  assert.strictEqual(timeline.scenes[0].startFrame, 0);
+  assert.strictEqual(timeline.scenes[0].durationFrames, 30);
+  assert.strictEqual(timeline.scenes[1].startFrame, 30);
+  assert.ok((timeline.scenes[1].subtitleCues?.length ?? 0) > 0);
+});
+
 let failures = 0;
 for (const item of tests) {
   try {

@@ -20,6 +20,37 @@ import argparse
 import json
 import os
 import sys
+import re
+import unicodedata
+
+
+def normalize_word(value):
+    value = unicodedata.normalize("NFC", value or "").lower()
+    return "".join(ch for ch in value if ch.isalnum())
+
+
+def transcript_words(text):
+    return re.findall(r"[\w]+(?:['’\-][\w]+)*", unicodedata.normalize("NFC", text), flags=re.UNICODE)
+
+
+def attach_transcript_indices(aligned, transcript):
+    expected = transcript_words(transcript)
+    cursor = 0
+    for item in aligned:
+        token = normalize_word(item["word"])
+        match_index = None
+        for index in range(cursor, min(len(expected), cursor + 8)):
+            if normalize_word(expected[index]) == token:
+                match_index = index
+                break
+        if match_index is None:
+            item["wordIndex"] = None
+            item["confidence"] = 0.0
+        else:
+            item["wordIndex"] = match_index
+            item["confidence"] = 1.0 if match_index == cursor else 0.8
+            cursor = match_index + 1
+    return aligned
 
 
 def main() -> int:
@@ -28,6 +59,7 @@ def main() -> int:
     ap.add_argument("--outdir", required=True, help="folder to write words.json")
     ap.add_argument("--model", default="base", help="whisper model size (tiny/base/small/medium)")
     ap.add_argument("--lang", default=None, help="language code hint, e.g. en / vi (auto if omitted)")
+    ap.add_argument("--transcript", default=None, help="verbatim transcript for stable wordIndex mapping")
     args = ap.parse_args()
 
     if not os.path.isfile(args.wav):
@@ -61,7 +93,12 @@ def main() -> int:
                 "word": token,
                 "startSec": round(float(w.start), 3),
                 "endSec": round(float(w.end), 3),
+                "confidence": round(float(getattr(w, "probability", 0.0) or 0.0), 3),
             })
+
+    if args.transcript:
+        with open(args.transcript, "r", encoding="utf-8-sig") as f:
+            words = attach_transcript_indices(words, f.read())
 
     out_path = os.path.join(args.outdir, "words.json")
     with open(out_path, "w", encoding="utf-8") as f:

@@ -24,7 +24,7 @@ import sys
 
 FPS = 30
 SR = 24000          # Kokoro output sample rate
-GAP_SEC = 0.30      # silence inserted between scenes for natural pacing
+GAP_SEC = 0.08      # short section boundary only; visual shots are not TTS chunks
 
 
 def main():
@@ -33,6 +33,7 @@ def main():
     ap.add_argument("--outdir", required=True)
     ap.add_argument("--voice", default="af_heart")
     ap.add_argument("--lang", default="a", help="Kokoro lang_code (a=US English)")
+    ap.add_argument("--gap", type=float, default=GAP_SEC, help="silence between natural TTS sections")
     args = ap.parse_args()
 
     import numpy as np
@@ -49,7 +50,7 @@ def main():
 
     pipeline = KPipeline(lang_code=args.lang)
 
-    gap = np.zeros(int(SR * GAP_SEC), dtype=np.float32)
+    gap = np.zeros(int(SR * max(0.0, args.gap)), dtype=np.float32)
     all_audio = []
     manifest = {"fps": FPS, "sampleRate": SR, "voice": args.voice,
                 "lang": args.lang, "scenes": []}
@@ -74,9 +75,11 @@ def main():
         sf.write(os.path.join(args.outdir, f"{sid}.wav"), clip, SR)
 
         all_audio.append(clip)
-        all_audio.append(gap)
+        if idx < len(scenes) - 1:
+            all_audio.append(gap)
 
-        sec = (len(clip) + len(gap)) / SR
+        boundary_gap = len(gap) if idx < len(scenes) - 1 else 0
+        sec = (len(clip) + boundary_gap) / SR
         frames = max(1, round(sec * FPS))
         manifest["scenes"].append({
             "id": sid, "sec": round(sec, 3),

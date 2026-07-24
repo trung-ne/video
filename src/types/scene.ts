@@ -201,6 +201,7 @@ export interface Scene {
   claimIds?: string[];
   heroVisual?: boolean;
   unresolvedAssets?: string[];
+  subtitleCues?: Array<{ text: string; startFrame: number; endFrame: number }>;
   backgroundSrc?: string;  // CSS color/gradient or image path for background event
   backgroundBlur?: number;    // blur px for photo bg (8-14 recommended so flat 2D cat pops)
   backgroundOverlay?: string; // scrim over photo bg for legibility (e.g. "rgba(0,0,0,0.35)")

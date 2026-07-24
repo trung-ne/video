@@ -446,6 +446,26 @@ function compileSubtitles(
   totalFrames: number,
   transitionDur: number
 ): void {
+  if (scene.subtitleCues?.length) {
+    for (let i = 0; i < scene.subtitleCues.length; i++) {
+      const cue = scene.subtitleCues[i];
+      const frame = Math.max(sceneStart + transitionDur, sceneStart + cue.startFrame);
+      const exitFrame = Math.min(sceneStart + cue.endFrame, sceneEnd, totalFrames - 1);
+      events.push({
+        frame,
+        type: "text",
+        textId: `${scene.id}__sub_${i}`,
+        content: cue.text,
+        position: { x: 0.5, y: 0.9 },
+        style: "SUBTITLE",
+        color: "#FFFFFF",
+        align: "center",
+        animation: "fadeIn",
+        exitFrame,
+      } as TextEvent);
+    }
+    return;
+  }
   const chunks = chunkNarration(scene.narration!);
   if (chunks.length === 0) return;
 

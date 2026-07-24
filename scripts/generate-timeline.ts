@@ -598,12 +598,13 @@ function readDurations(projectDir: string): SceneTiming[] | undefined {
 
 // Word-align voice.wav → words.json (best-effort; beats fall back to
 // char-proportion if whisper isn't installed or fails).
-function runWordAlignment(projectDir: string): void {
+function runWordAlignment(projectDir: string, transcriptPath?: string): void {
   const wav = path.join(projectDir, "voice.wav");
   if (!fs.existsSync(wav)) return;
   try {
     console.log("🎯 Word alignment (whisper)...");
-    execSync(`py -3.11 scripts/align_words.py --wav "${wav}" --outdir "${projectDir}" --model base`, {
+    const transcriptArg = transcriptPath ? ` --transcript "${transcriptPath}"` : "";
+    execSync(`py -3.11 scripts/align_words.py --wav "${wav}" --outdir "${projectDir}" --model base${transcriptArg}`, {
       stdio: "inherit", cwd: process.cwd(),
     });
   } catch {
@@ -620,17 +621,25 @@ function readWords(projectDir: string): any[] | undefined {
 }
 
 // --- TTS: generate audio per scene, patch timeline durations ---
-async function runTTS(timeline: any, projectDir: string): Promise<void> {
+async function runTTS(timeline: any, projectDir: string, storyboard?: Storyboard): Promise<void> {
   if (!Array.isArray(timeline.scenes) || timeline.scenes.length === 0) {
     console.warn("⚠️  TTS: timeline có 0 scenes, bỏ qua TTS");
     return;
   }
 
   // Extract narrations from scenes
-  const scenes = timeline.scenes.map((s: any) => ({
-    id: s.id ?? `scene-${s.startFrame ?? 0}`,
-    text: (s.narration ?? s.label ?? "").replace(/^\[.*?\]\s*/, "").trim(),
-  }));
+  const scenes = storyboard?.schemaVersion === 2 && storyboard.sections?.length
+    ? storyboard.sections.map((section) => ({
+        id: section.id,
+        text: storyboard.scenes
+          .filter((scene) => scene.sectionId === section.id)
+          .map((scene) => scene.narration.trim())
+          .join(" "),
+      }))
+    : timeline.scenes.map((s: any) => ({
+        id: s.id ?? `scene-${s.startFrame ?? 0}`,
+        text: (s.narration ?? s.label ?? "").replace(/^\[.*?\]\s*/, "").trim(),
+      }));
 
   const ttsDir = projectDir;
   const scenesJsonPath = path.join(ttsDir, "tts_scenes.json");
@@ -682,15 +691,23 @@ async function runTTS(timeline: any, projectDir: string): Promise<void> {
   }
   timeline.durationInFrames = cursor;
 
-  // Save voice.wav to project dir + also copy to public/ for Remotion
+  // Master narration before publishing it to Remotion.
   const voiceWav = path.join(ttsDir, "voice.wav");
+  const masteredWav = path.join(ttsDir, "voice-mastered.wav");
+  const audioReport = path.join(ttsDir, "audio-audit.json");
+  execSync(`python scripts/master-audio.py --input "${voiceWav}" --output "${masteredWav}"`, {
+    stdio: "inherit", cwd: process.cwd(),
+  });
+  execSync(`python scripts/audio-audit.py "${masteredWav}" --out "${audioReport}"`, {
+    stdio: "inherit", cwd: process.cwd(),
+  });
   const publicDir = path.join(process.cwd(), "public");
   const publicAudioDir = path.join(publicDir, "audio", path.basename(ttsDir));
 
   // Copy voice.wav to public/ so Remotion can access it
   fs.mkdirSync(publicAudioDir, { recursive: true });
   const publicVoiceWav = path.join(publicAudioDir, "voice.wav");
-  fs.copyFileSync(voiceWav, publicVoiceWav);
+  fs.copyFileSync(masteredWav, publicVoiceWav);
 
   // Timeline audio ref is relative to public/
   const relAudio = `audio/${path.basename(ttsDir)}/voice.wav`;
@@ -751,12 +768,12 @@ async function main() {
 
   // Step 3.5: TTS — generate audio and patch durations (same folder as timeline)
   if (ttsFlag && Array.isArray(timeline.scenes)) {
-    await runTTS(timeline, projectDir);
+    await runTTS(timeline, projectDir, storyboard ?? undefined);
     // Storyboard mode: word-align the voice, then re-compile with LOCKED TTS
     // timing + word alignment so beat-emphasis lands on the exact spoken word.
     if (storyboardMode && storyboard) {
-      runWordAlignment(projectDir);
-      const durations = readDurations(projectDir);
+      runWordAlignment(projectDir, transcriptInput);
+      const durations = storyboard.schemaVersion === 2 ? undefined : readDurations(projectDir);
       const words = readWords(projectDir);
       timeline = compileStoryboard(storyboard, { durations, words, background: timeline.background });
       timeline.audio = `audio/${path.basename(projectDir)}/voice.wav`;
