@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--lufs", type=float, default=-17.0)
     parser.add_argument("--true-peak", type=float, default=-1.5)
     parser.add_argument("--lra", type=float, default=11.0)
+    parser.add_argument("--ffmpeg", default="ffmpeg")
     args = parser.parse_args()
 
     if not os.path.isfile(args.input):
@@ -27,7 +28,7 @@ def main():
     os.close(fd)
     try:
         command = [
-            "ffmpeg", "-y", "-v", "error", "-i", args.input,
+            args.ffmpeg, "-y", "-v", "error", "-i", args.input,
             "-af", f"loudnorm=I={args.lufs}:TP={args.true_peak}:LRA={args.lra}",
             "-ar", "48000", "-ac", "1", temp_path,
         ]

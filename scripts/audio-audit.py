@@ -15,10 +15,11 @@ def main():
     parser.add_argument("--min-lufs", type=float, default=-18.0)
     parser.add_argument("--max-lufs", type=float, default=-16.0)
     parser.add_argument("--max-true-peak", type=float, default=-1.5)
+    parser.add_argument("--ffmpeg", default="ffmpeg")
     args = parser.parse_args()
 
     command = [
-        "ffmpeg", "-hide_banner", "-nostats", "-i", args.input,
+        args.ffmpeg, "-hide_banner", "-nostats", "-i", args.input,
         "-filter_complex", "ebur128=peak=true", "-f", "null", "-",
     ]
     result = subprocess.run(command, text=True, capture_output=True)

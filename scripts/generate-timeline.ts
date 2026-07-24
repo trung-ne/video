@@ -773,10 +773,11 @@ async function runTTS(timeline: any, projectDir: string, storyboard?: Storyboard
   const voiceWav = path.join(ttsDir, "voice.wav");
   const masteredWav = path.join(ttsDir, "voice-mastered.wav");
   const audioReport = path.join(ttsDir, "audio-audit.json");
-  execSync(`python scripts/master-audio.py --input "${voiceWav}" --output "${masteredWav}"`, {
+  const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path as string;
+  execSync(`python scripts/master-audio.py --input "${voiceWav}" --output "${masteredWav}" --ffmpeg "${ffmpegPath}"`, {
     stdio: "inherit", cwd: process.cwd(),
   });
-  execSync(`python scripts/audio-audit.py "${masteredWav}" --out "${audioReport}"`, {
+  execSync(`python scripts/audio-audit.py "${masteredWav}" --out "${audioReport}" --ffmpeg "${ffmpegPath}"`, {
     stdio: "inherit", cwd: process.cwd(),
   });
   const publicDir = path.join(process.cwd(), "public");
