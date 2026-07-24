@@ -33,7 +33,7 @@ import { buildSystemPrompt, buildScriptFromIdea, listAvailableAssets } from "../
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
-import { runQualityCheck, printQualityReport, runStoryboardCheck } from "../src/ai/qualityCheck";
+import { QualityReport, runQualityCheck, printQualityReport, runStoryboardCheck } from "../src/ai/qualityCheck";
 import { buildStoryMapPrompt } from "../src/ai/prompts/storyMapPrompt";
 import { buildScenePlanPrompt } from "../src/ai/prompts/scenePlanPrompt";
 import { buildRepairPrompt } from "../src/ai/prompts/repairPrompt";
@@ -55,7 +55,12 @@ function getArg(flag: string): string | undefined {
 
 const ideaInput = getArg("--idea");
 const urlInput = getArg("--url");
-const projectInput = getArg("--project");
+const projectArg = getArg("--project");
+const projectInput = projectArg
+  ? (fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
+      ? projectArg
+      : path.join("projects", projectArg))
+  : undefined;
 const transcriptInput = getArg("--transcript") ?? (projectInput ? path.join(projectInput, "transcript.txt") : undefined);
 const audioInput = getArg("--audio");
 const durationOverride = getArg("--duration");
@@ -588,6 +593,79 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
   return storyboard;
 }
 
+async function repairStoryboard(
+  storyboard: Storyboard,
+  transcript: string,
+  projectDir: string,
+  report: QualityReport,
+): Promise<Storyboard> {
+  const manifest = readAssetManifest();
+  const words = indexTranscript(transcript);
+  const storyMapPath = path.join(projectDir, "story-map.json");
+  const storyMap = fs.existsSync(storyMapPath)
+    ? JSON.parse(fs.readFileSync(storyMapPath, "utf8"))
+    : { sections: storyboard.sections, claims: storyboard.claims };
+  const issueSceneIds = new Set(
+    report.checks.flatMap((check) => check.issues).map((issue) => issue.scene).filter(Boolean),
+  );
+  const hasGlobalMajor = report.checks
+    .flatMap((check) => check.issues)
+    .some((issue) => issue.severity !== "MINOR" && !issue.scene);
+  const nextScenes = [...storyboard.scenes];
+
+  for (const section of storyboard.sections ?? []) {
+    const sectionScenes = nextScenes.filter((scene) => scene.sectionId === section.id);
+    if (!hasGlobalMajor && !sectionScenes.some((scene) => issueSceneIds.has(scene.id))) continue;
+    const excerpt = sourceExcerpt(transcript, words, section.sourceRange);
+    const candidates = selectAssetCandidates(excerpt, manifest);
+    const sectionIssues = report.checks
+      .flatMap((check) => check.issues)
+      .filter((issue) => !issue.scene || sectionScenes.some((scene) => scene.id === issue.scene));
+    const response = await callWithFallback<any>({
+      user: buildRepairPrompt({
+        failedScenes: sectionScenes,
+        issues: sectionIssues,
+        neighbors: nextScenes.filter((scene) => scene.sectionId !== section.id).slice(-2),
+        assetCandidates: candidates,
+      }),
+      maxTokens: 12000,
+      modelType: "timeline",
+      parse: parseJsonObject,
+    });
+    const repaired = finalizeSectionScenes(response.scenes ?? [], section, transcript);
+    const coverageIssues = sectionCoverageIssues(section, repaired);
+    if (coverageIssues.length) {
+      throw new Error(`Semantic repair broke ${section.id} coverage: ${coverageIssues.join("; ")}`);
+    }
+    resolveSceneAssets(repaired, manifest);
+    const first = nextScenes.findIndex((scene) => scene.sectionId === section.id);
+    nextScenes.splice(first, sectionScenes.length, ...repaired);
+    storyboard.generation = storyboard.generation ?? {};
+    storyboard.generation.repairs = storyboard.generation.repairs ?? [];
+    storyboard.generation.repairs.push({ sceneId: section.id, reason: "production storyboard gate" });
+  }
+  storyboard.scenes = nextScenes;
+  return storyboard;
+}
+
+function writeAssetRequestQueue(storyboard: Storyboard, projectDir: string): void {
+  const requests = storyboard.scenes.flatMap((scene) =>
+    (scene.unresolvedAssetRequests ?? []).map((reason) => ({
+      sceneId: scene.id,
+      sectionId: scene.sectionId,
+      reason,
+      requests: scene.assetRequests,
+      semanticVisual: scene.semanticVisual,
+    }))
+  );
+  const queuePath = path.join(projectDir, "asset-requests.json");
+  if (requests.length) {
+    fs.writeFileSync(queuePath, `${JSON.stringify({ schemaVersion: 1, requests }, null, 2)}\n`, "utf8");
+  } else if (fs.existsSync(queuePath)) {
+    fs.unlinkSync(queuePath);
+  }
+}
+
 // Read a durations.json (written by TTS) → SceneTiming[] for re-compile.
 function readDurations(projectDir: string): SceneTiming[] | undefined {
   const p = path.join(projectDir, "durations.json");
@@ -753,7 +831,14 @@ async function main() {
     fs.mkdirSync(projectDir, { recursive: true });
     storyboard = await generateStoryboard(transcript, durationSeconds, projectDir);
     if (audioInput && !ttsFlag) storyboard.audio = audioInput;
-    const storyboardReport = runStoryboardCheck(storyboard);
+    let storyboardReport = runStoryboardCheck(storyboard);
+    for (let repairAttempt = 0;
+         repairAttempt < 2 && (storyboardReport.blockers > 0 || storyboardReport.majors > 0);
+         repairAttempt++) {
+      storyboard = await repairStoryboard(storyboard, transcript, projectDir, storyboardReport);
+      storyboardReport = runStoryboardCheck(storyboard);
+    }
+    writeAssetRequestQueue(storyboard, projectDir);
     printQualityReport(storyboardReport);
     if (!args.includes("--diagnostic") && (storyboardReport.blockers > 0 || storyboardReport.majors > 0)) {
       fs.writeFileSync(path.join(projectDir, "storyboard.failed.json"), JSON.stringify(storyboard, null, 2));
