@@ -436,7 +436,7 @@ function normalizeSections(raw: any, transcript: string): StorySection[] {
   const words = indexTranscript(transcript);
   const sections = Array.isArray(raw?.sections) ? raw.sections : [];
   if (sections.length === 0) throw new Error("Story map returned no sections");
-  return sections.map((section: any, index: number) => {
+  const normalized = sections.map((section: any, index: number) => {
     const startWord = Number(section.sourceRange?.startWord);
     const endWord = Number(section.sourceRange?.endWord);
     if (!Number.isInteger(startWord) || !Number.isInteger(endWord) || startWord < 0 || endWord < startWord || endWord >= words.length) {
@@ -448,6 +448,40 @@ function normalizeSections(raw: any, transcript: string): StorySection[] {
       thesis: String(section.thesis ?? ""),
       emotionalTurn: String(section.emotionalTurn ?? ""),
       targetDurationSeconds: section.targetDurationSeconds,
+    };
+  });
+  let cursor = 0;
+  for (const section of normalized) {
+    if (section.sourceRange.startWord !== cursor) {
+      throw new Error(`Story-map coverage gap/overlap before ${section.id}: expected ${cursor}, got ${section.sourceRange.startWord}`);
+    }
+    cursor = section.sourceRange.endWord + 1;
+  }
+  if (cursor !== words.length) {
+    throw new Error(`Story map ends at word ${cursor - 1}; transcript ends at ${words.length - 1}`);
+  }
+  return normalized;
+}
+
+function normalizeClaims(rawClaims: any, transcript: string): Storyboard["claims"] {
+  const words = indexTranscript(transcript);
+  if (!Array.isArray(rawClaims)) return [];
+  return rawClaims.map((claim: any, index: number) => {
+    const startWord = Number(claim.sourceRange?.startWord);
+    const endWord = Number(claim.sourceRange?.endWord);
+    if (!Number.isInteger(startWord) || !Number.isInteger(endWord) ||
+        startWord < 0 || endWord < startWord || endWord >= words.length) {
+      throw new Error(`Invalid claim sourceRange for ${claim.id ?? index}`);
+    }
+    const policy = ["none", "quote", "data", "source_card"].includes(claim.evidencePolicy)
+      ? claim.evidencePolicy
+      : "none";
+    return {
+      id: String(claim.id ?? `claim-${index + 1}`),
+      text: String(claim.text ?? sourceExcerpt(transcript, words, makeSourceRange(words, startWord, endWord))),
+      sourceRange: makeSourceRange(words, startWord, endWord),
+      evidencePolicy: policy,
+      sceneIds: Array.isArray(claim.sceneIds) ? claim.sceneIds : [],
     };
   });
 }
@@ -520,13 +554,24 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
   console.log("🎬 Multipass director: global story map → section scene plans\n");
   const words = indexTranscript(transcript);
   const manifest = readAssetManifest();
-  const storyMap = await callWithFallback<any>({
-    user: buildStoryMapPrompt(transcript, words, durationSeconds),
-    maxTokens: 12000,
-    modelType: "timeline",
-    parse: parseJsonObject,
-  });
-  const sections = normalizeSections(storyMap, transcript);
+  let storyMap: any;
+  let sections: StorySection[] | undefined;
+  let storyMapError: Error | undefined;
+  for (let attempt = 0; attempt < 2 && !sections; attempt++) {
+    storyMap = await callWithFallback<any>({
+      user: buildStoryMapPrompt(transcript, words, durationSeconds),
+      maxTokens: 12000,
+      modelType: "timeline",
+      parse: parseJsonObject,
+    });
+    try {
+      sections = normalizeSections(storyMap, transcript);
+    } catch (error) {
+      storyMapError = error as Error;
+      console.warn(`   Story-map coverage attempt ${attempt + 1} failed: ${storyMapError.message}`);
+    }
+  }
+  if (!sections) throw storyMapError ?? new Error("Story map generation failed");
   fs.writeFileSync(path.join(projectDir, "story-map.json"), JSON.stringify({ ...storyMap, sections }, null, 2));
 
   const scenes: SceneBrief[] = [];
@@ -582,7 +627,7 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
     height: 1080,
     cast: { narrator: { src: "generated-assets/characters/cat_explain.png" } },
     sections,
-    claims: Array.isArray(storyMap.claims) ? storyMap.claims : [],
+    claims: normalizeClaims(storyMap.claims, transcript),
     generation: { passIds: ["story-map", ...sections.map((section) => `scene-plan:${section.id}`)] },
     scenes,
   };
