@@ -33,6 +33,7 @@ export interface AssetState {
   label?: string;        // text label shown below asset
   badge?: string;        // number/text badge overlaid on the character
   circle?: string;       // colored disc rendered BEHIND the icon (icon-in-circle grouping)
+  facing?: "left" | "right" | "front";
   visible: boolean;
 }
 
@@ -51,6 +52,7 @@ export interface EnterEvent {
   zIndex?: number;
   badge?: string;             // number/text badge on the character (e.g. "4") — game-theory ranking
   circle?: string;            // colored disc behind icon (icon-in-circle grouping, e.g. "#8E44AD")
+  facing?: "left" | "right" | "front";
 }
 
 export interface ExitEvent {

@@ -6,7 +6,7 @@ import {
   staticFile,
   AbsoluteFill,
 } from "remotion";
-import { Timeline, EnterEvent } from "./types/timeline";
+import { Timeline } from "./types/timeline";
 import { computeFrameState } from "./engine/timelineEngine";
 import { AnimatedAsset } from "./components/AnimatedAsset";
 import { AnimatedText } from "./components/AnimatedText";
@@ -89,12 +89,9 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
           const enterFrame = state.assetEnterFrames.get(assetId) ?? 0;
           const exitInfo = state.assetExitFrames.get(assetId) ?? null;
 
-          const enterEvent = timeline.events.find(
-            (e) => e.type === "enter" && (e as EnterEvent).assetId === assetId
-          ) as EnterEvent | undefined;
-
-          const enterAnimation = enterEvent?.animation ?? "popIn";
-          const enterDuration = enterEvent?.animationDuration ?? 18;
+          const enterInfo = state.assetEnterInfo.get(assetId);
+          const enterAnimation = enterInfo?.animation ?? "popIn";
+          const enterDuration = enterInfo?.duration ?? 18;
 
           return (
             <AnimatedAsset

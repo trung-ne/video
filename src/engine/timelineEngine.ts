@@ -119,6 +119,7 @@ export interface ActiveEmphasize {
 export interface FrameState {
   assets: Map<string, AssetState>;
   assetEnterFrames: Map<string, number>;
+  assetEnterInfo: Map<string, { animation: string; duration: number }>;
   assetExitFrames: Map<string, { frame: number; animation: string; duration: number }>;
   texts: Map<string, TextState>;
   camera: CameraState;
@@ -131,11 +132,22 @@ export interface FrameState {
   activeTransition: TransitionState | null;
 }
 
+const SORTED_EVENT_CACHE = new WeakMap<Timeline, TimelineEvent[]>();
+
+function getSortedEvents(timeline: Timeline): TimelineEvent[] {
+  const cached = SORTED_EVENT_CACHE.get(timeline);
+  if (cached && cached.length === timeline.events.length) return cached;
+  const sorted = [...timeline.events].sort((a, b) => a.frame - b.frame);
+  SORTED_EVENT_CACHE.set(timeline, sorted);
+  return sorted;
+}
+
 // Compute canvas state at a given frame from the timeline
 export function computeFrameState(timeline: Timeline, currentFrame: number): FrameState {
   const state: FrameState = {
     assets: new Map(),
     assetEnterFrames: new Map(),
+    assetEnterInfo: new Map(),
     assetExitFrames: new Map(),
     texts: new Map(),
     camera: { zoom: 1, centerX: 0.5, centerY: 0.5 },
@@ -150,7 +162,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
 
   // Process all events up to and including current frame (for state)
   // But we need to know future exits too, so process all events
-  const sortedEvents = [...timeline.events].sort((a, b) => a.frame - b.frame);
+  const sortedEvents = getSortedEvents(timeline);
 
   // First pass: collect all enter/exit frames
   for (const event of sortedEvents) {
@@ -168,9 +180,14 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
           label: e.label,
           badge: e.badge,
           circle: e.circle,
+          facing: e.facing,
           visible: true,
         });
         state.assetEnterFrames.set(e.assetId, e.frame);
+        state.assetEnterInfo.set(e.assetId, {
+          animation: e.animation ?? "popIn",
+          duration: e.animationDuration ?? 18,
+        });
       }
     }
 
@@ -186,6 +203,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
       if (currentFrame >= e.frame + duration) {
         state.assets.delete(e.assetId);
         state.assetEnterFrames.delete(e.assetId);
+        state.assetEnterInfo.delete(e.assetId);
       }
     }
 
@@ -245,11 +263,13 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
       if (!e.assetIds || e.assetIds.length === 0) {
         state.assets.clear();
         state.assetEnterFrames.clear();
+        state.assetEnterInfo.clear();
         state.texts.clear();
       } else {
         for (const id of e.assetIds) {
           state.assets.delete(id);
           state.assetEnterFrames.delete(id);
+          state.assetEnterInfo.delete(id);
         }
       }
     }

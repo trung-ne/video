@@ -291,6 +291,7 @@ function compileEntity(
     label: entity.label,
     badge: entity.badge,
     circle: entity.circle,
+    facing: entity.facing,
     zIndex: entity.zIndex ?? (entity.role === "host" ? 1 : 2),
   } as EnterEvent);
 

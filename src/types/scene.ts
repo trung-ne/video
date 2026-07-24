@@ -92,6 +92,7 @@ export interface SceneEntity {
   role?: "host" | "hero" | "cause" | "effect" | "support";
   scale?: number;                      // default 1.0
   zIndex?: number;                     // default 1
+  facing?: "left" | "right" | "front";
   label?: string;                      // label shown below asset
 
   badge?: string;                      // number/text badge on character (e.g. "4")

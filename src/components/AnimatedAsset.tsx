@@ -111,9 +111,11 @@ export const AnimatedAsset: React.FC<Props> = ({
       <Img
         src={staticFile(assetPath)}
         style={{
-          width: "100%",
+          width: "auto",
           height: "100%",
+          maxWidth: "180%",
           objectFit: "contain",
+          transform: asset.facing === "left" ? "scaleX(-1)" : undefined,
         }}
       />
       {asset.label && (
