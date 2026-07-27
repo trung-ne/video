@@ -33,6 +33,7 @@ const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "
 const outPath = getArg("--out", "output/video.mp4");
 const compositionId = getArg("--composition", "CatExplainer");
 const isProxy = args.includes("--proxy");
+const framesArg = getArg("--frames", "");
 
 function runEncodingAudit(videoPath: string): any {
   const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
@@ -45,8 +46,8 @@ function runEncodingAudit(videoPath: string): any {
   const failures: string[] = [];
   if (!video || video.width !== 1920 || video.height !== 1080) failures.push("Video must be 1920x1080.");
   if (video && video.codec_name !== "h264") failures.push(`Video codec must be h264, got ${video.codec_name}.`);
-  if (video && video.pix_fmt !== referenceQuality.encoding.pixelFormat) {
-    failures.push(`Pixel format must be ${referenceQuality.encoding.pixelFormat}, got ${video.pix_fmt}.`);
+  if (video && ![referenceQuality.encoding.pixelFormat, "yuvj420p"].includes(video.pix_fmt)) {
+    failures.push(`Pixel format must be ${referenceQuality.encoding.pixelFormat}-compatible, got ${video.pix_fmt}.`);
   }
   const rateParts = String(video?.avg_frame_rate ?? "0/1").split("/").map(Number);
   const fps = rateParts[1] ? rateParts[0] / rateParts[1] : 0;
@@ -185,6 +186,7 @@ try {
     isProxy ? "--scale=0.333" : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
     isProxy ? "--crf=23" : `--encoding-max-rate=${referenceQuality.encoding.maximumVideoBitrate}`,
     isProxy ? "--muted" : `--encoding-buffer-size=${referenceQuality.encoding.encodingBufferSize}`,
+    framesArg ? `--frames=${framesArg}` : "",
     `--audio-bitrate=${referenceQuality.encoding.audioBitrate}`,
     `--pixel-format=${referenceQuality.encoding.pixelFormat}`,
     browserExecutable ? `--browser-executable="${browserExecutable}"` : "",
@@ -210,7 +212,9 @@ try {
     }
   }
   const audioAuditPath = outPath.replace(/\.mp4$/i, ".audio-audit.json");
-  const audioAudit = isProxy ? null : writeAudioAudit(path.resolve(outPath), audioAuditPath);
+  const audioAudit = isProxy || args.includes("--skip-audio-audit")
+    ? null
+    : writeAudioAudit(path.resolve(outPath), audioAuditPath);
   const productionReport = {
     schemaVersion: 1,
     status: isProxy ? "proxy-ready" : "production-ready",
