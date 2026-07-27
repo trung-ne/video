@@ -35,6 +35,8 @@ def main() -> int:
     parser.add_argument("--report", help="optional report path; defaults beside the video")
     parser.add_argument("--sample-seconds", type=float, default=5.0)
     parser.add_argument("--subtitle-band-top", type=float, default=0.76)
+    parser.add_argument("--config", default="config/reference-quality.json")
+    parser.add_argument("--contact-sheet")
     args = parser.parse_args()
 
     try:
@@ -51,6 +53,13 @@ def main() -> int:
     timeline = None
     if args.timeline and Path(args.timeline).is_file():
         timeline = json.loads(Path(args.timeline).read_text(encoding="utf-8-sig"))
+    profile = {}
+    if args.config and Path(args.config).is_file():
+        profile = json.loads(Path(args.config).read_text(encoding="utf-8-sig")).get("visualAudit", {})
+    minimum_saturation = float(profile.get("minimumSaturation", 0.15))
+    minimum_edges = float(profile.get("minimumEdgeDensity", 0.16))
+    maximum_duplicates = float(profile.get("maximumNearDuplicateRatio", 0.22))
+    maximum_flat = float(profile.get("maximumFlatFrameRatio", 0.50))
 
     with tempfile.TemporaryDirectory(prefix="cat-video-audit-") as tmp:
         pattern = str(Path(tmp) / "frame_%05d.jpg")
@@ -67,6 +76,7 @@ def main() -> int:
 
         rows = []
         thumbs = []
+        contact_frames = []
         for index, frame_path in enumerate(paths):
             full = Image.open(frame_path).convert("RGB").resize((320, 180))
             content_height = max(1, round(full.height * args.subtitle_band_top))
@@ -93,6 +103,7 @@ def main() -> int:
                 "flat": flat,
             })
             thumbs.append(np.asarray(image.convert("L").resize((32, 14))).astype(np.float32) / 255.0)
+            contact_frames.append(full.resize((320, 180)))
 
         differences = [float(np.mean(np.abs(a - b))) for a, b in zip(thumbs, thumbs[1:])]
         duplicate_flags = [difference < 0.025 for difference in differences]
@@ -128,15 +139,77 @@ def main() -> int:
             "samples": rows,
         }
 
+        by_scene = {}
+        for row in rows:
+            key = row["sceneId"] or "unknown"
+            bucket = by_scene.setdefault(key, {"samples": 0, "flat": 0, "edges": [], "saturation": []})
+            bucket["samples"] += 1
+            bucket["flat"] += int(row["flat"])
+            bucket["edges"].append(row["edges"])
+            bucket["saturation"].append(row["saturation"])
+        scene_metrics = [{
+            "sceneId": scene_id,
+            "samples": values["samples"],
+            "flatRatio": round(values["flat"] / values["samples"], 4),
+            "edgeDensityMean": round(float(np.mean(values["edges"])), 4),
+            "saturationMean": round(float(np.mean(values["saturation"])), 4),
+        } for scene_id, values in by_scene.items()]
+        metrics["worstFlatScenes"] = sorted(
+            scene_metrics, key=lambda item: (-item["flatRatio"], item["edgeDensityMean"])
+        )[:20]
+        metrics["lowDensityScenes"] = sorted(
+            scene_metrics, key=lambda item: item["edgeDensityMean"]
+        )[:20]
+        scene_lookup = {
+            scene.get("id"): scene for scene in (timeline or {}).get("scenes", [])
+        }
+        register_buckets = {}
+        for item in scene_metrics:
+            register = scene_lookup.get(item["sceneId"], {}).get("visualRegister", "unknown")
+            register_buckets.setdefault(register, []).append(item)
+        metrics["registerMetrics"] = {
+            register: {
+                "sceneCount": len(items),
+                "flatRatioMean": round(float(np.mean([item["flatRatio"] for item in items])), 4),
+                "edgeDensityMean": round(float(np.mean([item["edgeDensityMean"] for item in items])), 4),
+                "saturationMean": round(float(np.mean([item["saturationMean"] for item in items])), 4),
+            }
+            for register, items in register_buckets.items()
+        }
+        metrics["duplicateScenePairs"] = [{
+            "fromSceneId": rows[index]["sceneId"],
+            "toSceneId": rows[index + 1]["sceneId"],
+            "fromSeconds": rows[index]["seconds"],
+            "toSeconds": rows[index + 1]["seconds"],
+            "difference": round(differences[index], 4),
+        } for index, duplicate in enumerate(duplicate_flags) if duplicate][:50]
+
+        if args.contact_sheet and contact_frames:
+            from PIL import ImageDraw
+            count = min(30, len(contact_frames))
+            selected = np.linspace(0, len(contact_frames) - 1, count, dtype=int)
+            sheet = Image.new("RGB", (5 * 324 + 4, 6 * 204 + 4), "white")
+            draw = ImageDraw.Draw(sheet)
+            for slot, frame_index in enumerate(selected):
+                x = 4 + (slot % 5) * 324
+                y = 4 + (slot // 5) * 204
+                sheet.paste(contact_frames[frame_index], (x, y))
+                label = f"{rows[frame_index]['seconds']:.0f}s {rows[frame_index]['sceneId'] or ''}"
+                draw.text((x + 4, y + 183), label, fill="black")
+            contact_path = Path(args.contact_sheet).resolve()
+            contact_path.parent.mkdir(parents=True, exist_ok=True)
+            sheet.save(contact_path, quality=88)
+            metrics["contactSheet"] = str(contact_path)
+
     failures = []
-    if metrics["saturation"]["mean"] < 0.15:
-        failures.append("LOW_COLOUR_REGISTER: content saturation mean <0.15")
-    if metrics["edgeDensity"]["mean"] < 0.16:
-        failures.append("LOW_VISUAL_DENSITY: content edge density mean <0.16")
-    if metrics["nearDuplicateRatio"] > 0.22:
-        failures.append("FRAME_SIMILARITY: adjacent near-duplicate ratio >22%")
-    if metrics["flatFrameRatio"] > 0.50:
-        failures.append("FLAT_REGISTER: >50% sampled content frames are flat")
+    if metrics["saturation"]["mean"] < minimum_saturation:
+        failures.append(f"LOW_COLOUR_REGISTER: content saturation mean <{minimum_saturation}")
+    if metrics["edgeDensity"]["mean"] < minimum_edges:
+        failures.append(f"LOW_VISUAL_DENSITY: content edge density mean <{minimum_edges}")
+    if metrics["nearDuplicateRatio"] > maximum_duplicates:
+        failures.append(f"FRAME_SIMILARITY: adjacent near-duplicate ratio >{maximum_duplicates:.0%}")
+    if metrics["flatFrameRatio"] > maximum_flat:
+        failures.append(f"FLAT_REGISTER: sampled content flat ratio >{maximum_flat:.0%}")
 
     metrics["failures"] = failures
     metrics["passed"] = not failures
