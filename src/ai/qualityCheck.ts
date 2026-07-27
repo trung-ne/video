@@ -197,9 +197,8 @@ function checkBackgroundReal(scenes: any[]): CheckResult {
   return { name: "Background: path hợp lệ (nền trắng là mặc định — V4)", passed: issues.length === 0, issues };
 }
 
-// CHECK 2 (V4): Photo restraint. Photos are deliberate PUNCHES (evidence /
-// emotional beat), not wallpaper. 0 photos loses those beats on a longer video;
-// >5 distinct photos means they've become background noise.
+// CHECK 2 (V4): Photos are deliberate evidence/punches, but long reference-like
+// videos need more than 2-4 frames. Keep them bounded by the shared profile.
 function checkBackgroundVariety(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
   const isPhoto = (b: any) => b && backgroundImageExists(b) && !STAGE_ANCHORS_KEYS.has(b);
@@ -214,16 +213,17 @@ function checkBackgroundVariety(scenes: any[]): CheckResult {
       suggestion: "Thêm 1-2 ảnh full-bleed đúng lúc (evidence card / emotional beat) — vẫn giữ nền trắng làm mặc định",
     });
   }
-  if (photoScenes > 5) {
+  const maximumPhotoScenes = Math.max(5, Math.ceil(scenes.length * 0.35));
+  if (photoScenes > maximumPhotoScenes) {
     issues.push({
       severity: "MAJOR",
       rule: "BACKGROUND_VARIETY",
-      message: `${photoScenes} scene dùng ảnh nền — ảnh đang biến thành wallpaper`,
-      suggestion: "Chỉ dùng 2-4 ảnh có chủ đích; scene kể chuyện thông thường để nền trắng + nhân vật to",
+      message: `${photoScenes} scene dùng ảnh nền — ảnh đang vượt giới hạn ${maximumPhotoScenes}`,
+      suggestion: "Giữ ảnh cho evidence/photo punch; dùng stage hoặc infographic cho cảnh giải thích thường.",
     });
   }
 
-  return { name: "Background: ảnh là cú đấm có chủ đích 2-4 lần (V4)", passed: issues.length === 0, issues };
+  return { name: "Background: photo evidence có giới hạn (V4)", passed: issues.length === 0, issues };
 }
 
 // CHECK 3: Layout variety
