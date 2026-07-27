@@ -94,6 +94,54 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
     supportedRegisters: ["character_action"],
     semanticRequirements: ["A neutral pose plus keyword alone is not sufficient."],
   },
+  {
+    id: "MAP_FLOW", purpose: "Explain movement between real places on a map",
+    requiredSlots: ["map", "items", "icons"], optionalSlots: ["relations"],
+    supportedRegisters: ["infographic", "framebox"],
+    semanticRequirements: ["Places and movement must be stated or implied by the source range."],
+  },
+  {
+    id: "DATA_CHART", purpose: "Show transcript-supported data as a large chart",
+    requiredSlots: ["chart"], optionalSlots: ["caption", "source"],
+    supportedRegisters: ["infographic", "evidence", "framebox"],
+    semanticRequirements: ["The chart must resolve to a real asset and may not invent values."],
+  },
+  {
+    id: "SURVEY_CARD", purpose: "Show a survey question, options, or stated result",
+    requiredSlots: ["body"], optionalSlots: ["title", "choices", "source", "date"],
+    supportedRegisters: ["evidence"],
+    semanticRequirements: ["Do not invent survey choices, result, source, or date."],
+  },
+  {
+    id: "PHOTO_EVIDENCE", purpose: "Use a large real photo as evidence",
+    requiredSlots: ["photo"], optionalSlots: ["caption", "source"],
+    supportedRegisters: ["photo_broll", "evidence", "framebox"],
+    semanticRequirements: ["Photo must occupy the focal region and resolve to a real manifest asset."],
+  },
+  {
+    id: "SCREEN_CAPTURE", purpose: "Show a screenshot or UI inside a device frame",
+    requiredSlots: ["content"], optionalSlots: ["caption", "source"],
+    supportedRegisters: ["framebox", "evidence"],
+    semanticRequirements: ["Screen content must explain the source-range idea."],
+  },
+  {
+    id: "FULL_SCENE_ACTION", purpose: "Show a subject acting on an object in a full setting",
+    requiredSlots: ["stage", "who", "anchorA", "prop"], optionalSlots: ["caption"],
+    supportedRegisters: ["full_tableau", "character_action", "visual_gag"],
+    semanticRequirements: ["Subject, verb, object, and setting must all be visible."],
+  },
+  {
+    id: "HISTORY_TIMELINE", purpose: "Explain change through ordered historical stages",
+    requiredSlots: ["items", "icons"], optionalSlots: ["dates"],
+    supportedRegisters: ["infographic", "evidence"],
+    semanticRequirements: ["Dates must come from the source range."],
+  },
+  {
+    id: "VISUAL_METAPHOR", purpose: "Use a concrete setup and payoff to explain an abstract idea",
+    requiredSlots: ["setup", "payoff", "leftAsset", "rightAsset"], optionalSlots: ["relation"],
+    supportedRegisters: ["visual_gag", "character_action"],
+    semanticRequirements: ["The metaphor relation must be understandable in a silent frame."],
+  },
 ];
 
 export function getGrammarDefinition(grammar: VisualGrammar): GrammarDefinition | undefined {

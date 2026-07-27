@@ -185,6 +185,17 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     const anchorB = b.slots?.anchorB ?? anchorKeys[1] ?? anchorKeys[0];
     entities.push({ assetId: `${b.id}-b`, src: c.src, badge: c.badge, anchor: anchorB, enterAnimation: "fadeIn", enterDelay: 12 });
   }
+  if (b.slots?.prop) {
+    entities.push({
+      assetId: `${b.id}-prop`,
+      src: b.slots.prop,
+      position: { x: 0.55, y: 0.58 },
+      scale: 1.35,
+      enterAnimation: "popIn",
+      enterDelay: 24,
+      emphasize: { animation: "pulse", delay: 24, duration: 20 },
+    });
+  }
   if (b.slots?.lineA && entities[0])
     bubbles.push({ id: `${b.id}-la`, anchorAssetId: `${b.id}-a`, text: b.slots.lineA, direction: "right", delay: 14, duration: 70 });
   if (b.slots?.lineB && entities[1])
@@ -359,6 +370,94 @@ function grammarIconTriple(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   return { layout: "ICON_TRIPLE", backgroundSrc: WHITE, entities, texts, focusAssetId: `${b.id}-i0` };
 }
 
+function grammarMapFlow(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const map = semanticAsset(ctx, b.slots?.map, "map", "");
+  const base = grammarDiagram(b, ctx);
+  return {
+    ...base,
+    layout: "CUSTOM",
+    backgroundSrc: map,
+    entities: base.entities.map((entity) => ({ ...entity, scale: (entity.scale ?? 1) * 0.9 })),
+  };
+}
+
+function grammarDataChart(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const chart = semanticAsset(ctx, b.slots?.chart, "chart", "");
+  return {
+    layout: "SOLO",
+    backgroundSrc: WHITE,
+    entities: [],
+    texts: [],
+    frameBoxes: [{
+      id: `${b.id}-chart`,
+      contentSrc: chart,
+      caption: b.slots?.caption,
+      source: b.slots?.source,
+      position: { x: 0.5, y: 0.42 },
+      width: 1350,
+      objectFit: "contain",
+      delay: 6,
+    }],
+  };
+}
+
+function grammarSurveyCard(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  return grammarEvidence({ ...b, slots: { ...(b.slots ?? {}), title: b.slots?.title ?? "Survey" } }, ctx);
+}
+
+function grammarPhotoEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const photo = semanticAsset(ctx, b.slots?.photo, "photo", "");
+  return {
+    layout: "CLOSE_UP",
+    backgroundSrc: photo,
+    entities: [],
+    texts: [],
+    frameBoxes: b.slots?.caption ? [{
+      id: `${b.id}-photo`,
+      contentSrc: photo,
+      caption: b.slots.caption,
+      source: b.slots?.source,
+      position: { x: 0.5, y: 0.42 },
+      width: 1450,
+      objectFit: "cover",
+      delay: 6,
+    }] : undefined,
+  };
+}
+
+function grammarScreenCapture(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  return grammarFrameBox({ ...b, slots: { ...(b.slots ?? {}), who: undefined } }, { ...ctx, strict: true });
+}
+
+function grammarFullSceneAction(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  return grammarTableau(b, ctx);
+}
+
+function grammarHistoryTimeline(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  const result = grammarDiagram(b, ctx);
+  const dates = (b.slots?.dates ?? "").split("|").map((value) => value.trim()).filter(Boolean);
+  result.texts.push(...dates.slice(0, 3).map((date, index) => ({
+    id: `${b.id}-date-${index}`,
+    content: date,
+    style: "CALLOUT" as const,
+    position: { x: [0.2, 0.5, 0.8][index], y: 0.22 },
+    delay: 8 + index * 16,
+    duration: 120,
+  })));
+  return result;
+}
+
+function grammarVisualMetaphor(b: SceneBrief, ctx: GrammarContext): GrammarResult {
+  return grammarCompare({
+    ...b,
+    slots: {
+      ...(b.slots ?? {}),
+      left: b.slots?.setup ?? "",
+      right: b.slots?.payoff ?? "",
+    },
+  }, ctx);
+}
+
 type GrammarFn = (b: SceneBrief, ctx: GrammarContext) => GrammarResult;
 
 export const VISUAL_GRAMMARS: Record<string, GrammarFn> = {
@@ -376,6 +475,14 @@ export const VISUAL_GRAMMARS: Record<string, GrammarFn> = {
   ICON_TRIPLE: grammarIconTriple,
   BEAT: grammarBeat,
   SOLO: grammarSolo,
+  MAP_FLOW: grammarMapFlow,
+  DATA_CHART: grammarDataChart,
+  SURVEY_CARD: grammarSurveyCard,
+  PHOTO_EVIDENCE: grammarPhotoEvidence,
+  SCREEN_CAPTURE: grammarScreenCapture,
+  FULL_SCENE_ACTION: grammarFullSceneAction,
+  HISTORY_TIMELINE: grammarHistoryTimeline,
+  VISUAL_METAPHOR: grammarVisualMetaphor,
 };
 
 // Apply shot sizing to a grammar's character entities (skip anchored ones —
