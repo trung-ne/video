@@ -18,8 +18,16 @@ For each section return:
 - claims: only claims stated by the transcript
 - visualOpportunities
 - heroVisualOpportunity
+- claimVisuals: map claims to chart, map, evidence, photo, action, or visual gag
+- treatmentSequence: planned visual-register sequence
+- heroConcept: a concrete composition, not a boolean
+- requiredProps, requiredSettings, requiredCharacterRoles
+- noCharacterOpportunity
+- visualContrastFromPreviousSection
 
-Also return a top-level arc, visualMotifs, and claims. For every factual claim set
+Also return a top-level arc, visualMotifs, claims, and visualTreatmentPlan with
+registerTargets, characterFreeTarget (minimum 0.20), heroConcepts, visualMotifs,
+and forbiddenRepeats. For every factual claim set
 evidencePolicy to none, quote, data, or source_card. Do not invent evidence.
 
 INDEXED TRANSCRIPT:

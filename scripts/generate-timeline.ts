@@ -45,6 +45,7 @@ import { SceneBrief, StorySection, Storyboard } from "../src/types/storyboard";
 import { createDefaultProjectManifest, ProjectManifest } from "../src/types/project";
 import { DIRECTOR_POLICY_VERSION } from "../src/ai/directorPolicy";
 import { resolveAssetRequests } from "../src/engine/assetResolver";
+import { critiqueSceneBriefs } from "../src/ai/visualCritic";
 
 // --- Parse CLI args ---
 const args = process.argv.slice(2);
@@ -414,9 +415,10 @@ function readAssetManifest(): AssetManifest {
   return JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 }
 
-function selectAssetCandidates(text: string, manifest: AssetManifest, limit = 30): AssetManifestEntry[] {
+function selectAssetCandidates(text: string, manifest: AssetManifest, limit = 48): AssetManifestEntry[] {
   const tokens = new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((token) => token.length > 2));
-  return manifest.entries
+  const ranked = manifest.entries
+    .filter((entry) => !entry.isFallback)
     .map((entry) => {
       const haystack = [
         entry.id, entry.path, entry.characterId,
@@ -427,9 +429,16 @@ function selectAssetCandidates(text: string, manifest: AssetManifest, limit = 30
       for (const token of tokens) if (haystack.includes(token)) score += 2;
       return { entry, score };
     })
-    .sort((a, b) => b.score - a.score || a.entry.id.localeCompare(b.entry.id))
-    .slice(0, limit)
-    .map(({ entry }) => entry);
+    .sort((a, b) => b.score - a.score || a.entry.id.localeCompare(b.entry.id));
+  const byKind = new Map<string, number>();
+  const selected: AssetManifestEntry[] = [];
+  for (const { entry } of ranked) {
+    if ((byKind.get(entry.kind) ?? 0) >= 12) continue;
+    selected.push(entry);
+    byKind.set(entry.kind, (byKind.get(entry.kind) ?? 0) + 1);
+    if (selected.length >= limit) break;
+  }
+  return selected;
 }
 
 function normalizeSections(raw: any, transcript: string): StorySection[] {
@@ -443,6 +452,7 @@ function normalizeSections(raw: any, transcript: string): StorySection[] {
       throw new Error(`Invalid story-map sourceRange for section ${section.id ?? index}`);
     }
     return {
+      ...section,
       id: section.id ?? `section-${index + 1}`,
       sourceRange: makeSourceRange(words, startWord, endWord),
       thesis: String(section.thesis ?? ""),
@@ -532,15 +542,51 @@ function sectionCoverageIssues(section: StorySection, scenes: SceneBrief[]): str
   return issues;
 }
 
-function resolveSceneAssets(scenes: SceneBrief[], manifest: AssetManifest): void {
+function visualCriticIssues(scenes: SceneBrief[]): string[] {
+  return critiqueSceneBriefs(scenes)
+    .filter((critique) => critique.score < 8 || critique.issues.some((issue) => /hero is metadata-only|generic taxonomy/i.test(issue)))
+    .map((critique) => `${critique.sceneId}: visual critic ${critique.score}/12 — ${critique.issues.join(", ")}`);
+}
+
+function buildUsageLedger(scenes: SceneBrief[]): Record<string, Record<string, number>> {
+  const ledger: Record<string, Record<string, number>> = {
+    register: {}, grammar: {}, fingerprint: {}, asset: {}, stage: {},
+  };
+  const add = (bucket: keyof typeof ledger, value: string | undefined) => {
+    if (!value) return;
+    ledger[bucket][value] = (ledger[bucket][value] ?? 0) + 1;
+  };
   for (const scene of scenes) {
-    const resolutions = resolveAssetRequests(scene.assetRequests ?? [], manifest);
+    add("register", scene.visualRegister);
+    add("grammar", scene.visualGrammar);
+    add("fingerprint", scene.visualFingerprint);
+    add("stage", scene.slots?.stage);
+    Object.values(scene.resolvedAssets ?? {}).forEach((asset) => add("asset", asset));
+  }
+  return ledger;
+}
+
+function remainingTreatmentQuotas(storyMap: any, scenes: SceneBrief[]): Record<string, number> {
+  const targets = storyMap?.visualTreatmentPlan?.registerTargets ?? {};
+  const counts = buildUsageLedger(scenes).register;
+  return Object.fromEntries(Object.entries(targets).map(([register, ratio]) => [
+    register,
+    Math.max(0, Math.round(Number(ratio) * Math.max(1, scenes.length + 8)) - (counts[register] ?? 0)),
+  ]));
+}
+
+function resolveSceneAssets(scenes: SceneBrief[], manifest: AssetManifest): void {
+  const usage = new Map<string, number>();
+  const maximumUses = Math.max(2, Math.ceil(scenes.length * 0.08));
+  for (const scene of scenes) {
+    const resolutions = resolveAssetRequests(scene.assetRequests ?? [], manifest, { usage, maximumUses });
     scene.resolvedAssets = {};
     scene.unresolvedAssetRequests = [];
     for (const resolution of resolutions) {
       if (resolution.asset) {
         scene.resolvedAssets[resolution.request.slot] = resolution.asset.path;
         scene.slots = { ...(scene.slots ?? {}), [resolution.request.slot]: resolution.asset.path };
+        usage.set(resolution.asset.path, (usage.get(resolution.asset.path) ?? 0) + 1);
       } else {
         scene.unresolvedAssetRequests.push(
           `${resolution.request.slot}: ${resolution.request.query} (${resolution.unresolvedReason})`,
@@ -589,6 +635,9 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
         storyMap,
         assetCandidates: candidates,
         previousRegisters,
+        recentFingerprints: scenes.slice(-6).map((scene) => scene.visualFingerprint ?? ""),
+        usageLedger: buildUsageLedger(scenes),
+        remainingQuotas: remainingTreatmentQuotas(storyMap, scenes),
       }),
       maxTokens: 12000,
       modelType: "timeline",
@@ -596,7 +645,10 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
     });
     let sectionScenes = finalizeSectionScenes(response.scenes ?? [], section, transcript);
     for (let attempt = 0; attempt < 2; attempt++) {
-      const issues = sectionCoverageIssues(section, sectionScenes);
+      const issues = [
+        ...sectionCoverageIssues(section, sectionScenes),
+        ...visualCriticIssues(sectionScenes),
+      ];
       if (issues.length === 0) break;
       response = await callWithFallback<any>({
         user: buildRepairPrompt({
@@ -611,7 +663,10 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
       });
       sectionScenes = finalizeSectionScenes(response.scenes ?? [], section, transcript);
     }
-    const remaining = sectionCoverageIssues(section, sectionScenes);
+    const remaining = [
+      ...sectionCoverageIssues(section, sectionScenes),
+      ...visualCriticIssues(sectionScenes),
+    ];
     if (remaining.length) throw new Error(`Section ${section.id} failed coverage repair: ${remaining.join("; ")}`);
     resolveSceneAssets(sectionScenes, manifest);
     scenes.push(...sectionScenes);
@@ -628,6 +683,7 @@ async function generateStoryboard(transcript: string, durationSeconds: number, p
     cast: { narrator: { src: "generated-assets/characters/cat_explain.png" } },
     sections,
     claims: normalizeClaims(storyMap.claims, transcript),
+    visualTreatmentPlan: storyMap.visualTreatmentPlan,
     generation: { passIds: ["story-map", ...sections.map((section) => `scene-plan:${section.id}`)] },
     scenes,
   };
@@ -701,11 +757,20 @@ function writeAssetRequestQueue(storyboard: Storyboard, projectDir: string): voi
       reason,
       requests: scene.assetRequests,
       semanticVisual: scene.semanticVisual,
+      focalType: scene.focalType,
+      silentFrameTakeaway: scene.silentFrameTakeaway,
+      generationSpec: {
+        styleFamily: "editorial_cat_v1",
+        transparent: scene.focalType !== "full_scene" && scene.focalType !== "photo",
+        aspectRatio: scene.focalType === "full_scene" || scene.focalType === "photo" ? "16:9" : "1:1",
+        action: scene.semanticVisual?.action,
+        setting: scene.semanticVisual?.setting,
+      },
     }))
   );
   const queuePath = path.join(projectDir, "asset-requests.json");
   if (requests.length) {
-    fs.writeFileSync(queuePath, `${JSON.stringify({ schemaVersion: 1, requests }, null, 2)}\n`, "utf8");
+    fs.writeFileSync(queuePath, `${JSON.stringify({ schemaVersion: 2, status: "assets_required", requests }, null, 2)}\n`, "utf8");
   } else if (fs.existsSync(queuePath)) {
     fs.unlinkSync(queuePath);
   }
