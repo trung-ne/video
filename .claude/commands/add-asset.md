@@ -1,3 +1,8 @@
+---
+description: Thêm asset SVG/ảnh mới vào manifest (không dùng emoji/text placeholder)
+argument-hint: <mô tả asset cần thêm>
+---
+
 # /add-asset — Thêm asset semantic
 
 Thêm asset nguyên bản vào `public/assets/`, `public/generated-assets/` hoặc thư mục

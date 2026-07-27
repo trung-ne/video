@@ -1,3 +1,8 @@
+---
+description: Sửa nội dung video đúng tầng — storyboard là nguồn, timeline là compile output
+argument-hint: <project-id> + mô tả thay đổi
+---
+
 # /edit-timeline — Sửa artifact đúng tầng
 
 Production source là `storyboard.json`, không phải compiled events.

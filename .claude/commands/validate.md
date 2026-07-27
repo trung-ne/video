@@ -1,3 +1,8 @@
+---
+description: Chạy schema gate + thẻ điểm đạo diễn V4/V5 trên timeline của project
+argument-hint: <project-id> hoặc <path-to-timeline.json>
+---
+
 # /validate — Schema và semantic quality
 
 ```powershell

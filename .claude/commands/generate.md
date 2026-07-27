@@ -1,3 +1,8 @@
+---
+description: Sinh semantic storyboard v2 cho một project (route API, cần API key)
+argument-hint: <project-id-or-path>
+---
+
 # /generate — Semantic storyboard v2
 
 Production command:

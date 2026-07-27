@@ -1,3 +1,8 @@
+---
+description: Mở Remotion Studio xem trước một project (không copy timeline về root)
+argument-hint: <project-id-or-path>
+---
+
 # /preview — Preview một project
 
 ```powershell

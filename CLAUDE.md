@@ -110,22 +110,25 @@ Nội dung một folder (những file thực sự sinh ra qua pipeline):
 projects/video-003-tai-sao-eng/
 ├── idea.txt            # ý tưởng gốc (khi tạo bằng --idea)
 ├── transcript.txt      # script/transcript
-├── timeline.json       # SceneTimeline (scenes[]) — nguồn authored duy nhất
+├── storyboard-data.ts  # [session-authored] SCENES viết tay — nguồn authored
+├── storyboard.json     # Storyboard (briefs) — nguồn authored của route storyboard
+├── timeline.json       # SceneTimeline (scenes[]) — COMPILE ra từ storyboard
 ├── tts_scenes.json     # narration tách theo scene cho TTS
 ├── sceneNN.wav         # audio từng scene (TTS) + voice.wav ghép
 ├── durations.json      # thời lượng thực mỗi scene (patch durationFrames)
+├── words.json          # word-level alignment (align_words.py) để neo beat
 └── metadata.json       # chỉ new-project.ts tạo lúc khởi tạo
 ```
 
-Generate + render trỏ vào folder qua **path**, không có flag `--project`:
+Generate + render nhận **cả** `--project <id>` lẫn path tường minh:
 ```bash
-npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --out projects/<id>/timeline.json
-npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json
+npx ts-node scripts/generate-timeline.ts --project <id>          # hoặc --transcript <path> --out <path>
+npx ts-node scripts/render.ts --project <id>                     # hoặc --timeline projects/<id>/timeline.json
 ```
 
-(mặc định ghi ra `output/<id>/video.mp4`, id lấy từ tên folder cha của `--timeline`; chỉ định `--out` khi cần path khác.)
+(render mặc định ghi ra `output/<id>/video.mp4`, id lấy từ `--project` hoặc tên folder cha của `--timeline`; chỉ định `--out` khi cần path khác.)
 
-⚠️ Lưu ý để tránh hiểu nhầm: **không tồn tại** flag `--project`; `timeline.json` ở root là file thường (không phải symlink); `metadata.json` chỉ được `new-project.ts` ghi lúc tạo — generate/render **không** tự cập nhật status/version.
+⚠️ Lưu ý để tránh hiểu nhầm: `timeline.json` ở root là file thường (không phải symlink); `metadata.json` chỉ được `new-project.ts` ghi lúc tạo — generate/render **không** tự cập nhật status/version.
 
 ---
 
@@ -144,33 +147,60 @@ npx ts-node scripts/generate-timeline.ts --url "https://youtube.com/watch?v=..."
 # Generate từ transcript file
 npx ts-node scripts/generate-timeline.ts --transcript transcript.txt
 
-# Render ra MP4
-npx ts-node scripts/render.ts --timeline timeline.json --out output/video.mp4
+# [Route A] Build storyboard từ storyboard-data.ts viết tay (KHÔNG cần API key)
+npx ts-node scripts/build-storyboard.ts --project <id>
+
+# Compile storyboard → timeline (cần durations.json + words.json trước)
+npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
+  --out projects/<id>/timeline.json --durations projects/<id>/durations.json \
+  --words projects/<id>/words.json --audio audio/<id>/voice.wav
+
+# Render ra MP4 (→ output/<id>/video.mp4)
+npx ts-node scripts/render.ts --project <id>
 
 # TypeScript check
 npx tsc --noEmit
 ```
 
-**Environment variable cần thiết:**
+**Environment variable:**
 ```
 $env:ANTHROPIC_API_KEY = "sk-ant-..."
 ```
+Chỉ **route B** (`generate-timeline.ts`) cần key. Route A (`build-storyboard.ts` +
+TTS local + `compile-storyboard.ts` + `render.ts`) chạy hoàn toàn offline.
 
 ---
 
 ## Pipeline AI → Video
 
+Có **2 route authoring**, hội tụ về cùng một đuôi compile/render:
+
 ```
-Transcript/Idea
-    ↓
-Claude AI (systemPrompt.ts)
-    ↓ SceneTimeline JSON (scenes[])   ← ĐÂY LÀ FILE DUY NHẤT ĐƯỢC LƯU & CHỈNH SỬA
-loadTimeline() (src/engine/loadTimeline.ts)  ← điểm compile DUY NHẤT
-    ↓ Timeline (events[]) — TRANSIENT, chỉ tồn tại trong bộ nhớ, KHÔNG lưu ra file
-Remotion → MP4
+                      ROUTE A — session-authored (KHÔNG cần API key)
+Transcript ─┬─→ projects/<id>/storyboard-data.ts   ← agent đọc transcript, viết tay SCENES
+            │      ↓ scripts/build-storyboard.ts --project <id>   (thuần cơ học)
+            │   storyboard.json
+            │
+            │         ROUTE B — API (generate-timeline.ts, cần ANTHROPIC_API_KEY…)
+            └─→ story map → section plan → visualCritic → repair loop
+                   ↓
+                storyboard.json
+                      │
+                      ├─ storyboard-to-tts.ts → tts_*.py → voice.wav + durations.json
+                      └─ align_words.py → words.json
+                      ↓ scripts/compile-storyboard.ts (cần durations + words)
+              projects/<id>/timeline.json  (SceneTimeline — scenes[])
+                      ↓ loadTimeline()  ← điểm compile DUY NHẤT (compileScenes + injectLiveliness)
+              Timeline (events[]) — TRANSIENT, KHÔNG lưu ra đĩa
+                      ↓
+                Remotion → MP4
 ```
 
-**⚠️ MỘT FLOW DUY NHẤT (bắt buộc):** `scenes[]` là định dạng authored duy nhất. Mọi thứ ngữ nghĩa (AI gen, layout presets, `validateTimeline`, `qualityCheck`, `/edit-timeline`) đều thao tác trên `scenes[]`. `events[]` chỉ là đích compile tạm thời.
+⚠️ **TTS + word alignment phải chạy TRƯỚC `compile-storyboard.ts`** — compiler cần `durations.json`/`words.json` để chốt khung hình theo audio thật.
+
+**Nguồn authored = `storyboard.json`** (route A còn lùi thêm một bậc: `storyboard-data.ts`). `timeline.json` là **sản phẩm compile** — sửa tay nó sẽ bị ghi đè ở lần compile sau; muốn đổi nội dung thì sửa storyboard rồi compile lại (xem [/edit-timeline](.claude/commands/edit-timeline.md)).
+
+**`scenes[]` là định dạng authored duy nhất mà engine phía dưới hiểu.** Mọi thứ ngữ nghĩa (layout presets, `validateTimeline`, `qualityCheck`) đều thao tác trên `scenes[]`. `events[]` chỉ là đích compile tạm thời.
 - Compile `scenes → events` xảy ra ở **đúng 1 nơi**: [loadTimeline.ts](src/engine/loadTimeline.ts) (gọi `compileScenes` + `injectLiveliness`).
 - Cả **preview** ([Root.tsx](src/Root.tsx)) lẫn **render** ([render.ts](scripts/render.ts)) đều đi qua `loadTimeline()` → xem đúng cái sẽ render.
 - **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. `generate-timeline.ts` chỉ ghi `scenes[]`.

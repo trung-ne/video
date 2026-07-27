@@ -1,3 +1,8 @@
+---
+description: Full production pipeline — transcript → storyboard → TTS → timeline → MP4
+argument-hint: <transcript-file> hoặc <project-id>
+---
+
 # /new-video — Full production pipeline
 
 ```powershell

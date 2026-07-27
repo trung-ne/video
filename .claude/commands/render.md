@@ -1,3 +1,8 @@
+---
+description: Production render → output/<id>/video.mp4, kèm encoding/visual/audio audit
+argument-hint: <project-id-or-path>
+---
+
 # /render — Production render
 
 ```powershell

@@ -1,3 +1,8 @@
+---
+description: Liệt kê asset manifest (kind/style/action/emotion/topics), lọc theo topic
+argument-hint: [topic] hoặc --used <path-to-timeline.json>
+---
+
 # /list-assets — Semantic asset manifest
 
 ```powershell
