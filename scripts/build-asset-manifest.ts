@@ -29,11 +29,17 @@ function inferKind(relative: string): AssetKind {
   return "prop";
 }
 
+// Style family is decided by WHICH DIRECTORY the file lives in — the three
+// production directories each map to a family, and everything left over
+// (public/assets/**, the original hand-drawn SVGs) stays "legacy" so the
+// resolver's DEFAULT_STYLE_FAMILIES filters it out automatically.
 function inferStyle(relative: string, kind: AssetKind): AssetStyleFamily {
   const normalized = relative.replace(/\\/g, "/");
   if (normalized.startsWith("generated-assets/characters/")) return "editorial_cat_v1";
-  if (kind === "photo") return "photo";
-  if (kind === "stage" && normalized.startsWith("assets/scenes/")) return "flat_stage_v1";
+  if (normalized.startsWith("generated-assets/icons/")) return "flat_icon_v1";
+  if (normalized.startsWith("generated-assets/scenes/")) return "flat_stage_v1";
+  if (normalized.startsWith("generated-backgrounds/")) return "flat_stage_v1";
+  if (normalized.startsWith("backgrounds/")) return "photo";
   return "legacy";
 }
 
@@ -66,7 +72,7 @@ function buildEntry(file: string): AssetManifestEntry {
     emotion: kind === "character" ? tags.filter((tag) => ["happy", "sad", "surprised", "think"].includes(tag)) : undefined,
     action: kind === "character" ? tags.filter((tag) => ["explain", "talk", "think", "shrug", "worker", "teacher"].includes(tag)) : undefined,
     topics: kind !== "character" ? tags : undefined,
-    source: generatedLead ? "generated" : "original",
+    source: relative.startsWith("generated-") ? "generated" : "original",
     visualDensity: densityByKind[kind],
     recommendedScale: kind === "prop" || kind === "ui" ? 1.35 : 1,
     semanticRoles: kind === "character" ? ["subject", "actor"] : [kind, "focal"],
@@ -95,10 +101,78 @@ for (const entry of entries) {
     deduped.push(entry);
   }
 }
+// ─── Logical ref → production file alias map ──────────────────────────────
+// Storyboards keep authoring stable logical refs ("characters/cat_explain",
+// "finance/money", "assets/scenes/cafe.svg"). Rendering must resolve those to
+// the current production art in generated-assets/ + generated-backgrounds/,
+// never to the retired public/assets/*.svg set.
+//
+// Both sides of every mapping are files that actually exist on disk: the key
+// comes from a real legacy ref, the value from a real generated file. Nothing
+// here is a hand-maintained per-asset list, so adding a new generated file is
+// picked up automatically on the next `npm run build-assets`.
+function physicalSet(dir: string): Set<string> {
+  const full = path.join(publicDir, dir);
+  if (!fs.existsSync(full)) return new Set();
+  return new Set(fs.readdirSync(full).filter((f) => extensions.has(path.extname(f).toLowerCase())));
+}
+
+const generatedCharacters = physicalSet("generated-assets/characters");
+const generatedIcons = physicalSet("generated-assets/icons");
+const generatedScenes = physicalSet("generated-assets/scenes");
+const generatedBackgrounds = physicalSet("generated-backgrounds");
+
+const hyphen = (value: string) => value.replace(/_/g, "-");
+
+function firstExisting(
+  candidates: Array<[Set<string>, string, string]>,
+): string | undefined {
+  for (const [pool, dir, file] of candidates) {
+    if (pool.has(file)) return `${dir}/${file}`;
+  }
+  return undefined;
+}
+
+const aliases: Record<string, string> = {};
+for (const file of files) {
+  const relative = path.relative(publicDir, file).replace(/\\/g, "/");
+  if (!relative.startsWith("assets/") || !relative.endsWith(".svg")) continue;
+  const ref = relative.slice("assets/".length, -".svg".length); // e.g. finance/money
+  const slash = ref.indexOf("/");
+  if (slash === -1) continue;
+  const category = ref.slice(0, slash);
+  const name = ref.slice(slash + 1);
+
+  let target: string | undefined;
+  if (category === "characters") {
+    target = firstExisting([[generatedCharacters, "generated-assets/characters", `${name}.png`]]);
+  } else if (category === "scenes") {
+    // generated-backgrounds is the higher-fidelity override when present.
+    target = firstExisting([
+      [generatedBackgrounds, "generated-backgrounds", `${hyphen(name)}.png`],
+      [generatedScenes, "generated-assets/scenes", `${hyphen(name)}.png`],
+    ]);
+    if (target) aliases[relative] = target; // stage refs are authored WITH the assets/…svg path
+  } else {
+    target = firstExisting([
+      [generatedIcons, "generated-assets/icons", `${category}-${hyphen(name)}.png`],
+      [generatedIcons, "generated-assets/icons", `${hyphen(name)}.png`],
+    ]);
+  }
+  if (target) aliases[ref] = target;
+}
+
+const legacyRefs = files.filter((f) => {
+  const r = path.relative(publicDir, f).replace(/\\/g, "/");
+  return r.startsWith("assets/") && r.endsWith(".svg");
+}).length;
+
 const manifest: AssetManifest = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
   entries: deduped,
+  aliases,
 };
 fs.writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Wrote ${deduped.length} canonical assets (${entries.length - deduped.length} duplicate aliases) to ${outputPath}`);
+console.log(`Aliases: ${Object.keys(aliases).length} logical refs → production art (${legacyRefs} legacy svg on disk)`);

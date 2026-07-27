@@ -8,6 +8,7 @@ import {
   AnimationValues,
 } from "../animations";
 import { ActiveEmphasize } from "../engine/timelineEngine";
+import { resolveAssetSrc } from "../engine/assetPaths";
 
 interface Props {
   asset: AssetState;
@@ -73,9 +74,7 @@ export const AnimatedAsset: React.FC<Props> = ({
   const totalScale = resolved.scale * emphasisScale;
   const totalTX = resolved.translateX + emphasisTranslateX;
   const totalTY = resolved.translateY + emphasisTranslateY;
-  const assetPath = /\.(?:png|jpe?g|webp|gif|svg)$/i.test(asset.src)
-    ? asset.src
-    : `assets/${asset.src}.svg`;
+  const assetPath = resolveAssetSrc(asset.src);
 
   return (
     <div

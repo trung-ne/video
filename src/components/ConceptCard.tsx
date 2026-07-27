@@ -1,6 +1,7 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { CardState } from "../engine/timelineEngine";
+import { resolveAssetSrc } from "../engine/assetPaths";
 
 interface Props {
   card: CardState;
@@ -28,11 +29,7 @@ export const ConceptCard: React.FC<Props> = ({
   const y = card.position.y * canvasHeight;
   const w = card.width * card.scale;
   const h = card.height * card.scale;
-  const iconPath = card.iconSrc && /\.(?:png|jpe?g|webp|gif|svg)$/i.test(card.iconSrc)
-    ? card.iconSrc
-    : card.iconSrc
-      ? `assets/${card.iconSrc}.svg`
-      : "";
+  const iconPath = card.iconSrc ? resolveAssetSrc(card.iconSrc) : "";
 
   return (
     <div

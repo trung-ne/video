@@ -16,6 +16,7 @@ import { ConceptCard } from "./components/ConceptCard";
 import { PaperCard } from "./components/PaperCard";
 import { FrameBox } from "./components/FrameBox";
 import { TransitionOverlay } from "./components/TransitionOverlay";
+import { resolveAssetSrc } from "./engine/assetPaths";
 
 interface Props {
   timeline: Timeline;
@@ -53,7 +54,7 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
 
   const resolvedBackgrounds = state.backgrounds.map((bg) => ({
     ...bg,
-    src: isCSSValue(bg.src) ? bg.src : staticFile(bg.src),
+    src: isCSSValue(bg.src) ? bg.src : staticFile(resolveAssetSrc(bg.src)),
   }));
 
   return (

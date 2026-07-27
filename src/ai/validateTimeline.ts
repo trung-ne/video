@@ -4,6 +4,7 @@ import { Timeline, EnterEvent } from "../types/timeline";
 import { SceneTimeline, SLOT_POSITIONS, TEXT_SLOT_POSITIONS } from "../types/scene";
 import { isCSSBackground, backgroundImageExists } from "./backgroundResolver";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
+import { resolveAssetSrc } from "../engine/assetPaths";
 
 export interface ValidationResult {
   valid: boolean;
@@ -11,10 +12,11 @@ export interface ValidationResult {
   warnings: string[];
 }
 
-function resolveAssetPath(src: string, assetsDir: string): string {
-  return /\.(?:png|jpe?g|webp|gif|svg)$/i.test(src)
-    ? path.join(process.cwd(), "public", src)
-    : path.join(assetsDir, `${src}.svg`);
+// Resolve through the same manifest alias map the renderer uses, so the gate
+// validates the file that will actually be drawn (production art in
+// generated-assets/…), not the retired public/assets/*.svg it used to assume.
+function resolveAssetPath(src: string, _assetsDir: string): string {
+  return path.join(process.cwd(), "public", resolveAssetSrc(src));
 }
 
 // ─── Scene-level validation ──────────────────────────────────

@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
+import { resolveAssetSrcStrict } from "../engine/assetPaths";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
 import { getGrammarDefinition } from "../engine/grammarRegistry";
 import { stageMatchesSetting } from "../engine/stageRegistry";
@@ -1434,32 +1435,51 @@ function checkClearPrevious(scenes: any[]): CheckResult {
   return { name: "clearPrevious: set khi layout+background thay đổi", passed: issues.length === 0, issues };
 }
 
-// CHECK 17: Asset paths exist on disk
+// CHECK 17: Asset paths resolve to real production art.
+// Two distinct failures, deliberately different severities:
+//   ASSET_EXISTS  (BLOCKER) — nothing on disk at all → renders a broken image.
+//   LEGACY_ASSET  (MAJOR)   — resolves only to the retired public/assets/*.svg
+//                             set, i.e. no production art exists for that ref
+//                             yet. Renderable, but off-style; the fix is to
+//                             add the asset (see /add-asset) and rebuild the
+//                             manifest so the alias picks it up.
 function checkAssetPaths(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
-  const assetsDir = path.join(process.cwd(), "public", "assets");
   const checked = new Set<string>();
 
-  for (const s of scenes) {
-    for (const e of (s.entities ?? [])) {
-      if (!e.src || checked.has(e.src)) continue;
-      checked.add(e.src);
-      const assetPath = /\.(?:png|jpe?g|webp|gif|svg)$/i.test(e.src)
-        ? path.join(process.cwd(), "public", e.src)
-        : path.join(assetsDir, `${e.src}.svg`);
-      if (!fs.existsSync(assetPath)) {
-        issues.push({
-          severity: "BLOCKER",
-          rule: "ASSET_EXISTS",
-          scene: s.id,
-          message: `${sceneLabel(s)} asset không tồn tại: public/assets/${e.src}.svg (entity "${e.assetId}")`,
-          suggestion: "Chạy /list-assets để xem assets có sẵn, hoặc /add-asset để thêm mới",
-        });
-      }
+  const inspect = (src: string, sceneId: string, sceneObj: any, label: string) => {
+    if (!src || checked.has(src)) return;
+    checked.add(src);
+    const resolution = resolveAssetSrcStrict(src);
+    const full = path.join(process.cwd(), "public", resolution.path);
+    if (!fs.existsSync(full)) {
+      issues.push({
+        severity: "BLOCKER",
+        rule: "ASSET_EXISTS",
+        scene: sceneId,
+        message: `${sceneLabel(sceneObj)} asset không tồn tại: ${resolution.path} (${label} "${src}")`,
+        suggestion: "Chạy /list-assets để xem asset khả dụng, hoặc /add-asset để bổ sung rồi npm run build-assets",
+      });
+      return;
     }
+    if (resolution.isLegacy) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "LEGACY_ASSET",
+        scene: sceneId,
+        message: `${sceneLabel(sceneObj)} "${src}" chỉ còn art legacy (${resolution.path}) — chưa có bản production`,
+        suggestion: "Thêm art vào generated-assets/ (xem /add-asset) rồi npm run build-assets để alias trỏ sang bản mới",
+      });
+    }
+  };
+
+  for (const s of scenes) {
+    for (const e of (s.entities ?? [])) inspect(e.src, s.id, s, `entity ${e.assetId}`);
+    const bg: string = s.backgroundSrc ?? "";
+    if (bg && !isCSSBackground(bg)) inspect(bg, s.id, s, "backgroundSrc");
   }
 
-  return { name: "Assets: tất cả src paths tồn tại trên disk", passed: issues.length === 0, issues };
+  return { name: "Assets: resolve về art production, không còn legacy", passed: issues.length === 0, issues };
 }
 
 // CHECK 18: Duration sum matches durationInFrames

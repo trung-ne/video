@@ -302,19 +302,40 @@ Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có th�
 
 ## Asset Library Rules
 
-### Thêm SVG mới
-1. Đặt vào `public/assets/<category>/<name>.svg`
-2. Kích thước chuẩn: 160×160px viewBox
-3. Tham chiếu trong timeline: `"src": "<category>/<name>"` (không có `/` đầu, không có `.svg`)
-4. Claude sẽ tự động nhận ra qua `listAvailableAssets()`
+### 3 nguồn art production (⛔ `public/assets/` đã ngừng dùng)
 
-### Categories
-```
-characters/   — nhân vật (cat, dog, teacher...)
-finance/      — tài chính (bank, money, house, stock...)
-people/       — người/tổ chức (person, company, family...)
-ui/           — UI elements (arrow_up, arrow_down, percent...)
-```
+| Thư mục | Dùng cho | styleFamily |
+|---|---|---|
+| `public/generated-assets/{characters,icons,scenes}/` | nhân vật, icon/prop, stage (PNG) | `editorial_cat_v1` / `flat_icon_v1` / `flat_stage_v1` |
+| `public/generated-backgrounds/` | nền chất lượng cao, **đè** `scenes/` khi trùng tên | `flat_stage_v1` |
+| `public/backgrounds/` | ảnh thật JPG cho BEAT/photo | `photo` |
+| `public/assets/**.svg` | ⛔ bộ vẽ tay cũ — giữ để tương thích ngược, **không thêm mới** | `legacy` (resolver loại) |
+
+### Logical ref → file thật: alias-map tự sinh
+
+Storyboard **vẫn viết ref logic ổn định** (`characters/cat_explain`, `finance/money`,
+`assets/scenes/cafe.svg`). [assetPaths.ts](src/engine/assetPaths.ts) tra `aliases`
+trong `public/assets.manifest.json` để ra file thật lúc render/validate.
+
+Alias do [build-asset-manifest.ts](scripts/build-asset-manifest.ts) **suy ra từ file
+có thật trên đĩa**, không có bảng khai tay. Thêm asset mới = đặt đúng tên rồi
+`npm run build-assets`:
+
+| Logical ref | Tên file cần đặt |
+|---|---|
+| `characters/cat_angry` | `generated-assets/characters/cat_angry.png` |
+| `finance/tax_rate` | `generated-assets/icons/finance-tax-rate.png` |
+| `props/laptop` | `generated-assets/icons/props-laptop.png` |
+| `assets/scenes/rooftop.svg` | `generated-assets/scenes/rooftop.png` |
+
+Quy tắc: `<category>-<tên đổi _ thành ->.png`; riêng `characters/` giữ nguyên `_`.
+
+**Không hardcode path trong prompt hay code** — `listAvailableAssets()` đọc thẳng
+alias-map nên asset mới tự vào vốn từ authoring sau `build-assets`.
+
+Gate liên quan (trong `qualityCheck`):
+- `ASSET_EXISTS` (BLOCKER) — không có file nào trên đĩa.
+- `LEGACY_ASSET` (MAJOR) — chỉ còn art legacy, chưa có bản production → xem [/add-asset](.claude/commands/add-asset.md).
 
 ### Cat Pose Variants (characters/cat_*)
 | File | Dùng khi |

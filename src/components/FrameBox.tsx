@@ -1,6 +1,7 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { FrameBoxState } from "../engine/timelineEngine";
+import { resolveAssetSrc } from "../engine/assetPaths";
 
 interface Props {
   frameBox: FrameBoxState;
@@ -34,7 +35,7 @@ export const FrameBox: React.FC<Props> = ({
   // A hex/rgb content = a "screen panel" (no real image) → show the caption
   // large ON the screen. Otherwise it's an image path to display.
   const isColor = frameBox.contentSrc.startsWith("#") || frameBox.contentSrc.startsWith("rgb");
-  const src = isColor ? frameBox.contentSrc : staticFile(frameBox.contentSrc);
+  const src = isColor ? frameBox.contentSrc : staticFile(resolveAssetSrc(frameBox.contentSrc));
 
   return (
     <div

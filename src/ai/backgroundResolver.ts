@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { resolveAssetSrc } from "../engine/assetPaths";
 
 // ============================================================
 // backgroundResolver — real illustrated backgrounds
@@ -47,7 +48,9 @@ export function isCSSBackground(src: string): boolean {
 /** Does this backgroundSrc point at a real image file that exists on disk? */
 export function backgroundImageExists(src: string): boolean {
   if (!src || isCSSBackground(src)) return false;
-  const full = path.join(process.cwd(), "public", src);
+  // Resolve through the manifest alias map first: a stage authored as
+  // "assets/scenes/cafe.svg" now physically lives in generated-assets/scenes.
+  const full = path.join(process.cwd(), "public", resolveAssetSrc(src));
   return fs.existsSync(full);
 }
 

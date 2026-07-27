@@ -9,7 +9,7 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
 
 ---
 
-## 5 luật KHÔNG ĐƯỢC VI PHẠM
+## 6 luật KHÔNG ĐƯỢC VI PHẠM
 
 1. **KHÔNG dùng helper modulo/keyword để thay storyboard.** Không sinh scene bằng
    `index % N`, bảng regex từ khoá, hay vòng lặp gán layout máy móc. Mỗi scene phải
@@ -28,7 +28,14 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
 4. **TTS + word alignment chạy TRƯỚC `compile-storyboard.ts`** — compiler cần
    `durations.json` + `words.json` để chốt khung hình theo audio thật.
 
-5. **Luật thẩm mỹ hiện hành = mục "V4 — DIRECTOR'S RULES" trong [CLAUDE.md](CLAUDE.md).**
+5. **Asset: chỉ dùng art production, không thêm vào `public/assets/`.** Storyboard
+   vẫn viết logical ref (`characters/cat_explain`, `finance/money`); resolver
+   [assetPaths.ts](src/engine/assetPaths.ts) tra alias-map trong manifest để ra
+   file thật. Thiếu asset → thêm vào `generated-assets/` theo quy ước tên rồi
+   `npm run build-assets` (xem [/add-asset](.claude/commands/add-asset.md)) —
+   **không** hardcode path trong prompt/code.
+
+6. **Luật thẩm mỹ hiện hành = mục "V4 — DIRECTOR'S RULES" trong [CLAUDE.md](CLAUDE.md).**
    Tóm tắt: nền trắng là mặc định (ảnh thật chỉ dùng như "cú đấm" có chủ đích, không
    làm wallpaper); một khung hình = một lớp text; pose mèo đổi theo **từng câu**, không
    phải từng scene; SOLO ≤ 40% số scene; 3 giây đầu phải thấy rõ nhân vật/tiêu đề.
@@ -71,7 +78,10 @@ Cả hai route đều hội tụ về `storyboard.json` rồi đi chung phần �
 |---|---|
 | `projects/<id>/` | Nguồn: `transcript.txt`, `storyboard-data.ts`, `storyboard.json`, `timeline.json`, `tts_scenes.json`, `durations.json`, `words.json` |
 | `output/<id>/` | Sản phẩm render: `video.mp4`, `contact.jpg`, `*-audit.json`, `production-report.json` |
-| `public/assets/` | SVG assets (`characters/`, `finance/`, `props/`, `scenes/`, `people/`, `ui/`) |
+| `public/generated-assets/` | Art production: `characters/`, `icons/`, `scenes/` (PNG) |
+| `public/generated-backgrounds/` | Nền chất lượng cao, **đè** `generated-assets/scenes/` khi trùng tên |
+| `public/backgrounds/` | Ảnh thật JPG cho BEAT/photo |
+| `public/assets/` | ⛔ Bộ SVG vẽ tay **đã ngừng dùng** — giữ để tương thích, không thêm mới |
 | `config/reference-quality.json` | Ngưỡng của mọi audit (encoding, audio LUFS, visual density) |
 
 `--project <id>` được hỗ trợ ở `generate-timeline.ts`, `render.ts`,

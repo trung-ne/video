@@ -1,27 +1,16 @@
 import * as fs from "fs";
 import * as path from "path";
+import { listResolvableRefs } from "../engine/assetPaths";
 
-// Scan public/assets/ and return all available asset IDs
+// The authoring vocabulary = every logical ref that the manifest can resolve
+// to production art (generated-assets/ + generated-backgrounds/). Derived from
+// the manifest, never a hardcoded list: add art, run `npm run build-assets`,
+// and it becomes available to authoring on the next run.
+//
+// Deliberately does NOT scan public/assets — that retired hand-drawn set must
+// not be advertised as something new work can pick.
 export function listAvailableAssets(): string[] {
-  const assetsDir = path.join(process.cwd(), "public", "assets");
-  const results: string[] = [];
-
-  function scanDir(dir: string, prefix: string) {
-    if (!fs.existsSync(dir)) return;
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (entry.isDirectory()) {
-        scanDir(path.join(dir, entry.name), prefix ? `${prefix}/${entry.name}` : entry.name);
-      } else if (entry.name.endsWith(".svg")) {
-        const id = prefix
-          ? `${prefix}/${entry.name.replace(".svg", "")}`
-          : entry.name.replace(".svg", "");
-        results.push(id);
-      }
-    }
-  }
-
-  scanDir(assetsDir, "");
-  return results;
+  return listResolvableRefs();
 }
 
 // Scan public/backgrounds/ and return real illustrated background paths
