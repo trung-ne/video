@@ -19,7 +19,8 @@ export function measureAudio(input: string): AudioAudit {
   const result = spawnSync(ffmpegPath(), [
     "-hide_banner", "-nostats", "-i", input,
     "-filter_complex", "ebur128=peak=true", "-f", "null", "-",
-  ], { encoding: "utf8" });
+  ], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  if (result.error) throw result.error;
   const output = result.stderr ?? "";
   const integrated = [...output.matchAll(/I:\s*(-?\d+(?:\.\d+)?)\s*LUFS/g)];
   const truePeak = [...output.matchAll(/Peak:\s*(-?\d+(?:\.\d+)?)\s*dBFS/g)];
