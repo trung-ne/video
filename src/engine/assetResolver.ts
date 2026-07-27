@@ -8,6 +8,11 @@ export interface AssetResolution {
   unresolvedReason?: string;
 }
 
+export interface AssetResolutionContext {
+  usage?: ReadonlyMap<string, number>;
+  maximumUses?: number;
+}
+
 const DEFAULT_STYLE_FAMILIES: AssetStyleFamily[] = ["editorial_cat_v1", "flat_stage_v1", "photo"];
 
 function normalizedTokens(values: Array<string | undefined>): Set<string> {
@@ -21,8 +26,13 @@ function assetTokens(asset: AssetManifestEntry): Set<string> {
   ]);
 }
 
-export function scoreAsset(request: AssetRequest, asset: AssetManifestEntry): number {
+export function scoreAsset(
+  request: AssetRequest,
+  asset: AssetManifestEntry,
+  context: AssetResolutionContext = {},
+): number {
   if (asset.kind !== request.role) return -Infinity;
+  if (asset.isFallback) return -Infinity;
   const tokens = assetTokens(asset);
   const query = normalizedTokens([request.query, ...request.requiredTags]);
   let score = 0;
@@ -33,6 +43,11 @@ export function scoreAsset(request: AssetRequest, asset: AssetManifestEntry): nu
   }
   if (request.preferredAssetId === asset.id) score += 100;
   if (asset.styleFamily === "legacy") score -= 20;
+  const uses = context.usage?.get(asset.path) ?? 0;
+  if (context.maximumUses !== undefined && uses >= context.maximumUses) score -= 100;
+  score -= uses * 6;
+  if (asset.actionTags?.some((tag) => query.has(tag))) score += 4;
+  if (asset.settingTags?.some((tag) => query.has(tag))) score += 4;
   return score;
 }
 
@@ -40,6 +55,7 @@ export function resolveAssetRequest(
   request: AssetRequest,
   manifest: AssetManifest,
   allowedStyles: AssetStyleFamily[] = DEFAULT_STYLE_FAMILIES,
+  context: AssetResolutionContext = {},
 ): AssetResolution {
   if (request.preferredAssetId) {
     const exact = manifest.entries.find((entry) => entry.id === request.preferredAssetId);
@@ -49,7 +65,7 @@ export function resolveAssetRequest(
   }
   const candidates = manifest.entries
     .filter((entry) => allowedStyles.includes(entry.styleFamily))
-    .map((asset) => ({ asset, score: scoreAsset(request, asset) }))
+    .map((asset) => ({ asset, score: scoreAsset(request, asset, context) }))
     .filter((candidate) => Number.isFinite(candidate.score) && candidate.score > 0)
     .sort((a, b) => b.score - a.score || a.asset.id.localeCompare(b.asset.id));
   if (candidates.length === 0) {
@@ -64,6 +80,10 @@ export function resolveAssetRequest(
   return { request, ...candidates[0] };
 }
 
-export function resolveAssetRequests(requests: AssetRequest[], manifest: AssetManifest): AssetResolution[] {
-  return requests.map((request) => resolveAssetRequest(request, manifest));
+export function resolveAssetRequests(
+  requests: AssetRequest[],
+  manifest: AssetManifest,
+  context: AssetResolutionContext = {},
+): AssetResolution[] {
+  return requests.map((request) => resolveAssetRequest(request, manifest, DEFAULT_STYLE_FAMILIES, context));
 }
