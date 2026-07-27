@@ -6,6 +6,8 @@ import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
 import { runQualityCheck, runStoryboardCheck } from "../src/ai/qualityCheck";
 import { stageMatchesSetting } from "../src/engine/stageRegistry";
+import { critiqueSceneBriefs } from "../src/ai/visualCritic";
+import { validateTimeline } from "../src/ai/validateTimeline";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -96,6 +98,11 @@ test("schema v2 compiler preserves semantic background and resolved assets", () 
       id: "compare", narration: "one versus two", purpose: "contrast", emotion: "neutral",
       viewerFocus: "difference", visualGrammar: "COMPARE", visualRegister: "infographic",
       semanticVisual: { subject: "two values", action: "contrast", takeaway: "the values differ" },
+      focalType: "diagram", characterRequired: false,
+      visualFingerprint: "compare|diagram|0|none|contrast",
+      silentFrameTakeaway: "two values visibly differ",
+      focalOccupancyTarget: 0.4,
+      noveltyFromPrevious: ["first scene"],
       slots: {
         left: "one", right: "two",
         leftAsset: "finance/money", rightAsset: "finance/house",
@@ -107,6 +114,8 @@ test("schema v2 compiler preserves semantic background and resolved assets", () 
   const timeline = compileStoryboard(storyboard);
   assert.strictEqual(timeline.scenes[0].backgroundSrc, "#FFFFFF");
   assert.deepStrictEqual(timeline.scenes[0].semanticAssetIds, ["finance/money", "finance/house"]);
+  assert.strictEqual(timeline.scenes[0].visualFingerprint, "compare|diagram|0|none|contrast");
+  assert.strictEqual(timeline.scenes[0].semanticAction, "contrast");
 });
 
 test("schema v2 compiler rejects missing semantic assets instead of using cats", () => {
@@ -196,6 +205,79 @@ test("stage registry validates narration settings without banning continuity reu
   assert.strictEqual(stageMatchesSetting("assets/scenes/office_desk.svg", "corporate office"), true);
   assert.strictEqual(stageMatchesSetting("assets/scenes/beach.svg", "corporate office"), false);
   assert.strictEqual(stageMatchesSetting("assets/scenes/office_desk.svg", undefined), true);
+});
+
+test("asset resolver applies a usage budget instead of repeating the top match", () => {
+  const manifest: AssetManifest = {
+    schemaVersion: 1, generatedAt: "test",
+    entries: [
+      { id: "money-a", path: "finance/money-a", sha256: "a", kind: "prop", styleFamily: "editorial_cat_v1", topics: ["money"] },
+      { id: "money-b", path: "finance/money-b", sha256: "b", kind: "prop", styleFamily: "editorial_cat_v1", topics: ["money"] },
+    ],
+  };
+  const request = { role: "prop" as const, slot: "prop", query: "money", requiredTags: ["money"], allowGenerate: false };
+  const result = resolveAssetRequest(request, manifest, undefined, {
+    usage: new Map([["finance/money-a", 3]]), maximumUses: 2,
+  });
+  assert.strictEqual(result.asset?.path, "finance/money-b");
+});
+
+test("visual critic rejects a generic heading and metadata-only hero", () => {
+  const critiques = critiqueSceneBriefs([{
+    id: "generic", narration: "specific narration", purpose: "explain", emotion: "neutral",
+    viewerFocus: "money", visualGrammar: "CHAR_PROP", visualRegister: "character_action",
+    focalType: "character_action", heroVisual: true, characterRequired: true,
+    semanticVisual: { subject: "cat", action: "shows", object: "coin", takeaway: "money exists" },
+    silentFrameTakeaway: "cat and coin", visualFingerprint: "char-prop", noveltyFromPrevious: [],
+    focalOccupancyTarget: 0.3, slots: { label: "MONEY", prop: "finance/money" },
+    assetRequests: [{ role: "prop", slot: "prop", query: "money", requiredTags: ["money"], allowGenerate: false }],
+  }]);
+  assert.ok(critiques[0].score < 8);
+  assert.ok(critiques[0].issues.some((issue) => issue.includes("metadata-only")));
+  assert.ok(critiques[0].issues.some((issue) => issue.includes("taxonomy")));
+});
+
+test("rendered-intent gate rejects one-cat-one-prop template loops", () => {
+  const scenes = Array.from({ length: 40 }, (_, index) => ({
+    id: `loop-${index}`, startFrame: index * 180, durationFrames: 180,
+    layout: "CHAR_PROP", narration: "specific narration",
+    backgroundSrc: index % 2 ? "#ffffff" : "assets/scenes/office_desk.svg",
+    visualRegister: "character_action", semanticTakeaway: "cat looks at money",
+    semanticAction: "looks", semanticAssetIds: ["finance/money"],
+    focalType: "character_action", characterRequired: true,
+    visualFingerprint: "char_prop|character_action|1|office|looks",
+    silentFrameTakeaway: "cat looks at money", focalOccupancyTarget: 0.3,
+    noveltyFromPrevious: ["color"],
+    entities: [
+      { assetId: `cat-${index}`, src: "generated-assets/characters/cat_explain.png" },
+      { assetId: `prop-${index}`, src: "finance/money" },
+    ],
+    texts: [{ id: `text-${index}`, text: "MONEY", content: "MONEY" }],
+  }));
+  const report = runQualityCheck({
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080,
+    durationInFrames: scenes.length * 180, scenes,
+  });
+  const proxy = report.checks.find((check) => check.name === "Rendered-intent proxies");
+  const rules = proxy?.issues.map((issue) => issue.rule) ?? [];
+  assert.ok(rules.includes("TEMPLATE_SHAPE_DOMINANCE"));
+  assert.ok(rules.includes("CHARACTER_ALWAYS_PRESENT"));
+  assert.ok(rules.includes("POSE_REUSE"));
+  assert.ok(rules.includes("VISUAL_FINGERPRINT_REUSE"));
+});
+
+test("schema v2 validation requires rendered-intent metadata", () => {
+  const result = validateTimeline({
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080, durationInFrames: 90,
+    scenes: [{
+      id: "missing", label: "missing", startFrame: 0, durationFrames: 90,
+      layout: "SOLO", sourceRange: { startWord: 0, endWord: 0, quoteChecksum: "x" },
+      visualRegister: "character_action", semanticTakeaway: "x", semanticAssetIds: [],
+      entities: [], texts: [],
+    }],
+  });
+  assert.ok(result.errors.some((error) => error.includes("visualFingerprint")));
+  assert.ok(result.errors.some((error) => error.includes("focalOccupancyTarget")));
 });
 
 let failures = 0;

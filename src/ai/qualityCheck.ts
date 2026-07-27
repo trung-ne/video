@@ -4,6 +4,7 @@ import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
 import { getGrammarDefinition } from "../engine/grammarRegistry";
 import { stageMatchesSetting } from "../engine/stageRegistry";
+import referenceQuality from "../../config/reference-quality.json";
 
 const STAGE_ANCHORS_KEYS = new Set(Object.keys(STAGE_ANCHORS));
 
@@ -526,6 +527,14 @@ const GRAMMAR_REQUIRED_SLOTS: Record<string, string[][]> = {
   ICON_TRIPLE: [["items"]],
   BEAT: [],     // image falls back
   SOLO: [],
+  MAP_FLOW: [["map"], ["items"], ["icons"]],
+  DATA_CHART: [["chart"]],
+  SURVEY_CARD: [["body"]],
+  PHOTO_EVIDENCE: [["photo"]],
+  SCREEN_CAPTURE: [["content"]],
+  FULL_SCENE_ACTION: [["stage"], ["who"], ["anchorA"], ["prop"]],
+  HISTORY_TIMELINE: [["items"], ["icons"]],
+  VISUAL_METAPHOR: [["setup"], ["payoff"], ["leftAsset"], ["rightAsset"]],
   FREEFORM: [],
 };
 const GRAMMARS_WITHOUT_FOCAL = new Set(["BEAT"]); // no entity → beats can't anchor
@@ -550,6 +559,14 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         severity: "MAJOR", rule: "SEMANTIC_VISUAL", scene: brief.id,
         message: `${brief.id}: semanticVisual needs subject, action, and silent-viewer takeaway`,
         suggestion: "Describe what visibly happens; a pose or layout name is not an action.",
+      });
+    }
+    if (!brief.focalType || !brief.silentFrameTakeaway || !brief.visualFingerprint ||
+        !Array.isArray(brief.noveltyFromPrevious) ||
+        Number(brief.focalOccupancyTarget ?? 0) < referenceQuality.composition.minimumFocalOccupancy) {
+      semanticIssues.push({
+        severity: "MAJOR", rule: "VISUAL_TREATMENT", scene: brief.id,
+        message: `${brief.id}: missing focal type, silent-frame takeaway, fingerprint, novelty, or focal occupancy target.`,
       });
     }
     if (!Array.isArray(brief.assetRequests) || brief.assetRequests.length === 0) {
@@ -614,17 +631,17 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
   for (const brief of briefs) {
     if (brief.visualRegister) counts.set(brief.visualRegister, (counts.get(brief.visualRegister) ?? 0) + 1);
   }
-  if (briefs.length >= 8 && counts.size < 5) {
+  if (briefs.length >= 8 && counts.size < referenceQuality.registers.minimumDistinct) {
     registerIssues.push({
       severity: "MAJOR", rule: "REGISTER_DIVERSITY",
-      message: `Storyboard uses ${counts.size} visual registers; minimum is 5.`,
+      message: `Storyboard uses ${counts.size} visual registers; minimum is ${referenceQuality.registers.minimumDistinct}.`,
     });
   }
   for (const [register, count] of counts) {
-    if (briefs.length >= 8 && count / briefs.length > 0.35) {
+    if (briefs.length >= 8 && count / briefs.length > referenceQuality.registers.maximumSingleRatio) {
       registerIssues.push({
         severity: "MAJOR", rule: "REGISTER_DOMINANCE",
-        message: `${register} occupies ${Math.round(count / briefs.length * 100)}% of scenes; maximum is 35%.`,
+        message: `${register} occupies ${Math.round(count / briefs.length * 100)}% of scenes; maximum is ${Math.round(referenceQuality.registers.maximumSingleRatio * 100)}%.`,
       });
     }
   }
@@ -637,6 +654,19 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         message: `${briefs[index].id}: third consecutive ${briefs[index].visualRegister} scene.`,
       });
     }
+  }
+  if (briefs.length >= 8 && !storyboard.visualTreatmentPlan) {
+    registerIssues.push({
+      severity: "MAJOR", rule: "VISUAL_TREATMENT_PLAN",
+      message: "Storyboard is missing a video-level visualTreatmentPlan and usage budgets.",
+    });
+  }
+  const characterFree = briefs.filter((brief) => brief.characterRequired === false).length;
+  if (briefs.length >= 20 && characterFree / briefs.length < referenceQuality.composition.minimumCharacterFreeRatio) {
+    registerIssues.push({
+      severity: "MAJOR", rule: "CHARACTER_FREE_QUOTA",
+      message: `${characterFree}/${briefs.length} briefs intentionally omit characters; minimum is ${Math.round(referenceQuality.composition.minimumCharacterFreeRatio * 100)}%.`,
+    });
   }
   for (const claim of storyboard.claims ?? []) {
     if (claim.evidencePolicy === "none") continue;
@@ -1771,14 +1801,14 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
   for (const scene of scenes) {
     if (scene.visualRegister) registerCounts.set(scene.visualRegister, (registerCounts.get(scene.visualRegister) ?? 0) + 1);
   }
-  if (scenes.length >= 8 && registerCounts.size < 5) {
+  if (scenes.length >= 8 && registerCounts.size < referenceQuality.registers.minimumDistinct) {
     issues.push({
       severity: "MAJOR", rule: "REGISTER_DIVERSITY",
-      message: `Timeline uses ${registerCounts.size} visual registers; minimum is 5.`,
+      message: `Timeline uses ${registerCounts.size} visual registers; minimum is ${referenceQuality.registers.minimumDistinct}.`,
     });
   }
   for (const [register, count] of registerCounts) {
-    if (scenes.length >= 8 && count / scenes.length > 0.35) {
+    if (scenes.length >= 8 && count / scenes.length > referenceQuality.registers.maximumSingleRatio) {
       issues.push({
         severity: "MAJOR", rule: "REGISTER_DOMINANCE",
         message: `${register} occupies ${Math.round(count / scenes.length * 100)}% of the timeline.`,
@@ -1807,6 +1837,170 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
   }
 
   return { name: "Semantic production gates (schema v2)", passed: issues.length === 0, issues };
+}
+
+function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  if (timeline?.schemaVersion !== 2 || scenes.length < 8) {
+    return { name: "Rendered-intent proxies", passed: true, issues };
+  }
+  const cfg = referenceQuality.composition;
+  const isCharacter = (source: string): boolean =>
+    /(^|\/)(characters|character)\//.test(source) || source.includes("generated-assets/characters/");
+  const characters = scenes.map((scene) =>
+    (scene.entities ?? []).filter((entity: any) => isCharacter(String(entity.src ?? "")))
+  );
+  const characterSceneCount = characters.filter((items) => items.length > 0).length;
+  if (scenes.length >= 20 && characterSceneCount / scenes.length > cfg.maximumCharacterPresenceRatio) {
+    issues.push({
+      severity: "MAJOR", rule: "CHARACTER_ALWAYS_PRESENT",
+      message: `${characterSceneCount}/${scenes.length} scenes contain a character; maximum is ${Math.round(cfg.maximumCharacterPresenceRatio * 100)}%.`,
+      suggestion: "Let charts, maps, evidence, photos, and diagrams carry scenes without a narrator cat.",
+    });
+  }
+
+  const signatures = new Map<string, any[]>();
+  for (const [index, scene] of scenes.entries()) {
+    const entities = scene.entities ?? [];
+    const charCount = characters[index].length;
+    const propCount = entities.length - charCount;
+    const componentCount = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
+      (scene.speechBubbles?.length ?? 0);
+    const signature = `${charCount}c:${propCount}p:${scene.texts?.length ?? 0}t:${componentCount}x`;
+    signatures.set(signature, [...(signatures.get(signature) ?? []), scene]);
+  }
+  for (const [signature, matching] of signatures) {
+    if (scenes.length >= 20 && matching.length / scenes.length > cfg.maximumTemplateShapeRatio) {
+      issues.push({
+        severity: "MAJOR", rule: "TEMPLATE_SHAPE_DOMINANCE", scene: matching[0].id,
+        message: `${matching.length}/${scenes.length} scenes reuse entity shape ${signature}; maximum is ${Math.round(cfg.maximumTemplateShapeRatio * 100)}%.`,
+      });
+    }
+  }
+
+  const countSources = (sources: string[]) => sources.reduce((map, source) => {
+    map.set(source, (map.get(source) ?? 0) + 1);
+    return map;
+  }, new Map<string, number>());
+  const poseCounts = countSources(characters.flat().map((entity: any) => String(entity.src ?? "")));
+  const poseLimit = Math.max(3, Math.floor(scenes.length * cfg.maximumPoseRatio));
+  for (const [pose, count] of poseCounts) {
+    if (scenes.length >= 20 && count > poseLimit) {
+      issues.push({
+        severity: "MAJOR", rule: "POSE_REUSE",
+        message: `${pose} appears ${count} times; maximum is ${poseLimit}.`,
+      });
+    }
+  }
+  if ((timeline.durationInFrames ?? 0) / (timeline.fps ?? 30) > 600 &&
+      poseCounts.size < cfg.minimumLongVideoPoseVariants) {
+    issues.push({
+      severity: "MAJOR", rule: "POSE_VARIANT_SHORTAGE",
+      message: `${poseCounts.size} character pose/costume variants; long videos require ${cfg.minimumLongVideoPoseVariants}.`,
+    });
+  }
+
+  const stageCounts = countSources(scenes.map((scene) => String(scene.backgroundSrc ?? ""))
+    .filter((source) => source.startsWith("assets/scenes/")));
+  const stageLimit = Math.max(3, Math.floor(scenes.length * cfg.maximumStageRatio));
+  for (const [stage, count] of stageCounts) {
+    if (count > stageLimit) {
+      issues.push({
+        severity: "MAJOR", rule: "STAGE_REUSE",
+        message: `${stage} appears in ${count} scenes; maximum is ${stageLimit}.`,
+      });
+    }
+  }
+  const sparseStages = scenes.filter((scene) =>
+    String(scene.backgroundSrc ?? "").startsWith("assets/scenes/") &&
+    (!scene.semanticAction || !scene.semanticSetting ||
+      ((scene.entities?.length ?? 0) < 2 && (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) === 0))
+  );
+  if (sparseStages.length) {
+    issues.push({
+      severity: "MAJOR", rule: "SPARSE_STAGE", scene: sparseStages[0].id,
+      message: `${sparseStages.length} stage scenes lack a visible action, setting, or sufficient focal composition.`,
+    });
+  }
+
+  const headingCounts = new Map<string, any[]>();
+  for (const scene of scenes) {
+    for (const overlay of scene.texts ?? []) {
+      const value = String(overlay.content ?? overlay.text ?? "").trim().toLowerCase();
+      if (!value) continue;
+      headingCounts.set(value, [...(headingCounts.get(value) ?? []), scene]);
+    }
+  }
+  for (const [label, matching] of headingCounts) {
+    if (matching.length > cfg.maximumLabelUses &&
+        /^(the big picture|money|children|population|dating game|evidence|overview)$/.test(label)) {
+      issues.push({
+        severity: "MAJOR", rule: "GENERIC_LABEL_REUSE", scene: matching[0].id,
+        message: `Generic heading "${label}" appears ${matching.length} times.`,
+      });
+    }
+  }
+
+  const qualifiesHero = (scene: any): boolean => {
+    const background = String(scene.backgroundSrc ?? "");
+    const hasPhoto = /\.(jpg|jpeg|png|webp)$/i.test(background);
+    const cards = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0);
+    const nodes = scene.entities?.length ?? 0;
+    const fullScene = background.startsWith("assets/scenes/") && nodes >= 2 && !!scene.semanticAction;
+    const gag = (scene.speechBubbles?.length ?? 0) >= 1 && nodes >= 2;
+    return hasPhoto || cards > 0 || nodes >= 3 || fullScene || gag;
+  };
+  const fakeHeroes = scenes.filter((scene) => scene.heroVisual && !qualifiesHero(scene));
+  if (fakeHeroes.length) {
+    issues.push({
+      severity: "MAJOR", rule: "HERO_METADATA_ONLY", scene: fakeHeroes[0].id,
+      message: `${fakeHeroes.length} hero scenes have no qualifying rendered component.`,
+    });
+  }
+
+  const componentMismatch = scenes.filter((scene) => {
+    switch (scene.visualRegister) {
+      case "evidence":
+        return (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) === 0;
+      case "framebox":
+      case "photo_broll":
+        return (scene.frameBoxes?.length ?? 0) === 0 &&
+          !/\.(jpg|jpeg|png|webp)$/i.test(String(scene.backgroundSrc ?? ""));
+      case "full_tableau":
+        return !String(scene.backgroundSrc ?? "").startsWith("assets/scenes/") || !scene.semanticAction;
+      case "infographic":
+        return (scene.entities?.length ?? 0) < 2;
+      case "visual_gag":
+        return (scene.speechBubbles?.length ?? 0) === 0 && (scene.entities?.length ?? 0) < 3;
+      default:
+        return false;
+    }
+  });
+  if (componentMismatch.length) {
+    issues.push({
+      severity: "MAJOR", rule: "REGISTER_COMPONENT_MISMATCH", scene: componentMismatch[0].id,
+      message: `${componentMismatch.length} scenes declare a register without its rendered component.`,
+    });
+  }
+
+  const fingerprints = scenes.map((scene) => String(scene.visualFingerprint ?? "")).filter(Boolean);
+  const fingerprintCounts = countSources(fingerprints);
+  const repeated = [...fingerprintCounts].filter(([, count]) => count > Math.max(2, scenes.length * 0.08));
+  if (repeated.length) {
+    issues.push({
+      severity: "MAJOR", rule: "VISUAL_FINGERPRINT_REUSE",
+      message: `${repeated.length} visual fingerprints exceed the reuse budget.`,
+    });
+  }
+  const missingFingerprint = scenes.filter((scene) => !String(scene.visualFingerprint ?? "").trim());
+  if (missingFingerprint.length) {
+    issues.push({
+      severity: "MAJOR", rule: "MISSING_VISUAL_FINGERPRINT", scene: missingFingerprint[0].id,
+      message: `${missingFingerprint.length}/${scenes.length} schema-v2 scenes have no visual fingerprint.`,
+    });
+  }
+
+  return { name: "Rendered-intent proxies", passed: issues.length === 0, issues };
 }
 
 // CHECK 25: Narration coverage → subtitle track exists
@@ -1867,6 +2061,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkSceneDensity(timeline, scenes),
     checkReferenceComposition(timeline, scenes),
     checkSemanticTimeline(timeline, scenes),
+    checkRenderedIntentProxies(timeline, scenes),
     checkOverlayNarrationDuplication(scenes),
   ];
 
