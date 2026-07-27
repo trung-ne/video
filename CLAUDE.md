@@ -93,7 +93,7 @@ video/
 │       └── ui/{arrow_up,arrow_down}.svg
 ├── projects/                     # 📁 MỖI VIDEO = 1 FOLDER (xem bên dưới)
 ├── timeline.json                 # Active timeline (input cho render)
-├── output/                       # MP4 render ra đây
+├── output/                       # render ra đây, 1 folder/video: output/<id>/video.mp4 + audits
 └── CLAUDE.md                     # File này
 ```
 
@@ -120,8 +120,10 @@ projects/video-003-tai-sao-eng/
 Generate + render trỏ vào folder qua **path**, không có flag `--project`:
 ```bash
 npx ts-node scripts/generate-timeline.ts --transcript projects/<id>/transcript.txt --out projects/<id>/timeline.json
-npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json --out output/<id>.mp4
+npx ts-node scripts/render.ts --timeline projects/<id>/timeline.json
 ```
+
+(mặc định ghi ra `output/<id>/video.mp4`, id lấy từ tên folder cha của `--timeline`; chỉ định `--out` khi cần path khác.)
 
 ⚠️ Lưu ý để tránh hiểu nhầm: **không tồn tại** flag `--project`; `timeline.json` ở root là file thường (không phải symlink); `metadata.json` chỉ được `new-project.ts` ghi lúc tạo — generate/render **không** tự cập nhật status/version.
 

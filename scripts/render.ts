@@ -3,7 +3,14 @@
  *
  * Usage:
  *   npx ts-node scripts/render.ts
+ *   npx ts-node scripts/render.ts --project <id> --out output/<id>/video.mp4
  *   npx ts-node scripts/render.ts --timeline timeline.json --out output/video.mp4
+ *
+ * Without --out, the output path defaults to output/<id>/video.mp4 (id from
+ * --project, or from the parent folder name when --timeline points inside
+ * projects/<id>/) — every artifact for a video (video.mp4, contact.jpg,
+ * *-audit.json, production-report.json) lands in one output/<id>/ folder
+ * instead of flat output/<id>-suffix.ext files.
  */
 
 import { execFileSync, execSync } from "child_process";
@@ -30,7 +37,20 @@ const projectPath = projectArg
       : path.join("projects", projectArg))
   : "";
 const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "timeline.json");
-const outPath = getArg("--out", "output/video.mp4");
+
+// Derive a project id for the default output folder: from --project, or from
+// the parent directory name when --timeline points inside projects/<id>/.
+function defaultOutPath(): string {
+  const id = projectPath
+    ? path.basename(projectPath)
+    : (() => {
+        const dir = path.basename(path.dirname(timelinePath));
+        return dir && dir !== "." ? dir : null;
+      })();
+  return id ? path.join("output", id, "video.mp4") : "output/video.mp4";
+}
+
+const outPath = getArg("--out", defaultOutPath());
 const compositionId = getArg("--composition", "CatExplainer");
 const isProxy = args.includes("--proxy");
 const framesArg = getArg("--frames", "");
@@ -163,12 +183,18 @@ function findCachedChromeHeadlessShell(): string | null {
   if (!fs.existsSync(base)) return null;
   const candidates = fs
     .readdirSync(base)
-    .filter((d) => d.startsWith("chromium_headless_shell-"))
+    .filter((d) => d.startsWith("chromium_headless_shell-") || d.startsWith("chromium-"))
     .sort()
     .reverse();
   for (const dir of candidates) {
-    const exe = path.join(base, dir, "chrome-headless-shell-win64", "chrome-headless-shell.exe");
-    if (fs.existsSync(exe)) return exe;
+    const candidatesInDir = [
+      path.join(base, dir, "chrome-headless-shell-win64", "chrome-headless-shell.exe"),
+      path.join(base, dir, "chrome-win64", "chrome.exe"),
+      path.join(base, dir, "chrome-win", "chrome.exe"),
+    ];
+    for (const exe of candidatesInDir) {
+      if (fs.existsSync(exe)) return exe;
+    }
   }
   return null;
 }

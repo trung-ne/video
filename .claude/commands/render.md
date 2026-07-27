@@ -1,8 +1,11 @@
 # /render — Production render
 
 ```powershell
-npm run render -- --project <id-or-path> --out output/<id>.mp4
+npm run render -- --project <id-or-path>
 ```
+
+Mặc định ghi ra `output/<id>/video.mp4` (kèm `contact.jpg`, `*-audit.json`,
+`production-report.json` trong cùng folder). Chỉ định `--out` khi cần path khác.
 
 Render chỉ chạy khi schema và semantic quality gate pass. Sau render tự chạy:
 
