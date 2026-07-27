@@ -33,6 +33,10 @@ export interface AssetManifestEntry {
   aliases?: string[];
   visualDensity?: number;
   recommendedScale?: number;
+  // Multiplier that cancels out an asset's transparent padding, so two assets
+  // authored at the same `scale` occupy the same visual size. 1 = no padding.
+  // Measured from the alpha channel by scripts/measure-asset-content.py.
+  contentScale?: number;
   aspectRatio?: number;
   semanticRoles?: string[];
   actionTags?: string[];
@@ -49,4 +53,7 @@ export interface AssetManifest {
   // "characters/cat_explain" / "finance/money" / "assets/scenes/cafe.svg"
   // while rendering resolves to the current generated-* asset.
   aliases?: Record<string, string>;
+  // Physical path → contentScale, for the renderer to look up without walking
+  // the full entry list. Only assets whose padding differs from 1 appear here.
+  contentScales?: Record<string, number>;
 }

@@ -1,7 +1,47 @@
 import * as crypto from "crypto";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { AssetKind, AssetManifest, AssetManifestEntry, AssetStyleFamily } from "../src/types/assets";
+
+// ── Transparent-padding compensation ──────────────────────────────────────
+// The generated PNGs carry uneven transparent margins (measured 56-81% of the
+// canvas), so the same authored `scale` renders visibly different sizes and
+// characters came out ~20% smaller than the SVGs they replaced. Measure the
+// opaque bounding box once here and store a per-asset multiplier the renderer
+// applies, which is equivalent to trimming the padding without touching the
+// source files.
+//
+// Falls back to no compensation if Python/Pillow is unavailable — the manifest
+// must still build. (Python is already a hard dependency of this repo: TTS,
+// word alignment and the audio/visual audits all need it.)
+function measureContentFractions(): Record<string, [number, number]> {
+  const script = path.join(process.cwd(), "scripts", "measure-asset-content.py");
+  if (!fs.existsSync(script)) return {};
+  for (const python of ["python", "py"]) {
+    try {
+      const raw = execFileSync(python, [script, publicDir], {
+        encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 8 * 1024 * 1024,
+      });
+      return JSON.parse(raw);
+    } catch {
+      continue;
+    }
+  }
+  console.warn("⚠️  Không đo được padding asset (thiếu Python/Pillow) — bỏ qua contentScale.");
+  return {};
+}
+
+// Normalize so the content's longer side touches the frame: factor =
+// 1 / max(widthFraction, heightFraction). Clamped so a mostly-empty image
+// cannot blow up.
+function contentScaleFor(fractions: [number, number] | undefined): number | undefined {
+  if (!fractions) return undefined;
+  const largest = Math.max(fractions[0], fractions[1]);
+  if (!Number.isFinite(largest) || largest <= 0) return undefined;
+  const scale = Math.min(1.8, Math.max(1, 1 / largest));
+  return scale > 1.01 ? Number(scale.toFixed(3)) : undefined;
+}
 
 const publicDir = path.join(process.cwd(), "public");
 const outputPath = path.join(publicDir, "assets.manifest.json");
@@ -75,12 +115,15 @@ function buildEntry(file: string): AssetManifestEntry {
     source: relative.startsWith("generated-") ? "generated" : "original",
     visualDensity: densityByKind[kind],
     recommendedScale: kind === "prop" || kind === "ui" ? 1.35 : 1,
+    contentScale: contentScaleFor(contentFractions[relative]),
     semanticRoles: kind === "character" ? ["subject", "actor"] : [kind, "focal"],
     actionTags: kind === "character" ? tags : [],
     settingTags: kind === "stage" ? tags : [],
     isFallback: /placeholder|fallback|concept.card/i.test(relative) || stat.size < 200,
   };
 }
+
+const contentFractions = measureContentFractions();
 
 const files = [
   ...walk(path.join(publicDir, "assets")),
@@ -167,11 +210,18 @@ const legacyRefs = files.filter((f) => {
   return r.startsWith("assets/") && r.endsWith(".svg");
 }).length;
 
+// Flat path → contentScale lookup so the renderer does not walk every entry.
+const contentScales: Record<string, number> = {};
+for (const entry of deduped) {
+  if (entry.contentScale && entry.contentScale > 1.01) contentScales[entry.path] = entry.contentScale;
+}
+
 const manifest: AssetManifest = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
   entries: deduped,
   aliases,
+  contentScales,
 };
 fs.writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Wrote ${deduped.length} canonical assets (${entries.length - deduped.length} duplicate aliases) to ${outputPath}`);

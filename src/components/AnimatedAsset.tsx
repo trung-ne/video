@@ -8,7 +8,7 @@ import {
   AnimationValues,
 } from "../animations";
 import { ActiveEmphasize } from "../engine/timelineEngine";
-import { resolveAssetSrc } from "../engine/assetPaths";
+import { resolveAssetSrc, getContentScale } from "../engine/assetPaths";
 
 interface Props {
   asset: AssetState;
@@ -69,7 +69,9 @@ export const AnimatedAsset: React.FC<Props> = ({
 
   const pixelX = asset.position.x * canvasWidth;
   const pixelY = asset.position.y * canvasHeight;
-  const size = BASE_ASSET_SIZE * asset.scale;
+  // Compensate for baked-in transparent padding so an authored scale means the
+  // same visible size on every asset (see assetPaths.getContentScale).
+  const size = BASE_ASSET_SIZE * asset.scale * getContentScale(asset.src);
 
   const totalScale = resolved.scale * emphasisScale;
   const totalTX = resolved.translateX + emphasisTranslateX;

@@ -19,6 +19,8 @@
 import manifest from "../../public/assets.manifest.json";
 
 const ALIASES: Record<string, string> = (manifest as { aliases?: Record<string, string> }).aliases ?? {};
+const CONTENT_SCALES: Record<string, number> =
+  (manifest as { contentScales?: Record<string, number> }).contentScales ?? {};
 
 const HAS_EXTENSION = /\.(?:png|jpe?g|webp|gif|svg)$/i;
 
@@ -62,6 +64,18 @@ export function resolveAssetSrcStrict(src: string): {
     resolvedFromAlias: Boolean(ALIASES[src]),
     isLegacy: isLegacyAssetPath(path),
   };
+}
+
+/**
+ * Multiplier that cancels an asset's transparent padding so the same authored
+ * `scale` yields the same visual size across assets. 1 when the art already
+ * fills its canvas (or when padding was never measured).
+ *
+ * Accepts a logical ref or a physical path — it resolves first either way.
+ */
+export function getContentScale(src: string): number {
+  if (!src) return 1;
+  return CONTENT_SCALES[resolveAssetSrc(src)] ?? 1;
 }
 
 /** Every logical ref that currently maps to production art. */
