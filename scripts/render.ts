@@ -13,6 +13,8 @@ import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
+import { prepareTimelineAudio, writeAudioAudit } from "../src/audio/prepareAudio";
+import referenceQuality from "../config/reference-quality.json";
 
 const args = process.argv.slice(2);
 
@@ -30,8 +32,9 @@ const projectPath = projectArg
 const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "timeline.json");
 const outPath = getArg("--out", "output/video.mp4");
 const compositionId = getArg("--composition", "CatExplainer");
+const isProxy = args.includes("--proxy");
 
-function runEncodingAudit(videoPath: string): void {
+function runEncodingAudit(videoPath: string): any {
   const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
   const rawReport = execFileSync(ffprobePath, [
     "-v", "error", "-show_streams", "-show_format", "-of", "json", videoPath,
@@ -42,19 +45,26 @@ function runEncodingAudit(videoPath: string): void {
   const failures: string[] = [];
   if (!video || video.width !== 1920 || video.height !== 1080) failures.push("Video must be 1920x1080.");
   if (video && video.codec_name !== "h264") failures.push(`Video codec must be h264, got ${video.codec_name}.`);
+  if (video && video.pix_fmt !== referenceQuality.encoding.pixelFormat) {
+    failures.push(`Pixel format must be ${referenceQuality.encoding.pixelFormat}, got ${video.pix_fmt}.`);
+  }
   const rateParts = String(video?.avg_frame_rate ?? "0/1").split("/").map(Number);
   const fps = rateParts[1] ? rateParts[0] / rateParts[1] : 0;
   if (Math.abs(fps - 30) > 0.1) failures.push(`Frame rate must be 30fps, got ${fps}.`);
   const videoBitrate = Number(video?.bit_rate ?? 0);
   const totalBitrate = Number(probe.format?.bit_rate ?? 0);
-  if (Math.max(videoBitrate, totalBitrate) < 1_000_000) failures.push("1080p bitrate is below 1 Mbps.");
+  if (videoBitrate < referenceQuality.encoding.minimumVideoBitrate) {
+    failures.push(`1080p video bitrate is below ${referenceQuality.encoding.minimumVideoBitrate} bps.`);
+  }
   if (!audio) failures.push("Rendered file has no audio stream.");
+  if (audio && audio.codec_name !== "aac") failures.push(`Audio codec must be aac, got ${audio.codec_name}.`);
   const report = {
     videoPath: path.resolve(videoPath),
     codec: video?.codec_name,
     width: video?.width,
     height: video?.height,
     fps,
+    pixelFormat: video?.pix_fmt,
     videoBitrate,
     totalBitrate,
     audioCodec: audio?.codec_name,
@@ -65,6 +75,7 @@ function runEncodingAudit(videoPath: string): void {
   const reportPath = videoPath.replace(/\.mp4$/i, ".encoding-audit.json");
   fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   if (failures.length) throw new Error(`Encoding audit failed: ${failures.join(" ")}`);
+  return report;
 }
 
 // Validate timeline file
@@ -74,6 +85,7 @@ if (!fs.existsSync(timelinePath)) {
 }
 
 const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+let preparedAudio: any = null;
 
 // Schema gate — fail fast with a clear message instead of crashing deep inside
 // Remotion on a malformed/hand-edited timeline. Pass --skip-validate to bypass.
@@ -99,6 +111,12 @@ if (!args.includes("--skip-quality")) {
     );
     process.exit(1);
   }
+}
+
+if (raw.audio && !isProxy && !args.includes("--skip-audio-prepare")) {
+  preparedAudio = prepareTimelineAudio(raw.audio);
+  raw.audio = preparedAudio.publicPath;
+  console.log(`Audio prepared: ${preparedAudio.audit.integratedLufs} LUFS${preparedAudio.mastered ? " (mastered)" : ""}`);
 }
 
 // Scan which cat poses actually exist so pose-swaps never reference a missing asset.
@@ -162,11 +180,13 @@ try {
     compositionId,
     `"${outPath}"`,
     `--props="${propsTmpFile}"`,
-    "--log=verbose",
+    "--log=info",
     "--codec=h264",
-    "--crf=18",
-    "--audio-bitrate=192k",
-    "--pixel-format=yuv420p",
+    isProxy ? "--scale=0.333" : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
+    isProxy ? "--crf=23" : `--encoding-max-rate=${referenceQuality.encoding.maximumVideoBitrate}`,
+    isProxy ? "--muted" : `--encoding-buffer-size=${referenceQuality.encoding.encodingBufferSize}`,
+    `--audio-bitrate=${referenceQuality.encoding.audioBitrate}`,
+    `--pixel-format=${referenceQuality.encoding.pixelFormat}`,
     browserExecutable ? `--browser-executable="${browserExecutable}"` : "",
   ]
     .filter(Boolean)
@@ -174,8 +194,8 @@ try {
 
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
-  console.log(`\n✅ Render complete: ${outPath}`);
-  runEncodingAudit(outPath);
+  console.log(`\nEncoded media: ${outPath}. Running publish audits...`);
+  const encodingAudit = isProxy ? null : runEncodingAudit(outPath);
 
   // Pixel-level regression gate. Timeline quotas cannot detect semantically
   // empty or visually repetitive frames, so sample the actual encoded MP4.
@@ -184,12 +204,42 @@ try {
     const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
     if (fs.existsSync(auditScript)) {
       execSync(
-        `python "${auditScript}" --video "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}"`,
+        `python "${auditScript}" --video "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg"))}"`,
         { stdio: "inherit", cwd: process.cwd() }
       );
     }
   }
+  const audioAuditPath = outPath.replace(/\.mp4$/i, ".audio-audit.json");
+  const audioAudit = isProxy ? null : writeAudioAudit(path.resolve(outPath), audioAuditPath);
+  const productionReport = {
+    schemaVersion: 1,
+    status: isProxy ? "proxy-ready" : "production-ready",
+    video: path.resolve(outPath),
+    timeline: path.resolve(timelinePath),
+    preparedAudio,
+    encodingAudit,
+    audioAudit,
+    visualAudit: path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
+  };
+  fs.writeFileSync(
+    outPath.replace(/\.mp4$/i, ".production-report.json"),
+    `${JSON.stringify(productionReport, null, 2)}\n`,
+    "utf8",
+  );
+  console.log(`\n✅ ${isProxy ? "Proxy audit" : "Production render"} complete: ${outPath}`);
 } catch (err) {
+  const failedReport = {
+    schemaVersion: 1,
+    status: "diagnostic",
+    video: fs.existsSync(outPath) ? path.resolve(outPath) : null,
+    timeline: path.resolve(timelinePath),
+    error: err instanceof Error ? err.message : String(err),
+  };
+  fs.writeFileSync(
+    outPath.replace(/\.mp4$/i, ".production-report.json"),
+    `${JSON.stringify(failedReport, null, 2)}\n`,
+    "utf8",
+  );
   console.error("\n❌ Render failed:", err);
   process.exit(1);
 } finally {

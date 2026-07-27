@@ -30,15 +30,15 @@ npm run generate -- --project video-004-my-topic --tts-kokoro
 # Preview đúng project, không copy timeline về root
 npm run preview:project -- --project video-004-my-topic
 
-# Render kèm toàn bộ quality gates
-npm run render -- --project video-004-my-topic --out output/video-004-my-topic.mp4
+# Publish mặc định: pre-render gate -> proxy audit -> full render -> final audits
+npm run publish -- --timeline projects/video-004-my-topic/timeline.json --out output/video-004-my-topic.mp4
 ```
 
 Có thể truyền đường dẫn đầy đủ thay cho project ID:
 
 ```powershell
 npm run generate -- --project projects/video-004-my-topic --tts
-npm run render -- --project projects/video-004-my-topic --out output/video.mp4
+npm run publish -- --timeline projects/video-004-my-topic/timeline.json --out output/video.mp4
 ```
 
 ## Project artifacts
@@ -63,7 +63,9 @@ MP4/WAV và generated logs không phải source code và không được commit.
 - Transcript source-range coverage và checksum: 100%.
 - Không unresolved asset, empty semantic focal point hoặc generic character pair.
 - Flat/solid scenes: tối đa 50%, mục tiêu dưới 45%.
-- Ít nhất 5 visual registers; không register nào quá 35%.
+- Ít nhất 6 visual registers; không register nào quá 30%.
+- Character chỉ xuất hiện tối đa 80% cảnh; không để một template shape quá 25%.
+- Video dài cần ít nhất 20 pose/costume/action variant.
 - Hero visual ít nhất mỗi 45 giây.
 - Edge density `>=0.16`, saturation `>=0.15`, near-duplicate `<=22%`.
 - Audio từ `-18` đến `-16 LUFS`, true peak `<=-1.5 dBTP`.
@@ -71,6 +73,10 @@ MP4/WAV và generated logs không phải source code và không được commit.
 
 `--diagnostic`, `--skip-quality` và `--skip-visual-audit` chỉ dùng để chẩn đoán,
 không tạo production artifact.
+
+`render.ts` tạo media chẩn đoán; chỉ `publish.ts` mới chạy proxy trước và ghi
+`production-report.json` với trạng thái `production-ready`. Audio có sẵn cũng
+được audit/master tự động, không chỉ audio vừa sinh từ TTS.
 
 ## Assets
 
@@ -98,6 +104,7 @@ Chi tiết kiến trúc và thứ tự triển khai:
 
 - [Reference quality plan](docs/REFERENCE_QUALITY_PLAN.md)
 - [Implementation plan](docs/REFERENCE_QUALITY_IMPLEMENTATION_PLAN.md)
+- [V4 rendered-reference recovery](docs/V4_RENDERED_REFERENCE_RECOVERY_PLAN.md)
 
 `src/ai/systemPrompt.ts` và direct-to-events pipeline là compatibility path cho
 schema v1. Production mặc định dùng prompt modules trong `src/ai/prompts/`.
