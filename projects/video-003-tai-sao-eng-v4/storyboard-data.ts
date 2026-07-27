@@ -1,7 +1,8 @@
 // Hand-authored storyboard content for projects/video-003-tai-sao-eng-v4.
 // Each entry's `marker` is a verbatim phrase copied from transcript.txt that
-// marks where this scene's narration begins; the resolver (build-storyboard-v4.ts)
-// finds it in the tokenized transcript and slices exact, non-overlapping,
+// marks where this scene's narration begins; the resolver
+// (scripts/build-storyboard.ts --project video-003-tai-sao-eng-v4) finds it
+// in the tokenized transcript and slices exact, non-overlapping,
 // full-coverage sourceRanges from it. Only `marker`/`narrationOverride` touch
 // the transcript; `grammar`/`emotion`/`slots`/`purpose`/`viewerFocus` are the
 // actual authorial decisions for this video.
