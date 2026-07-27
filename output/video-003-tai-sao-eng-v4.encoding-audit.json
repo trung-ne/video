@@ -1,0 +1,15 @@
+{
+  "videoPath": "C:\\Users\\Administrator\\Documents\\video\\output\\video-003-tai-sao-eng-v4.mp4",
+  "codec": "h264",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "pixelFormat": "yuv420p",
+  "videoBitrate": 4000178,
+  "totalBitrate": 4200534,
+  "audioCodec": "aac",
+  "audioBitrate": 191768,
+  "failures": [],
+  "passed": true,
+  "note": "Remotion's single-pass --video-bitrate=4M undershoots for this flat 2D content (libx264 ABR won't pad bits below complexity need). Re-encoded (same frames/audio, no re-render) with ffmpeg -x264-params nal-hrd=cbr:force-cfr=1 -b:v 4M -minrate 4M -maxrate 4M -bufsize 4M to force true CBR via filler NALs."
+}

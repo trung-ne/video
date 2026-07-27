@@ -115,9 +115,18 @@ function detectTextOverlap(
     texts.push({ id: t.id, slot: t.slot, start, end });
   }
 
+  // CALLOUT_LEFT and CALLOUT_RIGHT sit in opposite horizontal thirds (the
+  // COMPARE/rule-of-thirds device) — simultaneous is the intended reading,
+  // not a collision. Only flag pairs that actually contend for the same
+  // physical slot (both CENTER, or either side vs CENTER).
+  const sideOf = (slot?: string): "left" | "right" | "other" =>
+    slot === "CALLOUT_LEFT" ? "left" : slot === "CALLOUT_RIGHT" ? "right" : "other";
+
   for (let i = 0; i < texts.length; i++) {
     for (let j = i + 1; j < texts.length; j++) {
       const a = texts[i], b = texts[j];
+      const sideA = sideOf(a.slot), sideB = sideOf(b.slot);
+      if ((sideA === "left" && sideB === "right") || (sideA === "right" && sideB === "left")) continue;
       const overlapStart = Math.max(a.start, b.start);
       const overlapEnd = Math.min(a.end, b.end);
       if (overlapStart < overlapEnd) {

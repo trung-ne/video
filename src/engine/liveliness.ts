@@ -131,8 +131,16 @@ export function injectLiveliness(
   const poses = opts.availablePoses;
   const total = timeline.durationInFrames;
 
-  const spans = computeAssetSpans(timeline.events, total).filter((s) =>
-    s.src.startsWith("characters/")
+  // Character spans get the full treatment (emphasize + narrator pose-swap).
+  // Non-character focal assets (props/icons/finance/people — the icon nodes
+  // of ICON_TRIPLE, DIAGRAM, POLICY_LIST, HISTORY_TIMELINE, etc.) still sit
+  // on screen for the whole scene but previously got NO periodic beat at
+  // all when a scene had no character entity, leaving those registers
+  // completely static for their full duration. Give them emphasize-only
+  // beats too. Thin connector glyphs (ui/arrow_*) are excluded — pulsing a
+  // tiny connecting arrow every few seconds reads as jitter, not liveliness.
+  const spans = computeAssetSpans(timeline.events, total).filter(
+    (s) => !s.src.startsWith("ui/arrow")
   );
 
   const added: TimelineEvent[] = [];
