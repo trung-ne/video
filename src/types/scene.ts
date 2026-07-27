@@ -203,9 +203,17 @@ export interface Scene {
   sourceRange?: SourceRange;
   visualRegister?: VisualRegister;
   semanticTakeaway?: string;
+  semanticAction?: string;
+  semanticSetting?: string;
   semanticAssetIds?: string[];
   claimIds?: string[];
   heroVisual?: boolean;
+  focalType?: import("./storyboard").FocalType;
+  characterRequired?: boolean;
+  visualFingerprint?: string;
+  silentFrameTakeaway?: string;
+  focalOccupancyTarget?: number;
+  noveltyFromPrevious?: string[];
   unresolvedAssets?: string[];
   subtitleCues?: Array<{ text: string; startFrame: number; endFrame: number }>;
   backgroundSrc?: string;  // CSS color/gradient or image path for background event

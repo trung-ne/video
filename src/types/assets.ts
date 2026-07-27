@@ -22,6 +22,13 @@ export interface AssetManifestEntry {
   anchors?: Record<string, AssetPoint>;
   source?: "original" | "generated" | "licensed";
   aliases?: string[];
+  visualDensity?: number;
+  recommendedScale?: number;
+  aspectRatio?: number;
+  semanticRoles?: string[];
+  actionTags?: string[];
+  settingTags?: string[];
+  isFallback?: boolean;
 }
 
 export interface AssetManifest {

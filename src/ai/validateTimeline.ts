@@ -86,7 +86,13 @@ export function validateSceneTimeline(input: any): ValidationResult {
       }
       if (!scene.visualRegister) errors.push(`${sp} schema v2 scene requires visualRegister`);
       if (!scene.semanticTakeaway) errors.push(`${sp} schema v2 scene requires semanticTakeaway`);
+      if (!scene.semanticAction) errors.push(`${sp} schema v2 scene requires semanticAction`);
       if (!Array.isArray(scene.semanticAssetIds)) errors.push(`${sp} schema v2 scene requires semanticAssetIds`);
+      if (!scene.focalType) errors.push(`${sp} schema v2 scene requires focalType`);
+      if (!scene.visualFingerprint) errors.push(`${sp} schema v2 scene requires visualFingerprint`);
+      if (!scene.silentFrameTakeaway) errors.push(`${sp} schema v2 scene requires silentFrameTakeaway`);
+      if (typeof scene.focalOccupancyTarget !== "number") errors.push(`${sp} schema v2 scene requires focalOccupancyTarget`);
+      if (!Array.isArray(scene.noveltyFromPrevious)) errors.push(`${sp} schema v2 scene requires noveltyFromPrevious`);
       if ((scene.unresolvedAssets?.length ?? 0) > 0) errors.push(`${sp} has unresolvedAssets`);
     }
 
@@ -359,7 +365,10 @@ export function validateTimeline(timeline: any, assetDir?: string): ValidationRe
 export function printValidationResult(result: ValidationResult, timelinePath: string) {
   if (result.errors.length > 0) {
     console.error(`\n❌ Validation FAILED (${timelinePath}):`);
-    for (const e of result.errors) console.error(`   ERROR: ${e}`);
+    for (const e of result.errors.slice(0, 40)) console.error(`   ERROR: ${e}`);
+    if (result.errors.length > 40) {
+      console.error(`   ... ${result.errors.length - 40} more validation errors`);
+    }
   } else {
     console.log(`\n✅ Validation passed: ${timelinePath}`);
   }

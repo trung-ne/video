@@ -9,13 +9,25 @@
     "maximumRatio": 0.5,
     "targetRatio": 0.45
   },
+  "composition": {
+    "maximumTemplateShapeRatio": 0.25,
+    "maximumCharacterPresenceRatio": 0.8,
+    "minimumCharacterFreeRatio": 0.2,
+    "minimumPhotoEvidenceRatio": 0.08,
+    "maximumPoseRatio": 0.08,
+    "maximumStageRatio": 0.12,
+    "maximumLabelUses": 2,
+    "minimumFocalOccupancy": 0.18,
+    "minimumLongVideoFocalAssets": 30,
+    "minimumLongVideoPoseVariants": 20
+  },
   "heroVisual": {
     "maximumGapSeconds": 45,
     "targetGapSeconds": 35
   },
   "registers": {
-    "minimumDistinct": 5,
-    "maximumSingleRatio": 0.35,
+    "minimumDistinct": 6,
+    "maximumSingleRatio": 0.3,
     "maximumConsecutive": 2
   },
   "semanticVariants": {
@@ -28,6 +40,8 @@
     "minimumEdgeDensity": 0.16,
     "minimumSaturation": 0.15,
     "maximumNearDuplicateRatio": 0.22,
+    "targetFlatFrameRatio": 0.45,
+    "maximumFlatFrameRatio": 0.5,
     "subtitleBandTopRatio": 0.76
   },
   "audio": {
@@ -35,5 +49,17 @@
     "minimumLufs": -18,
     "maximumLufs": -16,
     "maximumTruePeakDbtp": -1.5
+  },
+  "encoding": {
+    "codec": "h264",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "targetVideoBitrate": "4M",
+    "minimumVideoBitrate": 3000000,
+    "maximumVideoBitrate": "5M",
+    "encodingBufferSize": "8M",
+    "audioBitrate": "192k",
+    "pixelFormat": "yuv420p"
   }
 }

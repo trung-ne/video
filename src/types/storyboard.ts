@@ -30,6 +30,14 @@ export type VisualGrammar =
   | "ICON_TRIPLE"   // three concepts in colored circles
   | "BEAT"          // full-bleed emotional image, no character, no overlay
   | "SOLO"          // one expressive cat addressing the viewer + a keyword
+  | "MAP_FLOW"
+  | "DATA_CHART"
+  | "SURVEY_CARD"
+  | "PHOTO_EVIDENCE"
+  | "SCREEN_CAPTURE"
+  | "FULL_SCENE_ACTION"
+  | "HISTORY_TIMELINE"
+  | "VISUAL_METAPHOR"
   | "FREEFORM";     // escape hatch: an author-written Scene is embedded as-is
 
 export type Emotion =
@@ -47,6 +55,25 @@ export type VisualRegister =
   | "framebox"
   | "visual_gag"
   | "full_tableau";
+
+export type FocalType =
+  | "character_action"
+  | "full_scene"
+  | "chart"
+  | "map"
+  | "diagram"
+  | "evidence"
+  | "photo"
+  | "screenshot"
+  | "visual_gag";
+
+export interface VisualTreatmentPlan {
+  registerTargets: Partial<Record<VisualRegister, number>>;
+  characterFreeTarget: number;
+  heroConcepts: string[];
+  visualMotifs: string[];
+  forbiddenRepeats: string[];
+}
 
 export interface SourceRange {
   startWord: number;
@@ -103,6 +130,12 @@ export interface SceneBrief {
   semanticVisual?: SemanticVisual;
   claimIds?: string[];
   heroVisual?: boolean;
+  focalType?: FocalType;
+  characterRequired?: boolean;
+  visualFingerprint?: string;
+  silentFrameTakeaway?: string;
+  focalOccupancyTarget?: number;
+  noveltyFromPrevious?: string[];
   assetRequests?: AssetRequest[];
   resolvedAssets?: Record<string, string>;
   unresolvedAssetRequests?: string[];
@@ -134,6 +167,7 @@ export interface Storyboard {
   cast?: Record<string, { src: string; badge?: string }>;
   sections?: StorySection[];
   claims?: StoryClaim[];
+  visualTreatmentPlan?: VisualTreatmentPlan;
   generation?: {
     provider?: string;
     model?: string;
@@ -149,6 +183,14 @@ export interface StorySection {
   thesis: string;
   emotionalTurn: string;
   targetDurationSeconds?: number;
+  claimVisuals?: string[];
+  treatmentSequence?: VisualRegister[];
+  heroConcept?: string;
+  requiredProps?: string[];
+  requiredSettings?: string[];
+  requiredCharacterRoles?: string[];
+  noCharacterOpportunity?: boolean;
+  visualContrastFromPreviousSection?: string;
 }
 
 export interface StoryClaim {
