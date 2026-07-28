@@ -390,6 +390,16 @@ try {
           referenceBaseline,
         )
       : null;
+  const durationsManifestPath = path.join(path.dirname(path.resolve(timelinePath)), "durations.json");
+  const durationsManifest = fs.existsSync(durationsManifestPath)
+    ? JSON.parse(fs.readFileSync(durationsManifestPath, "utf8"))
+    : null;
+  const ttsMetrics = durationsManifest?.ttsMetrics ?? (durationsManifest
+    ? {
+        chunkCount: Array.isArray(durationsManifest.scenes) ? durationsManifest.scenes.length : null,
+        measurement: "legacy manifest; gap and wall-clock metrics unavailable",
+      }
+    : null);
   const productionReport = {
     schemaVersion: 1,
     status: isProxy ? "proxy-ready" : framesArg ? "diagnostic" : "production-ready",
@@ -405,6 +415,7 @@ try {
       ? null
       : path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
     referenceComparison,
+    ttsMetrics,
   };
   fs.writeFileSync(
     stagedOut.replace(/\.mp4$/i, ".production-report.json"),

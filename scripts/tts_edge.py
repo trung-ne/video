@@ -28,10 +28,11 @@ import json
 import os
 import struct
 import sys
+import time
 import wave
 
 FPS = 30
-GAP_SEC = 0.08      # short section boundary only; visual shots are not TTS chunks
+GAP_SEC = 0.08      # short boundary between per-scene narration chunks
 
 
 def wav_to_samples(path: str):
@@ -148,6 +149,7 @@ def mp3_to_wav_samples(mp3_path: str, target_sr: int = 24000):
 
 
 async def main_async(args):
+    started_at = time.perf_counter()
     with open(args.scenes, "r", encoding="utf-8-sig") as f:
         scenes = json.load(f)
 
@@ -209,7 +211,18 @@ async def main_async(args):
 
     manifest["totalSec"] = round(len(all_samples) / TARGET_SR, 3)
     manifest["totalFrames"] = start_frame
-    durations_path = os.path.join(args.outdir, "durations.json")
+    gap_count = max(0, len(manifest["scenes"]) - 1)
+    total_gap_seconds = gap_count * max(0.0, args.gap)
+    manifest["ttsMetrics"] = {
+        "chunkCount": len(manifest["scenes"]),
+        "gapCount": gap_count,
+        "maxInterSceneGapSeconds": round(max(0.0, args.gap), 3),
+        "totalGapSeconds": round(total_gap_seconds, 3),
+        "gapShare": round(total_gap_seconds / manifest["totalSec"], 6) if manifest["totalSec"] else 0,
+        "wallClockSeconds": round(time.perf_counter() - started_at, 3),
+    }
+    durations_path = args.manifest or os.path.join(args.outdir, "durations.json")
+    os.makedirs(os.path.dirname(os.path.abspath(durations_path)), exist_ok=True)
     with open(durations_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=2)
 
@@ -223,10 +236,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenes", required=True, help="JSON file: [{id,text},...]")
     ap.add_argument("--outdir", required=True)
+    ap.add_argument("--manifest", default=None,
+                    help="durations.json path (default: <outdir>/durations.json)")
     ap.add_argument("--voice", default="en-US-AvaNeural",
                     help="Edge TTS voice name (default: en-US-AvaNeural)")
     ap.add_argument("--gap", type=float, default=GAP_SEC,
-                    help="silence between natural TTS sections")
+                    help="silence between per-scene TTS chunks")
     args = ap.parse_args()
     asyncio.run(main_async(args))
 

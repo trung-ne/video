@@ -52,7 +52,8 @@ phiên chat và viết tay nội dung scene:
 # 1. Viết projects/<id>/storyboard-data.ts  (export SCENES, CAST) — việc authoring
 npx ts-node scripts/build-storyboard.ts --project <id>          # → storyboard.json
 npx ts-node scripts/storyboard-to-tts.ts --storyboard projects/<id>/storyboard.json
-py -3.11 scripts/tts_kokoro.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id>
+py -3.11 scripts/tts_kokoro.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id> \
+    --manifest projects/<id>/durations.json
 py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir projects/<id> \
     --model small --lang en --transcript projects/<id>/transcript.txt
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \

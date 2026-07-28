@@ -17,7 +17,7 @@ Route A dùng chính session agent, không cần API key:
 ```powershell
 npm run build-storyboard -- --project <id>
 npm run storyboard-to-tts -- --storyboard projects/<id>/storyboard.json
-py -3.11 scripts/tts_kokoro.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id>
+py -3.11 scripts/tts_kokoro.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id> --manifest projects/<id>/durations.json
 py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir projects/<id> --model small --lang en --transcript projects/<id>/transcript.txt
 npm run compile-storyboard -- --storyboard projects/<id>/storyboard.json --out projects/<id>/timeline.json --durations projects/<id>/durations.json --words projects/<id>/words.json --audio audio/<id>/voice.wav
 ```

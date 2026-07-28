@@ -21,19 +21,21 @@ import argparse
 import json
 import os
 import sys
+import time
 
 FPS = 30
 SR = 24000          # Kokoro output sample rate
-GAP_SEC = 0.08      # short section boundary only; visual shots are not TTS chunks
+GAP_SEC = 0.08      # short boundary between per-scene narration chunks
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenes", required=True, help="JSON file: [{id,text},...]")
     ap.add_argument("--outdir", required=True)
+    ap.add_argument("--manifest", default=None, help="durations.json path (default: <outdir>/durations.json)")
     ap.add_argument("--voice", default="af_heart")
     ap.add_argument("--lang", default="a", help="Kokoro lang_code (a=US English)")
-    ap.add_argument("--gap", type=float, default=GAP_SEC, help="silence between natural TTS sections")
+    ap.add_argument("--gap", type=float, default=GAP_SEC, help="silence between per-scene TTS chunks")
     args = ap.parse_args()
 
     import numpy as np
@@ -48,6 +50,7 @@ def main():
     # Suppress HF hub warning
     os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
 
+    started_at = time.perf_counter()
     pipeline = KPipeline(lang_code=args.lang)
 
     gap = np.zeros(int(SR * max(0.0, args.gap)), dtype=np.float32)
@@ -97,12 +100,25 @@ def main():
 
     manifest["totalSec"] = round(len(full) / SR, 3)
     manifest["totalFrames"] = start_frame
-    with open(os.path.join(args.outdir, "durations.json"), "w", encoding="utf-8") as f:
+    gap_count = max(0, len(manifest["scenes"]) - 1)
+    total_gap_seconds = gap_count * max(0.0, args.gap)
+    manifest["ttsMetrics"] = {
+        "chunkCount": len(manifest["scenes"]),
+        "gapCount": gap_count,
+        "maxInterSceneGapSeconds": round(max(0.0, args.gap), 3),
+        "totalGapSeconds": round(total_gap_seconds, 3),
+        "gapShare": round(total_gap_seconds / manifest["totalSec"], 6) if manifest["totalSec"] else 0,
+        "wallClockSeconds": round(time.perf_counter() - started_at, 3),
+    }
+    manifest_path = args.manifest or os.path.join(args.outdir, "durations.json")
+    os.makedirs(os.path.dirname(os.path.abspath(manifest_path)), exist_ok=True)
+    with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=2)
 
     print(f"\nDONE  total={manifest['totalSec']}s  ({start_frame} frames)  "
           f"scenes={len(manifest['scenes'])}")
-    print(f"  voice.wav + durations.json -> {args.outdir}")
+    print(f"  voice.wav -> {args.outdir}")
+    print(f"  durations.json -> {manifest_path}")
 
 
 if __name__ == "__main__":
