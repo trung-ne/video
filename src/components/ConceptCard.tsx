@@ -70,9 +70,11 @@ export const ConceptCard: React.FC<Props> = ({
             background: card.background,
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
+            alignItems: card.iconSrc && !card.label ? "flex-start" : "center",
             justifyContent: "center",
             gap: 8,
+            paddingLeft: card.iconSrc && !card.label ? 54 : 0,
+            boxSizing: "border-box",
           }}
         >
           {/* Icon */}
@@ -80,8 +82,8 @@ export const ConceptCard: React.FC<Props> = ({
             <img
               src={staticFile(iconPath)}
               style={{
-                width: h * 0.45,
-                height: h * 0.45,
+                width: h * (card.label ? 0.45 : 0.36),
+                height: h * (card.label ? 0.45 : 0.36),
                 objectFit: "contain",
               }}
             />

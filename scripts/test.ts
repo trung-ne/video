@@ -31,6 +31,7 @@ import { acquireRenderLock } from "../src/engine/renderLock";
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import { VISUAL_GRAMMARS } from "../src/engine/visualGrammars";
 import { compileScenes } from "../src/engine/sceneCompiler";
+import { injectLiveliness } from "../src/engine/liveliness";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -206,6 +207,54 @@ test("teaching text coverage counts persistent cards but exempts title tails", (
   });
   assert.strictEqual(titleOnly.coveredFrames, 120);
   assert.strictEqual(titleOnly.coverageRatio, 0.4);
+});
+
+test("narrator pose swaps persist until the next narration beat", () => {
+  const timeline: any = {
+    fps: 30,
+    width: 1920,
+    height: 1080,
+    durationInFrames: 500,
+    events: [{
+      frame: 0,
+      type: "enter",
+      assetId: "cat",
+      src: "characters/cat",
+      position: { x: 0.5, y: 0.5 },
+      scale: 1,
+      animation: "popIn",
+    }],
+  };
+  const result = injectLiveliness(timeline, {
+    availablePoses: new Set([
+      "characters/cat",
+      "characters/cat_talk",
+      "characters/cat_explain",
+      "characters/cat_think",
+    ]),
+  });
+  const swaps = timeline.events.filter((event: any) => event.type === "swap");
+  assert.strictEqual(result.swapsAdded, 3);
+  assert.strictEqual(result.movesAdded, 0);
+  assert.strictEqual(result.cameraMovesAdded, 3);
+  assert.strictEqual(swaps.length, 3);
+
+  const costumed: any = {
+    ...timeline,
+    events: [{
+      frame: 0,
+      type: "enter",
+      assetId: "worker",
+      src: "characters/cat_worker",
+      position: { x: 0.5, y: 0.5 },
+      scale: 1,
+      animation: "popIn",
+    }],
+  };
+  const costumedResult = injectLiveliness(costumed);
+  assert.strictEqual(costumedResult.movesAdded, 3);
+  assert.strictEqual(costumedResult.cameraMovesAdded, 3);
+  assert.strictEqual(costumed.events.filter((event: any) => event.type === "move").length, 3);
 });
 
 test("indexes Unicode words with stable indices", () => {

@@ -18,9 +18,9 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "STAT_REVEAL", purpose: "Reveal one transcript-supported number",
-    requiredSlots: ["stat"], optionalSlots: ["who", "anchor"],
+    requiredSlots: ["stat", "anchor"], optionalSlots: ["who"],
     supportedRegisters: ["infographic", "evidence"],
-    semanticRequirements: ["The number must occur in the source range; anchor should visualize what the figure measures."],
+    semanticRequirements: ["The number must occur in the source range; anchor must visualize what the figure measures."],
   },
   {
     id: "POLICY_LIST", purpose: "Show two to four distinct actors or items",

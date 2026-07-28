@@ -62,7 +62,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "Yet, in these countries, the birth rate",
     grammar: "STAT_REVEAL", emotion: "concern",
     purpose: "All that spending still isn't working.",
-    viewerFocus: "the falling trend", slots: { stat: "STILL FALLING", who: "characters/cat_think" } },
+    viewerFocus: "the falling trend", slots: { stat: "STILL FALLING", anchor: "finance/trending_down", who: "characters/cat_think" } },
 
   { marker: "I was reading these statistics",
     grammar: "TABLEAU", emotion: "curious",
@@ -96,7 +96,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "And with this trend of no one getting married",
     grammar: "STAT_REVEAL", emotion: "urgent",
     purpose: "Land the cold open's biggest stake before the branding beat.",
-    viewerFocus: "the 100-year stat", slots: { stat: "GONE IN 100 YEARS", who: "characters/cat_surprised" }, heroVisual: true },
+    viewerFocus: "the 100-year stat", slots: { stat: "GONE IN 100 YEARS", anchor: "props/hourglass", who: "characters/cat_surprised" }, heroVisual: true },
 
   { marker: "Welcome to our cat-themed adaptation series.",
     grammar: "TABLEAU", emotion: "happy",
@@ -220,7 +220,7 @@ export const SCENES: AuthoredScene[] = [
     grammar: "STAT_REVEAL", emotion: "surprise", heroVisual: true,
     purpose: "Land the cascade's punchline: the top-ranked man ends up worst off.",
     viewerFocus: "the ironic outcome",
-    slots: { stat: "#5 ENDS UP WITH #1", who: "guy5" } },
+    slots: { stat: "#5 ENDS UP WITH #1", anchor: "people/person", who: "guy5" } },
 
   { marker: "Actually, girl number 3 could still marry",
     narrationOverride: "Actually, girl number 3 could still marry guy number 5 — the gap there is smaller. But to simplify, let's just assume the cascade above.",
@@ -313,7 +313,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "In reality, many people rush into the top 1-2%",
     grammar: "STAT_REVEAL", emotion: "urgent",
     purpose: "Show the real-world consequence: most people chase the top and lose.",
-    viewerFocus: "the losing odds", slots: { stat: "TOP 1-2% ONLY", who: "characters/cat_think" } },
+    viewerFocus: "the losing odds", slots: { stat: "TOP 1-2% ONLY", anchor: "props/trophy", who: "characters/cat_think" } },
 
   { marker: "For example, Elon Musk, he has a ton of children",
     grammar: "EVIDENCE", emotion: "neutral",
@@ -344,7 +344,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "It's not because they're ugly or incompetent, but simply because the dating game is too tiring now — competition is fierce, the odds of winning are low.",
     grammar: "STAT_REVEAL", emotion: "concern",
     purpose: "Reframe the giving-up trend as a rational response to bad odds.",
-    viewerFocus: "the odds framing", slots: { stat: "TOO TIRING TO PLAY", who: "characters/cat_sad" } },
+    viewerFocus: "the odds framing", slots: { stat: "TOO TIRING TO PLAY", anchor: "props/hourglass", who: "characters/cat_sad" } },
 
   { marker: "That's the theory that says balancing things out",
     narrationOverride: "That's the theory saying balance is optimal. But in reality, people don't want to play that game anymore. Why? As I said, a game has three parts: the players — that hasn't changed much.",
@@ -395,7 +395,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "The scary thing is that the game of showing off",
     grammar: "STAT_REVEAL", emotion: "urgent", heroVisual: true,
     purpose: "Name the mechanism that makes this so brutal: zero-sum.",
-    viewerFocus: "the zero-sum reveal", slots: { stat: "ZERO-SUM GAME", who: "characters/cat_surprised" } },
+    viewerFocus: "the zero-sum reveal", slots: { stat: "ZERO-SUM GAME", anchor: "finance/loss", who: "characters/cat_surprised" } },
 
   { marker: "That means there will always be people better",
     narrationOverride: "That means there will always be people better off and people worse off. If everyone could show off, then no one could.",
@@ -434,7 +434,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "And face can't necessarily be bought with money. If you give someone a billion to marry someone their friends look down on, what does that billion even mean?",
     grammar: "STAT_REVEAL", emotion: "sarcastic",
     purpose: "Punchline: money can't buy the actual reward people want.",
-    viewerFocus: "money vs face", slots: { stat: "1 BILLION ≠ FACE", who: "guy2" } },
+    viewerFocus: "money vs face", slots: { stat: "1 BILLION ≠ FACE", anchor: "finance/money", who: "guy2" } },
 
   { marker: "Actually, it does have meaning, but in the end...",
     narrationOverride: "Actually, it does have meaning — but in the end, some people would rather stay single than marry someone their friends look down on.",
@@ -474,7 +474,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "Having children in such circumstances was like",
     grammar: "STAT_REVEAL", emotion: "sad",
     purpose: "Land how dangerous childbirth actually was.",
-    viewerFocus: "the death-trap framing", slots: { stat: "CHILDBIRTH = DEATH TRAP", who: "girl2" } },
+    viewerFocus: "the death-trap framing", slots: { stat: "CHILDBIRTH = DEATH TRAP", anchor: "family/01-flat-bold-color", who: "girl2" } },
 
   { marker: "In that context, there was no concept of love or dating;",
     narrationOverride: "In that context, there was no concept of love or dating — men and women had many partners at once, partly to raise everyone's odds of reproducing, and partly so no one knew exactly whose child was whose.",
@@ -500,7 +500,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "At this time, villages and tribes began fighting each other constantly over territory and resources — so society became extremely short of people.",
     grammar: "STAT_REVEAL", emotion: "urgent",
     purpose: "Land the era's core problem: constant war and a people shortage.",
-    viewerFocus: "war and a shrinking population", slots: { stat: "WAR = PEOPLE SHORTAGE", who: "cop" } },
+    viewerFocus: "war and a shrinking population", slots: { stat: "WAR = PEOPLE SHORTAGE", anchor: "people/company", who: "cop" } },
 
   { marker: "Because there was a need for soldiers to go to war",
     narrationOverride: "Because soldiers were needed for war, and hands were needed in the fields, where would anyone find time for courtship and romantic dates?",
@@ -520,7 +520,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "And finally, the third stage is the present day. The world is crowded now — 8 billion people. Look at China or India: each has over a billion, very crowded.",
     grammar: "STAT_REVEAL", emotion: "surprise", heroVisual: true,
     purpose: "Open the third stage with the sheer scale of today's world.",
-    viewerFocus: "a crowded planet", slots: { stat: "8,000,000,000 PEOPLE", who: "characters/cat_surprised" } },
+    viewerFocus: "a crowded planet", slots: { stat: "8,000,000,000 PEOPLE", anchor: "people/company", who: "characters/cat_surprised" } },
 
   { marker: "And there's much more money too.",
     narrationOverride: "And there's much more money too — but some have far more than enough, while others struggle to get by. Very unequal.",
@@ -583,7 +583,7 @@ export const SCENES: AuthoredScene[] = [
     grammar: "STAT_REVEAL", emotion: "urgent",
     purpose: "Land the core contradiction: everyone climbing, no one settling.",
     viewerFocus: "nobody wants their own level",
-    slots: { stat: "NO ONE WANTS THEIR OWN LEVEL", who: "characters/cat_surprised" } },
+    slots: { stat: "NO ONE WANTS THEIR OWN LEVEL", anchor: "people/person", who: "characters/cat_surprised" } },
 
   { marker: "So, marriage and childbirth are plummeting.",
     grammar: "TABLEAU", emotion: "sad",
@@ -617,7 +617,7 @@ export const SCENES: AuthoredScene[] = [
     grammar: "STAT_REVEAL", emotion: "concern",
     purpose: "Land the specific historical claim: wealthy Romans, fewer kids.",
     viewerFocus: "rich, but fewer babies",
-    slots: { stat: "ROME: RICH, BUT FEWER BABIES", who: "guy4" } },
+    slots: { stat: "ROME: RICH, BUT FEWER BABIES", anchor: "family/01-flat-bold-color", who: "guy4" } },
 
   { marker: "And the situation became so serious that Emperor Augustus",
     narrationOverride: "And the situation became so serious that Emperor Augustus enacted the Lex Iulia — punishing those too lazy to marry, and rewarding those with many children.",
@@ -644,7 +644,7 @@ export const SCENES: AuthoredScene[] = [
     grammar: "STAT_REVEAL", emotion: "neutral", heroVisual: true,
     purpose: "Anchor the video's core benchmark number.",
     viewerFocus: "the replacement-rate benchmark",
-    slots: { stat: "2.1 = REPLACEMENT RATE", who: "host" } },
+    slots: { stat: "2.1 = REPLACEMENT RATE", anchor: "family/01-flat-bold-color", who: "host" } },
 
   { marker: "Below 1.5, the decline is rapid.",
     narrationOverride: "Below 1.5, the decline is rapid. Below 1.0, society is essentially self-destructing.",
@@ -657,7 +657,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "Looking at the world map, we see it's split into two states: in Africa, birth rates are still very high — some regions average five to seven children per mother.",
     grammar: "STAT_REVEAL", emotion: "neutral",
     purpose: "Introduce the global divide, starting with Africa.",
-    viewerFocus: "Africa's high birth rate", slots: { stat: "AFRICA: 5-7 KIDS/MOTHER", who: "girl5" } },
+    viewerFocus: "Africa's high birth rate", slots: { stat: "AFRICA: 5-7 KIDS/MOTHER", anchor: "family/01-flat-bold-color", who: "girl5" } },
 
   { marker: "Because there, they are still in the stage where they need people",
     grammar: "TABLEAU", emotion: "neutral",
@@ -695,7 +695,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "South Korea is a prime example: their birth rate has dropped to around 0.6-0.8, the lowest in the world. At this rate, Korea will likely survive only a few more generations before disappearing from the map.",
     grammar: "STAT_REVEAL", emotion: "urgent", heroVisual: true,
     purpose: "Introduce South Korea's extreme case with the world's lowest rate.",
-    viewerFocus: "the world's lowest rate", slots: { stat: "0.6-0.8: WORLD'S LOWEST", who: "characters/cat_surprised" } },
+    viewerFocus: "the world's lowest rate", slots: { stat: "0.6-0.8: WORLD'S LOWEST", anchor: "finance/trending_down", who: "characters/cat_surprised" } },
 
   { marker: "Now, there are even restaurants there with signs saying",
     narrationOverride: "Now, there are even restaurants with \"No Kid Zone\" signs — treating children as a noisy nuisance ruining other customers' experience.",
@@ -741,13 +741,13 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "Currently, Korea's population seems relatively stable, since the working-age group is still fairly large — but around 2040, the imbalance begins: the elderly population will skyrocket while children keep shrinking.",
     grammar: "STAT_REVEAL", emotion: "concern",
     purpose: "Introduce the coming demographic cliff.",
-    viewerFocus: "the imbalance starting", slots: { stat: "2040: THE IMBALANCE BEGINS", who: "characters/cat_think" } },
+    viewerFocus: "the imbalance starting", slots: { stat: "2040: THE IMBALANCE BEGINS", anchor: "props/calendar", who: "characters/cat_think" } },
 
   { marker: "By 2060, the workforce will be halved.",
     narrationOverride: "By 2060, the workforce will be halved. No one to work, no one to serve in the military.",
     grammar: "STAT_REVEAL", emotion: "urgent",
     purpose: "Escalate the projection to a full economic collapse warning.",
-    viewerFocus: "workforce cut in half", slots: { stat: "2060: WORKFORCE HALVED", who: "characters/cat_surprised" } },
+    viewerFocus: "workforce cut in half", slots: { stat: "2060: WORKFORCE HALVED", anchor: "people/company", who: "characters/cat_surprised" } },
 
   { marker: "So, a society where everyone is just old folks",
     narrationOverride: "So, a society of just old folks sitting in parks with no one creating wealth only leads to a national economic collapse.",
@@ -760,7 +760,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "China is the same. Its birth rate is now only about 1.0...",
     grammar: "STAT_REVEAL", emotion: "concern",
     purpose: "Move from Korea's extreme case to the much bigger China.",
-    viewerFocus: "China's 1.0 rate", slots: { stat: "CHINA: 1.0", who: "characters/cat_think" } },
+    viewerFocus: "China's 1.0 rate", slots: { stat: "CHINA: 1.0", anchor: "family/01-flat-bold-color", who: "characters/cat_think" } },
 
   { marker: "...whereas five years ago it was still 1.7,",
     narrationOverride: "...whereas five years ago it was still 1.7 — now it's plummeting.",
@@ -773,7 +773,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "At this rate, by the end of the century, China's population will likely be halved — around 600 million.",
     grammar: "STAT_REVEAL", emotion: "urgent", heroVisual: true,
     purpose: "Land China's long-term projection.",
-    viewerFocus: "China halved by 2100", slots: { stat: "HALVED BY 2100", who: "characters/cat_surprised" } },
+    viewerFocus: "China halved by 2100", slots: { stat: "HALVED BY 2100", anchor: "finance/trending_down", who: "characters/cat_surprised" } },
 
   { marker: "Actually, it's still a lot, but with so many elderly people,",
     narrationOverride: "Actually, 600 million is still a lot — but with so many elderly people, the system won't be able to support itself.",
@@ -828,7 +828,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "In 2024, Vietnam's birth rate fell to 1.91 per woman, the lowest in our history — the third year in a row below 2.1.",
     grammar: "STAT_REVEAL", emotion: "concern", heroVisual: true,
     purpose: "Bring the whole framework home to Vietnam's own numbers.",
-    viewerFocus: "Vietnam's falling rate", slots: { stat: "VIETNAM 2024: 1.91", who: "characters/cat_surprised" } },
+    viewerFocus: "Vietnam's falling rate", slots: { stat: "VIETNAM 2024: 1.91", anchor: "finance/trending_down", who: "characters/cat_surprised" } },
 
   { marker: "The downward trend is very clear.",
     narrationOverride: "The downward trend is very clear. We lose a little each year — and 2024 was even the Year of the Dragon, a year our culture considers auspicious for having children.",
@@ -854,7 +854,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "Men now have to be around 30 to get married,",
     grammar: "STAT_REVEAL", emotion: "neutral",
     purpose: "Land the rising marriage-age statistic.",
-    viewerFocus: "marrying later than ever", slots: { stat: "MARRY LATER: ~30 / ~25", who: "worker" } },
+    viewerFocus: "marrying later than ever", slots: { stat: "MARRY LATER: ~30 / ~25", anchor: "props/calendar", who: "worker" } },
 
   { marker: "This aligns quite well with the theoretical framework",
     narrationOverride: "This aligns well with the framework: the more educated and wealthy people are, the fewer children they have — too much to lose by having them.",
@@ -867,7 +867,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "Many experts predict that if this continues, after 2035 Vietnam's population will start shrinking — deaths outpacing births. Seven provinces already show early signs of this.",
     grammar: "STAT_REVEAL", emotion: "urgent",
     purpose: "Land Vietnam's own projected tipping point.",
-    viewerFocus: "2035 and beyond", slots: { stat: "2035: DEATHS > BIRTHS", who: "characters/cat_surprised" } },
+    viewerFocus: "2035 and beyond", slots: { stat: "2035: DEATHS > BIRTHS", anchor: "finance/trending_down", who: "characters/cat_surprised" } },
 
   { marker: "Although Vietnam isn't as dire as South Korea or China,",
     narrationOverride: "Although Vietnam isn't as dire as South Korea or China yet, we're on the same path, and heavily influenced by social media.",
@@ -905,7 +905,7 @@ export const SCENES: AuthoredScene[] = [
   { marker: "So, naturally, you start comparing yourself to millions of people online.",
     grammar: "STAT_REVEAL", emotion: "sad",
     purpose: "State the direct consequence: comparison at an impossible scale.",
-    viewerFocus: "compared to millions", slots: { stat: "COMPARED TO MILLIONS", who: "characters/cat_sad" } },
+    viewerFocus: "compared to millions", slots: { stat: "COMPARED TO MILLIONS", anchor: "people/company", who: "characters/cat_sad" } },
 
   { marker: "And then, the people around you don't seem good enough anymore.",
     narrationOverride: "And then, the people around you don't seem good enough anymore. Social media expanded the playing field from a few hundred people to millions, pushing standards up unreasonably.",
@@ -932,7 +932,7 @@ export const SCENES: AuthoredScene[] = [
     narrationOverride: "From a game theory perspective, social media has multiplied the number of players a thousandfold, while the prizes at the top stay the same — the odds of winning are practically zero.",
     grammar: "STAT_REVEAL", emotion: "urgent", heroVisual: true,
     purpose: "State the video's sharpest closing statistic about the odds.",
-    viewerFocus: "a thousand times the players", slots: { stat: "×1000 PLAYERS, SAME PRIZES", who: "characters/cat_surprised" } },
+    viewerFocus: "a thousand times the players", slots: { stat: "×1000 PLAYERS, SAME PRIZES", anchor: "people/company", who: "characters/cat_surprised" } },
 
   { marker: "But people still play because",
     narrationOverride: "But people still play, because they see everyone else still playing.",

@@ -141,18 +141,18 @@ const POSE_CYCLE: Record<string, string[]> = {
 };
 
 const DEFAULT_FOCAL_OCCUPANCY: Record<string, number> = {
-  STAT_REVEAL: 0.4,
-  SOLO: 0.3,
-  CAUSE_EFFECT: 0.35,
-  COMPARE: 0.35,
-  POLICY_LIST: 0.32,
-  ICON_TRIPLE: 0.32,
-  DIAGRAM: 0.32,
-  QA_REVEAL: 0.35,
-  DIALOGUE_QA: 0.3,
-  TABLEAU: 0.3,
-  EVIDENCE: 0.35,
-  FRAMEBOX: 0.4,
+  // The audit measures the largest connected focal component, not the union
+  // of multiple cards. Targets therefore describe one component's footprint.
+  STAT_REVEAL: 0.22,
+  SOLO: 0.18,
+  CAUSE_EFFECT: 0.22,
+  COMPARE: 0.20,
+  POLICY_LIST: 0.18,
+  ICON_TRIPLE: 0.18,
+  DIAGRAM: 0.20,
+  QA_REVEAL: 0.22,
+  DIALOGUE_QA: 0.20,
+  FRAMEBOX: 0.28,
 };
 
 function importanceToEmphasis(imp: number): { animation: "pulse" | "shake" | "bounce"; duration: number; value?: number } {
@@ -330,26 +330,31 @@ const SOFT_BGS = [
 // on-demand via the gen-stage skill.
 function enforceDistinctStages(scenes: Scene[]): void {
   const pool = Object.keys(STAGE_ANCHORS);
-  const used = new Set<string>();
+  const uses = new Map<string, number>();
+  let previous = "";
   for (const s of scenes) {
     const bg = s.backgroundSrc ?? "";
     if (!STAGE_ANCHORS[bg]) continue; // not a stage
-    if (!used.has(bg)) { used.add(bg); continue; }
-    // Repeat → find an unused stage.
-    const free = pool.find((p) => !used.has(p));
-    if (free) {
-      const newAnchors = Object.keys(STAGE_ANCHORS[free]);
-      s.backgroundSrc = free;
-      let ai = 0;
-      for (const e of s.entities) {
-        if (e.anchor) { e.anchor = newAnchors[Math.min(ai, newAnchors.length - 1)]; ai++; }
+    let selected = bg;
+    if ((uses.get(bg) ?? 0) > 0) {
+      selected = pool.find((candidate) => !uses.has(candidate)) ?? bg;
+      if (selected === previous) {
+        selected = pool
+          .filter((candidate) => candidate !== previous)
+          .sort((a, b) => (uses.get(a) ?? 0) - (uses.get(b) ?? 0))[0] ?? bg;
       }
-      used.add(free);
-    } else {
-      // Pool exhausted — no repeats allowed, so drop to a plain bg (enrich tints
-      // it) and let entities fall back to layout slots.
-      s.backgroundSrc = "#FFFFFF";
-      for (const e of s.entities) delete e.anchor;
+    }
+    uses.set(selected, (uses.get(selected) ?? 0) + 1);
+    previous = selected;
+    if (selected === bg) continue;
+    const newAnchors = Object.keys(STAGE_ANCHORS[selected]);
+    s.backgroundSrc = selected;
+    let ai = 0;
+    for (const e of s.entities) {
+      if (e.anchor) {
+        e.anchor = newAnchors[Math.min(ai, newAnchors.length - 1)];
+        ai++;
+      }
     }
   }
 }

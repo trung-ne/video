@@ -58,22 +58,22 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
   }));
 
   return (
-    <AbsoluteFill style={{ overflow: "hidden" }}>
+    <AbsoluteFill style={{ overflow: "hidden", background: defaultBg }}>
       {/* Audio track */}
       {timeline.audio && (
         <Audio src={staticFile(timeline.audio)} />
       )}
 
-      {/* Background layer (behind camera, not affected by zoom) */}
-      <BackgroundLayer
-        backgrounds={resolvedBackgrounds}
-        defaultBackground={defaultBg}
-        width={width}
-        height={height}
-      />
-
       {/* Camera layer */}
       <div style={cameraStyle}>
+        {/* Background and foreground share the same camera transform. */}
+        <BackgroundLayer
+          backgrounds={resolvedBackgrounds}
+          defaultBackground={defaultBg}
+          width={width}
+          height={height}
+        />
+
         {/* Concept cards (behind characters) */}
         {Array.from(state.cards.entries()).map(([cardId, card]) => (
           <ConceptCard
@@ -144,7 +144,7 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
         ))}
 
         {/* Text overlays */}
-        {Array.from(state.texts.entries()).map(([textId, text]) => (
+        {Array.from(state.texts.entries()).filter(([, text]) => text.style !== "SUBTITLE").map(([textId, text]) => (
           <AnimatedText
             key={textId}
             text={text}
@@ -155,6 +155,18 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
           />
         ))}
       </div>
+
+      {/* Subtitles are screen-space UI and must never move with the camera. */}
+      {Array.from(state.texts.entries()).filter(([, text]) => text.style === "SUBTITLE").map(([textId, text]) => (
+        <AnimatedText
+          key={textId}
+          text={text}
+          currentFrame={frame}
+          fps={fps}
+          canvasWidth={width}
+          canvasHeight={height}
+        />
+      ))}
 
       {/* Transition overlay (above everything, not inside camera) */}
       {state.activeTransition && (

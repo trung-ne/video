@@ -6,6 +6,8 @@ import {
   ClearEvent,
   EmphasizeEvent,
   SwapEvent,
+  MoveEvent,
+  CameraEvent,
   EmphasizeType,
 } from "../types/timeline";
 
@@ -60,12 +62,15 @@ export interface LivelinessOptions {
 export interface LivelinessReport {
   emphasizesAdded: number;
   swapsAdded: number;
+  movesAdded: number;
+  cameraMovesAdded: number;
   charactersTouched: number;
 }
 
 interface Span {
   assetId: string;
   src: string;
+  position: { x: number; y: number };
   start: number;
   end: number;
 }
@@ -89,11 +94,21 @@ function computeAssetSpans(events: TimelineEvent[], total: number): Span[] {
     if (ev.type === "enter") {
       const e = ev as EnterEvent;
       close(e.assetId, e.frame); // re-enter closes previous span
-      open.set(e.assetId, { assetId: e.assetId, src: e.src, start: e.frame, end: total });
+      open.set(e.assetId, {
+        assetId: e.assetId,
+        src: e.src,
+        position: { ...e.position },
+        start: e.frame,
+        end: total,
+      });
     } else if (ev.type === "swap") {
       const e = ev as SwapEvent;
       const s = open.get(e.assetId);
       if (s) s.src = e.src; // track current pose so we don't fight manual swaps
+    } else if (ev.type === "move") {
+      const e = ev as MoveEvent;
+      const s = open.get(e.assetId);
+      if (s) s.position = { ...e.position };
     } else if (ev.type === "exit") {
       close((ev as ExitEvent).assetId, ev.frame);
     } else if (ev.type === "clear") {
@@ -146,6 +161,8 @@ export function injectLiveliness(
   const added: TimelineEvent[] = [];
   let emphasizesAdded = 0;
   let swapsAdded = 0;
+  let movesAdded = 0;
+  let cameraMovesAdded = 0;
   const touched = new Set<string>();
 
   for (const span of spans) {
@@ -153,6 +170,7 @@ export function injectLiveliness(
     if (windowLen < minWindow) continue;
 
     const isNarratorCat = NARRATOR_POSE_FAMILY.includes(span.src);
+    const isCharacter = span.src.startsWith("characters/");
     const existing = existingBeatFrames(timeline.events, span.assetId);
     const near = (f: number) => existing.some((x) => Math.abs(x - f) < interval * 0.5);
 
@@ -164,8 +182,9 @@ export function injectLiveliness(
       touched.add(span.assetId);
 
       // Alternate: even beats → emphasize; odd beats → pose swap (narrator only)
-      const doSwap =
-        isNarratorCat && beatIndex % 2 === 1;
+      const doSwap = isNarratorCat;
+      const doPersistentMove =
+        isCharacter && !isNarratorCat;
 
       if (doSwap) {
         // choose next talking pose different from current, that exists
@@ -179,19 +198,27 @@ export function injectLiveliness(
           added.push({ frame: f, type: "swap", assetId: span.assetId, src: pick } as SwapEvent);
           currentPose = pick;
           swapsAdded++;
-          // swap back toward a neutral base a bit later so it reads as a gesture
-          const back = Math.min(f + Math.round(interval * 0.5), span.end - 20);
-          const basePose = poses && !poses.has(span.src) ? pick : span.src;
-          if (back > f + 20) {
-            added.push({ frame: back, type: "swap", assetId: span.assetId, src: basePose } as SwapEvent);
-            currentPose = basePose;
-            swapsAdded++;
-          }
+          // Keep the pose until the next narration beat. A short swap-and-back
+          // pulse disappears between 5-second audit samples and, more
+          // importantly, leaves the composition editorially unchanged.
         } else {
           // no swap available → fall back to emphasize
           added.push(makeEmphasize(f, span.assetId, beatIndex));
           emphasizesAdded++;
         }
+      } else if (doPersistentMove) {
+        const direction = beatIndex % 2 === 0 ? 1 : -1;
+        added.push({
+          frame: f,
+          type: "move",
+          assetId: span.assetId,
+          position: {
+            x: Math.max(0.08, Math.min(0.92, span.position.x + direction * 0.09)),
+            y: span.position.y,
+          },
+          duration: 18,
+        } as MoveEvent);
+        movesAdded++;
       } else {
         added.push(makeEmphasize(f, span.assetId, beatIndex));
         emphasizesAdded++;
@@ -200,10 +227,58 @@ export function injectLiveliness(
     }
   }
 
+  // A shot camera is the fallback for rich full-frame stages where moving a
+  // small actor does not materially change the composition. Skip scenes that
+  // already contain authored camera direction.
+  const clearFrames = timeline.events
+    .filter((event) => event.type === "clear")
+    .map((event) => event.frame)
+    .filter((frame, index, values) => index === 0 || frame !== values[index - 1])
+    .sort((a, b) => a - b);
+  const sceneStarts = clearFrames[0] === 0 ? clearFrames : [0, ...clearFrames];
+  sceneStarts.forEach((start, sceneIndex) => {
+    const end = sceneStarts[sceneIndex + 1] ?? total;
+    if (end - start < minWindow) return;
+    const hasAuthoredCamera = timeline.events.some(
+      (event) => event.type === "camera" && event.frame >= start && event.frame < end,
+    );
+    if (hasAuthoredCamera) return;
+    if (start > 0) {
+      added.push({
+        frame: start,
+        type: "camera",
+        zoom: 1,
+        centerX: 0.5,
+        centerY: 0.5,
+        duration: 1,
+      } as CameraEvent);
+      cameraMovesAdded++;
+    }
+    let cameraBeat = 0;
+    for (let frame = start + Math.round(interval * 0.9); frame < end - 40; frame += interval) {
+      added.push({
+        frame,
+        type: "camera",
+        zoom: cameraBeat % 2 === 0 ? 1.045 : 1.075,
+        centerX: cameraBeat % 2 === 0 ? 0.485 : 0.515,
+        centerY: 0.49,
+        duration: 24,
+      } as CameraEvent);
+      cameraMovesAdded++;
+      cameraBeat++;
+    }
+  });
+
   timeline.events.push(...added);
   timeline.events.sort((a, b) => a.frame - b.frame);
 
-  return { emphasizesAdded, swapsAdded, charactersTouched: touched.size };
+  return {
+    emphasizesAdded,
+    swapsAdded,
+    movesAdded,
+    cameraMovesAdded,
+    charactersTouched: touched.size,
+  };
 }
 
 function makeEmphasize(frame: number, assetId: string, beatIndex: number): EmphasizeEvent {
@@ -220,6 +295,6 @@ function makeEmphasize(frame: number, assetId: string, beatIndex: number): Empha
 export function printLivelinessReport(r: LivelinessReport): void {
   console.log(`\n✨ Liveliness injector:`);
   console.log(
-    `   ${r.charactersTouched} character(s) enlivened · +${r.emphasizesAdded} emphasize · +${r.swapsAdded} pose-swap beats`
+    `   ${r.charactersTouched} character(s) enlivened · +${r.emphasizesAdded} emphasize · +${r.swapsAdded} pose-swap · +${r.movesAdded} persistent move · +${r.cameraMovesAdded} camera beats`
   );
 }
