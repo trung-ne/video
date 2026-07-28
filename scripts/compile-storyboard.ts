@@ -41,6 +41,7 @@ const outPath = getArg("--out") ?? "timeline.json";
 if (!sbPath || !fs.existsSync(sbPath)) { console.error(`❌ storyboard not found: ${sbPath}`); process.exit(1); }
 
 const sb = JSON.parse(fs.readFileSync(sbPath, "utf-8"));
+const storyboardChecksum = checksumJson(sb);
 if (getArg("--audio")) sb.audio = getArg("--audio");
 
 // Storyboard-level gates (INTENT_REALIZED, BEAT_UNANCHORED) before compiling.
@@ -150,7 +151,7 @@ const audioAbsolute = sb.audio
 const provenance = {
   audioSeconds,
   audioSha256: audioAbsolute ? sha256File(audioAbsolute) : undefined,
-  storyboardChecksum: checksumJson(sb),
+  storyboardChecksum,
   durationsChecksum: dPath ? checksumJson(JSON.parse(fs.readFileSync(dPath, "utf-8"))) : undefined,
   wordsChecksum: wPath ? checksumJson(JSON.parse(fs.readFileSync(wPath, "utf-8"))) : undefined,
 };

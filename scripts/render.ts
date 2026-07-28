@@ -20,10 +20,11 @@ import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
-import { prepareTimelineAudio, writeAudioAudit, resolvePublicAudio } from "../src/audio/prepareAudio";
+import { prepareTimelineAudio, writeAudioAudit, resolvePublicAudio, sha256File } from "../src/audio/prepareAudio";
 import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 import { acquireRenderLock } from "../src/engine/renderLock";
 import { promoteArtifacts, pruneRunHistory } from "../src/engine/promoteArtifacts";
+import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import {
   checkRenderMatchesTimeline,
   checkTimelineSpansAudio,
@@ -64,6 +65,21 @@ const outPath = getArg("--out", defaultOutPath());
 const compositionId = getArg("--composition", "CatExplainer");
 const isProxy = args.includes("--proxy");
 const framesArg = getArg("--frames", "");
+const referenceBaselinePath = path.resolve("config/reference-visual-baseline.json");
+if (!fs.existsSync(referenceBaselinePath)) {
+  console.error(`Reference baseline not found: ${referenceBaselinePath}`);
+  process.exit(1);
+}
+const referenceBaseline = JSON.parse(fs.readFileSync(referenceBaselinePath, "utf8"));
+const referenceVideoPath = path.resolve(String(referenceBaseline.reference ?? ""));
+if (!fs.existsSync(referenceVideoPath)
+    || sha256File(referenceVideoPath) !== referenceBaseline.referenceSha256) {
+  console.error(
+    `Reference baseline hash mismatch for ${referenceVideoPath}. ` +
+    "Run npm run reference-audit only after confirming the intended reference file."
+  );
+  process.exit(1);
+}
 
 /** Container duration in seconds, or undefined if the file is missing/unreadable. */
 function probeDurationSeconds(filePath: string): number | undefined {
@@ -364,6 +380,14 @@ try {
   const audioAudit = isProxy || framesArg || args.includes("--skip-audio-audit")
     ? null
     : writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath));
+  const visualAuditPath = stagedOut.replace(/\.mp4$/i, ".visual-audit.json");
+  const referenceComparison =
+    fs.existsSync(visualAuditPath)
+      ? buildReferenceComparison(
+          JSON.parse(fs.readFileSync(visualAuditPath, "utf8")),
+          referenceBaseline,
+        )
+      : null;
   const productionReport = {
     schemaVersion: 1,
     status: isProxy ? "proxy-ready" : framesArg ? "diagnostic" : "production-ready",
@@ -378,6 +402,7 @@ try {
     visualAudit: args.includes("--skip-visual-audit")
       ? null
       : path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
+    referenceComparison,
   };
   fs.writeFileSync(
     stagedOut.replace(/\.mp4$/i, ".production-report.json"),

@@ -202,6 +202,8 @@ export interface Scene {
   narration?: string;      // the words being spoken (helps compiler time things)
   sourceRange?: SourceRange;
   visualRegister?: VisualRegister;
+  /** Authored storyboard grammar, preserved for rendered per-grammar audits. */
+  visualGrammar?: string;
   semanticTakeaway?: string;
   semanticAction?: string;
   semanticSetting?: string;

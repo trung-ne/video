@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "reference": "refer/meo.mp4",
+  "referenceSha256": "fd01a0b60b164433cd432205ea96f5530437cff33d73f0d26b19c1e7e23817c0",
+  "sampleSeconds": 5.0,
+  "offsetsSeconds": [
+    0.0,
+    1.7,
+    3.3
+  ],
+  "legacyBaseline": {
+    "definition": "single offset at 0 seconds",
+    "flatFrameRatio": 0.45,
+    "edgeDensity": 0.1962,
+    "nearDuplicateRatio": 0.1841,
+    "saturation": 0.1827
+  },
+  "robustBaseline": {
+    "definition": "mean/variance/min/max across phase offsets",
+    "perOffset": [
+      {
+        "offsetSeconds": 0.0,
+        "flatFrameRatio": 0.45,
+        "edgeDensity": 0.1962,
+        "nearDuplicateRatio": 0.1841,
+        "saturation": 0.1827
+      },
+      {
+        "offsetSeconds": 1.7,
+        "flatFrameRatio": 0.4625,
+        "edgeDensity": 0.1941,
+        "nearDuplicateRatio": 0.1967,
+        "saturation": 0.1791
+      },
+      {
+        "offsetSeconds": 3.3,
+        "flatFrameRatio": 0.4644,
+        "edgeDensity": 0.1934,
+        "nearDuplicateRatio": 0.1891,
+        "saturation": 0.1808
+      }
+    ],
+    "metrics": {
+      "flatFrameRatio": {
+        "mean": 0.459,
+        "variance": 4.1e-05,
+        "min": 0.45,
+        "max": 0.4644
+      },
+      "edgeDensity": {
+        "mean": 0.1946,
+        "variance": 1e-06,
+        "min": 0.1934,
+        "max": 0.1962
+      },
+      "nearDuplicateRatio": {
+        "mean": 0.19,
+        "variance": 2.7e-05,
+        "min": 0.1841,
+        "max": 0.1967
+      },
+      "saturation": {
+        "mean": 0.1809,
+        "variance": 2e-06,
+        "min": 0.1791,
+        "max": 0.1827
+      }
+    }
+  }
+}

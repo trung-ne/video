@@ -23,6 +23,7 @@ import {
 import { canonicalJsonChecksum, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 import { promoteArtifacts } from "../src/engine/promoteArtifacts";
 import { acquireRenderLock } from "../src/engine/renderLock";
+import { buildReferenceComparison } from "../src/engine/referenceComparison";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -88,6 +89,33 @@ test("render lock refuses a concurrent writer and names the absolute lock", () =
     lock.release();
     fs.rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("reference comparison names the robust baseline and emits signed deltas", () => {
+  const result = buildReferenceComparison(
+    {
+      flatFrameRatio: 0.6,
+      edgeDensity: { mean: 0.14 },
+      nearDuplicateRatio: 0.3,
+      saturation: { mean: 0.2 },
+    },
+    {
+      reference: "refer/meo.mp4",
+      referenceSha256: "abc",
+      offsetsSeconds: [0, 1.7, 3.3],
+      robustBaseline: {
+        metrics: {
+          flatFrameRatio: { mean: 0.45 },
+          edgeDensity: { mean: 0.19 },
+          nearDuplicateRatio: { mean: 0.18 },
+          saturation: { mean: 0.18 },
+        },
+      },
+    }
+  );
+  assert.strictEqual(result.baseline, "robustBaseline");
+  assert.strictEqual(result.deltaCandidateMinusReference.flatFrameRatio, 0.15);
+  assert.strictEqual(result.deltaCandidateMinusReference.edgeDensity, -0.05);
 });
 
 test("indexes Unicode words with stable indices", () => {
@@ -193,6 +221,7 @@ test("schema v2 compiler preserves semantic background and resolved assets", () 
   assert.deepStrictEqual(timeline.scenes[0].semanticAssetIds, ["finance/money", "finance/house"]);
   assert.strictEqual(timeline.scenes[0].visualFingerprint, "compare|diagram|0|none|contrast");
   assert.strictEqual(timeline.scenes[0].semanticAction, "contrast");
+  assert.strictEqual(timeline.scenes[0].visualGrammar, "COMPARE");
 });
 
 test("schema v2 compiler rejects missing semantic assets instead of using cats", () => {

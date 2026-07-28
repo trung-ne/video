@@ -34,6 +34,7 @@ def main() -> int:
     parser.add_argument("--timeline")
     parser.add_argument("--report", help="optional report path; defaults beside the video")
     parser.add_argument("--sample-seconds", type=float, default=5.0)
+    parser.add_argument("--sample-offset", type=float, default=0.0)
     parser.add_argument("--subtitle-band-top", type=float, default=0.76)
     parser.add_argument("--config", default="config/reference-quality.json")
     parser.add_argument("--contact-sheet")
@@ -67,6 +68,7 @@ def main() -> int:
         pattern = str(Path(tmp) / "frame_%05d.jpg")
         subprocess.run([
             args.ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
+            "-ss", str(max(0.0, args.sample_offset)),
             "-i", str(video),
             "-vf", f"fps=1/{args.sample_seconds},scale=320:-1",
             "-q:v", "4", pattern,
@@ -94,7 +96,7 @@ def main() -> int:
             _, color_counts = np.unique(quantized, axis=0, return_counts=True)
             dominant_color = float(color_counts.max() / len(quantized))
             flat = dominant_color > 0.55 or (edge_density < 0.10 and saturation < 0.12)
-            seconds = index * args.sample_seconds
+            seconds = args.sample_offset + index * args.sample_seconds
             rows.append({
                 "seconds": round(seconds, 3),
                 "sceneId": scene_at(timeline, seconds),
@@ -120,6 +122,7 @@ def main() -> int:
         metrics = {
             "video": str(Path(args.record_video_path).resolve()) if args.record_video_path else str(video),
             "sampleSeconds": args.sample_seconds,
+            "sampleOffsetSeconds": args.sample_offset,
             "subtitleBandMaskedFrom": args.subtitle_band_top,
             "sampledFrames": len(rows),
             "nearWhiteMean": round(float(np.mean([row["white"] for row in rows])), 4),
@@ -166,17 +169,32 @@ def main() -> int:
             scene.get("id"): scene for scene in (timeline or {}).get("scenes", [])
         }
         register_buckets = {}
-        for item in scene_metrics:
-            register = scene_lookup.get(item["sceneId"], {}).get("visualRegister", "unknown")
-            register_buckets.setdefault(register, []).append(item)
+        for row in rows:
+            register = scene_lookup.get(row["sceneId"], {}).get("visualRegister", "unknown")
+            register_buckets.setdefault(register, []).append(row)
         metrics["registerMetrics"] = {
             register: {
-                "sceneCount": len(items),
-                "flatRatioMean": round(float(np.mean([item["flatRatio"] for item in items])), 4),
-                "edgeDensityMean": round(float(np.mean([item["edgeDensityMean"] for item in items])), 4),
-                "saturationMean": round(float(np.mean([item["saturationMean"] for item in items])), 4),
+                "sceneCount": len(set(item["sceneId"] for item in items)),
+                "sampleCount": len(items),
+                "flatRatioMean": round(float(np.mean([item["flat"] for item in items])), 4),
+                "edgeDensityMean": round(float(np.mean([item["edges"] for item in items])), 4),
+                "saturationMean": round(float(np.mean([item["saturation"] for item in items])), 4),
             }
             for register, items in register_buckets.items()
+        }
+        grammar_buckets = {}
+        for row in rows:
+            grammar = scene_lookup.get(row["sceneId"], {}).get("visualGrammar", "unknown")
+            grammar_buckets.setdefault(grammar, []).append(row)
+        metrics["grammarMetrics"] = {
+            grammar: {
+                "sceneCount": len(set(item["sceneId"] for item in items)),
+                "sampleCount": len(items),
+                "flatRatioMean": round(float(np.mean([item["flat"] for item in items])), 4),
+                "edgeDensityMean": round(float(np.mean([item["edges"] for item in items])), 4),
+                "saturationMean": round(float(np.mean([item["saturation"] for item in items])), 4),
+            }
+            for grammar, items in grammar_buckets.items()
         }
         metrics["duplicateScenePairs"] = [{
             "fromSceneId": rows[index]["sceneId"],

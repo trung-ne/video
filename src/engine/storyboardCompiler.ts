@@ -240,6 +240,7 @@ function compileBrief(
     narration: brief.narration,
     sourceRange: brief.sourceRange,
     visualRegister: brief.visualRegister,
+    visualGrammar: brief.visualGrammar,
     semanticTakeaway: brief.semanticVisual?.takeaway,
     semanticAction: brief.semanticVisual?.action,
     semanticSetting: brief.semanticVisual?.setting,
