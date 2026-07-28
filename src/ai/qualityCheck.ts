@@ -64,6 +64,12 @@ const ABSTRACT_LAYOUTS = new Set([
 // Solo-character layouts — a single cat centered. >40% of these = monotone.
 const SOLO_LAYOUTS = new Set(["SOLO", "CLOSE_UP", "SINGLE", "INTRO"]);
 
+// These grammars teach through a focal label/card. Unlike BEAT, photo and
+// TABLEAU scenes, a long text-free tail here is an editorial defect.
+const TEXT_BEARING_TEACHING_GRAMMARS = new Set([
+  "STAT_REVEAL", "QA_REVEAL", "POLICY_LIST", "DIAGRAM", "SOLO",
+]);
+
 // Neutral cat pose — valid only when truly no emotion cue in scene
 const NEUTRAL_CAT_SRCS = new Set(["characters/cat"]);
 
@@ -1521,6 +1527,100 @@ function checkTextDuration(scenes: any[]): CheckResult {
   return { name: "Text duration: texts có duration set, không tồn tại mãi", passed: issues.length === 0, issues };
 }
 
+export interface TeachingTextCoverage {
+  coverageRatio: number;
+  coveredFrames: number;
+  durationFrames: number;
+  layerCount: number;
+}
+
+/** Measure semantic text/card presence without forcing overlays onto visual-only registers. */
+export function measureTeachingTextCoverage(scene: any): TeachingTextCoverage {
+  const durationFrames = Math.max(0, Number(scene?.durationFrames) || 0);
+  const intervals: Array<[number, number]> = [];
+  const clamp = (value: number) => Math.max(0, Math.min(durationFrames, value));
+  const addPersistentLayer = (layer: any) => {
+    const start = clamp(Number(layer?.delay) || 0);
+    intervals.push([start, durationFrames]);
+  };
+
+  for (const text of scene?.texts ?? []) {
+    const start = clamp(Number(text?.delay) || 0);
+    let end = durationFrames;
+    if (text?.hold === "title") {
+      end = Math.min(durationFrames, start + 4 * 30);
+    } else if (typeof text?.duration === "number") {
+      end = Math.min(durationFrames, start + Math.max(0, text.duration));
+    }
+    intervals.push([start, clamp(end)]);
+  }
+
+  for (const layer of scene?.cards ?? []) addPersistentLayer(layer);
+  for (const layer of scene?.paperCards ?? []) addPersistentLayer(layer);
+  for (const layer of scene?.frameBoxes ?? []) addPersistentLayer(layer);
+
+  const sorted = intervals
+    .filter(([start, end]) => end > start)
+    .sort((a, b) => a[0] - b[0]);
+  let coveredFrames = 0;
+  let cursorStart = -1;
+  let cursorEnd = -1;
+  for (const [start, end] of sorted) {
+    if (cursorStart < 0) {
+      cursorStart = start;
+      cursorEnd = end;
+    } else if (start <= cursorEnd) {
+      cursorEnd = Math.max(cursorEnd, end);
+    } else {
+      coveredFrames += cursorEnd - cursorStart;
+      cursorStart = start;
+      cursorEnd = end;
+    }
+  }
+  if (cursorStart >= 0) coveredFrames += cursorEnd - cursorStart;
+
+  return {
+    coverageRatio: durationFrames > 0 ? coveredFrames / durationFrames : 0,
+    coveredFrames,
+    durationFrames,
+    layerCount: intervals.length,
+  };
+}
+
+function checkTeachingTextLifetime(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  for (const scene of scenes) {
+    const grammar = String(scene?.visualGrammar ?? "");
+    if (!TEXT_BEARING_TEACHING_GRAMMARS.has(grammar)) continue;
+    const coverage = measureTeachingTextCoverage(scene);
+    // SOLO deliberately reserves up to ~4 seconds for the character reaction
+    // before the teaching card lands. Direct teaching grammars start sooner.
+    const minimum = grammar === "STAT_REVEAL" ? 0.75 : grammar === "SOLO" ? 0.5 : 0.65;
+    if (coverage.layerCount === 0) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "TEACHING_TEXT_LIFETIME",
+        scene: scene.id,
+        message: `${sceneLabel(scene)} ${grammar} has no semantic text/card layer`,
+        suggestion: "Author a concise focal label/card; do not repeat the subtitle.",
+      });
+    } else if (coverage.coverageRatio < minimum) {
+      issues.push({
+        severity: "MINOR",
+        rule: "TEACHING_TEXT_LIFETIME",
+        scene: scene.id,
+        message: `${sceneLabel(scene)} ${grammar} text coverage ${(coverage.coverageRatio * 100).toFixed(1)}% < ${(minimum * 100).toFixed(0)}%`,
+        suggestion: "Use scene-end/until-replaced hold semantics or keep the teaching card persistent.",
+      });
+    }
+  }
+  return {
+    name: "Text lifetime: teaching grammars retain a semantic layer",
+    passed: issues.length === 0,
+    issues,
+  };
+}
+
 // CHECK 20: Audio path exists (if set)
 function checkAudioPath(timeline: any): CheckResult {
   const issues: QualityIssue[] = [];
@@ -2072,6 +2172,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkTextWordCap(scenes),
     checkTextOverlap(scenes),
     checkTextDuration(scenes),
+    checkTeachingTextLifetime(scenes),
     checkNarration(scenes),
     checkCatPoseDiversity(scenes),
     checkAssetScale(scenes),

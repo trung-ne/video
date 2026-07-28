@@ -7,7 +7,11 @@ import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
-import { runQualityCheck, runStoryboardCheck } from "../src/ai/qualityCheck";
+import {
+  measureTeachingTextCoverage,
+  runQualityCheck,
+  runStoryboardCheck,
+} from "../src/ai/qualityCheck";
 import { stageMatchesSetting } from "../src/engine/stageRegistry";
 import { critiqueSceneBriefs } from "../src/ai/visualCritic";
 import { validateTimeline } from "../src/ai/validateTimeline";
@@ -185,6 +189,23 @@ test("scene-end text hold survives beyond legacy hardcoded durations", () => {
   });
   const text = compiled.events.find((event: any) => event.type === "text") as any;
   assert.strictEqual(text.exitFrame, 299);
+});
+
+test("teaching text coverage counts persistent cards but exempts title tails", () => {
+  const persistent = measureTeachingTextCoverage({
+    durationFrames: 300,
+    texts: [],
+    cards: [{ id: "answer", title: "Answer", delay: 30 }],
+  });
+  assert.strictEqual(persistent.layerCount, 1);
+  assert.strictEqual(persistent.coverageRatio, 0.9);
+
+  const titleOnly = measureTeachingTextCoverage({
+    durationFrames: 300,
+    texts: [{ id: "title", content: "Hook", delay: 0, hold: "title" }],
+  });
+  assert.strictEqual(titleOnly.coveredFrames, 120);
+  assert.strictEqual(titleOnly.coverageRatio, 0.4);
 });
 
 test("indexes Unicode words with stable indices", () => {
