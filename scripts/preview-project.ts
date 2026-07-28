@@ -3,6 +3,7 @@ import * as os from "os";
 import * as path from "path";
 import { spawnSync } from "child_process";
 import { loadTimeline } from "../src/engine/loadTimeline";
+import { checkTimingProvenance, formatTimingIssues } from "../src/engine/timingIntegrity";
 
 const args = process.argv.slice(2);
 const index = args.indexOf("--project");
@@ -15,6 +16,18 @@ const timelinePath = path.join(projectPath, "timeline.json");
 if (!fs.existsSync(timelinePath)) throw new Error(`Timeline not found: ${timelinePath}`);
 
 const authored = JSON.parse(fs.readFileSync(timelinePath, "utf8"));
+
+// Preview does not gate — you often want to look at something broken. But it must
+// say what it is showing, so an estimate-timed or legacy timeline is never mistaken
+// for the production one while you judge it on screen.
+const provenanceIssues = checkTimingProvenance(authored.timingProvenance, { allowUnprovenanced: true });
+if (provenanceIssues.length) {
+  console.warn(`⏱️  ${formatTimingIssues(provenanceIssues)}`);
+} else {
+  const p = authored.timingProvenance;
+  console.log(`⏱️  Timing: ${p.mode} (scenes from ${p.sceneTimingSource}, beats from ${p.beatTimingSource})`);
+}
+
 const timeline = loadTimeline(authored).timeline;
 const propsPath = path.join(os.tmpdir(), `cat-preview-${process.pid}.json`);
 fs.writeFileSync(propsPath, JSON.stringify({ timeline }), "utf8");

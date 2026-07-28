@@ -15,6 +15,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
+import { checkTimingProvenance, formatTimingIssues, hasBlocker } from "../src/engine/timingIntegrity";
 
 const args = process.argv.slice(2);
 const timelinePath = args[0] ?? "timeline.json";
@@ -41,8 +42,25 @@ if (autoFix && Array.isArray(timeline.scenes)) {
 const report = runQualityCheck(timeline, timelinePath);
 printQualityReport(report);
 
+// Timing provenance is reported alongside the grade, because a high grade on an
+// estimate-timed timeline is exactly how the v5-codex incident read: 100/100
+// grade A on a video whose audio was 389s longer than its timeline. The grade
+// describes composition; it says nothing about whether the timing is real.
+const timingIssues = checkTimingProvenance(timeline.timingProvenance);
+const timingUntrusted = hasBlocker(timingIssues);
+if (timingIssues.length) {
+  console.log(`⏱️  TIMING PROVENANCE\n${formatTimingIssues(timingIssues)}\n`);
+} else {
+  const p = timeline.timingProvenance;
+  console.log(
+    `⏱️  Timing: ${p.mode} (scenes from ${p.sceneTimingSource}, beats from ${p.beatTimingSource})\n`
+  );
+}
+
 // Print grade summary
-if (report.blockers > 0) {
+if (timingUntrusted) {
+  console.log("❌ Video quality: NOT PRODUCTION-READY — timing cannot be trusted (see above).\n");
+} else if (report.blockers > 0) {
   console.log("❌ Video quality: BLOCKED — fix all blockers before render.\n");
 } else if (report.majors > 0) {
   console.log("❌ Video quality: NOT PRODUCTION-READY — fix all major issues before render.\n");
@@ -66,4 +84,4 @@ if (!autoFix && report.checks.find((c) => c.name.includes("Background: ảnh n�
   console.log(`   npx ts-node scripts/quality-check.ts ${timelinePath} --fix\n`);
 }
 
-process.exit(report.blockers > 0 ? 1 : report.majors > 0 ? 2 : 0);
+process.exit(timingUntrusted || report.blockers > 0 ? 1 : report.majors > 0 ? 2 : 0);

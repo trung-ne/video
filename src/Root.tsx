@@ -11,6 +11,21 @@ import timelineJson from "../timeline.json";
 // the browser — liveliness allows any pose there.)
 const DEFAULT_TIMELINE: Timeline = loadTimeline(timelineJson).timeline;
 
+// `npm start` renders whatever sits at the repo root, which is a scratch artifact
+// and bypasses every production gate. Say so, so a preview here is never mistaken
+// for the real build. Use `npm run preview:project -- --project <id>` for a project.
+{
+  const provenance = (timelineJson as { timingProvenance?: { mode?: string; sceneTimingSource?: string } })
+    .timingProvenance;
+  if (!provenance) {
+    console.warn(
+      "[preview] Root timeline.json carries no timing provenance — scratch artifact, not a production build."
+    );
+  } else if (provenance.mode !== "measured") {
+    console.warn(`[preview] Root timeline.json timing is "${provenance.mode}" (${provenance.sceneTimingSource}).`);
+  }
+}
+
 export const RemotionRoot: React.FC = () => {
   return (
     <Composition

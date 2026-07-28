@@ -9,7 +9,9 @@
  * ids must agree across storyboard/durations, word alignment must belong to this
  * audio, and the compiled timeline must span the voice track. Compiling from
  * word-count estimates silently desyncs the whole video, so it is refused rather
- * than warned about. `--no-timing-gate` opts out for scratch/preview compiles.
+ * than warned about. `--diagnostic-estimated-timing` opts out, and its output is
+ * written as `*.estimated.json` so a diagnostic build can never be mistaken for a
+ * production one by filename convention.
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -31,7 +33,8 @@ import {
 
 const args = process.argv.slice(2);
 const getArg = (f: string) => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : undefined; };
-const timingGate = !args.includes("--no-timing-gate");
+const diagnosticEstimated = args.includes("--diagnostic-estimated-timing");
+const timingGate = !diagnosticEstimated;
 
 const sbPath = getArg("--storyboard");
 const outPath = getArg("--out") ?? "timeline.json";
@@ -126,12 +129,15 @@ if (timingGate) {
     console.error(`\n⏱️  TIMING INTEGRITY\n${formatTimingIssues(preIssues)}\n`);
     if (hasBlocker(preIssues)) {
       console.error("❌ Compile refused: timing artifacts disagree. Fix them — do NOT compile from estimates.");
-      console.error("   (override for scratch/preview only: --no-timing-gate)\n");
+      console.error("   (diagnostic only, writes *.estimated.json: --diagnostic-estimated-timing)\n");
       process.exit(1);
     }
   }
 } else {
-  console.warn("\n⚠️  --no-timing-gate: scene timing may be estimated. Not valid for production.\n");
+  console.warn(
+    "\n⚠️  TIMING_ESTIMATED — scene timing may be guessed. " +
+    "Writing *.estimated.json; render and publish will refuse it.\n"
+  );
 }
 
 // The compiler enforces the same invariant independently (it is the engine-level
@@ -179,9 +185,16 @@ if (timingGate && audioSeconds !== undefined) {
   }
 }
 
-fs.writeFileSync(outPath, JSON.stringify(timeline, null, 2));
-console.log(`✅ Compiled storyboard → ${outPath}`);
+// The canonical name means "measured". A diagnostic build gets a distinct name so
+// it cannot be picked up by convention or renamed into production by accident.
+const writePath = diagnosticEstimated
+  ? outPath.replace(/\.json$/i, ".estimated.json")
+  : outPath;
+fs.writeFileSync(writePath, JSON.stringify(timeline, null, 2));
+console.log(`✅ Compiled storyboard → ${writePath}`);
 console.log(`   Scenes: ${timeline.scenes.length} | Duration: ${timeline.durationInFrames} frames (${(timeline.durationInFrames / timeline.fps).toFixed(1)}s)`);
 if (audioSeconds !== undefined) {
-  console.log(`   Timing: matches voice track ${audioSeconds.toFixed(1)}s (drift ${(timeline.durationInFrames / timeline.fps - audioSeconds).toFixed(2)}s)`);
+  const drift = timeline.durationInFrames / timeline.fps - audioSeconds;
+  const verdict = Math.abs(drift) < 1 ? "matches" : "DOES NOT MATCH";
+  console.log(`   Timing: ${verdict} voice track ${audioSeconds.toFixed(1)}s (drift ${drift.toFixed(2)}s)`);
 }
