@@ -11,7 +11,7 @@
 // Browser-safe: no fs / Date / random.
 // ============================================================
 
-import { Scene, SceneTimeline, SceneEntity, TimingProvenance } from "../types/scene";
+import { Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, TimingProvenance } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
@@ -101,7 +101,7 @@ function resolveBeatOffset(
   sceneFrames: number,
   fps: number,
   words: AlignedWord[] | undefined
-): number {
+): { offset: number; source: SceneBeatTimingSource } {
   const firstWord = beatText.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
   if (words && firstWord) {
     // Search words that fall within this scene's frame window.
@@ -110,14 +110,20 @@ function resolveBeatOffset(
     for (const w of words) {
       if (w.startSec < startSec - 0.05 || w.startSec > endSec) continue;
       if (w.word.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "") === firstWord) {
-        return Math.max(0, Math.round(w.startSec * fps) - sceneStartFrame);
+        return {
+          offset: Math.max(0, Math.round(w.startSec * fps) - sceneStartFrame),
+          source: "aligned-words",
+        };
       }
     }
   }
   // Fallback: proportional by character position in the narration.
   const idx = narration.toLowerCase().indexOf(beatText.trim().toLowerCase());
   const frac = idx >= 0 && narration.length > 0 ? idx / narration.length : 0.4;
-  return Math.round(frac * sceneFrames);
+  return {
+    offset: Math.round(frac * sceneFrames),
+    source: idx >= 0 ? "authored-beat" : "source-range-proportional",
+  };
 }
 
 // Per-emotion pose cycle for sentence-level re-posing. Only registers with ≥2
@@ -132,6 +138,21 @@ const POSE_CYCLE: Record<string, string[]> = {
   sad:       [],
   surprise:  [],
   urgent:    [],
+};
+
+const DEFAULT_FOCAL_OCCUPANCY: Record<string, number> = {
+  STAT_REVEAL: 0.4,
+  SOLO: 0.3,
+  CAUSE_EFFECT: 0.35,
+  COMPARE: 0.35,
+  POLICY_LIST: 0.32,
+  ICON_TRIPLE: 0.32,
+  DIAGRAM: 0.32,
+  QA_REVEAL: 0.35,
+  DIALOGUE_QA: 0.3,
+  TABLEAU: 0.3,
+  EVIDENCE: 0.35,
+  FRAMEBOX: 0.4,
 };
 
 function importanceToEmphasis(imp: number): { animation: "pulse" | "shake" | "bounce"; duration: number; value?: number } {
@@ -192,14 +213,30 @@ function compileBrief(
   }
   const result = grammarFn(brief, ctx);
   applyShot(result, brief.shot);
+  if (timing.frames >= fps * 8 && result.cards?.length) {
+    if (result.cards.length > 1) {
+      result.cards.forEach((card, index) => {
+        card.delay = index === 0
+          ? Math.min(card.delay ?? 8, 12)
+          : Math.min(timing.frames - 45, index * fps * 4);
+      });
+    } else if (brief.visualGrammar === "SOLO") {
+      result.cards[0].delay = Math.min(timing.frames - 45, fps * 4);
+    }
+  }
 
   // Layer beat-emphasis onto the focal entity at the aligned frame.
   const entities: SceneEntity[] = result.entities.map((e) => ({ ...e }));
   const focal = entities.find((e) => e.assetId === result.focusAssetId);
+  let beatTimingSource: SceneBeatTimingSource = /[.!?]/.test(brief.narration)
+    ? "sentence-boundary"
+    : "source-range-proportional";
   if (focal && brief.beats && brief.beats.length) {
     // Use the single highest-importance beat for the focal pulse.
     const beat = [...brief.beats].sort((a, b) => b.importance - a.importance)[0];
-    const offset = resolveBeatOffset(beat.text, brief.narration, timing.startFrame, timing.frames, fps, words);
+    const resolvedBeat = resolveBeatOffset(beat.text, brief.narration, timing.startFrame, timing.frames, fps, words);
+    const offset = resolvedBeat.offset;
+    beatTimingSource = resolvedBeat.source;
     const enterDelay = focal.enterDelay ?? 0;
     const emph = importanceToEmphasis(beat.importance);
     focal.emphasize = { animation: emph.animation, delay: Math.max(0, offset - enterDelay), duration: emph.duration };
@@ -217,7 +254,9 @@ function compileBrief(
       const sentences = brief.narration.split(/(?<=[.?!])\s+/).map((s) => s.trim()).filter((s) => s.length > 8);
       const swaps: SceneEntity[] = [];
       for (let si = 1; si < sentences.length; si++) {
-        const offset = resolveBeatOffset(sentences[si], brief.narration, timing.startFrame, timing.frames, fps, words);
+        const offset = resolveBeatOffset(
+          sentences[si], brief.narration, timing.startFrame, timing.frames, fps, words
+        ).offset;
         if (offset < 20 || offset > timing.frames - 20) continue;
         swaps.push({
           assetId: focal.assetId,
@@ -241,6 +280,7 @@ function compileBrief(
     sourceRange: brief.sourceRange,
     visualRegister: brief.visualRegister,
     visualGrammar: brief.visualGrammar,
+    beatTimingSource,
     semanticTakeaway: brief.semanticVisual?.takeaway,
     semanticAction: brief.semanticVisual?.action,
     semanticSetting: brief.semanticVisual?.setting,
@@ -251,7 +291,9 @@ function compileBrief(
     characterRequired: brief.characterRequired,
     visualFingerprint: brief.visualFingerprint,
     silentFrameTakeaway: brief.silentFrameTakeaway,
-    focalOccupancyTarget: brief.focalOccupancyTarget,
+    focalOccupancyTarget: brief.focalOccupancyTarget
+      ?? DEFAULT_FOCAL_OCCUPANCY[brief.visualGrammar]
+      ?? 0.25,
     noveltyFromPrevious: brief.noveltyFromPrevious,
     unresolvedAssets: brief.unresolvedAssetRequests,
     subtitleCues: buildSubtitleCues(brief, timing, words, fps),
@@ -261,6 +303,7 @@ function compileBrief(
     texts: result.texts,
     speechBubbles: result.speechBubbles,
     paperCards: result.paperCards,
+    cards: result.cards,
     frameBoxes: result.frameBoxes,
   };
 }
@@ -396,6 +439,11 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
   // otherwise yield a plausible total while every scene sits at its old
   // absolute start frame.
   const totalFrames = scenes.reduce((max, s) => Math.max(max, s.startFrame + s.durationFrames), 0);
+  const beatTimingSummary = scenes.reduce<Partial<Record<SceneBeatTimingSource, number>>>((summary, scene) => {
+    const source = scene.beatTimingSource ?? "source-range-proportional";
+    summary[source] = (summary[source] ?? 0) + 1;
+    return summary;
+  }, {});
 
   // Structural invariants enforced in the engine, not left to whoever remembers
   // to run the quality gate.
@@ -419,6 +467,7 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     beatTimingSource: opts.words?.some((w) => Number.isInteger(w.wordIndex))
       ? "aligned-words"
       : "proportional",
+    beatTimingSummary,
     measuredSceneCount: sb.scenes.length - estimatedIds.length,
     ...opts.provenance,
   };

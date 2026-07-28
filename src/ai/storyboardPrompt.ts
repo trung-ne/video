@@ -21,7 +21,7 @@ Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "
 ## VISUAL GRAMMAR (chọn 1/scene, LUÂN PHIÊN — đừng lặp 1 kiểu)
 | grammar | dùng khi | slots cần điền |
 |---|---|---|
-| STAT_REVEAL | 1 con số gây sốc | { "stat": "0.72", "who": "characters/cat_surprised" } |
+| STAT_REVEAL | 1 con số gây sốc | { "stat": "0.72", "anchor": "<asset thể hiện số đang đo>", "who": "<role?>" } |
 | COMPARE | 2 thứ đối lập | { "left": "...", "right": "..." } |
 | POLICY_LIST | liệt kê 2-4 mục/nhân vật | { "items": "A|B|C" } |
 | DIALOGUE_QA | hỏi–đáp giữa 2 nhân vật | { "asker": "<role>", "answerer": "<role>", "askerText": "≤8 từ", "answererText": "≤8 từ" } |
@@ -34,7 +34,7 @@ Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "
 | QA_REVEAL | hỏi rồi hé lộ đáp | { "question": "...", "answer": "..." } |
 | ICON_TRIPLE | 3 khái niệm vòng tròn màu | { "items": "A|B|C", "icons": "finance/x|props/y|...?" } |
 | BEAT | khoảnh khắc cảm xúc, không nhân vật | { "image": "backgrounds/....jpg | #hex" } |
-| SOLO | mèo độc thoại + 1 keyword | { "who": "<role>", "keyword": "≤4 từ" } |
+| SOLO | direct address + concept card lớn | { "who": "<role>", "action": "...", "keyword": "≤4 từ", "prop": "<asset liên quan?>" } |
 
 Icon/prop dùng cho CHAR_PROP/CAUSE_EFFECT/ICON_TRIPLE: finance/* (money, house, stock, inflation, chart_up, wallet, piggy_bank, debt, loan...), props/* (trophy, book, brain, hourglass, calendar, marshmallow...).
 
@@ -53,6 +53,7 @@ Khai báo "cast": role → { src, badge }. Giữ nguyên xuyên video (người 
 - narration = ĐÚNG câu transcript của scene (nguồn phụ đề) — không tóm tắt cụt.
 - Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE/FRAMEBOX, ≥2 TABLEAU/DIALOGUE_QA, ≥1 BEAT. Không lặp cùng grammar quá 2 scene. SOLO ≤20%.
 - Mỗi claim có số liệu/chính sách/khảo sát phải dùng EVIDENCE hoặc FRAMEBOX; không được thay bằng icon trang trí.
+- STAT_REVEAL: số là focal typography, \`anchor\` phải nói rõ số đó đo tiền/dân số/tỷ lệ gì. SOLO phải có keyword đủ mạnh cho concept card; thêm \`prop\` khi narration có danh từ cụ thể.
 - Title/keyword KHÔNG được copy 6+ từ đầu narration. Text overlay phải bổ sung ý, không lặp phụ đề.
 - beats[]: đánh dấu con số/từ khoá quan trọng = substring CHÍNH XÁC của narration + importance 0..1 + kind (number/keyword/turn). Hệ thống sẽ nhấn mạnh đúng khoảnh khắc từ đó được đọc.
 - cold open: scene 1 = câu sốc/hỏi nhất, không chào hỏi. Scene cuối: chốt + sáng.

@@ -27,6 +27,7 @@ import { promoteArtifacts, pruneRunHistory } from "../src/engine/promoteArtifact
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import {
   checkRenderMatchesTimeline,
+  checkSceneBeatTimingSources,
   checkTimelineSpansAudio,
   checkTimingProvenance,
   formatTimingIssues,
@@ -181,6 +182,7 @@ if (!args.includes("--skip-quality")) {
 const allowUnprovenanced = args.includes("--allow-unprovenanced-timing");
 {
   const issues = checkTimingProvenance(raw.timingProvenance, { allowUnprovenanced });
+  issues.push(...checkSceneBeatTimingSources(raw.scenes, raw.timingProvenance));
   if (issues.length) {
     console.error(`\n⏱️  TIMING PROVENANCE\n${formatTimingIssues(issues)}\n`);
     if (hasBlocker(issues)) process.exit(1);

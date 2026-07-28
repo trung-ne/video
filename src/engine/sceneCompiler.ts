@@ -23,6 +23,7 @@ import {
   TransitionEvent,
   BackgroundEvent,
   PaperCardEvent,
+  CardEvent,
   FrameBoxEvent,
   SpeechBubbleEvent,
 } from "../types/timeline";
@@ -183,6 +184,27 @@ function compileScene(
       compilePaperCard(pc, start, sceneEnd, events, totalFrames, transitionDur);
     }
   }
+  if (scene.cards) {
+    for (const card of scene.cards) {
+      const frame = start + transitionDur + (card.delay ?? 0);
+      events.push({
+        frame,
+        type: "card",
+        cardId: card.id,
+        position: card.position,
+        scale: card.scale,
+        background: card.background,
+        iconSrc: card.iconSrc,
+        label: card.label,
+        animation: "popIn",
+        exitFrame: card.duration !== undefined
+          ? Math.min(frame + card.duration, totalFrames - 1)
+          : Math.min(sceneEnd - 5, totalFrames - 1),
+        width: card.width,
+        height: card.height,
+      } as CardEvent);
+    }
+  }
 
   // ── 5c. TV/monitor data frames ───────────────────────────
   if (scene.frameBoxes) {
@@ -244,7 +266,7 @@ function compileEntity(
     !stageAnchor &&
     entity.scale !== undefined &&
     entity.scale < 1.4 &&
-    entity.src.startsWith("characters/")
+    !entity.src.startsWith("ui/")
   ) {
     scale = defaultScaleForLayout(scene.layout, entityIndex);
   }
@@ -360,7 +382,16 @@ function compileText(
 
   // Compute exitFrame
   let exitFrame: number | undefined;
-  if (text.duration !== undefined) {
+  if (text.hold === "title") {
+    exitFrame = Math.min(textFrame + 4 * 30, sceneEnd - 5, totalFrames - 1);
+  } else if (text.hold === "scene-end" || text.hold === "element") {
+    exitFrame = Math.min(sceneEnd - 5, totalFrames - 1);
+  } else if (text.hold === "until-replaced") {
+    exitFrame = Math.min(
+      text.duration !== undefined ? textFrame + text.duration : sceneEnd - 5,
+      totalFrames - 1,
+    );
+  } else if (text.duration !== undefined) {
     exitFrame = Math.min(textFrame + text.duration, totalFrames - 1);
   } else {
     // Default: text lasts until end of scene
@@ -399,6 +430,7 @@ function compileText(
     background: text.background,
     align: text.align ?? "center",
     fontWeight: text.fontWeight,
+    fontSize: text.fontSize,
     animation: "fadeIn",
     exitFrame,
   } as TextEvent);

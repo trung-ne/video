@@ -9,7 +9,7 @@
 // layers beat-emphasis on top. Browser-safe: no fs, no Date/random.
 // ============================================================
 
-import { Scene, SceneEntity, SceneText, SceneSpeechBubble, ScenePaperCard, SceneFrameBox, LayoutPreset } from "../types/scene";
+import { Scene, SceneEntity, SceneText, SceneSpeechBubble, ScenePaperCard, SceneFrameBox, SceneConceptCard, LayoutPreset } from "../types/scene";
 import { SceneBrief, Storyboard, Shot, Emotion } from "../types/storyboard";
 import { STAGE_ANCHORS } from "./stageAnchors";
 
@@ -46,6 +46,7 @@ export interface GrammarResult {
   texts: SceneText[];
   speechBubbles?: SceneSpeechBubble[];
   paperCards?: ScenePaperCard[];
+  cards?: SceneConceptCard[];
   frameBoxes?: SceneFrameBox[];
   // The assetId the eye should land on — compiler anchors beat-emphasis here.
   focusAssetId?: string;
@@ -87,15 +88,14 @@ function grammarCompare(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   return {
     layout: "DUAL_CONTRAST",
     backgroundSrc: WHITE,
-    entities: [
-      { assetId: `${b.id}-l`, src: leftAsset, slot: "LEFT_MID", enterAnimation: "slideLeft", enterDelay: 8 },
-      { assetId: `${b.id}-r`, src: rightAsset, slot: "RIGHT_MID", enterAnimation: "slideRight", enterDelay: 20 },
+    entities: [],
+    cards: [
+      { id: `${b.id}-l`, position: { x: 0.25, y: 0.47 }, background: "#286F7A",
+        iconSrc: leftAsset, label: left, width: 660, height: 540, delay: 8 },
+      { id: `${b.id}-r`, position: { x: 0.75, y: 0.47 }, background: "#B54848",
+        iconSrc: rightAsset, label: right, width: 660, height: 540, delay: 22 },
     ],
-    texts: [
-      { id: `${b.id}-lt`, content: left, style: "CALLOUT", slot: "CALLOUT_LEFT", delay: 12, duration: 120 },
-      { id: `${b.id}-rt`, content: right, style: "CALLOUT", slot: "CALLOUT_RIGHT", delay: 24, duration: 120 },
-    ],
-    focusAssetId: `${b.id}-r`,
+    texts: [],
   };
 }
 
@@ -109,10 +109,19 @@ function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "STAT_DRAMA",
     backgroundSrc: "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
     entities: [
-      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_MID", enterAnimation: "popIn", enterDelay: 10 },
+      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 22 },
     ],
+    cards: [{
+      id: `${b.id}-panel`,
+      position: { x: 0.42, y: 0.46 },
+      background: "#351A2B",
+      iconSrc: b.slots?.anchor,
+      width: 1080,
+      height: 650,
+      delay: 4,
+    }],
     texts: stat
-      ? [{ id: `${b.id}-stat`, content: stat, style: "STAT", slot: "STAT_CENTER", delay: 6, duration: 150 }]
+      ? [{ id: `${b.id}-stat`, content: stat, style: "STAT", position: { x: 0.42, y: 0.46 }, fontSize: 210, delay: 10, hold: "scene-end" }]
       : [],
     focusAssetId: `${b.id}-cat`,
     focusTextId: stat ? `${b.id}-stat` : undefined,
@@ -125,23 +134,18 @@ function grammarPolicyList(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const items = (b.slots?.items ?? "").split("|").map((s) => s.trim()).filter(Boolean).slice(0, 4);
   const icons = (b.slots?.icons ?? "").split("|").map((s) => s.trim()).filter(Boolean);
   const slots = ["FAR_LEFT", "LEFT", "RIGHT", "FAR_RIGHT"] as const;
-  const entities: SceneEntity[] = items.map((_, i) => ({
-    assetId: `${b.id}-i${i}`,
-    src: semanticAsset(ctx, icons[i], `icons[${i}]`, "characters/cat"),
-    slot: slots[i],
-    badge: String(i + 1),
-    enterAnimation: "popIn",
-    enterDelay: 8 + i * 8,
+  const xs = items.length === 4 ? [0.14, 0.38, 0.62, 0.86] : [0.2, 0.5, 0.8];
+  const cards: SceneConceptCard[] = items.map((label, i) => ({
+    id: `${b.id}-i${i}`,
+    position: { x: xs[i], y: 0.47 },
+    background: ["#286F7A", "#7B5AA6", "#B56B35", "#B54848"][i],
+    iconSrc: semanticAsset(ctx, icons[i], `icons[${i}]`, "characters/cat"),
+    label: `${i + 1}. ${label}`,
+    width: items.length === 4 ? 390 : 480,
+    height: 480,
+    delay: 8 + i * 12,
   }));
-  const texts: SceneText[] = items.map((label, i) => ({
-    id: `${b.id}-t${i}`,
-    content: label,
-    style: "CAPTION",
-    position: { x: [0.15, 0.38, 0.62, 0.85][i], y: 0.7 },
-    delay: 12 + i * 8,
-    duration: 120,
-  }));
-  return { layout: "LINEUP", backgroundSrc: WHITE, entities, texts, focusAssetId: entities[0]?.assetId };
+  return { layout: "LINEUP", backgroundSrc: WHITE, entities: [], texts: [], cards };
 }
 
 // ── DIALOGUE_QA ─────────────────────────────────────────────
@@ -160,6 +164,10 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     entities: [
       { assetId: `${b.id}-a`, src: a.src, badge: a.badge, slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
       { assetId: `${b.id}-b`, src: c.src, badge: c.badge, slot: "RIGHT", enterAnimation: "slideRight", enterDelay: 18 },
+    ],
+    cards: [
+      { id: `${b.id}-left-panel`, position: { x: 0.25, y: 0.5 }, background: "#DCEFF2", width: 720, height: 650, delay: 4 },
+      { id: `${b.id}-right-panel`, position: { x: 0.75, y: 0.5 }, background: "#F3DFD8", width: 720, height: 650, delay: 4 },
     ],
     texts: [],
     speechBubbles: bubbles,
@@ -205,7 +213,7 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   // keyword, like SOLO does) — sits in the top band, clear of the subtitle.
   const caption = b.slots?.caption ?? b.slots?.keyword;
   const texts: SceneText[] = caption
-    ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, duration: 110 }]
+    ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, hold: "title" }]
     : [];
 
   return { layout: "TABLEAU", backgroundSrc: stage, entities, texts, speechBubbles: bubbles, focusAssetId: entities[0]?.assetId };
@@ -246,13 +254,23 @@ function grammarBeat(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarSolo(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
   const kw = b.slots?.keyword;
+  const prop = b.slots?.prop;
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
-    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "CENTER_MID", enterAnimation: "popIn", enterDelay: 8 }],
-    texts: kw ? [{ id: `${b.id}-kw`, content: kw, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, duration: 110 }] : [],
+    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 1.75, enterAnimation: "popIn", enterDelay: 8 }],
+    cards: kw ? [{
+      id: `${b.id}-concept`,
+      position: { x: 0.65, y: 0.47 },
+      background: "#237A8B",
+      iconSrc: prop,
+      label: kw,
+      width: 760,
+      height: 570,
+      delay: 14,
+    }] : undefined,
+    texts: [],
     focusAssetId: `${b.id}-cat`,
-    focusTextId: kw ? `${b.id}-kw` : undefined,
   };
 }
 
@@ -302,15 +320,17 @@ function grammarDiagram(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const n = items.length || 2;
   const xs = n === 3 ? [0.2, 0.5, 0.8] : [0.28, 0.72];
   const entities: SceneEntity[] = [];
-  const texts: SceneText[] = [];
+  const cards: SceneConceptCard[] = [];
   items.forEach((label, i) => {
-    entities.push({ assetId: `${b.id}-n${i}`, src: semanticAsset(ctx, icons[i], `icons[${i}]`, "characters/cat"), position: { x: xs[i], y: 0.5 }, badge: String(i + 1), scale: 1.3, enterAnimation: "popIn", enterDelay: 8 + i * 16 });
-    texts.push({ id: `${b.id}-t${i}`, content: label, style: "CAPTION", position: { x: xs[i], y: 0.68 }, delay: 12 + i * 16, duration: 120 });
+    cards.push({ id: `${b.id}-n${i}`, position: { x: xs[i], y: 0.48 },
+      background: ["#286F7A", "#7B5AA6", "#B54848"][i],
+      iconSrc: semanticAsset(ctx, icons[i], `icons[${i}]`, "characters/cat"),
+      label, width: n === 3 ? 450 : 620, height: 470, delay: 8 + i * 16 });
     if (i < items.length - 1) {
-      entities.push({ assetId: `${b.id}-a${i}`, src: "ui/arrow_right", position: { x: (xs[i] + xs[i + 1]) / 2, y: 0.5 }, scale: 0.9, enterAnimation: "fadeIn", enterDelay: 16 + i * 16 });
+      entities.push({ assetId: `${b.id}-a${i}`, src: "ui/arrow_right", position: { x: (xs[i] + xs[i + 1]) / 2, y: 0.5 }, scale: 1.4, zIndex: 15, enterAnimation: "fadeIn", enterDelay: 16 + i * 16 });
     }
   });
-  return { layout: "CUSTOM", backgroundSrc: WHITE, entities, texts, focusAssetId: `${b.id}-n0` };
+  return { layout: "CUSTOM", backgroundSrc: WHITE, entities, texts: [], cards };
 }
 
 // ── CAUSE_EFFECT (cause → arrow → effect) ───────────────────
@@ -319,19 +339,21 @@ function grammarCauseEffect(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const effect = b.slots?.effect ?? "Effect";
   const causeIcon = b.slots?.causeIcon;
   const effectIcon = b.slots?.effectIcon;
+  const resolvedCauseIcon = semanticAsset(ctx, causeIcon, "causeIcon", "characters/cat_think");
+  const resolvedEffectIcon = semanticAsset(ctx, effectIcon, "effectIcon", "characters/cat_surprised");
   const entities: SceneEntity[] = [
-    { assetId: `${b.id}-c`, src: semanticAsset(ctx, causeIcon, "causeIcon", "characters/cat_think"), position: { x: 0.22, y: 0.48 }, scale: causeIcon ? 1.4 : 1.6, enterAnimation: "slideLeft", enterDelay: 8 },
-    { assetId: `${b.id}-arrow`, src: "ui/arrow_right", position: { x: 0.5, y: 0.48 }, scale: 1.1, enterAnimation: "fadeIn", enterDelay: 26 },
-    { assetId: `${b.id}-e`, src: semanticAsset(ctx, effectIcon, "effectIcon", "characters/cat_surprised"), position: { x: 0.78, y: 0.48 }, scale: effectIcon ? 1.4 : 1.6, enterAnimation: "slideRight", enterDelay: 40,
-      emphasize: { animation: "pulse", delay: 20, duration: 20 } },
+    { assetId: `${b.id}-arrow`, src: "ui/arrow_right", position: { x: 0.5, y: 0.48 }, scale: 1.8, enterAnimation: "fadeIn", enterDelay: 28 },
   ];
   return {
-    layout: "CUSTOM", backgroundSrc: WHITE, entities,
-    texts: [
-      { id: `${b.id}-ct`, content: cause, style: "CAPTION", position: { x: 0.22, y: 0.7 }, delay: 12, duration: 130 },
-      { id: `${b.id}-et`, content: effect, style: "CAPTION", position: { x: 0.78, y: 0.7 }, delay: 44, duration: 120 },
+    layout: "CAUSE_EFFECT", backgroundSrc: WHITE, entities,
+    cards: [
+      { id: `${b.id}-cause`, position: { x: 0.24, y: 0.47 }, background: "#286F7A",
+        iconSrc: resolvedCauseIcon, label: cause, width: 650, height: 540, delay: 8 },
+      { id: `${b.id}-effect`, position: { x: 0.76, y: 0.47 }, background: "#B54848",
+        iconSrc: resolvedEffectIcon, label: effect, width: 650, height: 540, delay: 38 },
     ],
-    focusAssetId: `${b.id}-e`,
+    texts: [],
+    focusAssetId: `${b.id}-arrow`,
   };
 }
 
@@ -343,13 +365,16 @@ function grammarQaReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "QA_REVEAL",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: "characters/cat_think", slot: "CENTER_MID", enterAnimation: "popIn", enterDelay: 8,
+      { assetId: `${b.id}-cat`, src: "characters/cat_think", slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 8,
         emphasize: { animation: "bounce", delay: 60, duration: 20 } },
     ],
-    texts: [
-      ...(q ? [{ id: `${b.id}-q`, content: q, style: "CALLOUT" as const, slot: "CALLOUT_CENTER" as const, delay: 10, duration: 70 }] : []),
-      ...(a ? [{ id: `${b.id}-a`, content: a, style: "STAT" as const, slot: "STAT_CENTER" as const, delay: 80, duration: 100 }] : []),
+    cards: [
+      ...(q ? [{ id: `${b.id}-q`, position: { x: 0.43, y: 0.46 }, background: "#286F7A",
+        label: q, width: 1050, height: 580, delay: 10, duration: 70 }] : []),
+      ...(a ? [{ id: `${b.id}-a`, position: { x: 0.43, y: 0.46 }, background: "#B54848",
+        iconSrc: b.slots?.answerAsset, label: a, width: 1050, height: 580, delay: 80 }] : []),
     ],
+    texts: [],
     focusAssetId: `${b.id}-cat`,
     focusTextId: a ? `${b.id}-a` : undefined,
   };
@@ -359,15 +384,15 @@ function grammarQaReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarIconTriple(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const items = (b.slots?.items ?? "").split("|").map((s) => s.trim()).filter(Boolean).slice(0, 3);
   const icons = (b.slots?.icons ?? "").split("|").map((s) => s.trim()).filter(Boolean);
-  const circles = ["#8E44AD", "#2E86C1", "#E67E22"];
+  const circles = ["#7B5AA6", "#286F7A", "#B56B35"];
   const xs = [0.2, 0.5, 0.8];
-  const entities: SceneEntity[] = [];
-  const texts: SceneText[] = [];
+  const cards: SceneConceptCard[] = [];
   items.forEach((label, i) => {
-    entities.push({ assetId: `${b.id}-i${i}`, src: semanticAsset(ctx, icons[i], `icons[${i}]`, "props/concept_card"), position: { x: xs[i], y: 0.45 }, scale: 1.1, circle: circles[i], enterAnimation: "popIn", enterDelay: 8 + i * 14 });
-    texts.push({ id: `${b.id}-t${i}`, content: label, style: "CAPTION", position: { x: xs[i], y: 0.66 }, delay: 12 + i * 14, duration: 120 });
+    cards.push({ id: `${b.id}-i${i}`, position: { x: xs[i], y: 0.47 }, background: circles[i],
+      iconSrc: semanticAsset(ctx, icons[i], `icons[${i}]`, "props/concept_card"),
+      label, width: 500, height: 500, delay: 8 + i * 14 });
   });
-  return { layout: "ICON_TRIPLE", backgroundSrc: WHITE, entities, texts, focusAssetId: `${b.id}-i0` };
+  return { layout: "ICON_TRIPLE", backgroundSrc: WHITE, entities: [], texts: [], cards };
 }
 
 function grammarMapFlow(b: SceneBrief, ctx: GrammarContext): GrammarResult {

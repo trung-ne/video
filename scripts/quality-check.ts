@@ -15,7 +15,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
-import { checkTimingProvenance, formatTimingIssues, hasBlocker } from "../src/engine/timingIntegrity";
+import { checkSceneBeatTimingSources, checkTimingProvenance, formatTimingIssues, hasBlocker } from "../src/engine/timingIntegrity";
 import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 
 const args = process.argv.slice(2);
@@ -60,6 +60,7 @@ printQualityReport(report);
 // describes composition; it says nothing about whether the timing is real.
 const timingIssues = [
   ...checkTimingProvenance(timeline.timingProvenance),
+  ...checkSceneBeatTimingSources(timeline.scenes, timeline.timingProvenance),
   ...verifyArtifactInputs(
     adjacentArtifactInputs(timelinePath, timeline.timingProvenance, { includeWords: true })
   ),

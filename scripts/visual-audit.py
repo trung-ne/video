@@ -24,6 +24,43 @@ def scene_at(timeline, seconds):
 def percentile(np, values, q):
     return round(float(np.percentile(values, q)), 4)
 
+def focal_occupancy(np, pixels, edge_mask):
+    """Largest connected non-background/edge component bbox as frame fraction."""
+    quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
+    colors, counts = np.unique(quantized, axis=0, return_counts=True)
+    background = colors[counts.argmax()].astype(np.float32) * 24 + 12
+    color_distance = np.linalg.norm(pixels - background, axis=2)
+    mask = (color_distance > 42) | edge_mask
+    height, width = mask.shape
+    seen = np.zeros_like(mask, dtype=bool)
+    best_bbox = None
+    best_size = 0
+    for y in range(height):
+        for x in range(width):
+            if not mask[y, x] or seen[y, x]:
+                continue
+            stack = [(y, x)]
+            seen[y, x] = True
+            size = 0
+            min_x = max_x = x
+            min_y = max_y = y
+            while stack:
+                cy, cx = stack.pop()
+                size += 1
+                min_x, max_x = min(min_x, cx), max(max_x, cx)
+                min_y, max_y = min(min_y, cy), max(max_y, cy)
+                for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
+                    if 0 <= ny < height and 0 <= nx < width and mask[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        stack.append((ny, nx))
+            if size > best_size:
+                best_size = size
+                best_bbox = (min_x, min_y, max_x, max_y)
+    if not best_bbox:
+        return 0.0
+    min_x, min_y, max_x, max_y = best_bbox
+    return ((max_x - min_x + 1) * (max_y - min_y + 1)) / (width * height)
+
 
 def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
@@ -56,6 +93,9 @@ def main() -> int:
     timeline = None
     if args.timeline and Path(args.timeline).is_file():
         timeline = json.loads(Path(args.timeline).read_text(encoding="utf-8-sig"))
+    scene_lookup = {
+        scene.get("id"): scene for scene in (timeline or {}).get("scenes", [])
+    }
     profile = {}
     if args.config and Path(args.config).is_file():
         profile = json.loads(Path(args.config).read_text(encoding="utf-8-sig")).get("visualAudit", {})
@@ -63,6 +103,7 @@ def main() -> int:
     minimum_edges = float(profile.get("minimumEdgeDensity", 0.16))
     maximum_duplicates = float(profile.get("maximumNearDuplicateRatio", 0.22))
     maximum_flat = float(profile.get("maximumFlatFrameRatio", 0.50))
+    maximum_below_focal_target = float(profile.get("maximumBelowFocalTargetRatio", 0.25))
 
     with tempfile.TemporaryDirectory(prefix="cat-video-audit-") as tmp:
         pattern = str(Path(tmp) / "frame_%05d.jpg")
@@ -91,20 +132,27 @@ def main() -> int:
             white = float(np.mean(np.all(pixels > 235, axis=2)))
             saturation = float(np.mean((channel_max - channel_min) / (channel_max + 1e-6)))
             edges = np.asarray(image.convert("L").filter(ImageFilter.FIND_EDGES)).astype(np.float32)
-            edge_density = float(np.mean(edges > 35))
+            edge_mask = edges > 35
+            edge_density = float(np.mean(edge_mask))
+            occupancy = float(focal_occupancy(np, pixels, edge_mask))
             quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
             _, color_counts = np.unique(quantized, axis=0, return_counts=True)
             dominant_color = float(color_counts.max() / len(quantized))
             flat = dominant_color > 0.55 or (edge_density < 0.10 and saturation < 0.12)
             seconds = args.sample_offset + index * args.sample_seconds
+            scene_id = scene_at(timeline, seconds)
+            target = scene_lookup.get(scene_id, {}).get("focalOccupancyTarget")
             rows.append({
                 "seconds": round(seconds, 3),
-                "sceneId": scene_at(timeline, seconds),
+                "sceneId": scene_id,
                 "white": white,
                 "saturation": saturation,
                 "edges": edge_density,
                 "dominantColor": dominant_color,
                 "flat": flat,
+                "focalOccupancy": round(occupancy, 4),
+                "focalOccupancyTarget": target,
+                "focalOccupancyDelta": round(occupancy - float(target), 4) if target is not None else None,
             })
             thumbs.append(np.asarray(image.convert("L").resize((32, 14))).astype(np.float32) / 255.0)
             contact_frames.append(full.resize((320, 180)))
@@ -143,6 +191,15 @@ def main() -> int:
             "structuralChangeMean": round(float(np.mean(differences)), 4),
             "samples": rows,
         }
+        occupancy_rows = [row for row in rows if row["focalOccupancyTarget"] is not None]
+        metrics["focalOccupancy"] = {
+            "mean": round(float(np.mean([row["focalOccupancy"] for row in rows])), 4),
+            "p10": percentile(np, [row["focalOccupancy"] for row in rows], 10),
+            "declaredTargetSamples": len(occupancy_rows),
+            "belowDeclaredTargetRatio": round(float(np.mean([
+                row["focalOccupancyDelta"] < 0 for row in occupancy_rows
+            ])), 4) if occupancy_rows else None,
+        }
 
         by_scene = {}
         for row in rows:
@@ -165,9 +222,6 @@ def main() -> int:
         metrics["lowDensityScenes"] = sorted(
             scene_metrics, key=lambda item: item["edgeDensityMean"]
         )[:20]
-        scene_lookup = {
-            scene.get("id"): scene for scene in (timeline or {}).get("scenes", [])
-        }
         register_buckets = {}
         for row in rows:
             register = scene_lookup.get(row["sceneId"], {}).get("visualRegister", "unknown")
@@ -233,6 +287,11 @@ def main() -> int:
         failures.append(f"FRAME_SIMILARITY: adjacent near-duplicate ratio >{maximum_duplicates:.0%}")
     if metrics["flatFrameRatio"] > maximum_flat:
         failures.append(f"FLAT_REGISTER: sampled content flat ratio >{maximum_flat:.0%}")
+    if (metrics["focalOccupancy"]["belowDeclaredTargetRatio"] is not None
+            and metrics["focalOccupancy"]["belowDeclaredTargetRatio"] > maximum_below_focal_target):
+        failures.append(
+            f"FOCAL_OCCUPANCY: samples below declared focal target >{maximum_below_focal_target:.0%}"
+        )
 
     metrics["failures"] = failures
     metrics["passed"] = not failures

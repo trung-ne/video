@@ -24,7 +24,7 @@
  * and safe to import from the browser-side compiler. Callers supply measurements.
  */
 
-import { SceneTimingSource, BeatTimingSource, TimingProvenance } from "../types/scene";
+import { SceneTimingSource, BeatTimingSource, SceneBeatTimingSource, TimingProvenance } from "../types/scene";
 
 export type TimingSeverity = "BLOCKER" | "WARNING";
 
@@ -510,6 +510,43 @@ export function checkTimingProvenance(
   }
 
   return issues;
+}
+
+const SCENE_BEAT_SOURCES: SceneBeatTimingSource[] = [
+  "aligned-words",
+  "authored-beat",
+  "sentence-boundary",
+  "source-range-proportional",
+];
+
+export function checkSceneBeatTimingSources(
+  scenes: Array<{ id?: string; beatTimingSource?: unknown }> | undefined,
+  provenance: TimingProvenance | undefined,
+): TimingIssue[] {
+  if (!scenes || !provenance) return [];
+  const missing = scenes.filter((scene) => !SCENE_BEAT_SOURCES.includes(scene.beatTimingSource as SceneBeatTimingSource));
+  if (missing.length) {
+    return [{
+      code: "TIMING_BEAT_SOURCE_MISSING",
+      severity: "BLOCKER",
+      message: `${missing.length}/${scenes.length} scenes do not declare their beat timing source.`,
+      hint: "Recompile so each scene records the fallback ladder branch it actually used.",
+    }];
+  }
+  const actual = scenes.reduce<Partial<Record<SceneBeatTimingSource, number>>>((counts, scene) => {
+    const source = scene.beatTimingSource as SceneBeatTimingSource;
+    counts[source] = (counts[source] ?? 0) + 1;
+    return counts;
+  }, {});
+  if (JSON.stringify(actual) !== JSON.stringify(provenance.beatTimingSummary ?? {})) {
+    return [{
+      code: "TIMING_BEAT_SUMMARY_DRIFT",
+      severity: "BLOCKER",
+      message: "timingProvenance.beatTimingSummary does not match scene-level timing sources.",
+      hint: "The timeline or provenance was modified after compile.",
+    }];
+  }
+  return [];
 }
 
 export function formatTimingIssues(issues: TimingIssue[]): string {

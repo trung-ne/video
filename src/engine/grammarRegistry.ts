@@ -18,9 +18,9 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "STAT_REVEAL", purpose: "Reveal one transcript-supported number",
-    requiredSlots: ["stat"], optionalSlots: ["who"],
+    requiredSlots: ["stat"], optionalSlots: ["who", "anchor"],
     supportedRegisters: ["infographic", "evidence"],
-    semanticRequirements: ["The number must occur in the source range."],
+    semanticRequirements: ["The number must occur in the source range; anchor should visualize what the figure measures."],
   },
   {
     id: "POLICY_LIST", purpose: "Show two to four distinct actors or items",
@@ -90,7 +90,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "SOLO", purpose: "Use one character for direct address with a meaningful action",
-    requiredSlots: ["who", "action"], optionalSlots: ["keyword", "prop"],
+    requiredSlots: ["who", "action", "keyword"], optionalSlots: ["prop"],
     supportedRegisters: ["character_action"],
     semanticRequirements: ["A neutral pose plus keyword alone is not sufficient."],
   },

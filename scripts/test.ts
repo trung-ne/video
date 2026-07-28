@@ -18,12 +18,15 @@ import {
   checkRenderMatchesTimeline,
   checkWordAlignment,
   checkTimingProvenance,
+  checkSceneBeatTimingSources,
   hasBlocker,
 } from "../src/engine/timingIntegrity";
 import { canonicalJsonChecksum, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 import { promoteArtifacts } from "../src/engine/promoteArtifacts";
 import { acquireRenderLock } from "../src/engine/renderLock";
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
+import { VISUAL_GRAMMARS } from "../src/engine/visualGrammars";
+import { compileScenes } from "../src/engine/sceneCompiler";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -116,6 +119,72 @@ test("reference comparison names the robust baseline and emits signed deltas", (
   assert.strictEqual(result.baseline, "robustBaseline");
   assert.strictEqual(result.deltaCandidateMinusReference.flatFrameRatio, 0.15);
   assert.strictEqual(result.deltaCandidateMinusReference.edgeDensity, -0.05);
+});
+
+test("occupancy pilot grammars emit semantic frame-filling components", () => {
+  const ctx = { cast: {}, index: 0, strict: true };
+  const cause = VISUAL_GRAMMARS.CAUSE_EFFECT({
+    id: "cause", narration: "Debt causes stress", purpose: "mechanism", emotion: "concern",
+    viewerFocus: "stress", visualGrammar: "CAUSE_EFFECT",
+    slots: {
+      cause: "Debt", effect: "Stress",
+      causeIcon: "finance/debt", effectIcon: "props/brain",
+    },
+  }, ctx);
+  assert.strictEqual(cause.layout, "CAUSE_EFFECT");
+  assert.strictEqual(cause.cards?.length, 2);
+  assert.ok((cause.cards?.[0].width ?? 0) >= 600);
+
+  const solo = VISUAL_GRAMMARS.SOLO({
+    id: "solo", narration: "Think about the budget", purpose: "direct address", emotion: "curious",
+    viewerFocus: "budget", visualGrammar: "SOLO",
+    slots: { who: "characters/cat_think", action: "points", keyword: "Your budget", prop: "finance/budget" },
+  }, ctx);
+  assert.strictEqual(solo.cards?.[0].iconSrc, "finance/budget");
+  assert.ok((solo.cards?.[0].width ?? 0) >= 700);
+
+  const stat = VISUAL_GRAMMARS.STAT_REVEAL({
+    id: "stat", narration: "It fell 30 percent", purpose: "reveal", emotion: "surprise",
+    viewerFocus: "30%", visualGrammar: "STAT_REVEAL",
+    slots: { stat: "30%", anchor: "finance/chart_down", who: "characters/cat_surprised" },
+  }, ctx);
+  assert.ok((stat.texts[0].fontSize ?? 0) >= 200);
+  assert.strictEqual(stat.cards?.[0].iconSrc, "finance/chart_down");
+});
+
+test("long multi-card scenes stage persistent reveals about four seconds apart", () => {
+  const storyboard = timingFixture(["scene-001"]);
+  storyboard.scenes[0].visualGrammar = "CAUSE_EFFECT";
+  storyboard.scenes[0].slots = {
+    cause: "Debt", effect: "Stress",
+    causeIcon: "finance/debt", effectIcon: "props/brain",
+  };
+  const timeline = compileStoryboard(storyboard, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 360 }],
+  });
+  assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 8);
+  assert.strictEqual(timeline.scenes[0].cards?.[1].delay, 120);
+  assert.deepStrictEqual(timeline.timingProvenance?.beatTimingSummary, {
+    "source-range-proportional": 1,
+  });
+  assert.deepStrictEqual(
+    checkSceneBeatTimingSources(timeline.scenes, timeline.timingProvenance),
+    []
+  );
+});
+
+test("scene-end text hold survives beyond legacy hardcoded durations", () => {
+  const scene = {
+    id: "hold", label: "hold", startFrame: 0, durationFrames: 300,
+    layout: "STAT_DRAMA" as const, narration: "Thirty percent.",
+    entities: [], backgroundSrc: "#111111",
+    texts: [{ id: "stat", content: "30%", style: "STAT" as const, delay: 10, duration: 30, hold: "scene-end" as const }],
+  };
+  const compiled = compileScenes({
+    fps: 30, width: 1920, height: 1080, durationInFrames: 300, scenes: [scene],
+  });
+  const text = compiled.events.find((event: any) => event.type === "text") as any;
+  assert.strictEqual(text.exitFrame, 299);
 });
 
 test("indexes Unicode words with stable indices", () => {
@@ -571,6 +640,7 @@ test("compiler stamps provenance describing how it was timed", () => {
     mode: "measured",
     sceneTimingSource: "durations",
     beatTimingSource: "proportional",
+    beatTimingSummary: { "source-range-proportional": 1 },
     measuredSceneCount: 1,
     audioSeconds: 10,
     audioSha256: "abc",

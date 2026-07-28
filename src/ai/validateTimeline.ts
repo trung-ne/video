@@ -201,12 +201,30 @@ export function validateSceneTimeline(input: any): ValidationResult {
         }
       }
     }
+    if (Array.isArray(scene.cards)) {
+      for (let ci = 0; ci < scene.cards.length; ci++) {
+        const card = scene.cards[ci];
+        const cp = `${sp} card[${ci}]:`;
+        if (!card.id) errors.push(`${cp} missing id`);
+        if (!card.background) errors.push(`${cp} missing background`);
+        if (!card.position || typeof card.position.x !== "number" || typeof card.position.y !== "number") {
+          errors.push(`${cp} missing numeric position`);
+        }
+        if (card.iconSrc) {
+          const assetPath = resolveAssetPath(card.iconSrc, assetsDir);
+          if (!fs.existsSync(assetPath)) {
+            errors.push(`${cp} icon asset not found: ${path.relative(process.cwd(), assetPath)}`);
+          }
+        }
+      }
+    }
 
     if (!Array.isArray(scene.texts)) {
       errors.push(`${sp} texts must be an array`);
     } else {
       if (scene.texts.length === 0 &&
           (scene.entities?.length ?? 0) === 0 &&
+          (scene.cards?.length ?? 0) === 0 &&
           (scene.paperCards?.length ?? 0) === 0 &&
           (scene.frameBoxes?.length ?? 0) === 0) {
         warnings.push(`${sp} has no texts — screen will be empty`);

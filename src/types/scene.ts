@@ -130,11 +130,26 @@ export interface SceneText {
 
   delay?: number;      // frames after scene.startFrame, default 0
   duration?: number;   // frames visible; if omitted: lasts until scene end
+  hold?: "title" | "until-replaced" | "scene-end" | "timed" | "element";
 
   background?: string; // for CALLOUT style
   color?: string;      // explicit override; otherwise compiler auto-picks by background darkness
   align?: "left" | "center" | "right";
   fontWeight?: number;
+  fontSize?: number;
+}
+
+export interface SceneConceptCard {
+  id: string;
+  position: { x: number; y: number };
+  background: string;
+  iconSrc?: string;
+  label?: string;
+  scale?: number;
+  delay?: number;
+  duration?: number;
+  width?: number;
+  height?: number;
 }
 
 // ─── Paper card (evidence / survey) inside a scene ───────────
@@ -204,6 +219,7 @@ export interface Scene {
   visualRegister?: VisualRegister;
   /** Authored storyboard grammar, preserved for rendered per-grammar audits. */
   visualGrammar?: string;
+  beatTimingSource?: SceneBeatTimingSource;
   semanticTakeaway?: string;
   semanticAction?: string;
   semanticSetting?: string;
@@ -226,6 +242,7 @@ export interface Scene {
   texts: SceneText[];
 
   paperCards?: ScenePaperCard[]; // evidence / survey cards
+  cards?: SceneConceptCard[]; // semantic color/icon/keyword panels
   frameBoxes?: SceneFrameBox[];  // TV/monitor data frames
   speechBubbles?: SceneSpeechBubble[]; // dialogue lines above characters
 
@@ -243,6 +260,11 @@ export type SceneTimingSource = "durations" | "aligned-words" | "authored-silent
 
 /** What anchored emphasis beats. `proportional` is a quality note, not a failure. */
 export type BeatTimingSource = "aligned-words" | "proportional";
+export type SceneBeatTimingSource =
+  | "aligned-words"
+  | "authored-beat"
+  | "sentence-boundary"
+  | "source-range-proportional";
 
 /**
  * How this timeline's timing was arrived at, recorded in the artifact itself.
@@ -256,6 +278,7 @@ export interface TimingProvenance {
   mode: "measured" | "estimated";
   sceneTimingSource: SceneTimingSource;
   beatTimingSource: BeatTimingSource;
+  beatTimingSummary?: Partial<Record<SceneBeatTimingSource, number>>;
   measuredSceneCount: number;
   /** length of the voice track this timeline was compiled against */
   audioSeconds?: number;
