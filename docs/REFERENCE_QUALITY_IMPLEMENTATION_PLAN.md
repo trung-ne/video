@@ -1,5 +1,9 @@
 # Reference-quality implementation plan
 
+> **HISTORICAL (2026-07-28):** Tài liệu này mô tả baseline/kiến trúc cũ và không
+> phải runbook. Dùng `AGENTS.md` + `CLAUDE.md` và plan active
+> `iridescent-doodling-island.md`; không dùng các escape hatch trong tài liệu này.
+
 Tài liệu này là kế hoạch sửa code và prompt ở mức triển khai. Mục tiêu là mọi video
 mới có nhịp kể chuyện và độ đa dạng thị giác gần `refer/meo.mp4`, nhưng vẫn dùng
 nhân vật, asset và cách thể hiện nguyên bản của project.
@@ -72,7 +76,7 @@ transcript
   -> register/hero scheduler
   -> asset requests
   -> manifest resolver or asset generation queue
-  -> natural-section TTS
+  -> per-scene TTS
   -> forced word alignment
   -> timing compiler
   -> semantic timeline gate

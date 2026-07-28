@@ -1,5 +1,8 @@
 # Reference-quality production plan
 
+> **HISTORICAL (2026-07-28):** Baseline và một số lệnh trong tài liệu này đã cũ.
+> Dùng `AGENTS.md` + `CLAUDE.md` cho workflow production hiện hành.
+
 Mục tiêu: mọi video mới đạt nhịp kể chuyện và độ đa dạng thị giác gần
 `refer/meo.mp4`, nhưng dùng character/art nguyên bản của project. Không sao chép
 nhân vật mèo tím, frame cụ thể, logo, quảng cáo hoặc footage của bản refer.

@@ -12,7 +12,9 @@ npm run render -- --project <id-or-path>
 Mặc định ghi ra `output/<id>/video.mp4` (kèm `contact.jpg`, `*-audit.json`,
 `production-report.json` trong cùng folder). Chỉ định `--out` khi cần path khác.
 
-Render chỉ chạy khi schema và semantic quality gate pass. Sau render tự chạy:
+Render chỉ chạy khi schema, semantic quality, measured timing provenance và
+artifact hash gate đều pass. Mỗi run dùng lock + staging; build cũ chỉ bị thay sau
+khi toàn bộ audit pass, và promotion có rollback. Sau render tự chạy:
 
 - encoding audit: H.264, 1920×1080, 30fps, bitrate floor;
 - visual audit bỏ subtitle band;

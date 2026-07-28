@@ -1,5 +1,9 @@
 # TODO — Storyboard V5 & nâng chất lượng render (bám refer/meo.mp4)
 
+> **HISTORICAL (2026-07-28):** Checklist này đã bị thay thế bởi plan active
+> `iridescent-doodling-island.md`. Giữ lại để tra lịch sử, không dùng lệnh cũ
+> hoặc các mục escape-hatch làm workflow production.
+
 Cập nhật: 2026-07-20. Mục tiêu: mọi video render tiệm cận `refer/meo.mp4` bất kể transcript.
 
 ---

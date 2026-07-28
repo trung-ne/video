@@ -1,110 +1,86 @@
 # Cat Explainer Video Pipeline
 
-Pipeline tạo video explainer 1920×1080 bằng storyboard semantic, asset nguyên bản,
-TTS có forced alignment và Remotion.
+Hệ thống tạo video explainer 1920×1080:
 
 ```text
-transcript
-  -> global story map
-  -> section scene plans
-  -> semantic asset resolver
-  -> natural-section TTS + word alignment
-  -> deterministic SceneTimeline
-  -> semantic quality gate
-  -> Remotion render
-  -> visual/audio/encoding audits
+transcript → semantic storyboard → measured per-scene TTS + word alignment
+           → compiled timeline → Remotion → encoding/audio/visual audits → MP4
 ```
 
-## Production workflow
+`storyboard.json` là nguồn authored. `timeline.json` là artifact compile có
+timing provenance; không sửa trực tiếp để xuất production.
+
+## Hai route authoring
+
+Route A dùng chính session agent, không cần API key:
 
 ```powershell
-# Tạo project
-npx ts-node scripts/new-project.ts --transcript .\transcript.txt --name my-topic
-
-# Build lại manifest sau khi thêm asset
-npm run build-assets
-
-# Generate storyboard v2 + TTS + timeline
-npm run generate -- --project video-004-my-topic --tts-kokoro
-
-# Preview đúng project, không copy timeline về root
-npm run preview:project -- --project video-004-my-topic
-
-# Publish mặc định: pre-render gate -> proxy audit -> full render -> final audits
-npm run publish -- --timeline projects/video-004-my-topic/timeline.json --out output/video-004-my-topic.mp4
+npm run build-storyboard -- --project <id>
+npm run storyboard-to-tts -- --storyboard projects/<id>/storyboard.json
+py -3.11 scripts/tts_kokoro.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id>
+py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir projects/<id> --model small --lang en --transcript projects/<id>/transcript.txt
+npm run compile-storyboard -- --storyboard projects/<id>/storyboard.json --out projects/<id>/timeline.json --durations projects/<id>/durations.json --words projects/<id>/words.json --audio audio/<id>/voice.wav
 ```
 
-Có thể truyền đường dẫn đầy đủ thay cho project ID:
+Route B dùng API để author hàng loạt:
 
 ```powershell
-npm run generate -- --project projects/video-004-my-topic --tts
-npm run publish -- --timeline projects/video-004-my-topic/timeline.json --out output/video.mp4
+npm run generate -- --project <id> --tts-kokoro
 ```
 
-## Project artifacts
+Cả hai route đều phải có TTS đo thật trước khi tạo `timeline.json` production.
+Artifact ước lượng chỉ mang tên `timeline.estimated.json`; preview được nhưng
+render/publish sẽ từ chối.
+
+## Kiểm tra, preview và xuất bản
+
+```powershell
+npm run validate -- projects/<id>/timeline.json
+npm run quality -- projects/<id>/timeline.json
+npm run preview:project -- --project <id>
+npm run render -- --project <id>
+npm run publish -- --project <id>
+```
+
+`render` và `publish` kiểm provenance, hash audio/storyboard/timing artifacts,
+schema, director quality, thời lượng MP4, encoding, loudness và visual audit.
+Mỗi run ghi vào staging có lock; chỉ promote sang `output/<id>/` khi toàn bộ gate
+pass. Run lỗi không thay đổi build production trước đó.
+
+Các flag `--skip-*`, `--diagnostic*` và `--allow-unprovenanced-timing` chỉ dành
+cho chẩn đoán. Artifact tạo với chúng không được publish.
+
+## Artifact
 
 ```text
-projects/video-XXX-slug/
-  project.json          versioned project manifest
-  metadata.json         project status
-  transcript.txt        narration source of truth
-  story-map.json        global sections, claims and story arc
-  storyboard.json       semantic storyboard v2
-  asset-requests.json   unresolved generation queue, only when needed
-  words.json            aligned words with stable transcript wordIndex
-  audio-audit.json      LUFS and true-peak report
-  timeline.json         authored SceneTimeline
+projects/<id>/
+  transcript.txt
+  storyboard-data.ts    # Route A
+  storyboard.json       # authored source
+  tts_scenes.json
+  durations.json
+  words.json
+  timeline.json         # measured compiled artifact
+
+output/<id>/
+  video.mp4
+  video.contact.jpg
+  video.*-audit.json
+  video.production-report.json
+  .runs/                # rollback + diagnostics, ignored by Git
 ```
 
-MP4/WAV và generated logs không phải source code và không được commit.
+MP4, WAV, logs và run artifacts không phải source code và không được commit.
+`output/imagegen/` là ngoại lệ có chủ đích cho asset generation.
 
-## Required gates
+## Quality gates
 
-- Transcript source-range coverage và checksum: 100%.
-- Không unresolved asset, empty semantic focal point hoặc generic character pair.
-- Flat/solid scenes: tối đa 50%, mục tiêu dưới 45%.
-- Ít nhất 6 visual registers; không register nào quá 30%.
-- Character chỉ xuất hiện tối đa 80% cảnh; không để một template shape quá 25%.
-- Video dài cần ít nhất 20 pose/costume/action variant.
-- Hero visual ít nhất mỗi 45 giây.
-- Edge density `>=0.16`, saturation `>=0.15`, near-duplicate `<=22%`.
-- Audio từ `-18` đến `-16 LUFS`, true peak `<=-1.5 dBTP`.
-- H.264, 1920×1080, 30fps và encoding audit pass.
+- Transcript/source coverage và semantic assets hợp lệ.
+- Timing provenance là `measured`; ID scene khớp storyboard/durations/timeline.
+- Hash audio, storyboard và timing artifacts khớp artifact đã compile.
+- H.264, 1920×1080, 30fps; audio khoảng −18 đến −16 LUFS.
+- Visual reference thresholds: flat ≤50%, edge density ≥0.16,
+  saturation ≥0.15, near-duplicate ≤22%.
 
-`--diagnostic`, `--skip-quality` và `--skip-visual-audit` chỉ dùng để chẩn đoán,
-không tạo production artifact.
-
-`render.ts` tạo media chẩn đoán; chỉ `publish.ts` mới chạy proxy trước và ghi
-`production-report.json` với trạng thái `production-ready`. Audio có sẵn cũng
-được audit/master tự động, không chỉ audio vừa sinh từ TTS.
-
-## Assets
-
-Asset được đọc từ `public/assets.manifest.json`, gồm SVG, PNG và JPG:
-
-```powershell
-npm run build-assets
-npm run list-assets
-npm run list-assets -- character
-npm run list-assets -- --used projects/video-004-my-topic/timeline.json
-```
-
-Bộ PNG trong `public/generated-assets/characters/` là lead teal cat chính. Không
-trộn character style legacy vào cùng scene/video production.
-
-## Development checks
-
-```powershell
-npm run check
-npm run quality -- projects/video-004-my-topic/timeline.json
-npm run visual-audit -- --video output/video.mp4 --ffmpeg <ffmpeg-path>
-```
-
-Chi tiết kiến trúc và thứ tự triển khai:
-
-- [Reference quality plan](docs/REFERENCE_QUALITY_PLAN.md)
-- [Implementation plan](docs/REFERENCE_QUALITY_IMPLEMENTATION_PLAN.md)
-- [V4 rendered-reference recovery](docs/V4_RENDERED_REFERENCE_RECOVERY_PLAN.md)
-
-`src/ai/systemPrompt.ts` và direct-to-events pipeline là compatibility path cho
-schema v1. Production mặc định dùng prompt modules trong `src/ai/prompts/`.
+Quy tắc đầy đủ và director policy nằm trong [CLAUDE.md](CLAUDE.md);
+[AGENTS.md](AGENTS.md) là entry point bắt buộc cho agent.

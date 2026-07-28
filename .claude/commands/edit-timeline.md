@@ -10,7 +10,7 @@ Production source là `storyboard.json`, không phải compiled events.
 - Sửa ý nghĩa/asset/register: sửa scene brief trong storyboard rồi compile lại.
 - Sửa transcript: regenerate source ranges/checksum.
 - Sửa timing: chạy lại TTS + alignment; không đoán frame.
-- Chỉ sửa `timeline.json` trực tiếp cho diagnostic nhỏ và phải chạy validate,
-  quality, render audits lại.
+- Không sửa `timeline.json` trực tiếp. Muốn diagnostic thay đổi khung hình, tạo
+  bản copy ngoài canonical project path; production luôn sửa storyboard rồi compile lại.
 
 Không thêm generic cat pair, CSS-only BEAT hoặc asset path ngoài manifest.

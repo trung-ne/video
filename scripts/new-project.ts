@@ -156,8 +156,9 @@ console.log(`   ├── metadata.json`);
 console.log(`   ├── project.json`);
 if (idea) console.log(`   ├── idea.txt`);
 if (transcript || url) console.log(`   ├── transcript.txt`);
-console.log(`   ├── timeline.json (generated later)`);
-console.log(`   └── output.mp4 (rendered later)`);
+console.log(`   ├── storyboard.json (authored later)`);
+console.log(`   ├── timeline.json (compiled after measured TTS)`);
+console.log(`   └── output/${videoId}/video.mp4 (rendered later)`);
 
 console.log(`\n🚀 Next steps:`);
 if (!transcript && !url && idea) {
@@ -176,8 +177,8 @@ if (auto) {
   // Auto-generate timeline (call generate-timeline.ts)
   try {
     execSync(`npm run generate -- --project ${videoId} --tts-kokoro`, { stdio: "inherit" });
-    console.log(`\n✅ Timeline generated. Next: npm run preview:project -- --project ${videoId} or npx ts-node scripts/render.ts --project ${videoId}`);
+    console.log(`\n✅ Measured timeline generated. Next: npm run preview:project -- --project ${videoId} or npm run render -- --project ${videoId}`);
   } catch (e) {
-    console.error(`❌ Auto-generation failed. Generate manually: npx ts-node scripts/generate-timeline.ts --project ${videoId}`);
+    console.error(`❌ Auto-generation failed. Generate manually: npm run generate -- --project ${videoId} --tts-kokoro`);
   }
 }

@@ -3,7 +3,7 @@
 ## Tổng quan
 
 Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải thích".
-Pipeline: **Script/URL/Transcript → Claude AI → timeline.json → Remotion → MP4**
+Pipeline: **Script/URL/Transcript → semantic storyboard → measured TTS/alignment → compiled timeline → Remotion → audited MP4**
 
 Mục tiêu: Tạo hàng trăm video, chỉ thay script/audio — không vẽ lại asset, không làm lại animation.
 
@@ -92,7 +92,7 @@ video/
 │       ├── people/{person,company}.svg
 │       └── ui/{arrow_up,arrow_down}.svg
 ├── projects/                     # 📁 MỖI VIDEO = 1 FOLDER (xem bên dưới)
-├── timeline.json                 # Active timeline (input cho render)
+├── timeline.json                 # Legacy scratch fixture; production dùng projects/<id>/timeline.json
 ├── output/                       # render ra đây, 1 folder/video: output/<id>/video.mp4 + audits
 └── CLAUDE.md                     # File này
 ```
@@ -122,13 +122,15 @@ projects/video-003-tai-sao-eng/
 
 Generate + render nhận **cả** `--project <id>` lẫn path tường minh:
 ```bash
-npx ts-node scripts/generate-timeline.ts --project <id>          # hoặc --transcript <path> --out <path>
+npm run generate -- --project <id> --tts-kokoro                 # route API, timing đo thật
 npx ts-node scripts/render.ts --project <id>                     # hoặc --timeline projects/<id>/timeline.json
 ```
 
 (render mặc định ghi ra `output/<id>/video.mp4`, id lấy từ `--project` hoặc tên folder cha của `--timeline`; chỉ định `--out` khi cần path khác.)
 
-⚠️ Lưu ý để tránh hiểu nhầm: `timeline.json` ở root là file thường (không phải symlink); `metadata.json` chỉ được `new-project.ts` ghi lúc tạo — generate/render **không** tự cập nhật status/version.
+⚠️ `timeline.json` ở root chỉ là legacy scratch fixture, không phải production input.
+Production luôn dùng `projects/<id>/timeline.json`; `metadata.json` chỉ được
+`new-project.ts` ghi lúc tạo — generate/render không tự cập nhật status/version.
 
 ---
 
@@ -138,14 +140,14 @@ npx ts-node scripts/render.ts --project <id>                     # hoặc --time
 # Preview trong Remotion Studio
 npm start
 
-# Generate timeline từ ý tưởng
-npx ts-node scripts/generate-timeline.ts --idea "Chủ đề video"
+# Generate production timeline từ ý tưởng
+npx ts-node scripts/generate-timeline.ts --idea "Chủ đề video" --tts-kokoro
 
 # Generate từ URL YouTube
-npx ts-node scripts/generate-timeline.ts --url "https://youtube.com/watch?v=..."
+npx ts-node scripts/generate-timeline.ts --url "https://youtube.com/watch?v=..." --tts-kokoro
 
 # Generate từ transcript file
-npx ts-node scripts/generate-timeline.ts --transcript transcript.txt
+npx ts-node scripts/generate-timeline.ts --transcript transcript.txt --tts-kokoro
 
 # [Route A] Build storyboard từ storyboard-data.ts viết tay (KHÔNG cần API key)
 npx ts-node scripts/build-storyboard.ts --project <id>
@@ -206,9 +208,11 @@ Transcript ─┬─→ projects/<id>/storyboard-data.ts   ← agent đọc tran
 - **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. `generate-timeline.ts` chỉ ghi `scenes[]`.
 
 **Hai tầng biến đổi (cố ý, đừng nhầm):**
-- **Authoring-time** (chạy lúc generate, GHI ĐÈ scenes trên đĩa): `autoFixBackgrounds` ([backgroundResolver.ts](src/ai/backgroundResolver.ts)) sửa nền lười → được *persist* vào file scenes. Muốn chạy lại thủ công: `quality-check --fix`.
+- **Authoring-time** (chạy lúc generate, GHI ĐÈ scenes trên đĩa): `autoFixBackgrounds` ([backgroundResolver.ts](src/ai/backgroundResolver.ts)) sửa nền lười → được *persist* trước khi compile. Không chạy post-hoc trên timeline có provenance.
 - **Load-time** (chạy mỗi lần preview/render, TRANSIENT): `compileScenes` + `injectLiveliness` trong `loadTimeline()`.
-- Hệ quả: sửa tay file scenes rồi render thẳng thì **không** được `autoFixBackgrounds` (chỉ compile + liveliness). Đây là chủ đích — muốn fix nền, chạy generate hoặc `quality-check --fix`.
+- Hệ quả: không sửa tay compiled timeline. Muốn sửa nền, đổi storyboard rồi compile
+  lại để provenance/hash được tái tạo; `quality-check --fix` từ chối timeline đã
+  có provenance.
 - **Render có cổng schema:** [render.ts](scripts/render.ts) gọi `validateTimeline` trước khi render, sai schema → dừng ngay (bỏ qua bằng `--skip-validate`).
 
 **SceneTimeline** (format AI tạo ra):
@@ -383,7 +387,7 @@ const result = validateTimeline(timeline);
 |--------|----------|
 | Asset không hiện | Kiểm tra `src` trong timeline có đúng path không. Chạy `npx ts-node scripts/list-assets.ts` |
 | Animation giật | Tăng `animationDuration` lên 25-30 frames |
-| Video quá tối/sáng | Đổi `background` trong timeline.json |
+| Video quá tối/sáng | Đổi background trong storyboard rồi compile lại |
 | Audio không đồng bộ | Chạy `ffprobe public/audio/voice.mp3` kiểm tra duration |
 | TypeScript error | `npx tsc --noEmit` để xem chi tiết lỗi |
 | Render fail | Kiểm tra `output/` directory tồn tại |
@@ -403,5 +407,5 @@ Dùng trong Claude Code:
 | `/validate` | Schema validate timeline.json (errors/warnings) |
 | `quality-check` | Full quality checklist 22 rules → score 0-100, grade A-F |
 | `/list-assets` | Liệt kê tất cả SVG có sẵn |
-| `/edit-timeline` | Sửa timeline.json thông minh |
+| `/edit-timeline` | Sửa storyboard đúng tầng rồi compile lại |
 | `/add-asset` | Hướng dẫn thêm SVG mới |

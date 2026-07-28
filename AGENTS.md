@@ -16,10 +16,11 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
    là một quyết định đạo diễn có chủ đích dựa trên nội dung câu narration đó.
    *(Repo từng có `scripts/session-v3.ts`/`session-v4.ts` vi phạm điều này — đã xoá.)*
 
-2. **KHÔNG bypass production gate.** `validateTimeline` (schema) và `qualityCheck`
-   (thẻ điểm đạo diễn V4/V5) phải pass trước khi render. Các flag `--skip-validate`,
-   `--skip-quality`, `--skip-visual-audit` **chỉ** dùng để chẩn đoán, không dùng để
-   xuất bản. Gate fail → sửa storyboard/asset rồi chạy lại, không hạ ngưỡng.
+2. **KHÔNG bypass production gate.** Schema, director quality, measured timing
+   provenance, artifact hash và render audit phải pass. Các flag `--skip-*`,
+   `--diagnostic*`, `--allow-unprovenanced-timing` **chỉ** dùng để chẩn đoán;
+   artifact tạo theo đường này không được xuất bản. Gate fail → sửa
+   storyboard/asset/timing source rồi chạy lại, không hạ ngưỡng.
 
 3. **Sửa đúng tầng.** Nguồn authored là `storyboard.json` (hoặc
    `projects/<id>/storyboard-data.ts` ở route A). `timeline.json` là **sản phẩm
@@ -77,7 +78,7 @@ Cả hai route đều hội tụ về `storyboard.json` rồi đi chung phần �
 | Đường dẫn | Nội dung |
 |---|---|
 | `projects/<id>/` | Nguồn: `transcript.txt`, `storyboard-data.ts`, `storyboard.json`, `timeline.json`, `tts_scenes.json`, `durations.json`, `words.json` |
-| `output/<id>/` | Sản phẩm render: `video.mp4`, `contact.jpg`, `*-audit.json`, `production-report.json` |
+| `output/<id>/` | Sản phẩm render: `video.mp4`, `video.contact.jpg`, `video.*-audit.json`, `video.production-report.json`; `.runs/` giữ rollback/diagnostic |
 | `public/generated-assets/` | Art production: `characters/`, `icons/`, `scenes/` (PNG) |
 | `public/generated-backgrounds/` | Nền chất lượng cao, **đè** `generated-assets/scenes/` khi trùng tên |
 | `public/backgrounds/` | Ảnh thật JPG cho BEAT/photo |

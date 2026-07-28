@@ -1,5 +1,8 @@
 # V4 rendered-reference recovery plan
 
+> **HISTORICAL (2026-07-28):** Đây là audit của v3/V4, chỉ giữ làm bằng chứng.
+> Không dùng như production runbook hoặc nguồn escape-hatch.
+
 ## 1. Kết luận từ v3
 
 `video-003-tai-sao-eng-v3.mp4` chứng minh pre-render gate hiện có thể đạt
@@ -405,4 +408,3 @@ chi tiết hình. Vì vậy:
 4. Chạy ba transcript khác chủ đề để tránh tối ưu riêng cho video-003.
 5. Đặt pipeline mới làm mặc định; giữ `--diagnostic` cho artifact fail nhưng không
    bao giờ gắn nhãn production-ready.
-
