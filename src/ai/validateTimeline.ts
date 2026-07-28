@@ -42,6 +42,39 @@ export function validateSceneTimeline(input: any): ValidationResult {
     errors.push(`Unsupported schemaVersion ${input.schemaVersion}`);
   }
 
+  // timingProvenance is a checked field, not an ignored extra: a malformed or
+  // self-contradictory stamp asserts something false about how the video was
+  // timed. Whether an ABSENT stamp is acceptable is a production-gate decision
+  // (see checkTimingProvenance), not a schema one — this only validates shape.
+  if (input.timingProvenance !== undefined) {
+    const p = input.timingProvenance;
+    if (typeof p !== "object" || p === null) {
+      errors.push("timingProvenance must be an object");
+    } else {
+      if (!["measured", "estimated"].includes(p.mode)) {
+        errors.push(`timingProvenance.mode must be "measured" or "estimated", got ${JSON.stringify(p.mode)}`);
+      }
+      const sceneSources = ["durations", "aligned-words", "authored-silent", "estimated"];
+      if (!sceneSources.includes(p.sceneTimingSource)) {
+        errors.push(`timingProvenance.sceneTimingSource invalid: ${JSON.stringify(p.sceneTimingSource)}`);
+      }
+      if (!["aligned-words", "proportional"].includes(p.beatTimingSource)) {
+        errors.push(`timingProvenance.beatTimingSource invalid: ${JSON.stringify(p.beatTimingSource)}`);
+      }
+      if (typeof p.measuredSceneCount !== "number") {
+        errors.push("timingProvenance.measuredSceneCount must be a number");
+      }
+      if (p.mode === "measured" && p.sceneTimingSource === "estimated") {
+        errors.push('timingProvenance claims mode "measured" with sceneTimingSource "estimated"');
+      }
+      if (p.mode === "measured" && p.measuredSceneCount !== input.scenes.length) {
+        errors.push(
+          `timingProvenance says ${p.measuredSceneCount} measured scenes but the timeline has ${input.scenes.length}`
+        );
+      }
+    }
+  }
+
   const validLayouts = [
     // V3 layouts
     "SOLO", "DIALOGUE", "DUAL_CONTRAST", "SIZE_HIERARCHY", "CHAR_PROP",

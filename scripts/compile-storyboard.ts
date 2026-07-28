@@ -17,6 +17,8 @@ import { execFileSync } from "child_process";
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { SceneTimeline } from "../src/types/scene";
 import { AlignedWord } from "../src/types/storyboard";
+import { checksumText } from "../src/ai/transcriptCoverage";
+import { sha256File } from "../src/audio/prepareAudio";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 import {
   checkSceneIdAlignment,
@@ -135,9 +137,21 @@ if (timingGate) {
 // The compiler enforces the same invariant independently (it is the engine-level
 // backstop for callers that never come through this CLI). The pre-checks above
 // exist to explain *why* before it throws.
+// Digests of every input, so the artifact records exactly what it was built from.
+const audioAbsolute = sb.audio
+  ? [path.resolve("public", sb.audio), path.resolve(sb.audio)].find((p) => fs.existsSync(p))
+  : undefined;
+const provenance = {
+  audioSeconds,
+  audioSha256: audioAbsolute ? sha256File(audioAbsolute) : undefined,
+  storyboardChecksum: checksumText(fs.readFileSync(sbPath, "utf-8")),
+  durationsChecksum: dPath ? checksumText(fs.readFileSync(dPath, "utf-8")) : undefined,
+  wordsChecksum: wPath ? checksumText(fs.readFileSync(wPath, "utf-8")) : undefined,
+};
+
 let timeline: SceneTimeline;
 try {
-  timeline = compileStoryboard(sb, { durations, words, allowEstimatedTiming: !timingGate });
+  timeline = compileStoryboard(sb, { durations, words, provenance, allowEstimatedTiming: !timingGate });
 } catch (error) {
   console.error(`\n❌ Compile refused: ${(error as Error).message}\n`);
   process.exit(1);

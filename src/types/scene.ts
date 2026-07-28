@@ -236,6 +236,33 @@ export interface Scene {
 }
 
 // ─── Top-level SceneTimeline (what AI produces) ──────────────
+/** What set scene boundaries. Exactly one per video; `estimated` is not shippable. */
+export type SceneTimingSource = "durations" | "aligned-words" | "authored-silent" | "estimated";
+
+/** What anchored emphasis beats. `proportional` is a quality note, not a failure. */
+export type BeatTimingSource = "aligned-words" | "proportional";
+
+/**
+ * How this timeline's timing was arrived at, recorded in the artifact itself.
+ *
+ * Without this a consumer cannot tell a timeline built from measured TTS audio
+ * from one built from word-count guesses — which is how an out-of-sync render
+ * shipped past every gate. The hashes matter as much as the mode: `audioSeconds`
+ * alone cannot detect a swap to a different track of the same length.
+ */
+export interface TimingProvenance {
+  mode: "measured" | "estimated";
+  sceneTimingSource: SceneTimingSource;
+  beatTimingSource: BeatTimingSource;
+  measuredSceneCount: number;
+  /** length of the voice track this timeline was compiled against */
+  audioSeconds?: number;
+  audioSha256?: string;
+  storyboardChecksum?: string;
+  durationsChecksum?: string;
+  wordsChecksum?: string;
+}
+
 export interface SceneTimeline {
   schemaVersion?: 1 | 2;
   fps: 30;
@@ -244,6 +271,11 @@ export interface SceneTimeline {
   durationInFrames: number;
   audio?: string;
   background?: string;
+  /**
+   * Absent means "provenance unknown" — a legacy artifact. Production refuses
+   * those rather than assuming they are fine.
+   */
+  timingProvenance?: TimingProvenance;
   scenes: Scene[];
 }
 

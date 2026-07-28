@@ -14,6 +14,7 @@ import {
   checkTimelineSpansAudio,
   checkRenderMatchesTimeline,
   checkWordAlignment,
+  checkTimingProvenance,
   hasBlocker,
 } from "../src/engine/timingIntegrity";
 
@@ -464,6 +465,62 @@ test("compiler rejects interleaving two absolute-frame timing systems", () => {
     }),
     /Mixed scene-boundary timing sources/,
   );
+});
+
+test("compiler stamps provenance describing how it was timed", () => {
+  const timeline = compileStoryboard(timingFixture(["scene-001"]), {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    provenance: { audioSeconds: 10, audioSha256: "abc", storyboardChecksum: "def" },
+  });
+  assert.deepStrictEqual(timeline.timingProvenance, {
+    mode: "measured",
+    sceneTimingSource: "durations",
+    beatTimingSource: "proportional",
+    measuredSceneCount: 1,
+    audioSeconds: 10,
+    audioSha256: "abc",
+    storyboardChecksum: "def",
+  });
+  // A preview build must own up to being estimated.
+  const preview = compileStoryboard(timingFixture(["scene-001"]), { allowEstimatedTiming: true });
+  assert.strictEqual(preview.timingProvenance?.mode, "estimated");
+  assert.strictEqual(preview.timingProvenance?.measuredSceneCount, 0);
+});
+
+test("provenance gate fails closed on a legacy timeline with no stamp", () => {
+  assert.ok(hasBlocker(checkTimingProvenance(undefined)));
+  const allowed = checkTimingProvenance(undefined, { allowUnprovenanced: true });
+  assert.ok(allowed.length === 1 && !hasBlocker(allowed));
+});
+
+test("provenance gate rejects estimated, malformed and self-contradictory stamps", () => {
+  const good = {
+    mode: "measured", sceneTimingSource: "durations",
+    beatTimingSource: "proportional", measuredSceneCount: 3,
+  };
+  assert.deepStrictEqual(checkTimingProvenance(good), []);
+  assert.ok(hasBlocker(checkTimingProvenance({ ...good, mode: "estimated", sceneTimingSource: "estimated" })));
+  assert.ok(hasBlocker(checkTimingProvenance({ ...good, beatTimingSource: "vibes" })));
+  // Claims measured while admitting the source was a guess.
+  assert.ok(checkTimingProvenance({ ...good, sceneTimingSource: "estimated" })
+    .some((i) => i.code === "TIMING_PROVENANCE_INCONSISTENT"));
+});
+
+test("schema validation treats provenance as a checked field, not an extra", () => {
+  const base = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 100,
+    scenes: [{
+      id: "s1", layout: "SOLO", backgroundSrc: "#FFFFFF", startFrame: 0, durationFrames: 100,
+      narration: "n", entities: [], texts: [],
+    }],
+  };
+  assert.ok(validateTimeline({ ...base }).valid);
+  const bad = validateTimeline({
+    ...base,
+    timingProvenance: { mode: "measured", sceneTimingSource: "estimated", beatTimingSource: "proportional", measuredSceneCount: 1 },
+  });
+  assert.ok(!bad.valid);
+  assert.ok(bad.errors.some((e) => /measured.*estimated/.test(e)));
 });
 
 test("compiler derives durationInFrames from max end, not array order", () => {

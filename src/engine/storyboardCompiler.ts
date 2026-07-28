@@ -11,7 +11,7 @@
 // Browser-safe: no fs / Date / random.
 // ============================================================
 
-import { Scene, SceneTimeline, SceneEntity } from "../types/scene";
+import { Scene, SceneTimeline, SceneEntity, TimingProvenance } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
@@ -41,6 +41,18 @@ export interface CompileStoryboardOpts {
    * rather than a mode string — it cannot be typo'd into a permissive value.
    */
   allowEstimatedTiming?: boolean;
+  /**
+   * Hashes and measurements the compiler cannot obtain itself (it stays
+   * browser-safe: no fs). Callers that read the wav / durations / words files
+   * pass their digests so the emitted timeline records what it was built from.
+   */
+  provenance?: {
+    audioSeconds?: number;
+    audioSha256?: string;
+    storyboardChecksum?: string;
+    durationsChecksum?: string;
+    wordsChecksum?: string;
+  };
 }
 
 function buildAlignedSceneTimings(
@@ -395,6 +407,21 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     throw new Error(`Compiled scene timing is inconsistent:\n${formatTimingIssues(structural)}`);
   }
 
+  // Record how this timeline was timed, in the artifact itself, so no downstream
+  // consumer has to guess whether the numbers came from audio or from a word count.
+  const sceneTimingSource: SceneTimingSource = estimatedIds.length
+    ? "estimated"
+    : (measuredSources[0] ?? "estimated");
+  const timingProvenance: TimingProvenance = {
+    mode: estimatedIds.length ? "estimated" : "measured",
+    sceneTimingSource,
+    beatTimingSource: opts.words?.some((w) => Number.isInteger(w.wordIndex))
+      ? "aligned-words"
+      : "proportional",
+    measuredSceneCount: sb.scenes.length - estimatedIds.length,
+    ...opts.provenance,
+  };
+
   // SceneTimeline pins fps/width/height to literal types (30/1920/1080); this
   // project only ever renders at that spec, so assert rather than widen.
   return {
@@ -405,6 +432,7 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     durationInFrames: totalFrames,
     audio: sb.audio,
     background: opts.background ?? "#FAFAF8",
+    timingProvenance,
     scenes,
   } as SceneTimeline;
 }

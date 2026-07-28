@@ -45,6 +45,7 @@ import { SceneBrief, StorySection, Storyboard } from "../src/types/storyboard";
 import { createDefaultProjectManifest, ProjectManifest } from "../src/types/project";
 import { DIRECTOR_POLICY_VERSION } from "../src/ai/directorPolicy";
 import { resolveAssetRequests } from "../src/engine/assetResolver";
+import { sha256File } from "../src/audio/prepareAudio";
 import { critiqueSceneBriefs } from "../src/ai/visualCritic";
 
 // --- Parse CLI args ---
@@ -800,6 +801,29 @@ function runWordAlignment(projectDir: string, transcriptPath?: string): void {
   }
 }
 
+/**
+ * Digests of the inputs a compile consumed, recorded into the artifact so a later
+ * consumer can tell which voice track / storyboard / alignment it belongs to.
+ * Length alone cannot detect a swap to a different track of the same duration.
+ */
+function timingProvenanceInputs(projectDir: string, storyboard: Storyboard) {
+  const read = (name: string): string | undefined => {
+    const p = path.join(projectDir, name);
+    return fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : undefined;
+  };
+  const durationsRaw = read("durations.json");
+  const wordsRaw = read("words.json");
+  const publicWav = path.join(process.cwd(), "public", "audio", path.basename(projectDir), "voice.wav");
+  const durations = durationsRaw ? JSON.parse(durationsRaw) : undefined;
+  return {
+    audioSeconds: typeof durations?.totalSec === "number" ? durations.totalSec : undefined,
+    audioSha256: fs.existsSync(publicWav) ? sha256File(publicWav) : undefined,
+    storyboardChecksum: checksumText(JSON.stringify(storyboard)),
+    durationsChecksum: durationsRaw ? checksumText(durationsRaw) : undefined,
+    wordsChecksum: wordsRaw ? checksumText(wordsRaw) : undefined,
+  };
+}
+
 // Read a words.json (written by align_words.py) → AlignedWord[] for beats.
 function readWords(projectDir: string): any[] | undefined {
   const p = path.join(projectDir, "words.json");
@@ -1029,7 +1053,9 @@ async function main() {
       const durations = readDurations(projectDir);
       const words = readWords(projectDir);
       // Strict: throws unless every scene boundary came from measured audio.
-      timeline = compileStoryboard(storyboard, { durations, words });
+      timeline = compileStoryboard(storyboard, {
+        durations, words, provenance: timingProvenanceInputs(projectDir, storyboard),
+      });
       timeline.audio = publicAudio;
       console.log(`🎬 Compiled once with locked TTS timing${words ? " + word alignment" : " (approx beats)"}.`);
     } else {
@@ -1038,10 +1064,13 @@ async function main() {
       // scene boundaries from; otherwise this is a preview build.
       const durations = readDurations(projectDir);
       const words = readWords(projectDir);
+      const provenance = timingProvenanceInputs(projectDir, storyboard);
       try {
-        timeline = compileStoryboard(storyboard, { durations, words });
+        timeline = compileStoryboard(storyboard, { durations, words, provenance });
       } catch {
-        timeline = compileStoryboard(storyboard, { durations, words, allowEstimatedTiming: true });
+        timeline = compileStoryboard(storyboard, {
+          durations, words, provenance, allowEstimatedTiming: true,
+        });
         estimatedTiming = true;
       }
       if (audioInput) timeline.audio = audioInput;

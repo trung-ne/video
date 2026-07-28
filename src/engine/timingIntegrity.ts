@@ -24,13 +24,12 @@
  * and safe to import from the browser-side compiler. Callers supply measurements.
  */
 
+import { SceneTimingSource, BeatTimingSource, TimingProvenance } from "../types/scene";
+
 export type TimingSeverity = "BLOCKER" | "WARNING";
 
-/** What determined scene boundaries. Only `estimated` is barred from production. */
-export type SceneTimingSource = "durations" | "aligned-words" | "authored-silent" | "estimated";
-
-/** What anchored emphasis beats. `proportional` is a quality note, not a failure. */
-export type BeatTimingSource = "aligned-words" | "proportional";
+// Re-exported so timing consumers have one import site.
+export type { SceneTimingSource, BeatTimingSource, TimingProvenance };
 
 export interface TimingIssue {
   code: string;
@@ -422,6 +421,91 @@ export function checkWordAlignment(
         `Only ${indexed}/${words.length} aligned words (${(indexedFraction * 100).toFixed(1)}%) carry a ` +
         `transcript index` + (timingSource ? " — scene boundaries cannot be derived." : " — beats fall back to proportional."),
       hint: "align_words.py lost its cursor against the transcript; see attach_transcript_indices.",
+    });
+  }
+
+  return issues;
+}
+
+const SCENE_TIMING_SOURCES: SceneTimingSource[] = ["durations", "aligned-words", "authored-silent", "estimated"];
+const BEAT_TIMING_SOURCES: BeatTimingSource[] = ["aligned-words", "proportional"];
+
+/**
+ * Gate a timeline's provenance before it is rendered or published.
+ *
+ * Absent provenance fails rather than passes. Every timeline written before this
+ * field existed lacks it, including ones whose scene durations were distributed
+ * proportionally by word count — those have a plausible total and estimated
+ * internals, which is exactly the state that must not slip through.
+ */
+export function checkTimingProvenance(
+  provenance: unknown,
+  opts: { allowUnprovenanced?: boolean } = {},
+): TimingIssue[] {
+  if (provenance === undefined || provenance === null) {
+    return opts.allowUnprovenanced
+      ? [{
+          code: "TIMING_PROVENANCE_UNKNOWN",
+          severity: "WARNING",
+          message: "Timeline carries no timing provenance; proceeding because it was explicitly allowed.",
+          hint: "Recompile from a storyboard with measured TTS timing to remove this.",
+        }]
+      : [{
+          code: "TIMING_PROVENANCE_MISSING",
+          severity: "BLOCKER",
+          message: "Timeline carries no timing provenance, so its timing cannot be trusted.",
+          hint: "Recompile it, or pass --allow-unprovenanced-timing to accept a legacy artifact.",
+        }];
+  }
+
+  const p = provenance as Partial<TimingProvenance>;
+  const issues: TimingIssue[] = [];
+
+  if (p.mode !== "measured" && p.mode !== "estimated") {
+    issues.push({
+      code: "TIMING_PROVENANCE_MALFORMED",
+      severity: "BLOCKER",
+      message: `timingProvenance.mode must be "measured" or "estimated", got ${JSON.stringify(p.mode)}.`,
+    });
+  }
+  if (!p.sceneTimingSource || !SCENE_TIMING_SOURCES.includes(p.sceneTimingSource)) {
+    issues.push({
+      code: "TIMING_PROVENANCE_MALFORMED",
+      severity: "BLOCKER",
+      message: `timingProvenance.sceneTimingSource is invalid: ${JSON.stringify(p.sceneTimingSource)}.`,
+    });
+  }
+  if (!p.beatTimingSource || !BEAT_TIMING_SOURCES.includes(p.beatTimingSource)) {
+    issues.push({
+      code: "TIMING_PROVENANCE_MALFORMED",
+      severity: "BLOCKER",
+      message: `timingProvenance.beatTimingSource is invalid: ${JSON.stringify(p.beatTimingSource)}.`,
+    });
+  }
+  if (!Number.isFinite(p.measuredSceneCount as number)) {
+    issues.push({
+      code: "TIMING_PROVENANCE_MALFORMED",
+      severity: "BLOCKER",
+      message: "timingProvenance.measuredSceneCount is missing.",
+    });
+  }
+
+  // Internally contradictory stamps are worse than a missing one: they assert
+  // something false.
+  if (p.mode === "measured" && p.sceneTimingSource === "estimated") {
+    issues.push({
+      code: "TIMING_PROVENANCE_INCONSISTENT",
+      severity: "BLOCKER",
+      message: 'timingProvenance claims mode "measured" with sceneTimingSource "estimated".',
+    });
+  }
+
+  if (p.mode === "estimated" && !issues.length) {
+    issues.push({
+      code: "TIMING_ESTIMATED",
+      severity: "BLOCKER",
+      message: "Timeline was compiled from word-count estimates, not measured audio.",
+      hint: "This is a preview artifact. Run TTS and recompile to produce a production timeline.",
     });
   }
 

@@ -38,9 +38,14 @@ export function measureAudio(input: string): AudioAudit {
   };
 }
 
-function checksum(file: string): string {
+/** sha256 of a file's bytes. Exported so timing provenance can record which
+ *  exact voice track a timeline was compiled against — length alone cannot
+ *  detect a swap to a different track of the same duration. */
+export function sha256File(file: string): string {
   return createHash("sha256").update(fs.readFileSync(file)).digest("hex");
 }
+
+const checksum = sha256File;
 
 export function resolvePublicAudio(audio: string): string {
   if (path.isAbsolute(audio)) return audio;
