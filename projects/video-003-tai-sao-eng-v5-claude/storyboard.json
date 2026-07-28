@@ -1,0 +1,4034 @@
+{
+  "schemaVersion": 1,
+  "transcriptChecksum": "683da7bbdb2cbb241cb194dd4677fe8bf96cb89cbfc186a544be987f2e8c5153",
+  "promptVersion": "session-authored",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "cast": {
+    "guy5": {
+      "src": "characters/cat_sunglasses",
+      "badge": "5"
+    },
+    "guy4": {
+      "src": "characters/cat_business",
+      "badge": "4"
+    },
+    "guy3": {
+      "src": "characters/cat_worker",
+      "badge": "3"
+    },
+    "guy2": {
+      "src": "characters/cat_shrug",
+      "badge": "2"
+    },
+    "guy1": {
+      "src": "characters/cat",
+      "badge": "1"
+    },
+    "girl5": {
+      "src": "characters/cat_happy",
+      "badge": "5"
+    },
+    "girl4": {
+      "src": "characters/cat_talk",
+      "badge": "4"
+    },
+    "girl3": {
+      "src": "characters/cat_think",
+      "badge": "3"
+    },
+    "girl2": {
+      "src": "characters/cat_sad",
+      "badge": "2"
+    },
+    "girl1": {
+      "src": "characters/cat_surprised",
+      "badge": "1"
+    },
+    "dad": {
+      "src": "characters/cat_dad"
+    },
+    "mom": {
+      "src": "characters/cat_mom"
+    },
+    "student": {
+      "src": "characters/cat_child_school"
+    },
+    "teacher": {
+      "src": "characters/cat_teacher"
+    },
+    "worker": {
+      "src": "characters/cat_worker"
+    },
+    "cop": {
+      "src": "characters/cat_police"
+    },
+    "host": {
+      "src": "characters/cat_explain"
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "narration": "In South Korea, the government says that having one child earns you 2 million won, which is about 40 million won in our currency.",
+      "purpose": "Cold open on the single biggest cash-for-baby number in the script.",
+      "emotion": "surprise",
+      "viewerFocus": "the won figure",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 0,
+        "endWord": 38,
+        "quoteChecksum": "004c181f7b785b698ac78f174f627f8b93ed681caf5f969b5d8302a583daf467"
+      },
+      "heroVisual": true,
+      "slots": {
+        "title": "Korea's cash bonus",
+        "body": "1 child = ~40 million VND, paid by the state"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the won figure",
+        "takeaway": "Cold open on the single biggest cash-for-baby number in the script."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-002",
+      "narration": "Hungary goes even further, granting women who have four or more children a lifetime exemption from personal income tax",
+      "purpose": "Second, bigger policy — a lifetime tax break.",
+      "emotion": "surprise",
+      "viewerFocus": "the tax exemption",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 39,
+        "endWord": 57,
+        "quoteChecksum": "6cb529de81cc49c525b63d1d493c34402bd34c802fa9d5e11c9e64ea9d4b4167"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Hungary's offer",
+        "body": "4+ kids = income tax exempt for life"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the tax exemption",
+        "takeaway": "Second, bigger policy — a lifetime tax break."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-003",
+      "narration": "Japan has even established an agency dedicated to caring for children and families",
+      "purpose": "A third country builds a whole ministry around this problem.",
+      "emotion": "neutral",
+      "viewerFocus": "a state office dedicated to families",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 58,
+        "endWord": 70,
+        "quoteChecksum": "5ea873f3881eb87ff75f75e79a0152b710e175a5731f3472ba1ac58a61a40925"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "worker",
+        "caption": "A whole agency, just for families"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a state office dedicated to families",
+        "takeaway": "A third country builds a whole ministry around this problem."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-004",
+      "narration": "Yet, in these countries, the birth rate is still declining",
+      "purpose": "All that spending still isn't working.",
+      "emotion": "concern",
+      "viewerFocus": "the falling trend",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 71,
+        "endWord": 80,
+        "quoteChecksum": "4bdcbf96279aa0197d887611727fc7538c4ea57ab7269e2d6ad3dc0066fe54ba"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "STILL FALLING",
+        "who": "characters/cat_think"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the falling trend",
+        "takeaway": "All that spending still isn't working."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_think"
+      }
+    },
+    {
+      "id": "scene-005",
+      "narration": "I was reading these statistics and wondering why people still refuse to have children even with money",
+      "purpose": "Host poses the video's puzzle from behind a desk of reports.",
+      "emotion": "curious",
+      "viewerFocus": "the host reading the numbers",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 81,
+        "endWord": 97,
+        "quoteChecksum": "3f189a88452dea52b33be437aff15df97e1e598254a43d283256e88aef16556b"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Why refuse kids, even with money?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host reading the numbers",
+        "takeaway": "Host poses the video's puzzle from behind a desk of reports."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-006",
+      "narration": "The normal logic is that they're probably too poor to have children. But now that they have money, they should have more children, right?",
+      "purpose": "State and undercut the obvious explanation.",
+      "emotion": "curious",
+      "viewerFocus": "the reveal text",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 98,
+        "endWord": 121,
+        "quoteChecksum": "217d450f80a2918e7ad5d18049b38b0fbbb830f88ff1a2e80c6653872846d5e3"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "\"Too poor to have kids?\"",
+        "a": "They have money now. So why not?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the reveal text",
+        "takeaway": "State and undercut the obvious explanation."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-007",
+      "narration": "People used to have many children even when they were poor",
+      "purpose": "Quiet image beat — the old poverty-and-many-children norm.",
+      "emotion": "concern",
+      "viewerFocus": "an old countryside home",
+      "visualGrammar": "BEAT",
+      "sourceRange": {
+        "startWord": 122,
+        "endWord": 132,
+        "quoteChecksum": "0600aa5bc7d1442570eb7a1d9fd015f188b9db7458f977b3bb914fccfd42dab7"
+      },
+      "heroVisual": false,
+      "slots": {
+        "image": "backgrounds/countryside.jpg"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "an old countryside home",
+        "takeaway": "Quiet image beat — the old poverty-and-many-children norm."
+      },
+      "resolvedAssets": {
+        "image": "backgrounds/countryside.jpg"
+      }
+    },
+    {
+      "id": "scene-008",
+      "narration": "To explain this, we have to go back to the first step of starting a family: dating. And we'll use the theoretical framework of game theory to explain why dating is becoming increasingly difficult",
+      "purpose": "Pivot to the analytical tool: game theory applied to dating.",
+      "emotion": "neutral",
+      "viewerFocus": "dating linked to game theory",
+      "visualGrammar": "DIAGRAM",
+      "sourceRange": {
+        "startWord": 133,
+        "endWord": 166,
+        "quoteChecksum": "02a2012b002d0cf2e7ea0c4f044502f9ac88e8a7753bd982c03bda98d503d194"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Dating|Game Theory",
+        "icons": "props/round_table|props/brain"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "dating linked to game theory",
+        "takeaway": "Pivot to the analytical tool: game theory applied to dating."
+      },
+      "resolvedAssets": {
+        "icon0": "props/round_table",
+        "icon1": "props/brain"
+      }
+    },
+    {
+      "id": "scene-009",
+      "narration": "Why are there so many dating apps, yet people are still single",
+      "purpose": "Sharpen the puzzle with the modern, relatable version.",
+      "emotion": "sarcastic",
+      "viewerFocus": "a cat scrolling apps in bed",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 167,
+        "endWord": 178,
+        "quoteChecksum": "6c6cd911fd2658d6e7ca4a86707c60a9b64438fa383f6548a3f66323df81b6a5"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bedroom.svg",
+        "who": "guy2",
+        "caption": "So many apps. Still single."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a cat scrolling apps in bed",
+        "takeaway": "Sharpen the puzzle with the modern, relatable version."
+      },
+      "resolvedAssets": {
+        "who": "guy2",
+        "stage": "assets/scenes/bedroom.svg"
+      }
+    },
+    {
+      "id": "scene-010",
+      "narration": "And with this trend of no one getting married or having children, many countries will disappear within 100 years",
+      "purpose": "Land the cold open's biggest stake before the branding beat.",
+      "emotion": "urgent",
+      "viewerFocus": "the 100-year stat",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 179,
+        "endWord": 197,
+        "quoteChecksum": "be7f777606d3b51a2b5a7bdb8bb41bab047820a0ff04226c336c7e148d39d5e5"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "GONE IN 100 YEARS",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the 100-year stat",
+        "takeaway": "Land the cold open's biggest stake before the branding beat."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-011",
+      "narration": "Welcome to our cat-themed adaptation series. We're adapting great foreign videos into Vietnamese for you to refer to",
+      "purpose": "Breathing room after the climax stat: channel branding beat.",
+      "emotion": "happy",
+      "viewerFocus": "the host welcoming viewers",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 198,
+        "endWord": 215,
+        "quoteChecksum": "40db85881863061675d6418ca93b273f7cfe026e1fae6cbf905b394c9d39f997"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Cat-Themed Adaptation Series"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host welcoming viewers",
+        "takeaway": "Breathing room after the climax stat: channel branding beat."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-012",
+      "narration": "Actually, we've always done this, but now we're going to do it more officially",
+      "purpose": "Quick aside on going more official with the format.",
+      "emotion": "happy",
+      "viewerFocus": "the host, reassuring",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 216,
+        "endWord": 229,
+        "quoteChecksum": "3cb44b1a41febf9f167a76535e6b82494753641a9aef93934e33d97e9d991a10"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Just making it official now"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host, reassuring",
+        "takeaway": "Quick aside on going more official with the format."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-013",
+      "narration": "And our first series is the game theory series from the Predictive History channel",
+      "purpose": "Credit the source material honestly.",
+      "emotion": "neutral",
+      "viewerFocus": "the source credit",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 230,
+        "endWord": 243,
+        "quoteChecksum": "999e1f633d4aed2292eba4140740a39ec11b5ba04a0d641516f2aed0abf9b834"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Source: Predictive History",
+        "body": "Their game-theory series, adapted"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the source credit",
+        "takeaway": "Credit the source material honestly."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-014",
+      "narration": "In this video, we'll base our content on those videos, as well as add our own research and counter-arguments — so we can have more productive meals, sleep, and dish-washing sessions.",
+      "purpose": "Explain the format: source video plus original research.",
+      "emotion": "happy",
+      "viewerFocus": "the host at a stack of books",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 244,
+        "endWord": 274,
+        "quoteChecksum": "d554328fdf9e995f2803abb1e86548b781f61996faa5f3435df82e76a17ac087"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Their research + ours"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host at a stack of books",
+        "takeaway": "Explain the format: source video plus original research."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-015",
+      "narration": "Okay, let's begin",
+      "purpose": "Short transition into the lesson.",
+      "emotion": "neutral",
+      "viewerFocus": "the host, ready to explain",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 275,
+        "endWord": 277,
+        "quoteChecksum": "0a134a94a0dfc6fcca41d0942cebbfbd331972ec38ff4926a613e1593c54318c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "Let's begin"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host, ready to explain",
+        "takeaway": "Short transition into the lesson."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-016",
+      "narration": "First, let's talk a little about game theory. Any game will have three parts: the players, which are the participants; the rules, which are the constraints, the limitations, what can and cannot be done; and the rewards.",
+      "purpose": "Teach the three-part definition of a game — the tool used all video.",
+      "emotion": "neutral",
+      "viewerFocus": "the three icons",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 278,
+        "endWord": 314,
+        "quoteChecksum": "aedb549552b28bdb255253d19c5ca8970b031817ca307571fdacbf59145d6a47"
+      },
+      "heroVisual": true,
+      "slots": {
+        "items": "Players|Rules|Rewards",
+        "icons": "people/person|props/book|props/trophy"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the three icons",
+        "takeaway": "Teach the three-part definition of a game — the tool used all video."
+      },
+      "resolvedAssets": {
+        "icon0": "people/person",
+        "icon1": "props/book",
+        "icon2": "props/trophy"
+      }
+    },
+    {
+      "id": "scene-017",
+      "narration": "Because there must be rewards in a game; no one plays for no reason. It's what makes players want to play",
+      "purpose": "Emphasize why rewards matter — the reason anyone plays at all.",
+      "emotion": "neutral",
+      "viewerFocus": "the host at a boardroom table",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 315,
+        "endWord": 335,
+        "quoteChecksum": "fd7e0f9be249a830a1d3a12f92662f05d09993f976033d5cb2399b3de36250da"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/boardroom.svg",
+        "who": "host",
+        "caption": "No reward, no reason to play"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host at a boardroom table",
+        "takeaway": "Emphasize why rewards matter — the reason anyone plays at all."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/boardroom.svg"
+      }
+    },
+    {
+      "id": "scene-018",
+      "narration": "To understand a game, we need to understand who is playing, what the rules are, and what the rewards are. And if we understand those three things, we can guess where the game will go.\r\nScene 3: Simulating a 10-person society",
+      "purpose": "Recap the framework right before applying it.",
+      "emotion": "neutral",
+      "viewerFocus": "the summary keyword",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 336,
+        "endWord": 376,
+        "quoteChecksum": "7f6586e6d944b3481f16a4f5684ec78249e20725b4e76dd6733c703a25a3fc7b"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "Players + Rules + Rewards"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the summary keyword",
+        "takeaway": "Recap the framework right before applying it."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-019",
+      "narration": "Okay, now let's apply this theoretical framework to the dating story. Now imagine a society with 10 people, five men and five women, and all of them want to date and get married.",
+      "purpose": "Set the scene for the 10-person simulation.",
+      "emotion": "neutral",
+      "viewerFocus": "a table set for ten",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 377,
+        "endWord": 408,
+        "quoteChecksum": "7e3f4e4ea1033efd92beb3b66f259364867a7c171bf642630e8b0b5d9a27c615"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/dinner_table.svg",
+        "who": "host",
+        "caption": "Imagine 10 people: 5 men, 5 women"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a table set for ten",
+        "takeaway": "Set the scene for the 10-person simulation."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/dinner_table.svg"
+      }
+    },
+    {
+      "id": "scene-020",
+      "narration": "These five men will belong to five different social classes and will be ranked from 1 to 5 based on criteria such as appearance, health, wealth, and social status",
+      "purpose": "Establish the ranking criteria used to sort the five men.",
+      "emotion": "neutral",
+      "viewerFocus": "the four ranking criteria",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 409,
+        "endWord": 437,
+        "quoteChecksum": "8f0ee5e29d5a1d1c7383662bc077776a696d86c9c7aafec62f08841177609451"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Looks|Health|Wealth|Status",
+        "icons": "people/person|props/muscle_arm|finance/money|props/trophy"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the four ranking criteria",
+        "takeaway": "Establish the ranking criteria used to sort the five men."
+      },
+      "resolvedAssets": {
+        "icon0": "people/person",
+        "icon1": "props/muscle_arm",
+        "icon2": "finance/money",
+        "icon3": "props/trophy"
+      }
+    },
+    {
+      "id": "scene-021",
+      "narration": "Number five will be the ultimate catch, while number one will be the lowest.",
+      "purpose": "Set up the top-vs-bottom rank contrast that drives the simulation.",
+      "emotion": "sarcastic",
+      "viewerFocus": "rank 5 vs rank 1",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 438,
+        "endWord": 451,
+        "quoteChecksum": "2a3d0a0e9447b50abf9c8f18c4537b30c26e1878f08a78779210e68321344323"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Rank 5 — the catch",
+        "right": "Rank 1 — overlooked",
+        "leftAsset": "characters/cat_sunglasses",
+        "rightAsset": "characters/cat"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rank 5 vs rank 1",
+        "takeaway": "Set up the top-vs-bottom rank contrast that drives the simulation."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_sunglasses",
+        "rightAsset": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-022",
+      "narration": "Instinctively, all women will want to marry number five, and all five men will want to date all five women at the same time.",
+      "purpose": "State the naive starting preference: everyone wants the top.",
+      "emotion": "sarcastic",
+      "viewerFocus": "everyone chasing #5 at the table",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 452,
+        "endWord": 475,
+        "quoteChecksum": "56616341a7487a759a04c8331681d020a536a03d91570077194a33d8d6188766"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/dinner_table.svg",
+        "who": "girl5",
+        "seatB": "guy5",
+        "caption": "Everyone wants #5"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "everyone chasing #5 at the table",
+        "takeaway": "State the naive starting preference: everyone wants the top."
+      },
+      "resolvedAssets": {
+        "who": "girl5",
+        "seatB": "guy5",
+        "stage": "assets/scenes/dinner_table.svg"
+      }
+    },
+    {
+      "id": "scene-023",
+      "narration": "This is because women want a partner capable of protecting and providing for them, while men want to maximize their fertility, so they want to date many women.",
+      "purpose": "Explain the underlying incentive on each side.",
+      "emotion": "neutral",
+      "viewerFocus": "the two incentives, side by side",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 476,
+        "endWord": 505,
+        "quoteChecksum": "54a9f6905176d528eff4a91d4c8cc6dee6af287455dbaf21ddb08c72e7f0b75a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "She wants protection & provision",
+        "effect": "He wants to maximize partners",
+        "causeIcon": "characters/cat_think",
+        "effectIcon": "characters/cat_business"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the two incentives, side by side",
+        "takeaway": "Explain the underlying incentive on each side."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_think",
+        "effectIcon": "characters/cat_business"
+      }
+    },
+    {
+      "id": "scene-024",
+      "narration": "However, if all the women only chase after number five, it won't work",
+      "purpose": "Flag that the naive strategy breaks down — a quiet beat before the twist.",
+      "emotion": "curious",
+      "viewerFocus": "an empty table",
+      "visualGrammar": "BEAT",
+      "sourceRange": {
+        "startWord": 506,
+        "endWord": 518,
+        "quoteChecksum": "91b18c1d2181ccf20b27904916f595bc57138e967ac4640676107ab71a0327df"
+      },
+      "heroVisual": false,
+      "slots": {
+        "image": "#111111"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "an empty table",
+        "takeaway": "Flag that the naive strategy breaks down — a quiet beat before the twist."
+      },
+      "resolvedAssets": {
+        "image": "#111111"
+      }
+    },
+    {
+      "id": "scene-025",
+      "narration": "Because the other four men will team up to deal with number five",
+      "purpose": "Show the coalition forming against the top-ranked man.",
+      "emotion": "urgent",
+      "viewerFocus": "four vs one at the table",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 519,
+        "endWord": 531,
+        "quoteChecksum": "c6a1631a4fc94312391e5bd81b88c4929d537b71974c4be30ad3b30a05756042"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/boardroom.svg",
+        "who": "guy4",
+        "caption": "The other four team up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "four vs one at the table",
+        "takeaway": "Show the coalition forming against the top-ranked man."
+      },
+      "resolvedAssets": {
+        "who": "guy4",
+        "stage": "assets/scenes/boardroom.svg"
+      }
+    },
+    {
+      "id": "scene-026",
+      "narration": "If number five decides to date all five women at the same time, then number five will realize that number five is no longer the most desirable person",
+      "purpose": "First twist: being the most wanted backfires.",
+      "emotion": "surprise",
+      "viewerFocus": "guy 5, suddenly undesirable",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 532,
+        "endWord": 559,
+        "quoteChecksum": "5356c6d7e643d17c821e5364187513ffb5a7346ff2991dbf1996579cee776d48"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/dinner_table.svg",
+        "who": "guy5",
+        "caption": "No longer the top pick"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "guy 5, suddenly undesirable",
+        "takeaway": "First twist: being the most wanted backfires."
+      },
+      "resolvedAssets": {
+        "who": "guy5",
+        "stage": "assets/scenes/dinner_table.svg"
+      }
+    },
+    {
+      "id": "scene-027",
+      "narration": "Because this guy is too promiscuous and doesn't guarantee a future, the best option for girl number 5 becomes guy number 4.",
+      "purpose": "First domino of the cascade: girl 5 settles for guy 4.",
+      "emotion": "concern",
+      "viewerFocus": "the first downgrade",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 560,
+        "endWord": 587,
+        "quoteChecksum": "0cbd17a6b32a1d475cfeb23bc7d192115ad4290f5ba24637dbc1ab30f9404ce6"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "#5 is too risky",
+        "effect": "Girl 5 settles for #4",
+        "causeIcon": "characters/cat_sunglasses",
+        "effectIcon": "characters/cat_business"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the first downgrade",
+        "takeaway": "First domino of the cascade: girl 5 settles for guy 4."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_sunglasses",
+        "effectIcon": "characters/cat_business"
+      }
+    },
+    {
+      "id": "scene-028",
+      "narration": "At this point, girl number 4 will lose her best option, so she'll have to choose guy number 3",
+      "purpose": "Second domino: the downgrade keeps propagating.",
+      "emotion": "concern",
+      "viewerFocus": "girl 4 settling for guy 3",
+      "visualGrammar": "DIALOGUE_QA",
+      "sourceRange": {
+        "startWord": 588,
+        "endWord": 606,
+        "quoteChecksum": "1c420c236aa46f8c9b3a05aa90e32a840b33c942525215d5bc6b5e18fd06dac5"
+      },
+      "heroVisual": false,
+      "slots": {
+        "asker": "girl4",
+        "answerer": "guy3",
+        "askerText": "I just lost my best option.",
+        "answererText": "Guess you're stuck with me."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "girl 4 settling for guy 3",
+        "takeaway": "Second domino: the downgrade keeps propagating."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-029",
+      "narration": "Then girl number 3 will have to marry guy number 2, and girl number 2 will marry guy number 1.",
+      "purpose": "Compress the rest of the cascade into one beat.",
+      "emotion": "sad",
+      "viewerFocus": "the chain reaction continuing",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 607,
+        "endWord": 626,
+        "quoteChecksum": "02a889e37b32ade48d5300408991c2ee0d558f3b313dec5c56a098709327ef1e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Everyone drops one rank",
+        "effect": "The cascade keeps falling",
+        "causeIcon": "characters/cat_think",
+        "effectIcon": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the chain reaction continuing",
+        "takeaway": "Compress the rest of the cascade into one beat."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_think",
+        "effectIcon": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-030",
+      "narration": "And the result is that guy number 5, the most eager one, ends up stuck with girl number 1",
+      "purpose": "Land the cascade's punchline: the top-ranked man ends up worst off.",
+      "emotion": "surprise",
+      "viewerFocus": "the ironic outcome",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 627,
+        "endWord": 645,
+        "quoteChecksum": "ff6f6895d57f27610bd2dde8d57dbdf89a78c677644d06dca1a6e981d7a8d469"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "#5 ENDS UP WITH #1",
+        "who": "guy5"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the ironic outcome",
+        "takeaway": "Land the cascade's punchline: the top-ranked man ends up worst off."
+      },
+      "resolvedAssets": {
+        "who": "guy5"
+      }
+    },
+    {
+      "id": "scene-031",
+      "narration": "Actually, girl number 3 could still marry guy number 5 — the gap there is smaller. But to simplify, let's just assume the cascade above.",
+      "purpose": "Give the model a caveat, then move on — a breathing beat after the twist.",
+      "emotion": "curious",
+      "viewerFocus": "the caveat",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 646,
+        "endWord": 673,
+        "quoteChecksum": "d5e24527873e0803d5d57beca1cf19479aa2e82deaf31323eebdfb54c5e9e0f9"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "(simplified for clarity)"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the caveat",
+        "takeaway": "Give the model a caveat, then move on — a breathing beat after the twist."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-032",
+      "narration": "And the final result is that guy number 5, who should have gotten the best outcome, gets the worst one. Every girl ends up worse off — except girl number one. The only upside: every guy benefits.",
+      "purpose": "Summarize who won and lost in the naive strategy.",
+      "emotion": "sarcastic",
+      "viewerFocus": "guys vs girls outcome",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 674,
+        "endWord": 718,
+        "quoteChecksum": "9d5cf3558f1f24473cab5ff4de68c9b10b4075ac99c744e62b001fe0639449d0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "The guys: all benefit",
+        "right": "The girls: mostly worse off",
+        "leftAsset": "characters/cat_business",
+        "rightAsset": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "guys vs girls outcome",
+        "takeaway": "Summarize who won and lost in the naive strategy."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_business",
+        "rightAsset": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-033",
+      "narration": "Actually, this is just a small assumption to illustrate the point: in a game, the strongest person, if too greedy, suffers a bitter end — and their rivals benefit directly.",
+      "purpose": "State the general principle the toy example illustrates.",
+      "emotion": "neutral",
+      "viewerFocus": "the insight card",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 719,
+        "endWord": 754,
+        "quoteChecksum": "ebde0a3deb7f419eecd327aa957dbf3a2942dee740607ab81537f0da3582086f"
+      },
+      "heroVisual": true,
+      "slots": {
+        "title": "The lesson so far",
+        "body": "Greedy + strongest = worst outcome"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the insight card",
+        "takeaway": "State the general principle the toy example illustrates."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-034",
+      "narration": "From this, we can deduce that the strongest person isn't the one who can steal everything from everyone else, but the one who can coordinate so that everyone benefits the most",
+      "purpose": "Answer who actually wins in the long run.",
+      "emotion": "hopeful",
+      "viewerFocus": "the reveal",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 755,
+        "endWord": 785,
+        "quoteChecksum": "ff8169c92aa8aae7412eb06ae375fa943e1354d2d280d1a73eec3ab64d407411"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "So who really wins?",
+        "a": "Whoever coordinates, not hoards."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the reveal",
+        "takeaway": "Answer who actually wins in the long run."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-035",
+      "narration": "Because if they just steal, the strongest person might win in the short term, but in the long term, everyone will lose",
+      "purpose": "Contrast short-term vs long-term payoff of greed.",
+      "emotion": "concern",
+      "viewerFocus": "short win, long-term conflict",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 786,
+        "endWord": 807,
+        "quoteChecksum": "3932257fb21b4104021ab64888be53dead82d577ed4e89e7ab437c9095db65f0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/boardroom.svg",
+        "who": "guy5",
+        "caption": "Short-term win, long-term loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "short win, long-term conflict",
+        "takeaway": "Contrast short-term vs long-term payoff of greed."
+      },
+      "resolvedAssets": {
+        "who": "guy5",
+        "stage": "assets/scenes/boardroom.svg"
+      }
+    },
+    {
+      "id": "scene-036",
+      "narration": "Because even though Mr. Four gets Ms. Five, there's still a disparity between the two, so conflicts and difficulties will inevitably arise",
+      "purpose": "Show the unequal pairing still has friction.",
+      "emotion": "concern",
+      "viewerFocus": "the mismatched couple",
+      "visualGrammar": "DIALOGUE_QA",
+      "sourceRange": {
+        "startWord": 808,
+        "endWord": 829,
+        "quoteChecksum": "c0e307cb5ca4d19fdb704131375c7c33021040f495a22d1e8a5ab2cf0bd9e4b9"
+      },
+      "heroVisual": false,
+      "slots": {
+        "asker": "guy4",
+        "answerer": "girl5",
+        "askerText": "We're together now.",
+        "answererText": "But we're not equals."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the mismatched couple",
+        "takeaway": "Show the unequal pairing still has friction."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-037",
+      "narration": "Therefore, the best solution is cooperation. Mr. Five takes Ms. Five, Mr. Four takes Ms. Four, Mr. Three takes Ms. Three — everyone finds a partner, everyone has children, and society develops.",
+      "purpose": "Resolve the simulation: cooperation beats competition.",
+      "emotion": "hopeful",
+      "viewerFocus": "everyone paired up",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 830,
+        "endWord": 860,
+        "quoteChecksum": "363fc532276a7d3a73991d2e5b7fd7f96407e55a713c9aa077d36015284dcd1d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/wedding_hall.svg",
+        "who": "guy5",
+        "seatB": "girl5",
+        "caption": "Cooperation: everyone pairs up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "everyone paired up",
+        "takeaway": "Resolve the simulation: cooperation beats competition."
+      },
+      "resolvedAssets": {
+        "who": "guy5",
+        "seatB": "girl5",
+        "stage": "assets/scenes/wedding_hall.svg"
+      }
+    },
+    {
+      "id": "scene-038",
+      "narration": "This state — game theory calls it Nash equilibrium. It's a state where no one benefits by unilaterally changing strategy. Everyone's content, and any change would only bring more losses.",
+      "purpose": "Name the concept the simulation just demonstrated.",
+      "emotion": "hopeful",
+      "viewerFocus": "the definition card",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 861,
+        "endWord": 903,
+        "quoteChecksum": "fad8a10ea6e9fb88cfff4f46c9e862ee9fc388ff81d483cb787c6fb92b95a18c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Nash Equilibrium",
+        "body": "No one gains by changing alone"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the definition card",
+        "takeaway": "Name the concept the simulation just demonstrated."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-039",
+      "narration": "So, let's just keep things as they are. That theory is perfectly fine. But there's a problem: society doesn't have just 10 people — it has 8 billion.",
+      "purpose": "Break the toy model's scale assumption — the real complication.",
+      "emotion": "surprise",
+      "viewerFocus": "10 vs 8 billion",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 904,
+        "endWord": 937,
+        "quoteChecksum": "86c47c9e7c6d8bd9e2d1a2f08feb8c7c019ff8633ee8664fefe7197e9cfe279f"
+      },
+      "heroVisual": true,
+      "slots": {
+        "left": "10 people",
+        "right": "8,000,000,000 people",
+        "leftAsset": "characters/cat_think",
+        "rightAsset": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "10 vs 8 billion",
+        "takeaway": "Break the toy model's scale assumption — the real complication."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_think",
+        "rightAsset": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-040",
+      "narration": "A fun survey asks: if you're 30, your parents are pressuring you, you've dated for 10 years with no luck, and now you're forced to marry someone — what's your minimum requirement?",
+      "purpose": "Introduce a real-world survey to test the theory against reality.",
+      "emotion": "curious",
+      "viewerFocus": "the survey card",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 938,
+        "endWord": 983,
+        "quoteChecksum": "1a6c7dbef6004b32fec16fd7bd7834f5ebd4fd0aefeb996f8ef92b9c077da1f0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Survey: your minimum requirement?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the survey card",
+        "takeaway": "Introduce a real-world survey to test the theory against reality."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-041",
+      "narration": "I think it would be simpler for guys — like, any girl will do, even girl number one.",
+      "purpose": "First survey answer: guys claim to be flexible.",
+      "emotion": "neutral",
+      "viewerFocus": "guy 1, shrugging",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 984,
+        "endWord": 1003,
+        "quoteChecksum": "b26da6b07f1bb0555d7601de59b09f938bf7968f8f919da1a96a152afc40a378"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bar.svg",
+        "who": "guy1",
+        "caption": "Guys: \"Honestly, anyone works\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "guy 1, shrugging",
+        "takeaway": "First survey answer: guys claim to be flexible."
+      },
+      "resolvedAssets": {
+        "who": "guy1",
+        "stage": "assets/scenes/bar.svg"
+      }
+    },
+    {
+      "id": "scene-042",
+      "narration": "Some girls say: if I don't love him, or find him attractive, then at least he must be earning around 200 million a month.",
+      "purpose": "Second survey answer: a very specific bar.",
+      "emotion": "sarcastic",
+      "viewerFocus": "girl 3's real requirement",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1004,
+        "endWord": 1032,
+        "quoteChecksum": "e4006fa114f6041d6ebeff857ab58d85d51192ff5ddcbb2fe61371e0f0df9d82"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bar.svg",
+        "who": "girl3",
+        "caption": "Girls: \"At least 200M a month\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "girl 3's real requirement",
+        "takeaway": "Second survey answer: a very specific bar."
+      },
+      "resolvedAssets": {
+        "who": "girl3",
+        "stage": "assets/scenes/bar.svg"
+      }
+    },
+    {
+      "id": "scene-043",
+      "narration": "According to Nash equilibrium, number three should marry number three and live happily",
+      "purpose": "Contrast the model's prediction with what people actually do.",
+      "emotion": "sarcastic",
+      "viewerFocus": "theory vs reality",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 1033,
+        "endWord": 1045,
+        "quoteChecksum": "a1d93384a4abe6a46841b4c6a0cd7ffe7a32dda9d589678489a43b2f7ea266e6"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Nash says: pair with your equal",
+        "a": "Reality: \"I'd rather stay single\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "theory vs reality",
+        "takeaway": "Contrast the model's prediction with what people actually do."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-044",
+      "narration": "But in reality, number three looks at number three and thinks: better to stay single, unless I meet a number five or someone earning 200 million a month.",
+      "purpose": "Dramatize the reasoning behind refusing an equal match.",
+      "emotion": "concern",
+      "viewerFocus": "the rejection",
+      "visualGrammar": "DIALOGUE_QA",
+      "sourceRange": {
+        "startWord": 1046,
+        "endWord": 1110,
+        "quoteChecksum": "53bfa21d95f7d16544f277f25dab416511a4a0b241e9bd3ecd9500305c52853d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "asker": "guy3",
+        "answerer": "girl3",
+        "askerText": "We're a fair match, aren't we?",
+        "answererText": "Unless you're a 5, forget it."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the rejection",
+        "takeaway": "Dramatize the reasoning behind refusing an equal match."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-045",
+      "narration": "In reality, many people rush into the top 1-2%, and most end up being left behind",
+      "purpose": "Show the real-world consequence: most people chase the top and lose.",
+      "emotion": "urgent",
+      "viewerFocus": "the losing odds",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1111,
+        "endWord": 1126,
+        "quoteChecksum": "2bc3f12513ed873704d6db37c0fb823a15601e49015049f20dc7fd018c811814"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "TOP 1-2% ONLY",
+        "who": "characters/cat_think"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the losing odds",
+        "takeaway": "Show the real-world consequence: most people chase the top and lose."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_think"
+      }
+    },
+    {
+      "id": "scene-046",
+      "narration": "For example, Elon Musk, he has a ton of children and many wives. Billionaires and celebrities have no shortage of people lining up for them",
+      "purpose": "A concrete example of the top tier's abundance.",
+      "emotion": "neutral",
+      "viewerFocus": "the billionaire example",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 1127,
+        "endWord": 1151,
+        "quoteChecksum": "b49de532cda943ea4bbc15cb0aedd4529e6bccccd5619e376662c28fcfc0dd90"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Elon Musk: many kids, many partners",
+        "body": "Billionaires never lack suitors"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the billionaire example",
+        "takeaway": "A concrete example of the top tier's abundance."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-047",
+      "narration": "Meanwhile, many young people around the world are experiencing involuntary singlehood — they want a partner and want to marry, but can't.",
+      "purpose": "Show the flip side: the ones left behind.",
+      "emotion": "sad",
+      "viewerFocus": "someone left out, alone",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1152,
+        "endWord": 1181,
+        "quoteChecksum": "5f50ad0af86904e91ffc6df2fe164263dbd70b53bc05049ec32e263621824ce1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bedroom.svg",
+        "who": "guy2",
+        "caption": "Involuntarily single"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "someone left out, alone",
+        "takeaway": "Show the flip side: the ones left behind."
+      },
+      "resolvedAssets": {
+        "who": "guy2",
+        "stage": "assets/scenes/bedroom.svg"
+      }
+    },
+    {
+      "id": "scene-048",
+      "narration": "So gradually, they give up. As for the guys — many in their 20s and 30s have never dated, never had a relationship, and don't want to try anymore.",
+      "purpose": "Land the giving-up beat with a specific demographic.",
+      "emotion": "sad",
+      "viewerFocus": "the checked-out single guy",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1182,
+        "endWord": 1224,
+        "quoteChecksum": "91b29ecc1a1376dc325bc7c86a1a1ec67db13411daf2722208bc262b2798b5ae"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bedroom.svg",
+        "who": "guy1",
+        "caption": "25-30, never dated, given up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the checked-out single guy",
+        "takeaway": "Land the giving-up beat with a specific demographic."
+      },
+      "resolvedAssets": {
+        "who": "guy1",
+        "stage": "assets/scenes/bedroom.svg"
+      }
+    },
+    {
+      "id": "scene-049",
+      "narration": "Grandpa, that sounds like me, right",
+      "purpose": "Break tension with a self-aware joke.",
+      "emotion": "sarcastic",
+      "viewerFocus": "the wink to camera",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 1225,
+        "endWord": 1230,
+        "quoteChecksum": "cc2538d279449eab332850e2f874569100fe408ffa582341b15402cf0dec161f"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "Sound familiar?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the wink to camera",
+        "takeaway": "Break tension with a self-aware joke."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-050",
+      "narration": "It's not because they're ugly or incompetent, but simply because the dating game is too tiring now — competition is fierce, the odds of winning are low.",
+      "purpose": "Reframe the giving-up trend as a rational response to bad odds.",
+      "emotion": "concern",
+      "viewerFocus": "the odds framing",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1231,
+        "endWord": 1258,
+        "quoteChecksum": "b1dc7ae4126fff3e6e3ac49643564717a3bb41f9e8b3e150c9f637b38f5535cf"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "TOO TIRING TO PLAY",
+        "who": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the odds framing",
+        "takeaway": "Reframe the giving-up trend as a rational response to bad odds."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-051",
+      "narration": "That's the theory saying balance is optimal. But in reality, people don't want to play that game anymore. Why? As I said, a game has three parts: the players — that hasn't changed much.",
+      "purpose": "Reframe: something in the three-part model must have shifted.",
+      "emotion": "neutral",
+      "viewerFocus": "players, unchanged",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1259,
+        "endWord": 1298,
+        "quoteChecksum": "a1ee6f737f806c71f417426996c9a1760fc34f05f651481c37e8f0a396d3b311"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Players: mostly unchanged"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "players, unchanged",
+        "takeaway": "Reframe: something in the three-part model must have shifted."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-052",
+      "narration": "The rules of the game are competition, and that hasn't changed much.\r\nScene 6: The New Reward of the Game",
+      "purpose": "Rule out the rules as the source of change.",
+      "emotion": "neutral",
+      "viewerFocus": "rules, unchanged",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 1299,
+        "endWord": 1318,
+        "quoteChecksum": "f80403a10d140cfbc06eeeb56d290167455f1bbbacaa72c04a6786defdce9a66"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "Rules: still competition"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rules, unchanged",
+        "takeaway": "Rule out the rules as the source of change."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-053",
+      "narration": "The final thing is the reward. Dating rewards used to mean love, sex, marriage, and children. But now there's another element — one that used to matter, but is now exaggerated: social status.",
+      "purpose": "Reveal the reward that actually changed.",
+      "emotion": "neutral",
+      "viewerFocus": "love vs status",
+      "visualGrammar": "DIAGRAM",
+      "sourceRange": {
+        "startWord": 1319,
+        "endWord": 1383,
+        "quoteChecksum": "fda06dbcbcec2fe5f54b9d0664663307f41c170be5b658deb855376a06f81c6e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Love & Family|Social Status",
+        "icons": "props/photo_frame|props/trophy"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "love vs status",
+        "takeaway": "Reveal the reward that actually changed."
+      },
+      "resolvedAssets": {
+        "icon0": "props/photo_frame",
+        "icon1": "props/trophy"
+      }
+    },
+    {
+      "id": "scene-054",
+      "narration": "Simply put, if you love this person and marry this person, can you show them off",
+      "purpose": "Frame the new reward as a question of showing off.",
+      "emotion": "sarcastic",
+      "viewerFocus": "the showing-off angle",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1384,
+        "endWord": 1399,
+        "quoteChecksum": "fee3d8fb1ebcde9bdb3e52d990f2021bda64cc3950ccf64bf6893779facd8df5"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "girl4",
+        "caption": "But can you show them off?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the showing-off angle",
+        "takeaway": "Frame the new reward as a question of showing off."
+      },
+      "resolvedAssets": {
+        "who": "girl4",
+        "stage": "assets/scenes/living_room.svg"
+      }
+    },
+    {
+      "id": "scene-055",
+      "narration": "Can you be proud in the eyes of others? Show them off on Facebook, on Instagram, at a class reunion, bragging about how handsome, rich, hot, or capable your partner is?",
+      "purpose": "Dramatize the reunion-bragging scenario.",
+      "emotion": "sarcastic",
+      "viewerFocus": "bragging at the reunion",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1400,
+        "endWord": 1449,
+        "quoteChecksum": "6b2b616084bc498da2384f1fd4d5c30bb3bd163dfefe82a86de26dc7ed88d572"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/restaurant.svg",
+        "who": "girl5",
+        "seatB": "girl4",
+        "caption": "Bragging at the reunion"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "bragging at the reunion",
+        "takeaway": "Dramatize the reunion-bragging scenario."
+      },
+      "resolvedAssets": {
+        "who": "girl5",
+        "seatB": "girl4",
+        "stage": "assets/scenes/restaurant.svg"
+      }
+    },
+    {
+      "id": "scene-056",
+      "narration": "Now the story has added an extremely important element: reputation. And it doesn't stop at marriage — it shows up in the latest iPhone, luxury travel, designer goods.",
+      "purpose": "Widen the reputation game beyond marriage into consumption.",
+      "emotion": "neutral",
+      "viewerFocus": "reputation, everywhere",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 1450,
+        "endWord": 1483,
+        "quoteChecksum": "1f8c339fbabf27f667caa8a972307fc91a230c1e5c4b01bbcc1f0819a4549494"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Latest phone|Luxury trips|Designer goods",
+        "icons": "finance/money|props/photo_frame|finance/wallet"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "reputation, everywhere",
+        "takeaway": "Widen the reputation game beyond marriage into consumption."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/money",
+        "icon1": "props/photo_frame",
+        "icon2": "finance/wallet"
+      }
+    },
+    {
+      "id": "scene-057",
+      "narration": "Many people do things not because they use them, but to show off. Marriage is part of this game too: marrying below your standard is embarrassing, so better to stay single.",
+      "purpose": "Connect showing-off logic directly to refusing to marry down.",
+      "emotion": "concern",
+      "viewerFocus": "the embarrassment logic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 1484,
+        "endWord": 1545,
+        "quoteChecksum": "d66e93fc63305ac670aadf81e015261a835688dbaffbaaf048667faaeaddb2b3"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Marrying \"below your level\"",
+        "effect": "= embarrassing, so: stay single",
+        "causeIcon": "characters/cat_shrug",
+        "effectIcon": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the embarrassment logic",
+        "takeaway": "Connect showing-off logic directly to refusing to marry down."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_shrug",
+        "effectIcon": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-058",
+      "narration": "The scary thing is that the game of showing off is a zero-sum game",
+      "purpose": "Name the mechanism that makes this so brutal: zero-sum.",
+      "emotion": "urgent",
+      "viewerFocus": "the zero-sum reveal",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1546,
+        "endWord": 1559,
+        "quoteChecksum": "54df41370c74bb6b5f6eba0fade9a1eba417bf0688ba5aa81ca40ba496b4e171"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "ZERO-SUM GAME",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the zero-sum reveal",
+        "takeaway": "Name the mechanism that makes this so brutal: zero-sum."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-059",
+      "narration": "That means there will always be people better off and people worse off. If everyone could show off, then no one could.",
+      "purpose": "Illustrate the zero-sum logic concretely.",
+      "emotion": "neutral",
+      "viewerFocus": "top vs bottom",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 1560,
+        "endWord": 1595,
+        "quoteChecksum": "836533f19528737a70b777d200d857a39c06932b7cadf06055ab0ea368dcfcc3"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Someone's on top",
+        "right": "Someone's at the bottom",
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "top vs bottom",
+        "takeaway": "Illustrate the zero-sum logic concretely."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-060",
+      "narration": "If there are people at the top, there must be people at the bottom",
+      "purpose": "Let the zero-sum idea sit for a beat.",
+      "emotion": "neutral",
+      "viewerFocus": "a skyline of winners and losers",
+      "visualGrammar": "BEAT",
+      "sourceRange": {
+        "startWord": 1596,
+        "endWord": 1609,
+        "quoteChecksum": "f01d2cfd0c805017d13fbe8adcdf89c5902304e47f96a46cc54c59021189bd96"
+      },
+      "heroVisual": false,
+      "slots": {
+        "image": "backgrounds/city_skyline.jpg"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a skyline of winners and losers",
+        "takeaway": "Let the zero-sum idea sit for a beat."
+      },
+      "resolvedAssets": {
+        "image": "backgrounds/city_skyline.jpg"
+      }
+    },
+    {
+      "id": "scene-061",
+      "narration": "There's a common view that government cash incentives don't work — because the problem was never a lack of money.",
+      "purpose": "State the policy critique this whole video is building toward.",
+      "emotion": "neutral",
+      "viewerFocus": "the policy critique",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 1610,
+        "endWord": 1637,
+        "quoteChecksum": "937ac74eafd5274cf66cf910432f083d0637345cdb08d2015581563541b4e908"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "\"Cash incentives don't work\"",
+        "body": "The problem was never money"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the policy critique",
+        "takeaway": "State the policy critique this whole video is building toward."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-062",
+      "narration": "Nowadays, finding a job is easier — there may be a lot of unemployment, but it's easier than in the past, when people only knew farm work. Now there are more choices.",
+      "purpose": "Establish that material survival isn't really the bottleneck anymore.",
+      "emotion": "neutral",
+      "viewerFocus": "more job choices than ever",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1638,
+        "endWord": 1675,
+        "quoteChecksum": "9c65d7d41ba0f4f228afa1d9f7601f6b140af6c3c9a4d09b83d57006cf34afca"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "worker",
+        "caption": "More job choices than before"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "more job choices than ever",
+        "takeaway": "Establish that material survival isn't really the bottleneck anymore."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-063",
+      "narration": "So now, people can find a normal job, stay healthy, and earn enough to live on. But the real thing they lack is face.",
+      "purpose": "Land the actual missing ingredient: face, not money.",
+      "emotion": "curious",
+      "viewerFocus": "what's actually missing",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1676,
+        "endWord": 1702,
+        "quoteChecksum": "3bb1a0ef123bd2366681636d7bd4ca1d2c1bfac160aad9c48c6e9818c207a807"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "What's missing: face"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "what's actually missing",
+        "takeaway": "Land the actual missing ingredient: face, not money."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-064",
+      "narration": "And face can't necessarily be bought with money. If you give someone a billion to marry someone their friends look down on, what does that billion even mean?",
+      "purpose": "Punchline: money can't buy the actual reward people want.",
+      "emotion": "sarcastic",
+      "viewerFocus": "money vs face",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1703,
+        "endWord": 1734,
+        "quoteChecksum": "b3d3fc94637cbe9dc4e0838ec76ac297bdfb67173ae81ba9a24f78d4cbe44d48"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "1 BILLION ≠ FACE",
+        "who": "guy2"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "money vs face",
+        "takeaway": "Punchline: money can't buy the actual reward people want."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-065",
+      "narration": "Actually, it does have meaning — but in the end, some people would rather stay single than marry someone their friends look down on.",
+      "purpose": "Confirm face beats money as the deciding factor.",
+      "emotion": "sarcastic",
+      "viewerFocus": "rather single than shamed",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 1735,
+        "endWord": 1760,
+        "quoteChecksum": "0aa53435313998c5c465e63b30fb54946ff54d516eaf8ce0c592eee88edc70d8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "Rather single than \"embarrassing\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rather single than shamed",
+        "takeaway": "Confirm face beats money as the deciding factor."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-066",
+      "narration": "Here's a question: if humans always chase this kind of \"face\", why has our species survived for tens of thousands of years, remaining numerous and never going extinct? The answer is...",
+      "purpose": "Set up the historical explanation coming next.",
+      "emotion": "curious",
+      "viewerFocus": "the open question",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 1761,
+        "endWord": 1807,
+        "quoteChecksum": "adfec44d168181e6c5a5779ba9e44ad91300499b2f64b401f6678b3c24c60774"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Why didn't \"face\" wipe us out sooner?",
+        "a": "Because the game itself has changed."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the open question",
+        "takeaway": "Set up the historical explanation coming next."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-067",
+      "narration": "From Mr. Giang at the Predictive History channel: humans didn't always behave this way, because the game changes over time. Game theory calls this the overall picture — the big context around the game: population size, whether society is rich or poor, whether there are outside threats, how advanced the technology is.",
+      "purpose": "Introduce the concept of the surrounding context that shapes the game.",
+      "emotion": "neutral",
+      "viewerFocus": "the big picture around the game",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1808,
+        "endWord": 1873,
+        "quoteChecksum": "262896ce0f98bc81347c0e543ad09c4a637dfd22737a6f26e6e5b83f6e5d0070"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "The big picture around the game"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the big picture around the game",
+        "takeaway": "Introduce the concept of the surrounding context that shapes the game."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-068",
+      "narration": "These factors combine to determine which game is played. When the context changes, the game changes too. Let's divide human history into three stages for easier understanding.",
+      "purpose": "Preview the three-stage historical framework.",
+      "emotion": "neutral",
+      "viewerFocus": "the three eras",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 1874,
+        "endWord": 1901,
+        "quoteChecksum": "ae6b0e474bbc013e3206a981a93956ccf2064d2f72d94898bbe917ae0b0843d0"
+      },
+      "heroVisual": true,
+      "slots": {
+        "items": "Primitive era|Early civilization|Today",
+        "icons": "props/round_table|finance/bank|props/computer_desk"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the three eras",
+        "takeaway": "Preview the three-stage historical framework."
+      },
+      "resolvedAssets": {
+        "icon0": "props/round_table",
+        "icon1": "finance/bank",
+        "icon2": "props/computer_desk"
+      }
+    },
+    {
+      "id": "scene-069",
+      "narration": "The first stage is the primitive era. A small village had only about 200 people. Everything was scarce and inconvenient — even getting clean water meant carrying it home to boil.",
+      "purpose": "Set the primitive-era scene: scarcity and hardship.",
+      "emotion": "concern",
+      "viewerFocus": "a small, scarce village",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1902,
+        "endWord": 1953,
+        "quoteChecksum": "c5448a2aed74464f2dfb7d3fb2290507f152acdaa551b511c09e994d4522c949"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/farm_field.svg",
+        "who": "host",
+        "caption": "~200 people, everything scarce"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a small, scarce village",
+        "takeaway": "Set the primitive-era scene: scarcity and hardship."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/farm_field.svg"
+      }
+    },
+    {
+      "id": "scene-070",
+      "narration": "Having children in such circumstances was like stepping into a death trap",
+      "purpose": "Land how dangerous childbirth actually was.",
+      "emotion": "sad",
+      "viewerFocus": "the death-trap framing",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1954,
+        "endWord": 1965,
+        "quoteChecksum": "3fbdad82287fbffef6caa555c16995efcb77618125394ca1345943fa801b748d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "CHILDBIRTH = DEATH TRAP",
+        "who": "girl2"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the death-trap framing",
+        "takeaway": "Land how dangerous childbirth actually was."
+      },
+      "resolvedAssets": {
+        "who": "girl2"
+      }
+    },
+    {
+      "id": "scene-071",
+      "narration": "In that context, there was no concept of love or dating — men and women had many partners at once, partly to raise everyone's odds of reproducing, and partly so no one knew exactly whose child was whose.",
+      "purpose": "Explain the primitive-era mating structure and its logic.",
+      "emotion": "neutral",
+      "viewerFocus": "no exclusive pairing, by design",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1966,
+        "endWord": 2005,
+        "quoteChecksum": "dde7d31fd027819b9ce747f1d0be59da62a97bf1ce28e64d0a90f752cba10e57"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/farm_field.svg",
+        "who": "guy3",
+        "seatB": "girl3",
+        "caption": "No dating, no exclusivity"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "no exclusive pairing, by design",
+        "takeaway": "Explain the primitive-era mating structure and its logic."
+      },
+      "resolvedAssets": {
+        "who": "guy3",
+        "seatB": "girl3",
+        "stage": "assets/scenes/farm_field.svg"
+      }
+    },
+    {
+      "id": "scene-072",
+      "narration": "When the men in the village all thought the child might be theirs, everyone would flock together to protect and care for it. And the reward would be ensuring the entire village didn't become extinct",
+      "purpose": "Show the payoff of that ambiguity: shared protection.",
+      "emotion": "hopeful",
+      "viewerFocus": "the whole village protecting a child",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 2006,
+        "endWord": 2040,
+        "quoteChecksum": "25c82674fbb132be7c3da190e7e3a842cb7785187fe9efe853b60d62c978d208"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Might be my child too",
+        "effect": "So the whole village protects it",
+        "causeIcon": "characters/cat_think",
+        "effectIcon": "characters/cat_happy"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the whole village protecting a child",
+        "takeaway": "Show the payoff of that ambiguity: shared protection."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_think",
+        "effectIcon": "characters/cat_happy"
+      }
+    },
+    {
+      "id": "scene-073",
+      "narration": "Let's move to the second stage, when the small village grew into a society of tens of thousands, with money changing hands and some rudimentary technology.",
+      "purpose": "Introduce the second historical stage: early large society.",
+      "emotion": "neutral",
+      "viewerFocus": "a growing early economy",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2041,
+        "endWord": 2078,
+        "quoteChecksum": "257675bbd03816c8bf0993b3bba69f316b22e6b21c42786a626ac896eacc3423"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/boardroom.svg",
+        "who": "worker",
+        "caption": "Tens of thousands, early trade & tech"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a growing early economy",
+        "takeaway": "Introduce the second historical stage: early large society."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/boardroom.svg"
+      }
+    },
+    {
+      "id": "scene-074",
+      "narration": "At this time, villages and tribes began fighting each other constantly over territory and resources — so society became extremely short of people.",
+      "purpose": "Land the era's core problem: constant war and a people shortage.",
+      "emotion": "urgent",
+      "viewerFocus": "war and a shrinking population",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2079,
+        "endWord": 2103,
+        "quoteChecksum": "7c2689f5ebf105dedde49683d4341a04be6fbeb5f6328220b5c87d0534a60b45"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "WAR = PEOPLE SHORTAGE",
+        "who": "cop"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "war and a shrinking population",
+        "takeaway": "Land the era's core problem: constant war and a people shortage."
+      },
+      "resolvedAssets": {
+        "who": "cop"
+      }
+    },
+    {
+      "id": "scene-075",
+      "narration": "Because soldiers were needed for war, and hands were needed in the fields, where would anyone find time for courtship and romantic dates?",
+      "purpose": "Show why courtship had no room to exist in this era.",
+      "emotion": "concern",
+      "viewerFocus": "no time for dating",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2104,
+        "endWord": 2137,
+        "quoteChecksum": "32d06d364ff0158e22ac09a4ffa9b893f610fc0aa3d4e9b747cc7e15b072be60"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/construction.svg",
+        "who": "guy3",
+        "caption": "No time left for courtship"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "no time for dating",
+        "takeaway": "Show why courtship had no room to exist in this era."
+      },
+      "resolvedAssets": {
+        "who": "guy3",
+        "stage": "assets/scenes/construction.svg"
+      }
+    },
+    {
+      "id": "scene-076",
+      "narration": "And so, arranged marriages took center stage. Parents decided who their children married, with no room for argument — as long as they married and had many children.",
+      "purpose": "Land the era's solution: arranged marriage, no personal choice.",
+      "emotion": "neutral",
+      "viewerFocus": "parents deciding, no debate",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2138,
+        "endWord": 2183,
+        "quoteChecksum": "7f7a27e3be3c0a600c533e9d790b01d8a1c49aa3ecf6592b37e157ac2fa7dce0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/wedding_hall.svg",
+        "who": "dad",
+        "seatB": "mom",
+        "caption": "Parents decide. No argument."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "parents deciding, no debate",
+        "takeaway": "Land the era's solution: arranged marriage, no personal choice."
+      },
+      "resolvedAssets": {
+        "who": "dad",
+        "seatB": "mom",
+        "stage": "assets/scenes/wedding_hall.svg"
+      }
+    },
+    {
+      "id": "scene-077",
+      "narration": "And finally, the third stage is the present day. The world is crowded now — 8 billion people. Look at China or India: each has over a billion, very crowded.",
+      "purpose": "Open the third stage with the sheer scale of today's world.",
+      "emotion": "surprise",
+      "viewerFocus": "a crowded planet",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2184,
+        "endWord": 2215,
+        "quoteChecksum": "d2870059592d06b1017d4b496c22d6f03cb8f7c4bdb0579068f8555364733da5"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "8,000,000,000 PEOPLE",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a crowded planet",
+        "takeaway": "Open the third stage with the sheer scale of today's world."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-078",
+      "narration": "And there's much more money too — but some have far more than enough, while others struggle to get by. Very unequal.",
+      "purpose": "Show the flip side of modern abundance: inequality.",
+      "emotion": "concern",
+      "viewerFocus": "plenty vs barely scraping by",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2216,
+        "endWord": 2239,
+        "quoteChecksum": "0fb807c391dd7c7f8571d730b8fd84786ce0cc4d2b9d02659e5b4fc85460a3ce"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Some: more than enough",
+        "right": "Some: barely scraping by",
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "plenty vs barely scraping by",
+        "takeaway": "Show the flip side of modern abundance: inequality."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-079",
+      "narration": "The upside is that healthcare is better and technology is more advanced, so mothers who give birth are almost guaranteed to survive — childbirth is no longer a death sentence.",
+      "purpose": "Note the genuine improvement: childbirth is far safer now.",
+      "emotion": "hopeful",
+      "viewerFocus": "childbirth, much safer now",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2240,
+        "endWord": 2269,
+        "quoteChecksum": "cbcb33ef074c66a61c3867de97ff01140134c9d504bd3010d5a5c55bb0456c54"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/hospital.svg",
+        "who": "teacher",
+        "caption": "Childbirth: far safer now"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "childbirth, much safer now",
+        "takeaway": "Note the genuine improvement: childbirth is far safer now."
+      },
+      "resolvedAssets": {
+        "who": "teacher",
+        "stage": "assets/scenes/hospital.svg"
+      }
+    },
+    {
+      "id": "scene-080",
+      "narration": "And then, the world is relatively peaceful, in a certain way — superpowers no longer shoot each other directly, they wage proxy wars instead.",
+      "purpose": "Note the era's relative — if imperfect — peace.",
+      "emotion": "neutral",
+      "viewerFocus": "peace, sort of",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2270,
+        "endWord": 2295,
+        "quoteChecksum": "a251ff1a739cca9905670b1532798aa30b9c603429bed7107931f695bde52d78"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/rooftop_night.svg",
+        "who": "host",
+        "caption": "Peaceful, sort of"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "peace, sort of",
+        "takeaway": "Note the era's relative — if imperfect — peace."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/rooftop_night.svg"
+      }
+    },
+    {
+      "id": "scene-081",
+      "narration": "Talk aside, life is genuinely much better now. But because life is better, people expect dating to be good too.",
+      "purpose": "Connect general life improvement to rising dating expectations.",
+      "emotion": "neutral",
+      "viewerFocus": "better life, higher expectations",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 2296,
+        "endWord": 2318,
+        "quoteChecksum": "bc81a426a3bb73e35afb91129f3424547d192dc423ea829f20f35e8b2c412217"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Life got easier overall",
+        "effect": "So expectations for love rose too",
+        "causeIcon": "finance/trending_up",
+        "effectIcon": "props/photo_frame"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "better life, higher expectations",
+        "takeaway": "Connect general life improvement to rising dating expectations."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/trending_up",
+        "effectIcon": "props/photo_frame"
+      }
+    },
+    {
+      "id": "scene-082",
+      "narration": "While dating, falling in love, and marriage — like everything else — must have both good and bad sides.",
+      "purpose": "Set up the trade-off logic of modern relationships.",
+      "emotion": "neutral",
+      "viewerFocus": "every relationship, trade-offs",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 2319,
+        "endWord": 2335,
+        "quoteChecksum": "f0f97744eeaf39ddc423d759a898623a1a80a3974633f8a8da3098176dbba1fa"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "Every relationship has trade-offs"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "every relationship, trade-offs",
+        "takeaway": "Set up the trade-off logic of modern relationships."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-083",
+      "narration": "So if you're going to endure hardship anyway, why date someone from your own class and suffer together? Why not aim for someone from a higher class instead?",
+      "purpose": "Voice the logic that pushes people to date upward, not sideways.",
+      "emotion": "sarcastic",
+      "viewerFocus": "why not aim higher",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 2336,
+        "endWord": 2362,
+        "quoteChecksum": "5e22b67e25fdb457f1ec30f649d3f1598a256284bf9c6ad6bf6a6405c785ba42"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Why suffer with an equal?",
+        "a": "Why not just aim higher?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "why not aim higher",
+        "takeaway": "Voice the logic that pushes people to date upward, not sideways."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-084",
+      "narration": "So now, dating is pretty much a jump-starting platform. Lower levels try to climb to higher ones.",
+      "purpose": "Introduce the ladder-climbing metaphor for modern dating.",
+      "emotion": "neutral",
+      "viewerFocus": "dating as a ladder to climb",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2363,
+        "endWord": 2380,
+        "quoteChecksum": "8690d099d46f0b6218dc79f2d5e9a0b8f6ad1f61f3ba35d8d3073a1bf46f25c1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "worker",
+        "caption": "Dating: a ladder to climb"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "dating as a ladder to climb",
+        "takeaway": "Introduce the ladder-climbing metaphor for modern dating."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/street.svg"
+      }
+    },
+    {
+      "id": "scene-085",
+      "narration": "Apps like Tinder, Bumble, or dating groups on Facebook are essentially platforms for finding a better match to jump to.",
+      "purpose": "Name the actual apps enabling the climb — text only, no fake logos.",
+      "emotion": "sarcastic",
+      "viewerFocus": "swipe, match, climb a level",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 2381,
+        "endWord": 2401,
+        "quoteChecksum": "56c1e30ee59805c1cdf3f0e1cdcce983db9a6fdd96d1d5982a9274536d464140"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#3B5998",
+        "caption": "Swipe. Match. Climb a level.",
+        "who": "guy2"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "swipe, match, climb a level",
+        "takeaway": "Name the actual apps enabling the climb — text only, no fake logos."
+      },
+      "resolvedAssets": {
+        "who": "guy2",
+        "content": "#3B5998"
+      }
+    },
+    {
+      "id": "scene-086",
+      "narration": "But the problem is: if everyone wants to jump to a higher level, who wants to marry someone at their own level? If you're a 3 wanting a 5, or at best a 4 — why settle for another 3?",
+      "purpose": "Land the core contradiction: everyone climbing, no one settling.",
+      "emotion": "urgent",
+      "viewerFocus": "nobody wants their own level",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2402,
+        "endWord": 2456,
+        "quoteChecksum": "00518eea381c58ecdd2020365b371c9e746be9e9afe3a59de349335646cf616d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "NO ONE WANTS THEIR OWN LEVEL",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "nobody wants their own level",
+        "takeaway": "Land the core contradiction: everyone climbing, no one settling."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-087",
+      "narration": "So, marriage and childbirth are plummeting",
+      "purpose": "State the direct consequence: falling marriage and birth rates.",
+      "emotion": "sad",
+      "viewerFocus": "marriage and births, falling",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2457,
+        "endWord": 2462,
+        "quoteChecksum": "304b81def3ff24f78b6c1a95ecabec8c87c3311c4ffc8029faf2b7ee3403614e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bedroom.svg",
+        "who": "girl2",
+        "caption": "Marriage & births: plummeting"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "marriage and births, falling",
+        "takeaway": "State the direct consequence: falling marriage and birth rates."
+      },
+      "resolvedAssets": {
+        "who": "girl2",
+        "stage": "assets/scenes/bedroom.svg"
+      }
+    },
+    {
+      "id": "scene-088",
+      "narration": "And Mr. Giang says that if this trend continues, society will collapse sooner or later — and history has already proven it. The clearest sign of a collapsing civilization is when educated, wealthy women start refusing to have children.",
+      "purpose": "Introduce the historical-collapse claim.",
+      "emotion": "concern",
+      "viewerFocus": "the warning sign",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 2463,
+        "endWord": 2505,
+        "quoteChecksum": "7a0043fe90498c5ca6069be7bce20b2b5aaecf2e8a4572ec67acc6fe3540bf41"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Warning sign of collapse",
+        "body": "Educated, wealthy women opting out"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the warning sign",
+        "takeaway": "Introduce the historical-collapse claim."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-089",
+      "narration": "He says: \"Really? I don't know about that.\" Don't take it as looking down on women — I love women very much.",
+      "purpose": "Add a disclaimer beat before the historical example.",
+      "emotion": "neutral",
+      "viewerFocus": "the disclaimer",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 2506,
+        "endWord": 2525,
+        "quoteChecksum": "d84cdda358e246ce092d93f652509ccda42ad904d2f0ce6546f88119b7faa641"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "Not looking down on women"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the disclaimer",
+        "takeaway": "Add a disclaimer beat before the historical example."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-090",
+      "narration": "Although — in part — the Roman Empire, when it collapsed, faced the same scenario.",
+      "purpose": "Set the scene for the historical Rome example.",
+      "emotion": "neutral",
+      "viewerFocus": "Rome, before the fall",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2526,
+        "endWord": 2547,
+        "quoteChecksum": "e00a7e0875edc4be757dedb8d42c9c605d0fe5e37ea2d131ae5ee86e2e75e31e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/courtroom.svg",
+        "who": "guy4",
+        "caption": "Rome faced this too"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "Rome, before the fall",
+        "takeaway": "Set the scene for the historical Rome example."
+      },
+      "resolvedAssets": {
+        "who": "guy4",
+        "stage": "assets/scenes/courtroom.svg"
+      }
+    },
+    {
+      "id": "scene-091",
+      "narration": "The Romans at that time were both rich and skilled — so they decided not to have children, or to have very few.",
+      "purpose": "Land the specific historical claim: wealthy Romans, fewer kids.",
+      "emotion": "concern",
+      "viewerFocus": "rich, but fewer babies",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2548,
+        "endWord": 2569,
+        "quoteChecksum": "c0482ea3ac82dce0d6726dc0c1ed1b2d38cca78126041f29ee8b0a9fcedc4a01"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "ROME: RICH, BUT FEWER BABIES",
+        "who": "guy4"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rich, but fewer babies",
+        "takeaway": "Land the specific historical claim: wealthy Romans, fewer kids."
+      },
+      "resolvedAssets": {
+        "who": "guy4"
+      }
+    },
+    {
+      "id": "scene-092",
+      "narration": "And the situation became so serious that Emperor Augustus enacted the Lex Iulia — punishing those too lazy to marry, and rewarding those with many children.",
+      "purpose": "Introduce Rome's policy fix — an ancient version of today's cash incentives.",
+      "emotion": "neutral",
+      "viewerFocus": "an ancient incentive law",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2570,
+        "endWord": 2599,
+        "quoteChecksum": "f60fc55d8ea5cd035a18042e1f059848389fd7e3fc7a1a24d3d870bed3270e51"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/courtroom.svg",
+        "who": "cop",
+        "caption": "Lex Iulia: punish singles, reward parents"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "an ancient incentive law",
+        "takeaway": "Introduce Rome's policy fix — an ancient version of today's cash incentives."
+      },
+      "resolvedAssets": {
+        "who": "cop",
+        "stage": "assets/scenes/courtroom.svg"
+      }
+    },
+    {
+      "id": "scene-093",
+      "narration": "That means more than 2000 years ago, people tried using money and policies to solve the problem. But the results were not very effective",
+      "purpose": "Note the irony: this exact fix was tried millennia ago.",
+      "emotion": "sarcastic",
+      "viewerFocus": "the same fix, 2000 years ago",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2600,
+        "endWord": 2623,
+        "quoteChecksum": "2452dc86d18a09f7e3b11010eadd8b5da21caaf93cbaa227c41add97de857aba"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/courtroom.svg",
+        "who": "host",
+        "caption": "Same fix, 2000 years ago"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the same fix, 2000 years ago",
+        "takeaway": "Note the irony: this exact fix was tried millennia ago."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/courtroom.svg"
+      }
+    },
+    {
+      "id": "scene-094",
+      "narration": "Rome still collapsed as usual, though. This wasn't the only reason — just one part of the story.",
+      "purpose": "Caveat the Rome example honestly before moving to hard numbers.",
+      "emotion": "neutral",
+      "viewerFocus": "one piece, not the whole story",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 2624,
+        "endWord": 2659,
+        "quoteChecksum": "7101ff943a26b07fb7a99139f526ded596fd2d54f967a79e82efed2fb22bb837"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "One piece, not the whole story"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "one piece, not the whole story",
+        "takeaway": "Caveat the Rome example honestly before moving to hard numbers."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-095",
+      "narration": "Speaking of collapse, let's look at the numbers. The replacement birth rate is 2.1 children per woman — below that, we start seeing a shortage of people.",
+      "purpose": "Anchor the video's core benchmark number.",
+      "emotion": "neutral",
+      "viewerFocus": "the replacement-rate benchmark",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2660,
+        "endWord": 2710,
+        "quoteChecksum": "902d76ae575ef1a1bdd69410c0052c4d6656a4765c6dca248c23933985170211"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "2.1 = REPLACEMENT RATE",
+        "who": "host"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the replacement-rate benchmark",
+        "takeaway": "Anchor the video's core benchmark number."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-096",
+      "narration": "Below 1.5, the decline is rapid. Below 1.0, society is essentially self-destructing.",
+      "purpose": "Show the escalating severity thresholds.",
+      "emotion": "urgent",
+      "viewerFocus": "the danger thresholds",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 2711,
+        "endWord": 2728,
+        "quoteChecksum": "0b8f0e88fd8fef733c81b4bb5a499f652bf88572b44eba7026bb5fa9788a5131"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "1.5: rapid decline|1.0: self-destructing",
+        "icons": "finance/trending_down|finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the danger thresholds",
+        "takeaway": "Show the escalating severity thresholds."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/trending_down",
+        "icon1": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-097",
+      "narration": "Looking at the world map, we see it's split into two states: in Africa, birth rates are still very high — some regions average five to seven children per mother.",
+      "purpose": "Introduce the global divide, starting with Africa.",
+      "emotion": "neutral",
+      "viewerFocus": "Africa's high birth rate",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2729,
+        "endWord": 2761,
+        "quoteChecksum": "abea17c230acdd934b9f6143819371ef36a3906502b80670e1e9c913a0e9c514"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "AFRICA: 5-7 KIDS/MOTHER",
+        "who": "girl5"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "Africa's high birth rate",
+        "takeaway": "Introduce the global divide, starting with Africa."
+      },
+      "resolvedAssets": {
+        "who": "girl5"
+      }
+    },
+    {
+      "id": "scene-098",
+      "narration": "Because there, they are still in the stage where they need people to survive and then fight for territory and things like that, so they just have as many children as possible to compensate",
+      "purpose": "Explain why: still in the survival-and-territory stage.",
+      "emotion": "neutral",
+      "viewerFocus": "still needing people to survive",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2762,
+        "endWord": 2795,
+        "quoteChecksum": "4e053ddc73f2c528abacb26cf04b497d98a450c1e2eff3803a91677b79c39b93"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/farm_field.svg",
+        "who": "worker",
+        "caption": "Still needing people to survive"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "still needing people to survive",
+        "takeaway": "Explain why: still in the survival-and-territory stage."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/farm_field.svg"
+      }
+    },
+    {
+      "id": "scene-099",
+      "narration": "Meanwhile, in the wealthy regions of North America, Europe, and East Asia, the birth rate is plummeting. In North America and Europe, there are still immigrants — if native women don't want children, so be it.",
+      "purpose": "Contrast Africa's high rate against the wealthy world's collapse.",
+      "emotion": "concern",
+      "viewerFocus": "high vs collapsing birth rates",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2796,
+        "endWord": 2833,
+        "quoteChecksum": "cb424ce7c83ac9e934a93c031e506bb69fd579b1b2d021043cce76b574e2e37e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Africa: birth rate high",
+        "right": "Rich regions: birth rate falling",
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "high vs collapsing birth rates",
+        "takeaway": "Contrast Africa's high rate against the wealthy world's collapse."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-100",
+      "narration": "They open their doors to foreigners to work, pay taxes, and contribute to the economy — though it also stirs up cultural and political headaches, a hot topic in Europe and America.",
+      "purpose": "Show immigration as the West's stopgap, with its own friction.",
+      "emotion": "neutral",
+      "viewerFocus": "immigration filling the gap",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2834,
+        "endWord": 2886,
+        "quoteChecksum": "8e313dd9124ca2d6e90e64eb6be99f4914efc294f498633a74bf5d1603a18c11"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/airport.svg",
+        "who": "worker",
+        "caption": "Immigration fills the gap"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "immigration filling the gap",
+        "takeaway": "Show immigration as the West's stopgap, with its own friction."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/airport.svg"
+      }
+    },
+    {
+      "id": "scene-101",
+      "narration": "And in East Asia, we're really sitting on a powder keg.\r\nScene 11: South Korea",
+      "purpose": "Turn the focus toward East Asia's much worse situation.",
+      "emotion": "urgent",
+      "viewerFocus": "a region on edge",
+      "visualGrammar": "BEAT",
+      "sourceRange": {
+        "startWord": 2887,
+        "endWord": 2901,
+        "quoteChecksum": "20ee8c5b5702f32793f3e4a4021131abfacb797f829bd83ed557ad0bb33f2f02"
+      },
+      "heroVisual": false,
+      "slots": {
+        "image": "backgrounds/city_skyline.jpg"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a region on edge",
+        "takeaway": "Turn the focus toward East Asia's much worse situation."
+      },
+      "resolvedAssets": {
+        "image": "backgrounds/city_skyline.jpg"
+      }
+    },
+    {
+      "id": "scene-102",
+      "narration": "Because here, there's no easily opening the doors to immigrants — East Asian culture is fairly closed, and it's hard to accept strangers at the same table.",
+      "purpose": "Explain why East Asia can't use the West's immigration fix.",
+      "emotion": "neutral",
+      "viewerFocus": "closed doors, by culture",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2902,
+        "endWord": 2936,
+        "quoteChecksum": "85a59ecdb4ffbf48ae2d2e69d83b4b80d4404a9a6d54b8978626a23ce42b76f0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "guy2",
+        "caption": "East Asia: doors stay closed"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "closed doors, by culture",
+        "takeaway": "Explain why East Asia can't use the West's immigration fix."
+      },
+      "resolvedAssets": {
+        "who": "guy2",
+        "stage": "assets/scenes/street.svg"
+      }
+    },
+    {
+      "id": "scene-103",
+      "narration": "South Korea is a prime example: their birth rate has dropped to around 0.6-0.8, the lowest in the world. At this rate, Korea will likely survive only a few more generations before disappearing from the map.",
+      "purpose": "Introduce South Korea's extreme case with the world's lowest rate.",
+      "emotion": "urgent",
+      "viewerFocus": "the world's lowest rate",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2937,
+        "endWord": 2979,
+        "quoteChecksum": "ef9582c249b6225b4e67f1797f06b47f8513e5ce7a6e53489169079769d73358"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "0.6-0.8: WORLD'S LOWEST",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the world's lowest rate",
+        "takeaway": "Introduce South Korea's extreme case with the world's lowest rate."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-104",
+      "narration": "Now, there are even restaurants with \"No Kid Zone\" signs — treating children as a noisy nuisance ruining other customers' experience.",
+      "purpose": "Show a stark, concrete symptom: kids treated as unwelcome.",
+      "emotion": "sad",
+      "viewerFocus": "children, unwelcome",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 2980,
+        "endWord": 3014,
+        "quoteChecksum": "c4cf4adccb86b31a40cb5bb4b01bb3c9d908c4b113fa2ce2c5fff79bc7cef4d1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#E74C3C",
+        "caption": "\"No Kid Zone\"",
+        "who": "girl2"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "children, unwelcome",
+        "takeaway": "Show a stark, concrete symptom: kids treated as unwelcome."
+      },
+      "resolvedAssets": {
+        "who": "girl2",
+        "content": "#E74C3C"
+      }
+    },
+    {
+      "id": "scene-105",
+      "narration": "According to Mr. Giang, South Korea is like this because it's a society that values appearance to an extreme degree — everything has to be beautiful, high-quality, and expensive. Look at Korean showbiz: idols, actors, everyone has to be perfectly beautiful.",
+      "purpose": "Explain the cultural root: an obsession with polished appearance.",
+      "emotion": "sarcastic",
+      "viewerFocus": "obsessed with appearances",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3015,
+        "endWord": 3060,
+        "quoteChecksum": "647c0ae61460844dd77830f081412e05ebe0e60f1101093bc2d1284032e377ba"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bar.svg",
+        "who": "guy5",
+        "caption": "Obsessed with appearances"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "obsessed with appearances",
+        "takeaway": "Explain the cultural root: an obsession with polished appearance."
+      },
+      "resolvedAssets": {
+        "who": "guy5",
+        "stage": "assets/scenes/bar.svg"
+      }
+    },
+    {
+      "id": "scene-106",
+      "narration": "But where do idols and shows come from? And usually, people in Korea are also caught up in this \"perfection trap.\" And because of that, the path to success there is quite narrow",
+      "purpose": "Trace perfection culture back to its narrow path of success.",
+      "emotion": "concern",
+      "viewerFocus": "where perfection comes from",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 3061,
+        "endWord": 3093,
+        "quoteChecksum": "f0071946d5b494593d8a3c95a7f65483f8609c25e727dc70df41923e22a0d6a1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Where does that perfection come from?",
+        "a": "A brutally narrow path to success"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "where perfection comes from",
+        "takeaway": "Trace perfection culture back to its narrow path of success."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-107",
+      "narration": "Either you get into a prestigious university and work for Samsung or another major corporation, or you have no decent options at all. So if you're a middle-class family in Korea, you'll hear this argument:",
+      "purpose": "Lay out the narrow success path Korean families face.",
+      "emotion": "neutral",
+      "viewerFocus": "top university or nothing",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3094,
+        "endWord": 3130,
+        "quoteChecksum": "6d24d63376a6133049343d848262bcf8a36e49e5a57a83b38f4098e63a1abb1c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/classroom.svg",
+        "who": "teacher",
+        "caption": "Top university or nothing"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "top university or nothing",
+        "takeaway": "Lay out the narrow success path Korean families face."
+      },
+      "resolvedAssets": {
+        "who": "teacher",
+        "stage": "assets/scenes/classroom.svg"
+      }
+    },
+    {
+      "id": "scene-108",
+      "narration": "If you have three children, you need more than three times the money and resources. If none can get into a top school, just pour everything into one and send them to extra classes from dawn to night, hoping they'll pass and change their family's life.",
+      "purpose": "Show the economic logic: one child, every resource, maximum pressure.",
+      "emotion": "concern",
+      "viewerFocus": "one child, everything invested",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3131,
+        "endWord": 3184,
+        "quoteChecksum": "867c2a74c16de31bab27066f24ac34a930f5ff73216213ef43ff52dd58720e60"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/classroom.svg",
+        "who": "student",
+        "seatB": "teacher",
+        "caption": "One kid, everything invested"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "one child, everything invested",
+        "takeaway": "Show the economic logic: one child, every resource, maximum pressure."
+      },
+      "resolvedAssets": {
+        "who": "student",
+        "seatB": "teacher",
+        "stage": "assets/scenes/classroom.svg"
+      }
+    },
+    {
+      "id": "scene-109",
+      "narration": "And this logic forces people to have only one child — or none at all — just to avoid the burden.",
+      "purpose": "Land the direct consequence of the extra-class economics.",
+      "emotion": "sad",
+      "viewerFocus": "one child, or none",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 3185,
+        "endWord": 3207,
+        "quoteChecksum": "5aaabb23b1a6e4662fd8b51ef946c5410e8330c4f602553ee7a4764cd8b25355"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "student",
+        "keyword": "One shot to change everything"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "one child, or none",
+        "takeaway": "Land the direct consequence of the extra-class economics."
+      },
+      "resolvedAssets": {
+        "who": "student"
+      }
+    },
+    {
+      "id": "scene-110",
+      "narration": "Currently, Korea's population seems relatively stable, since the working-age group is still fairly large — but around 2040, the imbalance begins: the elderly population will skyrocket while children keep shrinking.",
+      "purpose": "Introduce the coming demographic cliff.",
+      "emotion": "concern",
+      "viewerFocus": "the imbalance starting",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3208,
+        "endWord": 3242,
+        "quoteChecksum": "7bdf1f281ff58a09d02583661405ffc0278ab0e60b788fa0d231413b722552b5"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "2040: THE IMBALANCE BEGINS",
+        "who": "characters/cat_think"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the imbalance starting",
+        "takeaway": "Introduce the coming demographic cliff."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_think"
+      }
+    },
+    {
+      "id": "scene-111",
+      "narration": "By 2060, the workforce will be halved. No one to work, no one to serve in the military.",
+      "purpose": "Escalate the projection to a full economic collapse warning.",
+      "emotion": "urgent",
+      "viewerFocus": "workforce cut in half",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3243,
+        "endWord": 3264,
+        "quoteChecksum": "969981ac569f9cc50296075ba7591f8dbce3c6eff6b1f71ca721e1b2469437b2"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "2060: WORKFORCE HALVED",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "workforce cut in half",
+        "takeaway": "Escalate the projection to a full economic collapse warning."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-112",
+      "narration": "So, a society of just old folks sitting in parks with no one creating wealth only leads to a national economic collapse.",
+      "purpose": "Visualize the end-state of the collapse this scenario predicts.",
+      "emotion": "sad",
+      "viewerFocus": "a park full of elders",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3265,
+        "endWord": 3290,
+        "quoteChecksum": "63e1f49f8abc9fa86f2a36f05054fa2123d39b3fdab477aee10212febcfd94a1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "dad",
+        "seatB": "mom",
+        "caption": "Only elders left in the park"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a park full of elders",
+        "takeaway": "Visualize the end-state of the collapse this scenario predicts."
+      },
+      "resolvedAssets": {
+        "who": "dad",
+        "seatB": "mom",
+        "stage": "assets/scenes/park.svg"
+      }
+    },
+    {
+      "id": "scene-113",
+      "narration": "China is the same. Its birth rate is now only about 1.0...",
+      "purpose": "Move from Korea's extreme case to the much bigger China.",
+      "emotion": "concern",
+      "viewerFocus": "China's 1.0 rate",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3291,
+        "endWord": 3312,
+        "quoteChecksum": "2af9219f6c79d83b877c8885618d0d5c420543e77739a49adb326a3216ccdab0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "CHINA: 1.0",
+        "who": "characters/cat_think"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "China's 1.0 rate",
+        "takeaway": "Move from Korea's extreme case to the much bigger China."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_think"
+      }
+    },
+    {
+      "id": "scene-114",
+      "narration": "...whereas five years ago it was still 1.7 — now it's plummeting.",
+      "purpose": "Show how fast China's rate has fallen in just five years.",
+      "emotion": "urgent",
+      "viewerFocus": "5 years ago vs now",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 3313,
+        "endWord": 3325,
+        "quoteChecksum": "2780099bf130a11057ae6649af8a6a85f82f9f34a4ae8d0f4bdf23d815e3055e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "5 years ago: 1.7",
+        "right": "Now: 1.0",
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "5 years ago vs now",
+        "takeaway": "Show how fast China's rate has fallen in just five years."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-115",
+      "narration": "At this rate, by the end of the century, China's population will likely be halved — around 600 million.",
+      "purpose": "Land China's long-term projection.",
+      "emotion": "urgent",
+      "viewerFocus": "China halved by 2100",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3326,
+        "endWord": 3345,
+        "quoteChecksum": "965eecfc70360d7eed28311258a84e8a9c3ffb1c0512edbe3c0ce721a431d1d1"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "HALVED BY 2100",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "China halved by 2100",
+        "takeaway": "Land China's long-term projection."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-116",
+      "narration": "Actually, 600 million is still a lot — but with so many elderly people, the system won't be able to support itself.",
+      "purpose": "Caveat the raw number with the real support burden.",
+      "emotion": "concern",
+      "viewerFocus": "too many elders to support",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 3346,
+        "endWord": 3366,
+        "quoteChecksum": "8c08ce8521416424cef0694ab8279206cf7f7c98492feaa698e793a29108b0a0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "Too many elders to support"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "too many elders to support",
+        "takeaway": "Caveat the raw number with the real support burden."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-117",
+      "narration": "Speaking of birth rates, there's an interesting comparison: usually, the richer a country, the fewer children it has. But there are exceptions — this country is rich and advanced, yet families still have more than two children.",
+      "purpose": "Set up the exception that breaks the wealth-vs-birthrate pattern.",
+      "emotion": "curious",
+      "viewerFocus": "rich, but still having kids",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3367,
+        "endWord": 3409,
+        "quoteChecksum": "685bad8b593f18efd3ca2a6651f5b185fe38b517a7d2410202e84fb2aae0219a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Rich isn't always fewer kids"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rich, but still having kids",
+        "takeaway": "Set up the exception that breaks the wealth-vs-birthrate pattern."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-118",
+      "narration": "So, using game theory: Israel's reward is different, shaped by history and religion. Having children there is tied to community and national identity — a source of pride, not a burden.",
+      "purpose": "Explain Israel's exception through the reward-changes-the-game lens.",
+      "emotion": "hopeful",
+      "viewerFocus": "kids as pride, not burden",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3410,
+        "endWord": 3460,
+        "quoteChecksum": "cd2ea7da0cc122976dde8efdc9db60d4e5bca581fb96c59188112820508dc06e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/temple.svg",
+        "who": "girl5",
+        "caption": "Kids = pride, not burden"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "kids as pride, not burden",
+        "takeaway": "Explain Israel's exception through the reward-changes-the-game lens."
+      },
+      "resolvedAssets": {
+        "who": "girl5",
+        "stage": "assets/scenes/temple.svg"
+      }
+    },
+    {
+      "id": "scene-119",
+      "narration": "In oil-rich countries too, people still have many children — the state covers everything from healthcare to housing, and religion encourages having more.",
+      "purpose": "Show a second exception with a different mechanism: state-funded abundance.",
+      "emotion": "neutral",
+      "viewerFocus": "state pays for everything",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 3461,
+        "endWord": 3501,
+        "quoteChecksum": "aa71ac33a20b3a2870661d5cece8623c95a98b32949fee3ffe1f2c72153f59a5"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Free healthcare|Free housing|Religious encouragement",
+        "icons": "finance/house|finance/bank|props/book"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "state pays for everything",
+        "takeaway": "Show a second exception with a different mechanism: state-funded abundance."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/house",
+        "icon1": "finance/bank",
+        "icon2": "props/book"
+      }
+    },
+    {
+      "id": "scene-120",
+      "narration": "You might ask if this model survives once the oil runs out. Only the future will tell.",
+      "purpose": "Flag the open question about this model's long-term durability.",
+      "emotion": "curious",
+      "viewerFocus": "what happens after the oil",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 3502,
+        "endWord": 3522,
+        "quoteChecksum": "f72a8176542a131e52074c4f3a93d28f6a310a2bf76870911ba810dd2b16a810"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "What happens when the oil runs out?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "what happens after the oil",
+        "takeaway": "Flag the open question about this model's long-term durability."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-121",
+      "narration": "The key point, from a game theory perspective: societies where having children enhances prestige will have high birth rates.",
+      "purpose": "State the general rule the exceptions both prove.",
+      "emotion": "hopeful",
+      "viewerFocus": "the underlying rule",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 3523,
+        "endWord": 3549,
+        "quoteChecksum": "481c714d9862a1ea7b1152da57615323afc750d817fd5deb5654d2ed5c8d13ec"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Which societies keep having kids?",
+        "a": "Ones where kids = prestige"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the underlying rule",
+        "takeaway": "State the general rule the exceptions both prove."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-122",
+      "narration": "Conversely, if having children means losing freedom, money, time, and career opportunities, people choose not to. So — what about Vietnam?",
+      "purpose": "State the opposite rule and pivot the video toward Vietnam.",
+      "emotion": "concern",
+      "viewerFocus": "kids as a cost, not a gain",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 3550,
+        "endWord": 3596,
+        "quoteChecksum": "058adc4a3f7f057e4304d3dc3df1102f499f22e3bf77a76745a49113a5b41f06"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Kids cost freedom, money, time",
+        "effect": "So people opt out",
+        "causeIcon": "finance/loss",
+        "effectIcon": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "kids as a cost, not a gain",
+        "takeaway": "State the opposite rule and pivot the video toward Vietnam."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/loss",
+        "effectIcon": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-123",
+      "narration": "In 2024, Vietnam's birth rate fell to 1.91 per woman, the lowest in our history — the third year in a row below 2.1.",
+      "purpose": "Bring the whole framework home to Vietnam's own numbers.",
+      "emotion": "concern",
+      "viewerFocus": "Vietnam's falling rate",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3597,
+        "endWord": 3623,
+        "quoteChecksum": "a347b7a0d047a262d16c02adfef6f951ed54b2f3ad847440c55a1dcd1c2aa0f8"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "VIETNAM 2024: 1.91",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "Vietnam's falling rate",
+        "takeaway": "Bring the whole framework home to Vietnam's own numbers."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-124",
+      "narration": "The downward trend is very clear. We lose a little each year — and 2024 was even the Year of the Dragon, a year our culture considers auspicious for having children.",
+      "purpose": "Note the irony: even a culturally lucky year didn't reverse the trend.",
+      "emotion": "sarcastic",
+      "viewerFocus": "a lucky year, wasted",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3624,
+        "endWord": 3679,
+        "quoteChecksum": "7ccf3dfe985648ac9cc0fb5e594760527ff9877675a8befea7c7d37d0347e0c6"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "guy2",
+        "caption": "Even a \"lucky\" year isn't enough"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a lucky year, wasted",
+        "takeaway": "Note the irony: even a culturally lucky year didn't reverse the trend."
+      },
+      "resolvedAssets": {
+        "who": "guy2",
+        "stage": "assets/scenes/living_room.svg"
+      }
+    },
+    {
+      "id": "scene-125",
+      "narration": "But even with such strong spiritual beliefs, they can't beat the modern game of saving face — thinking about the cost, fatigue, and career impact, people just give up on having children.",
+      "purpose": "Show belief losing out to modern cost-benefit logic.",
+      "emotion": "concern",
+      "viewerFocus": "belief losing to cost and fatigue",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3680,
+        "endWord": 3732,
+        "quoteChecksum": "9c2ff44fbda17e30a092c4cb8c95418cea4e17b4d28ae54b1c7fa600a3b9b10a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "dad",
+        "seatB": "mom",
+        "caption": "Belief loses to cost & fatigue"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "belief losing to cost and fatigue",
+        "takeaway": "Show belief losing out to modern cost-benefit logic."
+      },
+      "resolvedAssets": {
+        "who": "dad",
+        "seatB": "mom",
+        "stage": "assets/scenes/living_room.svg"
+      }
+    },
+    {
+      "id": "scene-126",
+      "narration": "In big cities, the birth rate is only 1.67. Rural areas are slightly higher but also declining. Ho Chi Minh City has the country's lowest, at just 1.39 — and the age of first marriage keeps rising.",
+      "purpose": "Break down Vietnam's numbers by region.",
+      "emotion": "concern",
+      "viewerFocus": "the regional breakdown",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 3733,
+        "endWord": 3778,
+        "quoteChecksum": "601cdb4bc7e7d7248212d3da2cafba366528ee37c3b0022607c787fdecc4ff89"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Big cities: 1.67|Rural: higher, still falling|HCMC: 1.39 — lowest",
+        "icons": "finance/trending_down|finance/trending_down|finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the regional breakdown",
+        "takeaway": "Break down Vietnam's numbers by region."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/trending_down",
+        "icon1": "finance/trending_down",
+        "icon2": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-127",
+      "narration": "Men now have to be around 30 to get married, and women around 25",
+      "purpose": "Land the rising marriage-age statistic.",
+      "emotion": "neutral",
+      "viewerFocus": "marrying later than ever",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3779,
+        "endWord": 3792,
+        "quoteChecksum": "b9e5b3bde38ded004e2a736105f090739de9bbd0b9e401598b47f4342893ba52"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "MARRY LATER: ~30 / ~25",
+        "who": "worker"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "marrying later than ever",
+        "takeaway": "Land the rising marriage-age statistic."
+      },
+      "resolvedAssets": {
+        "who": "worker"
+      }
+    },
+    {
+      "id": "scene-128",
+      "narration": "This aligns well with the framework: the more educated and wealthy people are, the fewer children they have — too much to lose by having them.",
+      "purpose": "Confirm the theory's prediction matches Vietnam's data.",
+      "emotion": "neutral",
+      "viewerFocus": "more educated, fewer kids",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3793,
+        "endWord": 3828,
+        "quoteChecksum": "e86b7ef36411e63d37c440bb76b0645ca9ed2bef8e2dc826de6212723f4119d6"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "More educated, fewer kids"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "more educated, fewer kids",
+        "takeaway": "Confirm the theory's prediction matches Vietnam's data."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-129",
+      "narration": "Many experts predict that if this continues, after 2035 Vietnam's population will start shrinking — deaths outpacing births. Seven provinces already show early signs of this.",
+      "purpose": "Land Vietnam's own projected tipping point.",
+      "emotion": "urgent",
+      "viewerFocus": "2035 and beyond",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3829,
+        "endWord": 3866,
+        "quoteChecksum": "689bea3ed9ea69493889d5fa2463105414b4a3857887e9acef2fb5877d694b71"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "2035: DEATHS > BIRTHS",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "2035 and beyond",
+        "takeaway": "Land Vietnam's own projected tipping point."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-130",
+      "narration": "Although Vietnam isn't as dire as South Korea or China yet, we're on the same path, and heavily influenced by social media.",
+      "purpose": "Bridge from Vietnam's data into the social-media explanation.",
+      "emotion": "concern",
+      "viewerFocus": "same road, earlier stage",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 3867,
+        "endWord": 3905,
+        "quoteChecksum": "a7985d4c482e7c7b5dc2e4f6efb73a60c5b0ca8528b3b07c51b40a713204be2d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "Same road, earlier stage"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "same road, earlier stage",
+        "takeaway": "Bridge from Vietnam's data into the social-media explanation."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-131",
+      "narration": "In the old days, people lived in a small village or neighborhood of only a few hundred people. They only compared themselves to those around them.",
+      "purpose": "Set the old, small-comparison-pool baseline before social media.",
+      "emotion": "neutral",
+      "viewerFocus": "a village of a few hundred",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3906,
+        "endWord": 3927,
+        "quoteChecksum": "8c13e4dcfe1794e44ec0ddacc8b6b3f463bba51d334ff09a5f470bc9baba12c9"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "worker",
+        "caption": "A village of a few hundred"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a village of a few hundred",
+        "takeaway": "Set the old, small-comparison-pool baseline before social media."
+      },
+      "resolvedAssets": {
+        "who": "worker",
+        "stage": "assets/scenes/park.svg"
+      }
+    },
+    {
+      "id": "scene-132",
+      "narration": "The odds of being the top person in your small neighborhood were fairly high, so people happily married so their children could live well, comfortably above the local average.",
+      "purpose": "Show why the old, small comparison pool made contentment easy.",
+      "emotion": "hopeful",
+      "viewerFocus": "easy to feel like \"the best\"",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3928,
+        "endWord": 3974,
+        "quoteChecksum": "3c2522042b86966b49158602c9dbca6196d6577db38cc17dc36c345a6947a004"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "girl4",
+        "caption": "Easy to feel like \"the best\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "easy to feel like \"the best\"",
+        "takeaway": "Show why the old, small comparison pool made contentment easy."
+      },
+      "resolvedAssets": {
+        "who": "girl4",
+        "stage": "assets/scenes/park.svg"
+      }
+    },
+    {
+      "id": "scene-133",
+      "narration": "Now it's completely different",
+      "purpose": "Hard cut into the modern comparison landscape.",
+      "emotion": "neutral",
+      "viewerFocus": "a city of strangers, online",
+      "visualGrammar": "BEAT",
+      "sourceRange": {
+        "startWord": 3975,
+        "endWord": 3978,
+        "quoteChecksum": "ad18017b715adcafc6ca7c829618f08629f1d000b015a63fb1e41566c29a6ee0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "image": "backgrounds/city_street.jpg"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a city of strangers, online",
+        "takeaway": "Hard cut into the modern comparison landscape."
+      },
+      "resolvedAssets": {
+        "image": "backgrounds/city_street.jpg"
+      }
+    },
+    {
+      "id": "scene-134",
+      "narration": "On TikTok, you see guys with six-pack abs driving Porsches; on Instagram, girls with perfect skin carrying designer bags. Anyone successful is now known to the whole of society.",
+      "purpose": "Show the feed of curated perfection everyone now compares against.",
+      "emotion": "surprise",
+      "viewerFocus": "curated perfection, everywhere",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 3979,
+        "endWord": 4019,
+        "quoteChecksum": "cfcc9c6af5d8f5dbcfd2d627b86ad648724bf68b85abfd1b3d09927847256c73"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#000000",
+        "caption": "Six-packs, Porsches, perfect skin",
+        "who": "girl1"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "curated perfection, everywhere",
+        "takeaway": "Show the feed of curated perfection everyone now compares against."
+      },
+      "resolvedAssets": {
+        "who": "girl1",
+        "content": "#000000"
+      }
+    },
+    {
+      "id": "scene-135",
+      "narration": "So, naturally, you start comparing yourself to millions of people online",
+      "purpose": "State the direct consequence: comparison at an impossible scale.",
+      "emotion": "sad",
+      "viewerFocus": "compared to millions",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 4020,
+        "endWord": 4030,
+        "quoteChecksum": "685b7b1160de450cf151f5fd7609c3e48a3555d5ab3f3d9b38c1ae1c67de7a29"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "COMPARED TO MILLIONS",
+        "who": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "compared to millions",
+        "takeaway": "State the direct consequence: comparison at an impossible scale."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-136",
+      "narration": "And then, the people around you don't seem good enough anymore. Social media expanded the playing field from a few hundred people to millions, pushing standards up unreasonably.",
+      "purpose": "Connect the expanded comparison pool to unreasonable standards.",
+      "emotion": "concern",
+      "viewerFocus": "field expanded, standards spiked",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 4031,
+        "endWord": 4057,
+        "quoteChecksum": "49781e3f423b06139af2308acaaf517ba728f9522a895ad3d00c2d91aa76b529"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Playing field: hundreds to millions",
+        "effect": "Standards spike unreasonably",
+        "causeIcon": "people/person",
+        "effectIcon": "finance/trending_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "field expanded, standards spiked",
+        "takeaway": "Connect the expanded comparison pool to unreasonable standards."
+      },
+      "resolvedAssets": {
+        "causeIcon": "people/person",
+        "effectIcon": "finance/trending_up"
+      }
+    },
+    {
+      "id": "scene-137",
+      "narration": "Dating apps are the same: swiping through hundreds of people a day tricks your brain into thinking you have too many choices.",
+      "purpose": "Extend the same illusion of abundance to dating apps.",
+      "emotion": "sarcastic",
+      "viewerFocus": "swipe, swipe, \"so many options\"",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 4058,
+        "endWord": 4082,
+        "quoteChecksum": "d837c0c93a11e5cc3073b0420ea3f1334be6ce130129ec27d720c777e5eb0a41"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bar.svg",
+        "who": "guy2",
+        "caption": "Swipe. Swipe. \"So many options.\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "swipe, swipe, \"so many options\"",
+        "takeaway": "Extend the same illusion of abundance to dating apps."
+      },
+      "resolvedAssets": {
+        "who": "guy2",
+        "stage": "assets/scenes/bar.svg"
+      }
+    },
+    {
+      "id": "scene-138",
+      "narration": "There's no need to rush, you think — keep swiping, better people will come. The result: you end up choosing no one, or not liking anyone even when you do meet up.",
+      "purpose": "Land the punchline: endless swiping ends in nobody chosen.",
+      "emotion": "sarcastic",
+      "viewerFocus": "endless swiping, no one chosen",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 4083,
+        "endWord": 4123,
+        "quoteChecksum": "389e646e18b4ea4fbbab10baefc9fdd4b76f080e0e92d248c1c091786d0f69f4"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "Endless swiping, no one chosen"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "endless swiping, no one chosen",
+        "takeaway": "Land the punchline: endless swiping ends in nobody chosen."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-139",
+      "narration": "From a game theory perspective, social media has multiplied the number of players a thousandfold, while the prizes at the top stay the same — the odds of winning are practically zero.",
+      "purpose": "State the video's sharpest closing statistic about the odds.",
+      "emotion": "urgent",
+      "viewerFocus": "a thousand times the players",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 4124,
+        "endWord": 4155,
+        "quoteChecksum": "0fa1ff5a72cc24f51d30353c430098ed3eb80d56c30808d8d2407e56f0972607"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "×1000 PLAYERS, SAME PRIZES",
+        "who": "characters/cat_surprised"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a thousand times the players",
+        "takeaway": "State the video's sharpest closing statistic about the odds."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-140",
+      "narration": "But people still play, because they see everyone else still playing.",
+      "purpose": "Explain why people keep playing a game they can't win.",
+      "emotion": "sarcastic",
+      "viewerFocus": "everyone's still playing, so...",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 4156,
+        "endWord": 4165,
+        "quoteChecksum": "630d218f00c216b87296539e660b7eb0ab29cb65552046bdf3285565ba25668a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "guy2",
+        "keyword": "Everyone else is still playing"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "everyone's still playing, so...",
+        "takeaway": "Explain why people keep playing a game they can't win."
+      },
+      "resolvedAssets": {
+        "who": "guy2"
+      }
+    },
+    {
+      "id": "scene-141",
+      "narration": "Actually, after watching the source video and writing this script, we realized game theory doesn't hand you an answer right away — it only teaches you how to ask the right question.",
+      "purpose": "Reframe the whole video's real takeaway: a way of asking, not an answer.",
+      "emotion": "neutral",
+      "viewerFocus": "the real takeaway",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 4166,
+        "endWord": 4198,
+        "quoteChecksum": "7c2be93630bfa9f82ea67aac0f7af9293a2ac7901e7f7e3723a18e5e3ee2dbdf"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "The real takeaway",
+        "body": "Game theory won't hand you an answer"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the real takeaway",
+        "takeaway": "Reframe the whole video's real takeaway: a way of asking, not an answer."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-142",
+      "narration": "For any situation, ask yourself: who are the players, what are the rules, and what's the reward? From there, you can see the bigger picture — where things stand, and where they're headed.",
+      "purpose": "Restate the three-part framework as the video's takeaway tool.",
+      "emotion": "neutral",
+      "viewerFocus": "the framework, one more time",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 4199,
+        "endWord": 4236,
+        "quoteChecksum": "1e861075beb996e29f1a4be92a0c6d879d516f3acb213bd396fc2a24bc51a35a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Players|Rules|Rewards",
+        "icons": "people/person|props/book|props/trophy"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the framework, one more time",
+        "takeaway": "Restate the three-part framework as the video's takeaway tool."
+      },
+      "resolvedAssets": {
+        "icon0": "people/person",
+        "icon1": "props/book",
+        "icon2": "props/trophy"
+      }
+    },
+    {
+      "id": "scene-143",
+      "narration": "Dating is just one example. This same framework applies to the US-Iran tension, the war in Ukraine, or why this could be Vietnam's moment to break through.",
+      "purpose": "Show the framework generalizing beyond dating to world events.",
+      "emotion": "neutral",
+      "viewerFocus": "the framework, applied elsewhere",
+      "visualGrammar": "DIAGRAM",
+      "sourceRange": {
+        "startWord": 4237,
+        "endWord": 4272,
+        "quoteChecksum": "eee14840513cc5ae82ac684b8cc2a080f932b1e101f7f6ffea04c56db49fdcc4"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "US-Iran tension|War in Ukraine|Vietnam's opening",
+        "icons": "props/round_table|finance/loss|finance/trending_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the framework, applied elsewhere",
+        "takeaway": "Show the framework generalizing beyond dating to world events."
+      },
+      "resolvedAssets": {
+        "icon0": "props/round_table",
+        "icon1": "finance/loss",
+        "icon2": "finance/trending_up"
+      }
+    },
+    {
+      "id": "scene-144",
+      "narration": "Okay, that's enough for now, let's stop here. What do you think — is the game of saving face affecting your own dating and marriage decisions? Or is it something else? Let us know in the comments.",
+      "purpose": "Wrap the video and invite viewer discussion.",
+      "emotion": "happy",
+      "viewerFocus": "the closing question",
+      "visualGrammar": "SOLO",
+      "sourceRange": {
+        "startWord": 4273,
+        "endWord": 4306,
+        "quoteChecksum": "2577685acb82c26a8b292fcea60ec3d62c611064207363741fa56b5837bc626d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "keyword": "What's really driving your choices?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the closing question",
+        "takeaway": "Wrap the video and invite viewer discussion."
+      },
+      "resolvedAssets": {
+        "who": "host"
+      }
+    },
+    {
+      "id": "scene-145",
+      "narration": "Don't forget to subscribe so you don't miss any videos",
+      "purpose": "End-card: subscribe CTA, mirroring the opening branding beat (Chekhov's gun).",
+      "emotion": "happy",
+      "viewerFocus": "the sign-off",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 4307,
+        "endWord": 4316,
+        "quoteChecksum": "09fbcde63f2a51253f32f139fb8082dd10e50e43ad7cca23326f285a54501819"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "seatB": "girl4",
+        "caption": "Subscribe so you don't miss out"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the sign-off",
+        "takeaway": "End-card: subscribe CTA, mirroring the opening branding beat (Chekhov's gun)."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "seatB": "girl4",
+        "stage": "assets/scenes/library.svg"
+      }
+    }
+  ]
+}
