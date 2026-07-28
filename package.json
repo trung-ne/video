@@ -21,7 +21,7 @@
     "asset-status": "npx ts-node scripts/asset-status.ts",
     "typecheck": "npx tsc --noEmit",
     "test": "npx ts-node scripts/test.ts",
-    "check": "npm run typecheck && npm test"
+    "check": "npm run typecheck && npm test && python -m unittest scripts/test_align_words.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",

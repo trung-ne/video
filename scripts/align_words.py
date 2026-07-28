@@ -22,6 +22,7 @@ import os
 import sys
 import re
 import unicodedata
+from difflib import SequenceMatcher
 
 
 def normalize_word(value):
@@ -35,21 +36,23 @@ def transcript_words(text):
 
 def attach_transcript_indices(aligned, transcript):
     expected = transcript_words(transcript)
-    cursor = 0
-    for item in aligned:
-        token = normalize_word(item["word"])
-        match_index = None
-        for index in range(cursor, min(len(expected), cursor + 8)):
-            if normalize_word(expected[index]) == token:
-                match_index = index
-                break
+    expected_norm = [normalize_word(word) for word in expected]
+    aligned_norm = [normalize_word(item["word"]) for item in aligned]
+    matcher = SequenceMatcher(None, expected_norm, aligned_norm, autojunk=False)
+    index_map = {}
+    for block in matcher.get_matching_blocks():
+        for offset in range(block.size):
+            index_map[block.b + offset] = block.a + offset
+    previous = None
+    for aligned_index, item in enumerate(aligned):
+        match_index = index_map.get(aligned_index)
+        item["whisperConfidence"] = item.get("confidence")
+        item["wordIndex"] = match_index
         if match_index is None:
-            item["wordIndex"] = None
             item["confidence"] = 0.0
         else:
-            item["wordIndex"] = match_index
-            item["confidence"] = 1.0 if match_index == cursor else 0.8
-            cursor = match_index + 1
+            item["confidence"] = 1.0 if previous is None or match_index == previous + 1 else 0.8
+            previous = match_index
     return aligned
 
 
