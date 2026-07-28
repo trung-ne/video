@@ -8,6 +8,14 @@ import { runQualityCheck, runStoryboardCheck } from "../src/ai/qualityCheck";
 import { stageMatchesSetting } from "../src/engine/stageRegistry";
 import { critiqueSceneBriefs } from "../src/ai/visualCritic";
 import { validateTimeline } from "../src/ai/validateTimeline";
+import {
+  checkSceneIdAlignment,
+  checkCompiledTimings,
+  checkTimelineSpansAudio,
+  checkRenderMatchesTimeline,
+  checkWordAlignment,
+  hasBlocker,
+} from "../src/engine/timingIntegrity";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -111,7 +119,9 @@ test("schema v2 compiler preserves semantic background and resolved assets", () 
       unresolvedAssetRequests: [],
     }],
   };
-  const timeline = compileStoryboard(storyboard);
+  // No sourceRange and no durations: this fixture is genuinely estimate-timed and
+  // only exercises grammar expansion, so it opts out of the timing invariant.
+  const timeline = compileStoryboard(storyboard, { allowEstimatedTiming: true });
   assert.strictEqual(timeline.scenes[0].backgroundSrc, "#FFFFFF");
   assert.deepStrictEqual(timeline.scenes[0].semanticAssetIds, ["finance/money", "finance/house"]);
   assert.strictEqual(timeline.scenes[0].visualFingerprint, "compare|diagram|0|none|contrast");
@@ -127,7 +137,8 @@ test("schema v2 compiler rejects missing semantic assets instead of using cats",
       slots: { cause: "cause", effect: "effect" },
     }],
   };
-  assert.throws(() => compileStoryboard(storyboard), /Missing semantic asset/);
+  // allowEstimatedTiming so the asset assertion is what fails, not the timing gate.
+  assert.throws(() => compileStoryboard(storyboard, { allowEstimatedTiming: true }), /Missing semantic asset/);
 });
 
 test("semantic storyboard gate rejects generic or unresolved planning", () => {
@@ -278,6 +289,191 @@ test("schema v2 validation requires rendered-intent metadata", () => {
   });
   assert.ok(result.errors.some((error) => error.includes("visualFingerprint")));
   assert.ok(result.errors.some((error) => error.includes("focalOccupancyTarget")));
+});
+
+// ── Timing integrity (P0) ───────────────────────────────────
+// Regression guard for the v5-codex bug: durations keyed `v4-NNN` against a
+// storyboard rebuilt as `scene-NNN` meant every scene compiled from a word-count
+// estimate — timeline 1124s vs a 1513s voice track, rendered and shipped
+// out-of-sync while every other gate reported green.
+
+test("blocks a stale durations.json whose scene ids do not match the storyboard", () => {
+  const issues = checkSceneIdAlignment(
+    ["scene-001", "scene-002", "scene-003"],
+    ["v4-001", "v4-002", "v4-003"],
+  );
+  assert.ok(hasBlocker(issues), "id scheme mismatch must be a blocker");
+  assert.strictEqual(issues[0].code, "TIMING_ID_MISSING");
+  assert.match(issues[0].hint ?? "", /stale/i);
+});
+
+test("blocks compiling with no TTS durations at all", () => {
+  const issues = checkSceneIdAlignment(["scene-001"], []);
+  assert.ok(hasBlocker(issues));
+  assert.strictEqual(issues[0].code, "TIMING_NO_DURATIONS");
+});
+
+test("accepts matching scene ids across storyboard, durations and timeline", () => {
+  const ids = ["scene-001", "scene-002"];
+  assert.deepStrictEqual(checkSceneIdAlignment(ids, ids, ids), []);
+});
+
+test("flags durations entries that match no storyboard scene", () => {
+  const issues = checkSceneIdAlignment(["scene-001"], ["scene-001", "scene-999"]);
+  assert.ok(hasBlocker(issues));
+  assert.strictEqual(issues[0].code, "TIMING_ID_ORPHAN");
+});
+
+test("blocks a timeline shorter than its narration track", () => {
+  const issues = checkTimelineSpansAudio(1124.27, 1513.14, { sceneCount: 139 });
+  assert.ok(hasBlocker(issues));
+  assert.strictEqual(issues[0].code, "TIMING_TIMELINE_SHORT");
+  assert.match(issues[0].message, /25\.7%/);
+});
+
+test("tolerates accumulated per-scene rounding, but not a real desync", () => {
+  // Measured drift on video-003-tai-sao-eng-v5-claude: 0.237s over 145 scenes.
+  assert.deepStrictEqual(checkTimelineSpansAudio(1434.23, 1434.47, { sceneCount: 145 }), []);
+  // The scene-count budget is 15 frames (0.5s) here, so a ~1s end-of-video
+  // desync is caught — a flat 1.0s tolerance would have passed it.
+  assert.ok(hasBlocker(checkTimelineSpansAudio(1433.5, 1434.47, { sceneCount: 145 })));
+});
+
+test("blocks a rendered MP4 that does not match its timeline", () => {
+  assert.ok(hasBlocker(checkRenderMatchesTimeline(1124.31, 1513.14)));
+  assert.deepStrictEqual(checkRenderMatchesTimeline(1434.28, 1434.23), []);
+});
+
+test("blocks word alignment that belongs to a different audio file", () => {
+  const issues = checkWordAlignment([{ startSec: 0, endSec: 1600, wordIndex: 0 }], 1434.47);
+  assert.ok(hasBlocker(issues));
+  assert.strictEqual(issues[0].code, "TIMING_WORDS_OVERRUN");
+});
+
+test("word alignment severity follows the axis it feeds", () => {
+  const short = [{ startSec: 0, endSec: 700, wordIndex: 0 }];
+  // Words are the scene-boundary source → short coverage is fatal.
+  assert.ok(hasBlocker(checkWordAlignment(short, 1434.47, { wordsProvideTiming: true })));
+  // Words only anchor beats → degraded beats, not a broken video.
+  const beatsOnly = checkWordAlignment(short, 1434.47, { wordsProvideTiming: false });
+  assert.ok(beatsOnly.length > 0 && !hasBlocker(beatsOnly));
+});
+
+test("flags aligned words that carry no transcript index", () => {
+  // The real defect in every words.json on disk: 99.95% endSec coverage but
+  // 0-2.2% usable wordIndex, so buildAlignedSceneTimings returns an empty map.
+  const unindexed = Array.from({ length: 100 }, (_, i) => ({
+    startSec: i * 14, endSec: i * 14 + 13, wordIndex: null,
+  }));
+  const codes = checkWordAlignment(unindexed, 1400).map((i) => i.code);
+  assert.ok(codes.includes("TIMING_WORDS_UNINDEXED"));
+});
+
+test("accepts word alignment covering the whole track", () => {
+  assert.deepStrictEqual(checkWordAlignment([{ startSec: 0, endSec: 1430, wordIndex: 0 }], 1434.47), []);
+});
+
+test("warns on proportional drift that stays inside the absolute budget", () => {
+  // Short track: 0.4s is within the 0.5s budget but 0.4% of a 100s video.
+  const issues = checkTimelineSpansAudio(99.6, 100.0, { sceneCount: 20 });
+  assert.strictEqual(issues.length, 1);
+  assert.strictEqual(issues[0].severity, "WARNING");
+  assert.strictEqual(issues[0].code, "TIMING_TIMELINE_DRIFT_PROPORTIONAL");
+});
+
+test("detects duplicate ids inside durations.json", () => {
+  // Set comparison alone cannot see this: two entries for one id look like one.
+  const issues = checkSceneIdAlignment(["a", "b"], ["a", "a", "b"]);
+  assert.ok(hasBlocker(issues));
+  assert.ok(issues.some((i) => i.code === "TIMING_DURATION_ID_DUPLICATE"));
+});
+
+test("detects gaps, overlaps and a wrong total in compiled timings", () => {
+  const ids = ["a", "b"];
+  assert.deepStrictEqual(
+    checkCompiledTimings([{ id: "a", startFrame: 0, frames: 30 }, { id: "b", startFrame: 30, frames: 20 }], ids, 50),
+    [],
+  );
+  const gap = checkCompiledTimings(
+    [{ id: "a", startFrame: 0, frames: 30 }, { id: "b", startFrame: 45, frames: 20 }], ids, 65);
+  assert.ok(gap.some((i) => i.code === "TIMING_GAP"));
+  const overlap = checkCompiledTimings(
+    [{ id: "a", startFrame: 0, frames: 30 }, { id: "b", startFrame: 20, frames: 20 }], ids, 40);
+  assert.ok(overlap.some((i) => i.code === "TIMING_OVERLAP"));
+  const badTotal = checkCompiledTimings(
+    [{ id: "a", startFrame: 0, frames: 30 }, { id: "b", startFrame: 30, frames: 20 }], ids, 999);
+  assert.ok(badTotal.some((i) => i.code === "TIMING_TOTAL_MISMATCH"));
+});
+
+test("detects scenes reordered after TTS, which keeps their old start frames", () => {
+  const issues = checkCompiledTimings(
+    [{ id: "b", startFrame: 0, frames: 30 }, { id: "a", startFrame: 30, frames: 20 }], ["a", "b"], 50);
+  assert.ok(issues.some((i) => i.code === "TIMING_ORDER_MISMATCH"));
+});
+
+// ── Compiler-level enforcement (the invariant lives in the engine) ───────────
+
+function timingFixture(ids: string[]): Storyboard {
+  return {
+    schemaVersion: 1, fps: 30, width: 1920, height: 1080,
+    scenes: ids.map((id) => ({
+      id, narration: "one two three four five", purpose: "p", emotion: "neutral",
+      viewerFocus: "f", visualGrammar: "SOLO", slots: { keyword: "k" },
+    })),
+  } as Storyboard;
+}
+
+test("compiler refuses estimated timing by default (the v5-codex signature)", () => {
+  // Storyboard keyed scene-NNN, durations keyed v4-NNN: the exact incident.
+  assert.throws(
+    () => compileStoryboard(timingFixture(["scene-001", "scene-002"]), {
+      durations: [
+        { id: "v4-001", startFrame: 0, frames: 300 },
+        { id: "v4-002", startFrame: 300, frames: 300 },
+      ],
+    }),
+    /no measured audio timing/,
+  );
+});
+
+test("compiler accepts durations and words together — they are different axes", () => {
+  const timeline = compileStoryboard(timingFixture(["scene-001", "scene-002"]), {
+    durations: [
+      { id: "scene-001", startFrame: 0, frames: 300 },
+      { id: "scene-002", startFrame: 300, frames: 240 },
+    ],
+    words: [{ wordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 }],
+  });
+  assert.strictEqual(timeline.durationInFrames, 540);
+});
+
+test("compiler rejects interleaving two absolute-frame timing systems", () => {
+  const sb = timingFixture(["s1", "s2"]);
+  sb.scenes[0].sourceRange = { startWord: 0, endWord: 1, quoteChecksum: "x" };
+  sb.scenes[1].sourceRange = { startWord: 2, endWord: 3, quoteChecksum: "y" };
+  assert.throws(
+    () => compileStoryboard(sb, {
+      // s2 measured by TTS, s1 only derivable from words → two boundary systems.
+      durations: [{ id: "s2", startFrame: 300, frames: 240 }],
+      words: [
+        { wordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 },
+        { wordIndex: 1, word: "two", startSec: 0.4, endSec: 0.6 },
+        { wordIndex: 2, word: "three", startSec: 1.0, endSec: 1.2 },
+        { wordIndex: 3, word: "four", startSec: 1.3, endSec: 1.6 },
+      ],
+    }),
+    /Mixed scene-boundary timing sources/,
+  );
+});
+
+test("compiler derives durationInFrames from max end, not array order", () => {
+  const timeline = compileStoryboard(timingFixture(["a", "b"]), {
+    durations: [
+      { id: "a", startFrame: 0, frames: 100 },
+      { id: "b", startFrame: 100, frames: 50 },
+    ],
+  });
+  assert.strictEqual(timeline.durationInFrames, 150);
 });
 
 let failures = 0;

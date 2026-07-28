@@ -4,14 +4,32 @@
  *   npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
  *       --out projects/<id>/timeline.json [--durations projects/<id>/durations.json] \
  *       [--words projects/<id>/words.json] [--audio audio/<id>/voice.wav]
+ *
+ * Timing integrity is a hard gate here (see src/engine/timingIntegrity.ts): scene
+ * ids must agree across storyboard/durations, word alignment must belong to this
+ * audio, and the compiled timeline must span the voice track. Compiling from
+ * word-count estimates silently desyncs the whole video, so it is refused rather
+ * than warned about. `--no-timing-gate` opts out for scratch/preview compiles.
  */
 import * as fs from "fs";
+import * as path from "path";
+import { execFileSync } from "child_process";
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
+import { SceneTimeline } from "../src/types/scene";
 import { AlignedWord } from "../src/types/storyboard";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
+import {
+  checkSceneIdAlignment,
+  checkTimelineSpansAudio,
+  checkWordAlignment,
+  formatTimingIssues,
+  hasBlocker,
+  TimingIssue,
+} from "../src/engine/timingIntegrity";
 
 const args = process.argv.slice(2);
 const getArg = (f: string) => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : undefined; };
+const timingGate = !args.includes("--no-timing-gate");
 
 const sbPath = getArg("--storyboard");
 const outPath = getArg("--out") ?? "timeline.json";
@@ -24,10 +42,12 @@ if (getArg("--audio")) sb.audio = getArg("--audio");
 printQualityReport(runStoryboardCheck(sb));
 
 let durations: SceneTiming[] | undefined;
+let durationsTotalSec: number | undefined;
 const dPath = getArg("--durations");
 if (dPath && fs.existsSync(dPath)) {
   const d = JSON.parse(fs.readFileSync(dPath, "utf-8"));
   durations = (d.scenes ?? []).map((s: any) => ({ id: s.id, startFrame: s.startFrame, frames: s.frames }));
+  durationsTotalSec = typeof d.totalSec === "number" ? d.totalSec : undefined;
 }
 
 let words: AlignedWord[] | undefined;
@@ -37,7 +57,106 @@ if (wPath && fs.existsSync(wPath)) {
   words = Array.isArray(w) ? w : w.words;
 }
 
-const timeline = compileStoryboard(sb, { durations, words });
+/** Measured length of the actual voice track, or undefined if not probeable. */
+function probeAudioSeconds(publicRelPath: string | undefined): number | undefined {
+  if (!publicRelPath) return undefined;
+  const candidates = [
+    path.resolve("public", publicRelPath),
+    path.resolve(publicRelPath),
+  ];
+  const wav = candidates.find((p) => fs.existsSync(p));
+  if (!wav) return undefined;
+  try {
+    const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
+    const out = execFileSync(ffprobePath, [
+      "-v", "error", "-show_entries", "format=duration", "-of", "json", wav,
+    ], { encoding: "utf8" });
+    const sec = Number(JSON.parse(out)?.format?.duration);
+    return Number.isFinite(sec) ? sec : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const probedAudioSec = probeAudioSeconds(sb.audio);
+const audioSeconds = probedAudioSec ?? durationsTotalSec;
+
+const preIssues: TimingIssue[] = [];
+// With no durations.json, aligned words are the only possible boundary source.
+const wordsProvideTiming = !(durations ?? []).length;
+
+if (timingGate) {
+  preIssues.push(...checkSceneIdAlignment(
+    sb.scenes.map((s: any) => s.id),
+    (durations ?? []).map((d) => d.id),
+    undefined,
+    { wordsProvideTiming },
+  ));
+
+  // A voice.wav that disagrees with durations.json means one of them is stale.
+  if (probedAudioSec !== undefined && durationsTotalSec !== undefined
+      && Math.abs(probedAudioSec - durationsTotalSec) > 1.0) {
+    preIssues.push({
+      code: "TIMING_AUDIO_STALE",
+      severity: "BLOCKER",
+      message:
+        `voice.wav is ${probedAudioSec.toFixed(2)}s but durations.json reports ${durationsTotalSec.toFixed(2)}s.`,
+      hint: "One artifact is left over from an earlier TTS run — regenerate both together.",
+    });
+  }
+
+  if (audioSeconds !== undefined) {
+    preIssues.push(...checkWordAlignment(words, audioSeconds, { wordsProvideTiming }));
+  }
+
+  if (preIssues.length) {
+    console.error(`\n⏱️  TIMING INTEGRITY\n${formatTimingIssues(preIssues)}\n`);
+    if (hasBlocker(preIssues)) {
+      console.error("❌ Compile refused: timing artifacts disagree. Fix them — do NOT compile from estimates.");
+      console.error("   (override for scratch/preview only: --no-timing-gate)\n");
+      process.exit(1);
+    }
+  }
+} else {
+  console.warn("\n⚠️  --no-timing-gate: scene timing may be estimated. Not valid for production.\n");
+}
+
+// The compiler enforces the same invariant independently (it is the engine-level
+// backstop for callers that never come through this CLI). The pre-checks above
+// exist to explain *why* before it throws.
+let timeline: SceneTimeline;
+try {
+  timeline = compileStoryboard(sb, { durations, words, allowEstimatedTiming: !timingGate });
+} catch (error) {
+  console.error(`\n❌ Compile refused: ${(error as Error).message}\n`);
+  process.exit(1);
+}
+
+if (timingGate && audioSeconds !== undefined) {
+  const timelineSeconds = timeline.durationInFrames / timeline.fps;
+  const postIssues = [
+    ...checkTimelineSpansAudio(timelineSeconds, audioSeconds, {
+      sceneCount: timeline.scenes.length,
+      fps: timeline.fps,
+    }),
+    ...checkSceneIdAlignment(
+      sb.scenes.map((s: any) => s.id),
+      (durations ?? []).map((d) => d.id),
+      timeline.scenes.map((s) => s.id),
+    ).filter((i) => i.code === "TIMING_ID_TIMELINE_DRIFT"),
+  ];
+  if (postIssues.length) {
+    console.error(`\n⏱️  TIMING INTEGRITY (post-compile)\n${formatTimingIssues(postIssues)}\n`);
+    if (hasBlocker(postIssues)) {
+      console.error("❌ Compile refused: the compiled timeline does not match the narration track.\n");
+      process.exit(1);
+    }
+  }
+}
+
 fs.writeFileSync(outPath, JSON.stringify(timeline, null, 2));
 console.log(`✅ Compiled storyboard → ${outPath}`);
 console.log(`   Scenes: ${timeline.scenes.length} | Duration: ${timeline.durationInFrames} frames (${(timeline.durationInFrames / timeline.fps).toFixed(1)}s)`);
+if (audioSeconds !== undefined) {
+  console.log(`   Timing: matches voice track ${audioSeconds.toFixed(1)}s (drift ${(timeline.durationInFrames / timeline.fps - audioSeconds).toFixed(2)}s)`);
+}

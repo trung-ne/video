@@ -15,6 +15,12 @@ import { Scene, SceneTimeline, SceneEntity } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
+import {
+  SceneTimingSource,
+  checkCompiledTimings,
+  formatTimingIssues,
+  hasBlocker,
+} from "./timingIntegrity";
 
 export interface SceneTiming {
   id: string;
@@ -27,6 +33,14 @@ export interface CompileStoryboardOpts {
   words?: AlignedWord[];     // from projects/<id>/words.json (whisper)
   background?: string;
   fallbackFramesPerWord?: number; // when no TTS timing (default 8)
+  /**
+   * Permit scenes timed by word-count estimate instead of measured audio.
+   * Defaults to false: estimated timing desyncs the whole video against the
+   * voice track (see src/engine/timingIntegrity.ts for the incident this
+   * prevents), so production must opt out explicitly and visibly. A boolean
+   * rather than a mode string — it cannot be typo'd into a permissive value.
+   */
+  allowEstimatedTiming?: boolean;
 }
 
 function buildAlignedSceneTimings(
@@ -306,20 +320,54 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
   const timingById = new Map((opts.durations ?? []).map((d) => [d.id, d]));
   const alignedTimingById = buildAlignedSceneTimings(sb, opts.words, fps);
 
-  // Build per-scene timing: prefer TTS durations; else estimate from word count.
+  // Build per-scene timing, recording WHICH source set each boundary. The source
+  // is the thing production cares about: measured audio vs a guess.
   let cursor = 0;
+  const sources: SceneTimingSource[] = [];
   const timings: SceneTiming[] = sb.scenes.map((brief) => {
-    const known = timingById.get(brief.id) ?? alignedTimingById.get(brief.id);
-    if (known) {
-      cursor = known.startFrame + known.frames;
-      return known;
+    const measured = timingById.get(brief.id);
+    if (measured) {
+      sources.push("durations");
+      cursor = measured.startFrame + measured.frames;
+      return measured;
     }
+    const aligned = alignedTimingById.get(brief.id);
+    if (aligned) {
+      sources.push("aligned-words");
+      cursor = aligned.startFrame + aligned.frames;
+      return aligned;
+    }
+    sources.push("estimated");
     const wordCount = brief.narration.trim().split(/\s+/).length;
     const frames = Math.max(90, wordCount * fpw);
     const t = { id: brief.id, startFrame: cursor, frames };
     cursor += frames;
     return t;
   });
+
+  // `durations` supplies absolute start frames from the TTS concat; aligned words
+  // supply them from whisper. Two systems of absolute frames cannot be
+  // interleaved — the boundary between them gaps or overlaps while per-scene
+  // numbers each look fine. (Supplying `words` *alongside* `durations` is normal:
+  // durations set boundaries, words anchor beats. That is not this case.)
+  const measuredSources = [...new Set(sources.filter((s) => s !== "estimated"))];
+  if (measuredSources.length > 1) {
+    throw new Error(
+      `Mixed scene-boundary timing sources (${measuredSources.join(" + ")}). ` +
+      `A video must take every scene boundary from one source.`
+    );
+  }
+
+  const estimatedIds = sb.scenes.filter((_, i) => sources[i] === "estimated").map((s) => s.id);
+  if (estimatedIds.length && !opts.allowEstimatedTiming) {
+    const shown = estimatedIds.slice(0, 3).join(", ");
+    throw new Error(
+      `${estimatedIds.length}/${sb.scenes.length} scenes have no measured audio timing ` +
+      `(${shown}${estimatedIds.length > 3 ? `, … (+${estimatedIds.length - 3})` : ""}). ` +
+      `Compiling from word-count estimates desyncs the video against the voice track. ` +
+      `Run TTS first, or pass allowEstimatedTiming for a diagnostic/preview build.`
+    );
+  }
 
   const ctx: GrammarContext = { cast: sb.cast, index: 0, strict: sb.schemaVersion === 2 };
   const scenes: Scene[] = sb.scenes.map((brief, i) =>
@@ -331,7 +379,21 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     enrichBackgrounds(scenes);
   }
 
-  const totalFrames = scenes.length ? scenes[scenes.length - 1].startFrame + scenes[scenes.length - 1].durationFrames : 0;
+  // Max end, not the last array element: reordering scenes after TTS would
+  // otherwise yield a plausible total while every scene sits at its old
+  // absolute start frame.
+  const totalFrames = scenes.reduce((max, s) => Math.max(max, s.startFrame + s.durationFrames), 0);
+
+  // Structural invariants enforced in the engine, not left to whoever remembers
+  // to run the quality gate.
+  const structural = checkCompiledTimings(
+    scenes.map((s) => ({ id: s.id, startFrame: s.startFrame, frames: s.durationFrames })),
+    sb.scenes.map((brief) => brief.id),
+    totalFrames,
+  );
+  if (hasBlocker(structural)) {
+    throw new Error(`Compiled scene timing is inconsistent:\n${formatTimingIssues(structural)}`);
+  }
 
   // SceneTimeline pins fps/width/height to literal types (30/1920/1080); this
   // project only ever renders at that spec, so assert rather than widen.
