@@ -808,27 +808,56 @@ function readWords(projectDir: string): any[] | undefined {
   return Array.isArray(w) ? w : w.words;
 }
 
-// --- TTS: generate audio per scene, patch timeline durations ---
-async function runTTS(timeline: any, projectDir: string, storyboard?: Storyboard): Promise<void> {
-  if (!Array.isArray(timeline.scenes) || timeline.scenes.length === 0) {
-    console.warn("⚠️  TTS: timeline có 0 scenes, bỏ qua TTS");
-    return;
+interface TtsChunk { id: string; text: string }
+
+/**
+ * One TTS chunk per SCENE, for both schema versions.
+ *
+ * v2 used to chunk by section, which left scene boundaries derivable only from
+ * whisper word indices — and those are 0-2.2% populated in practice, so every
+ * v2 scene silently fell back to a word-count estimate. Chunking per scene gives
+ * both routes the same invariant: durations.json is keyed by scene id, so
+ * boundaries are measured and word alignment is free to fail without breaking
+ * timing (it then only degrades beat anchoring).
+ */
+function ttsChunksFromStoryboard(storyboard: Storyboard): TtsChunk[] {
+  const chunks = storyboard.scenes.map((scene) => ({
+    id: scene.id,
+    text: (scene.narration ?? "").replace(/\s+/g, " ").trim(),
+  }));
+  // A scene with no narration gets no audio, so it can never appear in
+  // durations.json — it would surface later as an unsatisfiable TIMING_ID_MISSING.
+  // Fail here instead. Authored silent beats need an explicit duration field;
+  // inventing one while claiming the timeline matches the audio is the exact
+  // class of bug this pipeline is being hardened against.
+  const silent = chunks.filter((c) => !c.text.length).map((c) => c.id);
+  if (silent.length) {
+    throw new Error(
+      `${silent.length} scene(s) have empty narration (${silent.slice(0, 3).join(", ")}). ` +
+      `Silent scenes need an authored duration and real silence in the voice track; ` +
+      `that is not supported yet, so they cannot be timed.`
+    );
   }
+  return chunks;
+}
 
-  // Extract narrations from scenes
-  const scenes = storyboard?.schemaVersion === 2 && storyboard.sections?.length
-    ? storyboard.sections.map((section) => ({
-        id: section.id,
-        text: storyboard.scenes
-          .filter((scene) => scene.sectionId === section.id)
-          .map((scene) => scene.narration.trim())
-          .join(" "),
-      }))
-    : timeline.scenes.map((s: any) => ({
-        id: s.id ?? `scene-${s.startFrame ?? 0}`,
-        text: (s.narration ?? s.label ?? "").replace(/^\[.*?\]\s*/, "").trim(),
-      }));
+/** Chunks from an AI-authored timeline — `--legacy-direct` only. */
+function ttsChunksFromTimeline(timeline: any): TtsChunk[] {
+  return timeline.scenes.map((s: any) => ({
+    id: s.id ?? `scene-${s.startFrame ?? 0}`,
+    text: (s.narration ?? s.label ?? "").replace(/^\[.*?\]\s*/, "").trim(),
+  }));
+}
 
+/**
+ * Shared TTS execution: chunks → voice.wav + durations.json, mastered and copied
+ * into public/ for Remotion. Returns the measured frames per chunk id and the
+ * public audio ref.
+ */
+async function runTTSChunks(
+  scenes: TtsChunk[],
+  projectDir: string,
+): Promise<{ frameMap: Record<string, number>; publicAudio: string }> {
   const ttsDir = projectDir;
   const scenesJsonPath = path.join(ttsDir, "tts_scenes.json");
   fs.mkdirSync(ttsDir, { recursive: true });
@@ -864,21 +893,6 @@ async function runTTS(timeline: any, projectDir: string, storyboard?: Storyboard
     frameMap[s.id] = s.frames;
   }
 
-  // Patch timeline: set each scene's durationFrames from actual TTS duration
-  let cursor = 0;
-  let patchedCount = 0;
-  for (const scene of timeline.scenes) {
-    const sid = scene.id ?? `scene-${scene.startFrame ?? 0}`;
-    scene.startFrame = cursor;
-    if (frameMap[sid] !== undefined) {
-      scene.durationFrames = frameMap[sid];
-      patchedCount++;
-    }
-    // else: keep AI-estimated duration as fallback
-    cursor += scene.durationFrames ?? 150;
-  }
-  timeline.durationInFrames = cursor;
-
   // Master narration before publishing it to Remotion.
   const voiceWav = path.join(ttsDir, "voice.wav");
   const masteredWav = path.join(ttsDir, "voice-mastered.wav");
@@ -899,13 +913,55 @@ async function runTTS(timeline: any, projectDir: string, storyboard?: Storyboard
   fs.copyFileSync(masteredWav, publicVoiceWav);
 
   // Timeline audio ref is relative to public/
-  const relAudio = `audio/${path.basename(ttsDir)}/voice.wav`;
-  timeline.audio = relAudio;
+  const publicAudio = `audio/${path.basename(ttsDir)}/voice.wav`;
 
-  console.log(`\n✅ TTS done: ${patchedCount}/${timeline.scenes.length} scenes patched`);
-  console.log(`   Total: ${cursor} frames (${(cursor / 30).toFixed(1)}s)`);
+  const totalFrames = Object.values(frameMap).reduce((sum, f) => sum + f, 0);
+  console.log(`\n✅ TTS done: ${Object.keys(frameMap).length} chunks`);
+  console.log(`   Total: ${totalFrames} frames (${(totalFrames / 30).toFixed(1)}s)`);
   console.log(`   Audio: ${voiceWav} (+ public/audio/...)`);
-  console.log(`   Timeline ref: ${relAudio}`);
+  console.log(`   Timeline ref: ${publicAudio}`);
+  return { frameMap, publicAudio };
+}
+
+/**
+ * Storyboard route. TTS is driven straight off the storyboard — no provisional
+ * timeline is built first, so there is never an estimate-timed object in memory
+ * or on disk for production to accidentally persist.
+ */
+async function generateTTSFromStoryboard(storyboard: Storyboard, projectDir: string): Promise<string> {
+  const { publicAudio } = await runTTSChunks(ttsChunksFromStoryboard(storyboard), projectDir);
+  return publicAudio;
+}
+
+/**
+ * `--legacy-direct` route: the AI authored scenes directly, so there is no
+ * storyboard to recompile from and durations are patched into the timeline in
+ * place. Any scene TTS did not measure is fatal — keeping the AI's guess is the
+ * second copy of the silent-fallback bug.
+ */
+async function generateTTSFromTimeline(timeline: any, projectDir: string): Promise<void> {
+  const { frameMap, publicAudio } = await runTTSChunks(ttsChunksFromTimeline(timeline), projectDir);
+
+  const unmeasured = timeline.scenes
+    .map((s: any) => s.id ?? `scene-${s.startFrame ?? 0}`)
+    .filter((id: string) => frameMap[id] === undefined);
+  if (unmeasured.length) {
+    throw new Error(
+      `TTS measured no audio for ${unmeasured.length}/${timeline.scenes.length} scenes ` +
+      `(${unmeasured.slice(0, 3).join(", ")}). Refusing to keep the authored estimate — ` +
+      `the video would drift out of sync with the voice track.`
+    );
+  }
+
+  let cursor = 0;
+  for (const scene of timeline.scenes) {
+    const sid = scene.id ?? `scene-${scene.startFrame ?? 0}`;
+    scene.startFrame = cursor;
+    scene.durationFrames = frameMap[sid];
+    cursor += scene.durationFrames;
+  }
+  timeline.durationInFrames = cursor;
+  timeline.audio = publicAudio;
 }
 
 // --- Main ---
@@ -938,6 +994,10 @@ async function main() {
   // classic mode:    transcript → scenes[] (AI writes scenes directly).
   let storyboard: any = null;
   let timeline: any;
+  // True when scene boundaries came from word-count estimates rather than
+  // measured audio. Such an artifact is written under a distinct name and is
+  // refused downstream — it is a preview, not a production timeline.
+  let estimatedTiming = false;
   if (storyboardMode) {
     fs.mkdirSync(projectDir, { recursive: true });
     storyboard = await generateStoryboard(transcript, durationSeconds, projectDir);
@@ -955,31 +1015,46 @@ async function main() {
       fs.writeFileSync(path.join(projectDir, "storyboard.failed.json"), JSON.stringify(storyboard, null, 2));
       throw new Error("Storyboard failed production gate; use --diagnostic only to inspect invalid output.");
     }
-    timeline = compileStoryboard(storyboard, {});
+    // The storyboard is the authored artifact and is always kept, even when the
+    // run cannot produce a production timeline.
     fs.writeFileSync(path.join(projectDir, "storyboard.json"), JSON.stringify(storyboard, null, 2));
-    console.log(`🎬 Storyboard: ${storyboard.scenes?.length ?? 0} briefs → ${timeline.scenes.length} scenes`);
+    console.log(`🎬 Storyboard: ${storyboard.scenes?.length ?? 0} briefs`);
+
+    // TTS runs off the storyboard directly. There is deliberately NO provisional
+    // pre-TTS compile: an estimate-timed timeline must never exist for production
+    // to persist by accident.
+    if (ttsFlag) {
+      const publicAudio = await generateTTSFromStoryboard(storyboard, projectDir);
+      runWordAlignment(projectDir, transcriptInput);
+      const durations = readDurations(projectDir);
+      const words = readWords(projectDir);
+      // Strict: throws unless every scene boundary came from measured audio.
+      timeline = compileStoryboard(storyboard, { durations, words });
+      timeline.audio = publicAudio;
+      console.log(`🎬 Compiled once with locked TTS timing${words ? " + word alignment" : " (approx beats)"}.`);
+    } else {
+      // No TTS. An external --audio file counts as measured only if the project
+      // also supplies a durations manifest (or usable word alignment) to derive
+      // scene boundaries from; otherwise this is a preview build.
+      const durations = readDurations(projectDir);
+      const words = readWords(projectDir);
+      try {
+        timeline = compileStoryboard(storyboard, { durations, words });
+      } catch {
+        timeline = compileStoryboard(storyboard, { durations, words, allowEstimatedTiming: true });
+        estimatedTiming = true;
+      }
+      if (audioInput) timeline.audio = audioInput;
+    }
   } else {
     timeline = await generateTimeline(transcript, durationSeconds);
-  }
-
-  // Step 3.5: TTS — generate audio and patch durations (same folder as timeline)
-  if (ttsFlag && Array.isArray(timeline.scenes)) {
-    await runTTS(timeline, projectDir, storyboard ?? undefined);
-    // Storyboard mode: word-align the voice, then re-compile with LOCKED TTS
-    // timing + word alignment so beat-emphasis lands on the exact spoken word.
-    if (storyboardMode && storyboard) {
-      runWordAlignment(projectDir, transcriptInput);
-      const durations = storyboard.schemaVersion === 2 ? undefined : readDurations(projectDir);
-      const words = readWords(projectDir);
-      timeline = compileStoryboard(storyboard, { durations, words, background: timeline.background });
-      timeline.audio = `audio/${path.basename(projectDir)}/voice.wav`;
-      console.log(`🎬 Storyboard re-compiled with locked timing${words ? " + word alignment" : " (approx beats)"}.`);
+    if (ttsFlag) {
+      await generateTTSFromTimeline(timeline, projectDir);
+    } else {
+      // Legacy direct authoring with no TTS: every duration is the AI's guess.
+      estimatedTiming = true;
+      if (audioInput) timeline.audio = audioInput;
     }
-  }
-
-  // Step 4: Add audio if provided (non-TTS mode)
-  if (audioInput && !ttsFlag) {
-    timeline.audio = audioInput;
   }
 
   // Step 4.5: AUTO CHECK & FIX — after timeline + audio are ready.
@@ -1014,17 +1089,30 @@ async function main() {
   }
 
   // Step 7: Save the SceneTimeline (loadTimeline compiles it at preview/render).
-  fs.writeFileSync(outPath, JSON.stringify(authored, null, 2));
-  if (projectInput) {
+  // The canonical name is reserved for measured timing. An estimate-timed build
+  // goes to `*.estimated.json` and is never registered as the project timeline,
+  // so a later render or publish cannot pick it up by convention.
+  const writePath = estimatedTiming
+    ? outPath.replace(/\.json$/i, ".estimated.json")
+    : outPath;
+  fs.writeFileSync(writePath, JSON.stringify(authored, null, 2));
+  if (projectInput && !estimatedTiming) {
     const manifestPath = path.join(projectDir, "project.json");
     const manifest: ProjectManifest = fs.existsSync(manifestPath)
       ? JSON.parse(fs.readFileSync(manifestPath, "utf8"))
       : createDefaultProjectManifest(path.basename(path.resolve(projectDir)));
     manifest.transcriptPath = path.relative(projectDir, transcriptInput ?? path.join(projectDir, "transcript.txt")) || "transcript.txt";
-    manifest.timelinePath = path.basename(outPath);
+    manifest.timelinePath = path.basename(writePath);
     fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   }
-  console.log(`\n💾 Timeline đã lưu: ${outPath}`);
+  if (estimatedTiming) {
+    console.warn(
+      `\n⚠️  TIMING_ESTIMATED — scene boundaries came from word-count estimates, not audio.` +
+      `\n   Saved as ${path.basename(writePath)} for preview only; render and publish will refuse it.` +
+      `\n   Run with --tts-kokoro (or supply durations.json) to produce a production timeline.`
+    );
+  }
+  console.log(`\n💾 Timeline đã lưu: ${writePath}`);
   console.log(`   Scenes: ${authored.scenes?.length ?? 0}`);
   console.log(`   Duration: ${authored.durationInFrames} frames`);
 

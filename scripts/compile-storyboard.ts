@@ -41,10 +41,20 @@ if (getArg("--audio")) sb.audio = getArg("--audio");
 // Storyboard-level gates (INTENT_REALIZED, BEAT_UNANCHORED) before compiling.
 printQualityReport(runStoryboardCheck(sb));
 
+// A supplied-but-missing path must be an error, not silently `undefined` — a
+// typo'd --durations would otherwise degrade into "no timing supplied".
+function requireFile(flag: string, filePath: string): void {
+  if (!fs.existsSync(filePath)) {
+    console.error(`❌ ${flag} was given but does not exist: ${filePath}`);
+    process.exit(1);
+  }
+}
+
 let durations: SceneTiming[] | undefined;
 let durationsTotalSec: number | undefined;
 const dPath = getArg("--durations");
-if (dPath && fs.existsSync(dPath)) {
+if (dPath) {
+  requireFile("--durations", dPath);
   const d = JSON.parse(fs.readFileSync(dPath, "utf-8"));
   durations = (d.scenes ?? []).map((s: any) => ({ id: s.id, startFrame: s.startFrame, frames: s.frames }));
   durationsTotalSec = typeof d.totalSec === "number" ? d.totalSec : undefined;
@@ -52,7 +62,8 @@ if (dPath && fs.existsSync(dPath)) {
 
 let words: AlignedWord[] | undefined;
 const wPath = getArg("--words");
-if (wPath && fs.existsSync(wPath)) {
+if (wPath) {
+  requireFile("--words", wPath);
   const w = JSON.parse(fs.readFileSync(wPath, "utf-8"));
   words = Array.isArray(w) ? w : w.words;
 }
