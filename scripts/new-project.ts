@@ -162,18 +162,20 @@ console.log(`   └── output.mp4 (rendered later)`);
 console.log(`\n🚀 Next steps:`);
 if (!transcript && !url && idea) {
   console.log(`   1. Edit/write transcript: ${projectPath}/transcript.txt`);
-  console.log(`   2. npx ts-node scripts/generate-timeline.ts --project ${videoId}`);
+  console.log(`   2. npm run generate -- --project ${videoId} --tts-kokoro`);
 } else {
-  console.log(`   1. npx ts-node scripts/generate-timeline.ts --project ${videoId}`);
+  console.log(`   1. npm run generate -- --project ${videoId} --tts-kokoro`);
 }
-console.log(`   2. npm run preview:project -- --project ${videoId}`);
-console.log(`   3. npx ts-node scripts/render.ts --project ${videoId}`);
+console.log(`   2. npm run validate -- projects/${videoId}/timeline.json`);
+console.log(`   3. npm run quality -- projects/${videoId}/timeline.json`);
+console.log(`   4. npm run preview:project -- --project ${videoId}`);
+console.log(`   5. npm run render -- --project ${videoId}`);
 
 if (auto) {
   console.log(`\n⏳ Auto mode: generating timeline...`);
   // Auto-generate timeline (call generate-timeline.ts)
   try {
-    execSync(`npx ts-node scripts/generate-timeline.ts --project ${videoId}`, { stdio: "inherit" });
+    execSync(`npm run generate -- --project ${videoId} --tts-kokoro`, { stdio: "inherit" });
     console.log(`\n✅ Timeline generated. Next: npm run preview:project -- --project ${videoId} or npx ts-node scripts/render.ts --project ${videoId}`);
   } catch (e) {
     console.error(`❌ Auto-generation failed. Generate manually: npx ts-node scripts/generate-timeline.ts --project ${videoId}`);

@@ -37,6 +37,8 @@ def main() -> int:
     parser.add_argument("--subtitle-band-top", type=float, default=0.76)
     parser.add_argument("--config", default="config/reference-quality.json")
     parser.add_argument("--contact-sheet")
+    parser.add_argument("--record-video-path", help="published path to record while auditing a staged video")
+    parser.add_argument("--record-contact-sheet", help="published contact-sheet path to record")
     args = parser.parse_args()
 
     try:
@@ -116,7 +118,7 @@ def main() -> int:
         saturation_values = [row["saturation"] for row in rows]
         edge_values = [row["edges"] for row in rows]
         metrics = {
-            "video": str(video),
+            "video": str(Path(args.record_video_path).resolve()) if args.record_video_path else str(video),
             "sampleSeconds": args.sample_seconds,
             "subtitleBandMaskedFrom": args.subtitle_band_top,
             "sampledFrames": len(rows),
@@ -199,7 +201,10 @@ def main() -> int:
             contact_path = Path(args.contact_sheet).resolve()
             contact_path.parent.mkdir(parents=True, exist_ok=True)
             sheet.save(contact_path, quality=88)
-            metrics["contactSheet"] = str(contact_path)
+            metrics["contactSheet"] = (
+                str(Path(args.record_contact_sheet).resolve())
+                if args.record_contact_sheet else str(contact_path)
+            )
 
     failures = []
     if metrics["saturation"]["mean"] < minimum_saturation:

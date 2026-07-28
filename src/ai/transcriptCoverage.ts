@@ -25,6 +25,11 @@ export function checksumText(value: string): string {
   return createHash("sha256").update(value.normalize("NFC"), "utf8").digest("hex");
 }
 
+/** Stable digest for JSON artifacts. Formatting and line endings do not affect it. */
+export function checksumJson(value: unknown): string {
+  return checksumText(JSON.stringify(value));
+}
+
 export function indexTranscript(transcript: string): IndexedWord[] {
   const words: IndexedWord[] = [];
   const re = /[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu;

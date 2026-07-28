@@ -19,7 +19,7 @@ import { execFileSync } from "child_process";
 import { compileStoryboard, SceneTiming } from "../src/engine/storyboardCompiler";
 import { SceneTimeline } from "../src/types/scene";
 import { AlignedWord } from "../src/types/storyboard";
-import { checksumText } from "../src/ai/transcriptCoverage";
+import { checksumJson } from "../src/ai/transcriptCoverage";
 import { sha256File } from "../src/audio/prepareAudio";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 import {
@@ -150,9 +150,9 @@ const audioAbsolute = sb.audio
 const provenance = {
   audioSeconds,
   audioSha256: audioAbsolute ? sha256File(audioAbsolute) : undefined,
-  storyboardChecksum: checksumText(fs.readFileSync(sbPath, "utf-8")),
-  durationsChecksum: dPath ? checksumText(fs.readFileSync(dPath, "utf-8")) : undefined,
-  wordsChecksum: wPath ? checksumText(fs.readFileSync(wPath, "utf-8")) : undefined,
+  storyboardChecksum: checksumJson(sb),
+  durationsChecksum: dPath ? checksumJson(JSON.parse(fs.readFileSync(dPath, "utf-8"))) : undefined,
+  wordsChecksum: wPath ? checksumJson(JSON.parse(fs.readFileSync(wPath, "utf-8"))) : undefined,
 };
 
 let timeline: SceneTimeline;

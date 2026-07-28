@@ -16,11 +16,16 @@ import * as path from "path";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
 import { checkTimingProvenance, formatTimingIssues, hasBlocker } from "../src/engine/timingIntegrity";
+import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 
 const args = process.argv.slice(2);
-const timelinePath = args[0] ?? "timeline.json";
+const timelinePath = args.find((arg) => !arg.startsWith("--"));
 const autoFix = args.includes("--fix");
 
+if (!timelinePath) {
+  console.error("Usage: npm run quality -- projects/<id>/timeline.json [--fix]");
+  process.exit(2);
+}
 if (!fs.existsSync(timelinePath)) {
   console.error(`❌ File không tồn tại: ${timelinePath}`);
   process.exit(1);
@@ -30,6 +35,13 @@ const timeline = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
 
 // Optional: auto-fix backgrounds before checking
 if (autoFix && Array.isArray(timeline.scenes)) {
+  if (timeline.timingProvenance) {
+    console.error(
+      "Refusing --fix on a provenanced compiled timeline. " +
+      "Fix storyboard.json/storyboard-data.ts and recompile so provenance remains truthful."
+    );
+    process.exit(1);
+  }
   console.log("🔧 Auto-fixing backgrounds...");
   const bgReport = autoFixBackgrounds(timeline);
   printBackgroundFixReport(bgReport);
@@ -46,7 +58,12 @@ printQualityReport(report);
 // estimate-timed timeline is exactly how the v5-codex incident read: 100/100
 // grade A on a video whose audio was 389s longer than its timeline. The grade
 // describes composition; it says nothing about whether the timing is real.
-const timingIssues = checkTimingProvenance(timeline.timingProvenance);
+const timingIssues = [
+  ...checkTimingProvenance(timeline.timingProvenance),
+  ...verifyArtifactInputs(
+    adjacentArtifactInputs(timelinePath, timeline.timingProvenance, { includeWords: true })
+  ),
+];
 const timingUntrusted = hasBlocker(timingIssues);
 if (timingIssues.length) {
   console.log(`⏱️  TIMING PROVENANCE\n${formatTimingIssues(timingIssues)}\n`);

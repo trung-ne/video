@@ -9,14 +9,30 @@ function getArg(flag: string, fallback = ""): string {
 }
 
 const timeline = getArg("--timeline");
-const output = getArg("--out", "output/video.mp4");
-if (!timeline || !fs.existsSync(timeline)) {
-  console.error("Usage: npm run publish -- --timeline projects/<id>/timeline.json --out output/<id>.mp4");
+const project = getArg("--project");
+const projectPath = project
+  ? (fs.existsSync(project) || project.includes("/") || project.includes("\\")
+      ? project
+      : path.join("projects", project))
+  : "";
+const resolvedTimeline = timeline || (projectPath ? path.join(projectPath, "timeline.json") : "");
+const projectId = projectPath ? path.basename(projectPath) : "";
+const output = getArg("--out", projectId ? path.join("output", projectId, "video.mp4") : "");
+if (!resolvedTimeline || !output || !fs.existsSync(resolvedTimeline)) {
+  console.error(
+    "Usage: npm run publish -- --project <id> " +
+    "[--out output/<id>/video.mp4]\n" +
+    "   or: npm run publish -- --timeline projects/<id>/timeline.json --out output/<id>/video.mp4"
+  );
   process.exit(2);
 }
 
 const proxy = output.replace(/\.mp4$/i, ".proxy.mp4");
 const reportPath = output.replace(/\.mp4$/i, ".publish-report.json");
+const publishRunId = `publish-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+const publishRunDir = path.join(path.dirname(output), ".runs", publishRunId);
+const stagedReportPath = path.join(publishRunDir, path.basename(reportPath));
+fs.mkdirSync(publishRunDir, { recursive: true });
 
 /**
  * Run a render and then verify its evidence, not just its exit code.
@@ -31,7 +47,7 @@ function runRender(extra: string[]): any {
   const label = extra.includes("--proxy") ? "Proxy" : "Full";
   const result = spawnSync(process.execPath, [
     "-r", "ts-node/register", "scripts/render.ts",
-    "--timeline", timeline, "--out", target,
+    "--timeline", resolvedTimeline, "--out", target,
     ...extra,
   ], { cwd: process.cwd(), stdio: "inherit" });
   if (result.status !== 0) throw new Error(`${label} render failed`);
@@ -61,7 +77,7 @@ function runRender(extra: string[]): any {
 
 const report: any = {
   schemaVersion: 1,
-  timeline: path.resolve(timeline),
+  timeline: path.resolve(resolvedTimeline),
   output: path.resolve(output),
   proxy: path.resolve(proxy),
   status: "running",
@@ -81,10 +97,22 @@ try {
   report.status = "diagnostic";
   report.error = error instanceof Error ? error.message : String(error);
   report.completedAt = new Date().toISOString();
-  fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  fs.writeFileSync(stagedReportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   console.error(`Publish blocked: ${report.error}`);
+  console.error(`Diagnostic report: ${stagedReportPath}`);
   process.exit(1);
 }
 
-fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+fs.writeFileSync(stagedReportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+const previousReport = path.join(publishRunDir, `previous-${path.basename(reportPath)}`);
+try {
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  if (fs.existsSync(reportPath)) fs.renameSync(reportPath, previousReport);
+  fs.renameSync(stagedReportPath, reportPath);
+} catch (error) {
+  if (!fs.existsSync(reportPath) && fs.existsSync(previousReport)) {
+    fs.renameSync(previousReport, reportPath);
+  }
+  throw error;
+}
 console.log(`Production-ready: ${output}`);

@@ -38,7 +38,7 @@ import { buildStoryMapPrompt } from "../src/ai/prompts/storyMapPrompt";
 import { buildScenePlanPrompt } from "../src/ai/prompts/scenePlanPrompt";
 import { buildRepairPrompt } from "../src/ai/prompts/repairPrompt";
 import {
-  checksumText, indexTranscript, makeSourceRange, sourceExcerpt, validateStoryboardCoverage,
+  checksumJson, checksumText, indexTranscript, makeSourceRange, sourceExcerpt, validateStoryboardCoverage,
 } from "../src/ai/transcriptCoverage";
 import { AssetManifest, AssetManifestEntry } from "../src/types/assets";
 import { SceneBrief, StorySection, Storyboard } from "../src/types/storyboard";
@@ -818,9 +818,9 @@ function timingProvenanceInputs(projectDir: string, storyboard: Storyboard) {
   return {
     audioSeconds: typeof durations?.totalSec === "number" ? durations.totalSec : undefined,
     audioSha256: fs.existsSync(publicWav) ? sha256File(publicWav) : undefined,
-    storyboardChecksum: checksumText(JSON.stringify(storyboard)),
-    durationsChecksum: durationsRaw ? checksumText(durationsRaw) : undefined,
-    wordsChecksum: wordsRaw ? checksumText(wordsRaw) : undefined,
+    storyboardChecksum: checksumJson(storyboard),
+    durationsChecksum: durationsRaw ? checksumJson(JSON.parse(durationsRaw)) : undefined,
+    wordsChecksum: wordsRaw ? checksumJson(JSON.parse(wordsRaw)) : undefined,
   };
 }
 
@@ -1065,11 +1065,13 @@ async function main() {
       const durations = readDurations(projectDir);
       const words = readWords(projectDir);
       const provenance = timingProvenanceInputs(projectDir, storyboard);
-      try {
+      if ((durations?.length ?? 0) > 0 || (words?.length ?? 0) > 0) {
+        // Supplied timing artifacts must be internally consistent. A mismatch is
+        // stale/corrupt input, not permission to silently downgrade to estimates.
         timeline = compileStoryboard(storyboard, { durations, words, provenance });
-      } catch {
+      } else {
         timeline = compileStoryboard(storyboard, {
-          durations, words, provenance, allowEstimatedTiming: true,
+          provenance, allowEstimatedTiming: true,
         });
         estimatedTiming = true;
       }

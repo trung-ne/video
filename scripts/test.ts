@@ -1,4 +1,7 @@
 import * as assert from "assert";
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import { indexTranscript, makeSourceRange, validateStoryboardCoverage } from "../src/ai/transcriptCoverage";
 import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest } from "../src/engine/assetResolver";
@@ -17,12 +20,75 @@ import {
   checkTimingProvenance,
   hasBlocker,
 } from "../src/engine/timingIntegrity";
+import { canonicalJsonChecksum, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
+import { promoteArtifacts } from "../src/engine/promoteArtifacts";
+import { acquireRenderLock } from "../src/engine/renderLock";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
 function test(name: string, run: () => void): void {
   tests.push({ name, run });
 }
+
+test("canonical JSON checksums ignore formatting but detect semantic changes", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-artifact-test-"));
+  try {
+    const artifact = path.join(dir, "artifact.json");
+    fs.writeFileSync(artifact, '{\n  "a": 1,\n  "b": [2, 3]\n}\n');
+    const expected = canonicalJsonChecksum(artifact);
+    fs.writeFileSync(artifact, '{"a":1,"b":[2,3]}');
+    assert.strictEqual(canonicalJsonChecksum(artifact), expected);
+    fs.writeFileSync(artifact, '{"a":2,"b":[2,3]}');
+    const issues = verifyArtifactInputs([{ kind: "storyboard", filePath: artifact, expected }]);
+    assert.strictEqual(issues[0]?.code, "TIMING_STORYBOARD_HASH_MISMATCH");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("artifact promotion archives the previous canonical set and publishes report last", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-promotion-test-"));
+  const finalDir = path.join(dir, "output");
+  const stagingDir = path.join(finalDir, ".runs", "run-test");
+  fs.mkdirSync(stagingDir, { recursive: true });
+  fs.writeFileSync(path.join(finalDir, "video.mp4"), "old-video");
+  fs.writeFileSync(path.join(finalDir, "video.production-report.json"), "old-report");
+  fs.writeFileSync(path.join(finalDir, "video.visual-audit.json"), "stale-audit");
+  fs.writeFileSync(path.join(stagingDir, "video.mp4"), "new-video");
+  fs.writeFileSync(path.join(stagingDir, "video.production-report.json"), "new-report");
+  try {
+    const archive = promoteArtifacts(stagingDir, finalDir, "run-test");
+    assert.strictEqual(fs.readFileSync(path.join(finalDir, "video.mp4"), "utf8"), "new-video");
+    assert.strictEqual(
+      fs.readFileSync(path.join(finalDir, "video.production-report.json"), "utf8"),
+      "new-report"
+    );
+    assert.ok(archive);
+    assert.strictEqual(fs.readFileSync(path.join(archive!, "video.mp4"), "utf8"), "old-video");
+    assert.ok(!fs.existsSync(path.join(finalDir, "video.visual-audit.json")));
+    assert.strictEqual(
+      fs.readFileSync(path.join(archive!, "video.visual-audit.json"), "utf8"),
+      "stale-audit"
+    );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("render lock refuses a concurrent writer and names the absolute lock", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-render-lock-test-"));
+  const lock = acquireRenderLock(dir, "first");
+  try {
+    assert.throws(
+      () => acquireRenderLock(dir, "second"),
+      (error: Error) => error.message.includes(path.resolve(dir, ".runs", ".lock"))
+        && /already in progress/.test(error.message)
+    );
+  } finally {
+    lock.release();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 test("indexes Unicode words with stable indices", () => {
   const words = indexTranscript("Tại sao cats don't panic?");

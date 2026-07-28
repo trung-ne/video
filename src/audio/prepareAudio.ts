@@ -15,7 +15,7 @@ function ffmpegPath(): string {
   return require("@ffmpeg-installer/ffmpeg").path as string;
 }
 
-export function measureAudio(input: string): AudioAudit {
+export function measureAudio(input: string, recordAs = input): AudioAudit {
   const result = spawnSync(ffmpegPath(), [
     "-hide_banner", "-nostats", "-i", input,
     "-filter_complex", "ebur128=peak=true", "-f", "null", "-",
@@ -31,7 +31,7 @@ export function measureAudio(input: string): AudioAudit {
   const peak = Number(truePeak[truePeak.length - 1][1]);
   const cfg = referenceQuality.audio;
   return {
-    input: path.resolve(input),
+    input: path.resolve(recordAs),
     integratedLufs: lufs,
     truePeakDbtp: peak,
     passed: lufs >= cfg.minimumLufs && lufs <= cfg.maximumLufs && peak <= cfg.maximumTruePeakDbtp,
@@ -93,8 +93,8 @@ export function prepareTimelineAudio(audio: string): { publicPath: string; audit
   };
 }
 
-export function writeAudioAudit(input: string, reportPath: string): AudioAudit {
-  const audit = measureAudio(input);
+export function writeAudioAudit(input: string, reportPath: string, recordAs = input): AudioAudit {
+  const audit = measureAudio(input, recordAs);
   fs.writeFileSync(reportPath, `${JSON.stringify(audit, null, 2)}\n`, "utf8");
   if (!audit.passed) {
     throw new Error(`Audio audit failed: ${audit.integratedLufs} LUFS, ${audit.truePeakDbtp} dBTP`);

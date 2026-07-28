@@ -21,6 +21,9 @@ import { printLivelinessReport } from "../src/engine/liveliness";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 import { prepareTimelineAudio, writeAudioAudit, resolvePublicAudio } from "../src/audio/prepareAudio";
+import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
+import { acquireRenderLock } from "../src/engine/renderLock";
+import { promoteArtifacts, pruneRunHistory } from "../src/engine/promoteArtifacts";
 import {
   checkRenderMatchesTimeline,
   checkTimelineSpansAudio,
@@ -77,7 +80,7 @@ function probeDurationSeconds(filePath: string): number | undefined {
   }
 }
 
-function runEncodingAudit(videoPath: string): any {
+function runEncodingAudit(videoPath: string, recordAs = videoPath): any {
   const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
   const rawReport = execFileSync(ffprobePath, [
     "-v", "error", "-show_streams", "-show_format", "-of", "json", videoPath,
@@ -102,7 +105,7 @@ function runEncodingAudit(videoPath: string): any {
   if (!audio) failures.push("Rendered file has no audio stream.");
   if (audio && audio.codec_name !== "aac") failures.push(`Audio codec must be aac, got ${audio.codec_name}.`);
   const report = {
-    videoPath: path.resolve(videoPath),
+    videoPath: path.resolve(recordAs),
     codec: video?.codec_name,
     width: video?.width,
     height: video?.height,
@@ -176,6 +179,18 @@ if (raw.audio && sourceAudioSeconds === undefined) {
   console.error(`\n❌ Voice track not found or unreadable: ${sourceAudioPath}\n`);
   process.exit(1);
 }
+{
+  const issues = verifyArtifactInputs(
+    adjacentArtifactInputs(timelinePath, raw.timingProvenance, {
+      audioPath: sourceAudioPath,
+      includeWords: false,
+    })
+  );
+  if (issues.length) {
+    console.error(`\n⏱️  ARTIFACT PROVENANCE\n${formatTimingIssues(issues)}\n`);
+    if (hasBlocker(issues)) process.exit(1);
+  }
+}
 if (sourceAudioSeconds !== undefined) {
   const issues = checkTimelineSpansAudio(raw.durationInFrames / (raw.fps ?? 30), sourceAudioSeconds, {
     sceneCount: Array.isArray(raw.scenes) ? raw.scenes.length : undefined,
@@ -231,22 +246,9 @@ console.log(`   Events: ${timeline.events.length}`);
 const finalDir = path.dirname(outPath);
 const runId = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 const stagingDir = path.join(finalDir, ".runs", runId);
+const renderLock = acquireRenderLock(finalDir, runId);
 fs.mkdirSync(stagingDir, { recursive: true });
 const stagedOut = path.join(stagingDir, path.basename(outPath));
-
-/** Move every staged artifact over the published one, replacing it atomically-enough. */
-function promoteStagedRun(): void {
-  fs.mkdirSync(finalDir, { recursive: true });
-  for (const name of fs.readdirSync(stagingDir)) {
-    const from = path.join(stagingDir, name);
-    const to = path.join(finalDir, name);
-    fs.rmSync(to, { force: true, recursive: true });
-    fs.renameSync(from, to);
-  }
-  fs.rmSync(stagingDir, { recursive: true, force: true });
-  const runsDir = path.join(finalDir, ".runs");
-  if (fs.existsSync(runsDir) && fs.readdirSync(runsDir).length === 0) fs.rmSync(runsDir, { recursive: true, force: true });
-}
 
 // Serialize props to pass to Remotion
 const propsJson = JSON.stringify({ timeline });
@@ -314,7 +316,7 @@ try {
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
   console.log(`\nEncoded media: ${stagedOut}. Running publish audits...`);
-  const encodingAudit = isProxy ? null : runEncodingAudit(stagedOut);
+  const encodingAudit = isProxy ? null : runEncodingAudit(stagedOut, outPath);
 
   // A render that does not match what was asked for must never reach an audit or
   // a cross-render comparison — a truncated MP4 scores *better* on sampled pixel
@@ -349,7 +351,7 @@ try {
     const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
     if (fs.existsSync(auditScript)) {
       execSync(
-        `python "${auditScript}" --video "${path.resolve(stagedOut)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(stagedOut.replace(/\.mp4$/i, ".contact.jpg"))}"`,
+        `python "${auditScript}" --video "${path.resolve(stagedOut)}" --record-video-path "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(stagedOut.replace(/\.mp4$/i, ".contact.jpg"))}" --record-contact-sheet "${path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg"))}"`,
         { stdio: "inherit", cwd: process.cwd() }
       );
     }
@@ -361,10 +363,10 @@ try {
   const audioAuditPath = stagedOut.replace(/\.mp4$/i, ".audio-audit.json");
   const audioAudit = isProxy || framesArg || args.includes("--skip-audio-audit")
     ? null
-    : writeAudioAudit(path.resolve(stagedOut), audioAuditPath);
+    : writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath));
   const productionReport = {
     schemaVersion: 1,
-    status: isProxy ? "proxy-ready" : "production-ready",
+    status: isProxy ? "proxy-ready" : framesArg ? "diagnostic" : "production-ready",
     video: path.resolve(outPath),
     timeline: path.resolve(timelinePath),
     timingProvenance: raw.timingProvenance ?? null,
@@ -373,7 +375,9 @@ try {
     encodingAudit,
     timingAudit,
     audioAudit,
-    visualAudit: path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
+    visualAudit: args.includes("--skip-visual-audit")
+      ? null
+      : path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
   };
   fs.writeFileSync(
     stagedOut.replace(/\.mp4$/i, ".production-report.json"),
@@ -383,7 +387,9 @@ try {
 
   // Every gate passed — only now does the published build change.
   if (fs.existsSync(propsTmpFile)) fs.unlinkSync(propsTmpFile);
-  promoteStagedRun();
+  const previousBuild = promoteArtifacts(stagingDir, finalDir, runId);
+  pruneRunHistory(finalDir);
+  if (previousBuild) console.log(`   Previous successful build archived at: ${previousBuild}`);
   console.log(`\n✅ ${isProxy ? "Proxy audit" : "Production render"} complete: ${outPath}`);
 } catch (err) {
   // The previously published build is left exactly as it was. The failed run
@@ -404,11 +410,13 @@ try {
     `${JSON.stringify(failedReport, null, 2)}\n`,
     "utf8",
   );
+  pruneRunHistory(finalDir);
   console.error("\n❌ Render failed:", err);
   console.error(`   Published build untouched. Failed run kept at: ${stagingDir}`);
-  process.exit(1);
+  process.exitCode = 1;
 } finally {
   if (fs.existsSync(propsTmpFile)) {
     fs.unlinkSync(propsTmpFile);
   }
+  renderLock.release();
 }

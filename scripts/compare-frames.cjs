@@ -7,11 +7,18 @@ const fs = require('fs');
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
+const videoIndex = process.argv.indexOf('--video');
+const videoArg = videoIndex >= 0 ? process.argv[videoIndex + 1] : undefined;
+if (!videoArg) {
+  console.error('Usage: node scripts/compare-frames.cjs --video output/<id>/video.mp4');
+  process.exit(2);
+}
+
 const outDir = path.resolve(__dirname, '../refer/compare');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
 // Extract frames mỗi 15s từ result video (ngắn hơn, tập trung vào key scenes)
-const resultVideo = path.resolve(__dirname, '../output/video.mp4');
+const resultVideo = path.resolve(videoArg);
 
 ffmpeg.ffprobe(resultVideo, (err, meta) => {
   if (err) { console.error(err); process.exit(1); }

@@ -12,8 +12,17 @@ if (!projectArg) throw new Error("Usage: npx ts-node scripts/preview-project.ts 
 const projectPath = fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
   ? projectArg
   : path.join("projects", projectArg);
-const timelinePath = path.join(projectPath, "timeline.json");
-if (!fs.existsSync(timelinePath)) throw new Error(`Timeline not found: ${timelinePath}`);
+const measuredTimelinePath = path.join(projectPath, "timeline.json");
+const estimatedTimelinePath = path.join(projectPath, "timeline.estimated.json");
+const timelinePath = fs.existsSync(measuredTimelinePath)
+  ? measuredTimelinePath
+  : estimatedTimelinePath;
+if (!fs.existsSync(timelinePath)) {
+  throw new Error(`Timeline not found: ${measuredTimelinePath} or ${estimatedTimelinePath}`);
+}
+if (timelinePath === estimatedTimelinePath) {
+  console.warn(`No measured timeline found; previewing diagnostic artifact: ${estimatedTimelinePath}`);
+}
 
 const authored = JSON.parse(fs.readFileSync(timelinePath, "utf8"));
 
@@ -29,6 +38,10 @@ if (provenanceIssues.length) {
 }
 
 const timeline = loadTimeline(authored).timeline;
+if (args.includes("--check-only")) {
+  console.log(`Preview preflight passed: ${timelinePath}`);
+  process.exit(0);
+}
 const propsPath = path.join(os.tmpdir(), `cat-preview-${process.pid}.json`);
 fs.writeFileSync(propsPath, JSON.stringify({ timeline }), "utf8");
 try {
