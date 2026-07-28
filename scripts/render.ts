@@ -20,7 +20,14 @@ import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
-import { prepareTimelineAudio, writeAudioAudit } from "../src/audio/prepareAudio";
+import { prepareTimelineAudio, writeAudioAudit, resolvePublicAudio } from "../src/audio/prepareAudio";
+import {
+  checkRenderMatchesTimeline,
+  checkTimelineSpansAudio,
+  checkTimingProvenance,
+  formatTimingIssues,
+  hasBlocker,
+} from "../src/engine/timingIntegrity";
 import referenceQuality from "../config/reference-quality.json";
 
 const args = process.argv.slice(2);
@@ -54,6 +61,21 @@ const outPath = getArg("--out", defaultOutPath());
 const compositionId = getArg("--composition", "CatExplainer");
 const isProxy = args.includes("--proxy");
 const framesArg = getArg("--frames", "");
+
+/** Container duration in seconds, or undefined if the file is missing/unreadable. */
+function probeDurationSeconds(filePath: string): number | undefined {
+  if (!fs.existsSync(filePath)) return undefined;
+  try {
+    const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
+    const out = execFileSync(ffprobePath, [
+      "-v", "error", "-show_entries", "format=duration", "-of", "json", filePath,
+    ], { encoding: "utf8" });
+    const seconds = Number(JSON.parse(out)?.format?.duration);
+    return Number.isFinite(seconds) ? seconds : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 function runEncodingAudit(videoPath: string): any {
   const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
@@ -134,10 +156,54 @@ if (!args.includes("--skip-quality")) {
   }
 }
 
+// Provenance gate — a timeline must say how it was timed. Absent provenance is a
+// refusal, not a pass: every artifact written before that field existed lacks it,
+// including ones whose durations were spread proportionally by word count.
+const allowUnprovenanced = args.includes("--allow-unprovenanced-timing");
+{
+  const issues = checkTimingProvenance(raw.timingProvenance, { allowUnprovenanced });
+  if (issues.length) {
+    console.error(`\n⏱️  TIMING PROVENANCE\n${formatTimingIssues(issues)}\n`);
+    if (hasBlocker(issues)) process.exit(1);
+  }
+}
+
+// Preflight: the timeline must span the voice track BEFORE the expensive loudnorm
+// pass, so a 389s shortfall surfaces in seconds rather than minutes.
+const sourceAudioPath = raw.audio ? resolvePublicAudio(raw.audio) : undefined;
+const sourceAudioSeconds = sourceAudioPath ? probeDurationSeconds(sourceAudioPath) : undefined;
+if (raw.audio && sourceAudioSeconds === undefined) {
+  console.error(`\n❌ Voice track not found or unreadable: ${sourceAudioPath}\n`);
+  process.exit(1);
+}
+if (sourceAudioSeconds !== undefined) {
+  const issues = checkTimelineSpansAudio(raw.durationInFrames / (raw.fps ?? 30), sourceAudioSeconds, {
+    sceneCount: Array.isArray(raw.scenes) ? raw.scenes.length : undefined,
+    fps: raw.fps ?? 30,
+  });
+  if (issues.length) {
+    console.error(`\n⏱️  TIMING PREFLIGHT\n${formatTimingIssues(issues)}\n`);
+    if (hasBlocker(issues)) process.exit(1);
+  }
+}
+
 if (raw.audio && !isProxy && !args.includes("--skip-audio-prepare")) {
   preparedAudio = prepareTimelineAudio(raw.audio);
   raw.audio = preparedAudio.publicPath;
   console.log(`Audio prepared: ${preparedAudio.audit.integratedLufs} LUFS${preparedAudio.mastered ? " (mastered)" : ""}`);
+
+  // Mastering must not change length. If it ever does, every scene boundary and
+  // every word timestamp silently shifts against the audio Remotion plays.
+  const preparedSeconds = probeDurationSeconds(preparedAudio.audit.input);
+  if (preparedSeconds !== undefined && sourceAudioSeconds !== undefined) {
+    const issues = checkRenderMatchesTimeline(preparedSeconds, sourceAudioSeconds, raw.fps ?? 30);
+    if (issues.length) {
+      console.error(
+        `\n⏱️  Mastered audio length differs from the source track:\n${formatTimingIssues(issues)}\n`
+      );
+      if (hasBlocker(issues)) process.exit(1);
+    }
+  }
 }
 
 // Scan which cat poses actually exist so pose-swaps never reference a missing asset.
@@ -158,19 +224,38 @@ console.log(`   Duration: ${timeline.durationInFrames} frames @ ${timeline.fps}f
 console.log(`   = ${(timeline.durationInFrames / timeline.fps).toFixed(1)} seconds`);
 console.log(`   Events: ${timeline.events.length}`);
 
-// Ensure output directory exists
-const outDir = path.dirname(outPath);
-if (!fs.existsSync(outDir)) {
-  fs.mkdirSync(outDir, { recursive: true });
+// Render into a per-run staging directory and promote only once every gate has
+// passed. Previously a blocked run left a fresh MP4 sitting beside the previous
+// run's audits with a report that said "diagnostic" — anything globbing
+// output/<id>/*.visual-audit.json then picked up data describing a different file.
+const finalDir = path.dirname(outPath);
+const runId = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+const stagingDir = path.join(finalDir, ".runs", runId);
+fs.mkdirSync(stagingDir, { recursive: true });
+const stagedOut = path.join(stagingDir, path.basename(outPath));
+
+/** Move every staged artifact over the published one, replacing it atomically-enough. */
+function promoteStagedRun(): void {
+  fs.mkdirSync(finalDir, { recursive: true });
+  for (const name of fs.readdirSync(stagingDir)) {
+    const from = path.join(stagingDir, name);
+    const to = path.join(finalDir, name);
+    fs.rmSync(to, { force: true, recursive: true });
+    fs.renameSync(from, to);
+  }
+  fs.rmSync(stagingDir, { recursive: true, force: true });
+  const runsDir = path.join(finalDir, ".runs");
+  if (fs.existsSync(runsDir) && fs.readdirSync(runsDir).length === 0) fs.rmSync(runsDir, { recursive: true, force: true });
 }
 
 // Serialize props to pass to Remotion
 const propsJson = JSON.stringify({ timeline });
-const propsTmpFile = path.join(outDir, "_props.json");
+const propsTmpFile = path.join(stagingDir, "_props.json");
 fs.writeFileSync(propsTmpFile, propsJson);
 
 console.log(`\n🎬 Rendering: ${compositionId}`);
-console.log(`   Output: ${outPath}\n`);
+console.log(`   Staging: ${stagedOut}`);
+console.log(`   Publishes to: ${outPath}\n`);
 
 // This sandbox has no outbound network access, so Remotion can't download its
 // own Chrome Headless Shell. Point it at a compatible binary already cached
@@ -199,13 +284,19 @@ function findCachedChromeHeadlessShell(): string | null {
   return null;
 }
 
+// Declared outside the try so a failed run's diagnostic report can still say
+// whether the render matched what was asked for.
+let timingAudit: {
+  mp4Seconds: number; expectedSeconds: number; driftSeconds: number; scope: string;
+} | null = null;
+
 try {
   const browserExecutable = findCachedChromeHeadlessShell();
   const cmd = [
     "npx remotion render",
     `src/index.ts`,
     compositionId,
-    `"${outPath}"`,
+    `"${stagedOut}"`,
     `--props="${propsTmpFile}"`,
     "--log=info",
     "--codec=h264",
@@ -222,8 +313,34 @@ try {
 
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
-  console.log(`\nEncoded media: ${outPath}. Running publish audits...`);
-  const encodingAudit = isProxy ? null : runEncodingAudit(outPath);
+  console.log(`\nEncoded media: ${stagedOut}. Running publish audits...`);
+  const encodingAudit = isProxy ? null : runEncodingAudit(stagedOut);
+
+  // A render that does not match what was asked for must never reach an audit or
+  // a cross-render comparison — a truncated MP4 scores *better* on sampled pixel
+  // metrics, so this blocks before visual-audit runs, not after. A partial
+  // --frames render is compared against its requested range rather than skipped.
+  {
+    const mp4Seconds = probeDurationSeconds(stagedOut);
+    if (mp4Seconds === undefined) throw new Error(`Rendered file is unreadable: ${stagedOut}`);
+    const [from, to] = framesArg.includes("-")
+      ? framesArg.split("-").map(Number)
+      : [Number(framesArg), Number(framesArg)];
+    const expectedSeconds = framesArg
+      ? (to - from + 1) / timeline.fps
+      : timeline.durationInFrames / timeline.fps;
+    const issues = checkRenderMatchesTimeline(mp4Seconds, expectedSeconds, timeline.fps);
+    timingAudit = {
+      mp4Seconds,
+      expectedSeconds,
+      driftSeconds: Number((mp4Seconds - expectedSeconds).toFixed(3)),
+      scope: framesArg ? `frames ${framesArg}` : "full timeline",
+    };
+    if (issues.length) {
+      console.error(`\n⏱️  TIMING INTEGRITY\n${formatTimingIssues(issues)}\n`);
+      if (hasBlocker(issues)) throw new Error("Render timing does not match what was requested — refusing to audit or publish.");
+    }
+  }
 
   // Pixel-level regression gate. Timeline quotas cannot detect semantically
   // empty or visually repetitive frames, so sample the actual encoded MP4.
@@ -232,45 +349,63 @@ try {
     const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
     if (fs.existsSync(auditScript)) {
       execSync(
-        `python "${auditScript}" --video "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg"))}"`,
+        `python "${auditScript}" --video "${path.resolve(stagedOut)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(stagedOut.replace(/\.mp4$/i, ".contact.jpg"))}"`,
         { stdio: "inherit", cwd: process.cwd() }
       );
     }
   }
-  const audioAuditPath = outPath.replace(/\.mp4$/i, ".audio-audit.json");
-  const audioAudit = isProxy || args.includes("--skip-audio-audit")
+  // Loudness targets describe a whole narration track. Measuring a --frames slice
+  // against them is meaningless — a two-second excerpt legitimately sits outside
+  // the full-track LUFS window — so a partial render skips the audio audit for the
+  // same reason a proxy does.
+  const audioAuditPath = stagedOut.replace(/\.mp4$/i, ".audio-audit.json");
+  const audioAudit = isProxy || framesArg || args.includes("--skip-audio-audit")
     ? null
-    : writeAudioAudit(path.resolve(outPath), audioAuditPath);
+    : writeAudioAudit(path.resolve(stagedOut), audioAuditPath);
   const productionReport = {
     schemaVersion: 1,
     status: isProxy ? "proxy-ready" : "production-ready",
     video: path.resolve(outPath),
     timeline: path.resolve(timelinePath),
+    timingProvenance: raw.timingProvenance ?? null,
+    unprovenancedTimingAllowed: allowUnprovenanced || undefined,
     preparedAudio,
     encodingAudit,
+    timingAudit,
     audioAudit,
     visualAudit: path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
   };
   fs.writeFileSync(
-    outPath.replace(/\.mp4$/i, ".production-report.json"),
+    stagedOut.replace(/\.mp4$/i, ".production-report.json"),
     `${JSON.stringify(productionReport, null, 2)}\n`,
     "utf8",
   );
+
+  // Every gate passed — only now does the published build change.
+  if (fs.existsSync(propsTmpFile)) fs.unlinkSync(propsTmpFile);
+  promoteStagedRun();
   console.log(`\n✅ ${isProxy ? "Proxy audit" : "Production render"} complete: ${outPath}`);
 } catch (err) {
+  // The previously published build is left exactly as it was. The failed run
+  // stays in its staging dir so its artifacts can be inspected without being
+  // mistaken for the current production output.
   const failedReport = {
     schemaVersion: 1,
     status: "diagnostic",
-    video: fs.existsSync(outPath) ? path.resolve(outPath) : null,
+    video: fs.existsSync(stagedOut) ? path.resolve(stagedOut) : null,
     timeline: path.resolve(timelinePath),
+    timingProvenance: raw.timingProvenance ?? null,
+    timingAudit,
+    stagingDir: path.resolve(stagingDir),
     error: err instanceof Error ? err.message : String(err),
   };
   fs.writeFileSync(
-    outPath.replace(/\.mp4$/i, ".production-report.json"),
+    path.join(stagingDir, "production-report.json"),
     `${JSON.stringify(failedReport, null, 2)}\n`,
     "utf8",
   );
   console.error("\n❌ Render failed:", err);
+  console.error(`   Published build untouched. Failed run kept at: ${stagingDir}`);
   process.exit(1);
 } finally {
   if (fs.existsSync(propsTmpFile)) {
