@@ -1,0 +1,3569 @@
+{
+  "schemaVersion": 1,
+  "transcriptChecksum": "b6af3b3d261a074fb46b2eb3d607f73a90ea03b23cf0fa81810affa75fcda84e",
+  "promptVersion": "session-authored",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "cast": {
+    "host": {
+      "src": "characters/cat_explain"
+    },
+    "broker": {
+      "src": "characters/cat_business"
+    },
+    "investor": {
+      "src": "characters/cat"
+    },
+    "gaemi": {
+      "src": "characters/cat"
+    },
+    "landlord": {
+      "src": "characters/cat_dad"
+    },
+    "tenant": {
+      "src": "characters/cat_worker"
+    },
+    "youngperson": {
+      "src": "characters/cat_worker"
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "narration": "Nhắc tới Hàn Quốc, ngoài kim chi, phim tình cảm hay các anh oppa đẹp trai, còn có một vấn đề khá đau đầu: ngày càng nhiều người tin rằng đầu tư không còn là chuyện tích lũy lâu dài, mà là con đường ngắn nhất để đổi đời.",
+      "purpose": "Cold open hook — Korea beyond the cliché, into a real problem.",
+      "emotion": "neutral",
+      "viewerFocus": "the pivot from cliché to problem",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 0,
+        "endWord": 53,
+        "quoteChecksum": "45e2f05221d2c5c67f1b3734d799aeec4544247e9fd91c3f4b47ef285dc4e5ee"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "host",
+        "caption": "Đổi đời — con đường ngắn nhất?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the pivot from cliché to problem",
+        "takeaway": "Cold open hook — Korea beyond the cliché, into a real problem."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/street.svg"
+      }
+    },
+    {
+      "id": "scene-002",
+      "narration": "Những\r\ncái thứ như là cổ phiếu, coin, bất động\r\nsản, bất cứ cái thứ gì mà có khả năng\r\ntăng giá thì đều có người lao vào. Và\r\ncái thứ mà khiến cho cuộc chơi này trở\r\nnên nguy hiểm hơn rất nhiều là Marin hay\r\nnói đơn giản là tiền vay để đầu tư",
+      "purpose": "Show the range of assets people are chasing, then name the accelerant.",
+      "emotion": "neutral",
+      "viewerFocus": "the three asset classes",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 54,
+        "endWord": 109,
+        "quoteChecksum": "b587d4bb07d4b3c8ee8fe924a06a35643bd6ab25f74983fbd9d106ebd748b400"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Cổ phiếu|Coin|Bất động sản",
+        "icons": "finance/stock|finance/crypto|finance/house"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the three asset classes",
+        "takeaway": "Show the range of assets people are chasing, then name the accelerant."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/stock",
+        "icon1": "finance/crypto",
+        "icon2": "finance/house"
+      }
+    },
+    {
+      "id": "scene-003",
+      "narration": "Hậu quả bắt đầu lộ rõ vào đầu năm 2026, khi chỉ trong vài ngày, chỉ số KOSPI của Hàn Quốc lao dốc hơn 18%, hàng trăm tỷ đô la giá trị thị trường bị thổi bay — một trong những đợt sụt giảm mạnh nhất trong nhiều năm.",
+      "purpose": "Land the cold-open's biggest shock number early.",
+      "emotion": "urgent",
+      "viewerFocus": "the -18% figure",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 110,
+        "endWord": 160,
+        "quoteChecksum": "edf5a162144081d898ab53968410a345c0d7759d313b5c21cd2f4805fa471b5d"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "-18%",
+        "anchor": "finance/trending_down",
+        "who": "characters/cat_surprised",
+        "caption": "KOSPI lao dốc chỉ trong vài ngày, đầu 2026"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the -18% figure",
+        "takeaway": "Land the cold-open's biggest shock number early."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-004",
+      "narration": "Nhưng điều đáng chú ý là rất nhiều nhà đầu tư đã dùng margin ở mức rất cao, đến mức một số công ty chứng khoán phải tạm dừng cho vay vì đã chạm trần hạn mức.",
+      "purpose": "Reveal margin was maxed out — foreshadow the mechanism.",
+      "emotion": "concern",
+      "viewerFocus": "brokers halting new loans",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 161,
+        "endWord": 204,
+        "quoteChecksum": "7b29f142ee731984e49f13d7bb12936a620c48314979d0fd419dcc22b57ca433"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Đáng chú ý",
+        "body": "Một số công ty chứng khoán phải tạm dừng cho vay vì đã chạm trần margin"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "brokers halting new loans",
+        "takeaway": "Reveal margin was maxed out — foreshadow the mechanism."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-005",
+      "narration": "Nhưng mà tại sao cái chuyện này lại xảy\r\nra ở thị trường mà không phải là một thị\r\ntrường mới nổi ở trong một cái nền kinh\r\ntế lớn hàng đầu châu Á, từng trải qua\r\nkhông ít những cuộc khủng hoảng tài\r\nchính và sở hữu một thế hệ nhà đầu tư\r\nnổi tiếng vì tính cạnh tranh cùng với kỷ\r\nluật làm việc",
+      "purpose": "Sharpen the puzzle: why here, in a mature, disciplined market.",
+      "emotion": "curious",
+      "viewerFocus": "the host questioning",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 205,
+        "endWord": 270,
+        "quoteChecksum": "8d12342ed833c16720a596cf84aa96d2574b37fd3625a687d333acbd3ab9154e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Tại sao lại là Hàn Quốc?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host questioning",
+        "takeaway": "Sharpen the puzzle: why here, in a mature, disciplined market."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-006",
+      "narration": "Tại sao mà nhiều người\r\nlại sẵn sàng vay tiền để đặt cực vào thị\r\ntrường? Và tại sao đoàn bảy lại trở nên\r\nphổ biến đến thế? Thì trong video ngày\r\nhôm nay chúng ta sẽ cùng tìm hiểu",
+      "purpose": "State the video's core question before the branding beat.",
+      "emotion": "curious",
+      "viewerFocus": "the twin questions",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 271,
+        "endWord": 310,
+        "quoteChecksum": "394ef88c139a8dd8367f521fdd4ccecfdc3db88456f79d0fcc55ddecf8673f28"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Tại sao sẵn sàng vay tiền để cược?",
+        "a": "Và tại sao margin lại phổ biến đến thế?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the twin questions",
+        "takeaway": "State the video's core question before the branding beat."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-007",
+      "narration": "Tôi là Mèo, và đây là câu chuyện về cơn sốt đòn bẩy của Hàn Quốc.",
+      "purpose": "Channel branding beat.",
+      "emotion": "neutral",
+      "viewerFocus": "the host introducing the series",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 311,
+        "endWord": 326,
+        "quoteChecksum": "f36599c5660ec692e0234932d1d908dd48fb963e40cf72eb15af09e00e34c78b"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Cơn sốt đòn bẩy Hàn Quốc"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host introducing the series",
+        "takeaway": "Channel branding beat."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-008",
+      "narration": "Trước tiên\r\nthì chúng ta đã cần tìm hiểu xem là đoàn\r\nbảy hay là Marin là cái gì. Ôn lại một\r\ntí đi",
+      "purpose": "Transition into the explainer section: what is margin.",
+      "emotion": "neutral",
+      "viewerFocus": "the host, ready to explain",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 327,
+        "endWord": 350,
+        "quoteChecksum": "26070d084e4d7c9b3b51456eabd221b21f597d39230cd82b1c3620f05e3631ea"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Margin (đòn bẩy) là gì?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the host, ready to explain",
+        "takeaway": "Transition into the explainer section: what is margin."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-009",
+      "narration": "Margin, hay giao dịch ký quỹ, nói đơn giản là vay tiền từ công ty chứng khoán để mua thêm cổ phiếu.",
+      "purpose": "Define margin concretely with a prop.",
+      "emotion": "neutral",
+      "viewerFocus": "the loan prop",
+      "visualGrammar": "CHAR_PROP",
+      "sourceRange": {
+        "startWord": 351,
+        "endWord": 373,
+        "quoteChecksum": "4e2c6983650a767f188c21bcf742aa0c40a760d74c16c5a78a169f815e6d2bd2"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "host",
+        "prop": "finance/loan",
+        "label": "Vay tiền để mua thêm cổ phiếu"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the loan prop",
+        "takeaway": "Define margin concretely with a prop."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "prop": "finance/loan"
+      }
+    },
+    {
+      "id": "scene-010",
+      "narration": "Ví dụ như là\r\nbạn có 100 triệu chẳng hạn thì công ty\r\nchứng khoán cho bạn vay thêm 100 triệu\r\nnữa. Tức là thay vì là mua 100 triệu\r\ntiền cổ phiếu thì bạn mua được 200\r\ntriệu",
+      "purpose": "Worked example: 100 triệu vốn → 200 triệu sức mua.",
+      "emotion": "neutral",
+      "viewerFocus": "vốn vs. sức mua sau vay",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 374,
+        "endWord": 412,
+        "quoteChecksum": "be162d7de421cc51ef5c02f028f8b259cd0dae1509c3da8d520165b79e6622cc"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "100 triệu (vốn)",
+        "right": "200 triệu (vốn + vay)",
+        "leftAsset": "finance/wallet",
+        "rightAsset": "finance/stock"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "vốn vs. sức mua sau vay",
+        "takeaway": "Worked example: 100 triệu vốn → 200 triệu sức mua."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/wallet",
+        "rightAsset": "finance/stock"
+      }
+    },
+    {
+      "id": "scene-011",
+      "narration": "Nếu mà cổ phiếu tăng 10% ấy thì\r\nbạn lãi khoảng 20 triệu thay vì 10\r\ntriệu. Về cơ bản nó cũng chỉ thế thôi",
+      "purpose": "Show the upside multiplier of margin.",
+      "emotion": "neutral",
+      "viewerFocus": "gains doubled",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 413,
+        "endWord": 437,
+        "quoteChecksum": "854ba30c973e003125aef0fe63627884ab8d57311876d93cf2beeebbb73aec97"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "20 TRIỆU",
+        "anchor": "finance/chart_up",
+        "who": "characters/cat_explain",
+        "caption": "Lãi gấp đôi nhờ vay thêm"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "gains doubled",
+        "takeaway": "Show the upside multiplier of margin."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_explain"
+      }
+    },
+    {
+      "id": "scene-012",
+      "narration": "Nhưng mà vấn đề không phải là bạn cứ vay\r\ntiền là thị trường nó đi lên. Nếu mà cổ\r\nphiếu giảm 10% ấy thì khoản lố của bạn\r\ncũng bị x2. Trong khi tiền vay vẫn phải\r\ntrả và lãi vay thì vẫn phải đóng đầy đủ",
+      "purpose": "Flip to the downside — losses double too, debt stays fixed.",
+      "emotion": "sad",
+      "viewerFocus": "losses doubled",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 438,
+        "endWord": 485,
+        "quoteChecksum": "a772f99f0c8b5b1100944908266d90aaf9de3dbbb4ce446bdc37efd3bc4673e1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "LỖ x2",
+        "anchor": "finance/loss",
+        "who": "characters/cat_sad",
+        "caption": "và tiền vay + lãi vay vẫn phải trả đủ"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "losses doubled",
+        "takeaway": "Flip to the downside — losses double too, debt stays fixed."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-013",
+      "narration": "Margin về bản chất giống như việc gắn một động cơ đua vào danh mục đầu tư của bạn. Chạy đúng hướng thì rất đã, nhưng chỉ cần cua gấp một cái là bạn có thể văng thẳng ra khỏi đường đua.",
+      "purpose": "Metaphor for margin's amplifying, destabilizing nature.",
+      "emotion": "concern",
+      "viewerFocus": "engine metaphor for margin",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 486,
+        "endWord": 538,
+        "quoteChecksum": "442f1bcf657cd42f7e8b217cb5cbd0d9daac69f6b4af7786734c2cb9db747f8c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Gắn động cơ đua vào đầu tư",
+        "payoff": "Cua gấp là văng khỏi đường đua",
+        "leftAsset": "finance/chart_up",
+        "rightAsset": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "engine metaphor for margin",
+        "takeaway": "Metaphor for margin's amplifying, destabilizing nature."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/chart_up",
+        "rightAsset": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-014",
+      "narration": "Và thứ nguy hiểm nhất gọi là margin call, hay lệnh gọi ký quỹ.",
+      "purpose": "Name the mechanism that turns leverage lethal.",
+      "emotion": "surprise",
+      "viewerFocus": "the term margin call",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 539,
+        "endWord": 554,
+        "quoteChecksum": "dd311717f5f19b20cd4e024fb82c58abacd5000f567ec4f33e80407e7ab6ee4e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#E74C3C",
+        "caption": "MARGIN CALL",
+        "who": "host"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the term margin call",
+        "takeaway": "Name the mechanism that turns leverage lethal."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "content": "#E74C3C"
+      }
+    },
+    {
+      "id": "scene-015",
+      "narration": "Khi tài sản trong tài khoản giảm xuống dưới mức an toàn, công ty chứng khoán sẽ yêu cầu bạn nộp thêm tiền. Nếu bạn không nộp kịp, họ có quyền bán cổ phiếu để thu hồi khoản vay, bất kể lúc đó giá đang đẹp hay xấu.",
+      "purpose": "Explain the forced-sell mechanism precisely.",
+      "emotion": "concern",
+      "viewerFocus": "forced liquidation",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 555,
+        "endWord": 616,
+        "quoteChecksum": "eda8c73204de5d6a0742d6184ff7243e85e10ac6ab7f9a72f8b2c0d5962a64d5"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Tài sản dưới mức an toàn",
+        "effect": "Công ty chứng khoán bán cưỡng chế",
+        "causeIcon": "finance/trending_down",
+        "effectIcon": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "forced liquidation",
+        "takeaway": "Explain the forced-sell mechanism precisely."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/trending_down",
+        "effectIcon": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-016",
+      "narration": "Và vấn đề thường nằm ở đây: trong một thị trường lao dốc, hàng chục nghìn người có thể cùng nhận margin call. Mọi người cùng bán thì giá càng giảm mạnh hơn, mà giá càng giảm thì càng nhiều người lại bị margin call.",
+      "purpose": "Dramatize the cascade as a broker-investor exchange.",
+      "emotion": "urgent",
+      "viewerFocus": "the forced-sell demand",
+      "visualGrammar": "DIALOGUE_QA",
+      "sourceRange": {
+        "startWord": 617,
+        "endWord": 667,
+        "quoteChecksum": "5d2ca1a7d190adcb7664cedbc9692840e78cf59ba672b5b7e2ed409bbd3e9db6"
+      },
+      "heroVisual": false,
+      "slots": {
+        "asker": "broker",
+        "askerText": "Anh phải nộp thêm tiền ngay!",
+        "answerer": "investor",
+        "answererText": "Tôi... không đủ tiền nộp."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the forced-sell demand",
+        "takeaway": "Dramatize the cascade as a broker-investor exchange."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-017",
+      "narration": "Rồi nó lại xuất hiện thêm những cái đợt\r\nbán tháo mới. Nó giống như kiểu là một\r\nhàng người đang đứng trên cầu thang ấy.\r\nChỉ cần một người ngã thôi thì đằng sau\r\ncó rất là nhiều người sẽ ngã nữa",
+      "purpose": "The staircase-fall metaphor for cascading margin calls.",
+      "emotion": "urgent",
+      "viewerFocus": "one person falling, then a chain of falls",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 668,
+        "endWord": 710,
+        "quoteChecksum": "b7296dff3167189748ecf7242e1571c5e2ccdaeac58b3c153b666433868d03dc"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Một người ngã trên cầu thang",
+        "payoff": "Cả hàng người ngã theo sau",
+        "leftAsset": "characters/cat_sad",
+        "rightAsset": "finance/trending_down"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "one person falling, then a chain of falls",
+        "takeaway": "The staircase-fall metaphor for cascading margin calls."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_sad",
+        "rightAsset": "finance/trending_down"
+      }
+    },
+    {
+      "id": "scene-018",
+      "narration": "Và đó\r\nchính xác là những gì đã xảy ra tại Hàn\r\nQuốc trong năm nay. Và cú sập này thì\r\nbắt đầu từ cách mà cả một thế hệ nhìn\r\nnhận cái chuyện đầu tư và làm giàu",
+      "purpose": "Emotional-punch photo beat — the margin-call cascade climax, real photo, no character overlay.",
+      "emotion": "sad",
+      "viewerFocus": "a real trading-floor image",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 711,
+        "endWord": 749,
+        "quoteChecksum": "dd0466365718d85ee0cab19f59400dc97122b8f9df18552f993cf05c4e59be64"
+      },
+      "heroVisual": true,
+      "slots": {
+        "photo": "backgrounds/office_trading.jpg",
+        "caption": "Cú sập bắt đầu từ cách cả một thế hệ nhìn nhận việc làm giàu"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a real trading-floor image",
+        "takeaway": "Emotional-punch photo beat — the margin-call cascade climax, real photo, no character overlay."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/office_trading.jpg"
+      }
+    },
+    {
+      "id": "scene-019",
+      "narration": "Hàn\r\nQuốc hiện nay là một trong những quốc\r\ngia có tỉ lệ nợ hộ gia đình cao nhất thế\r\ngiới. Trong 20 năm qua thì quy mô nợ\r\nliên tục tăng lên và hiện đã tương đương\r\ngần toàn bộ GDP của quốc gia này",
+      "purpose": "Root-cause pivot: household debt near GDP.",
+      "emotion": "surprise",
+      "viewerFocus": "debt approaching GDP",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 750,
+        "endWord": 795,
+        "quoteChecksum": "ccaebfe918b90236e70a3885a9b2d012be9df5a97fb35bedeb17e1f179d0065e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "NỢ ≈ GDP",
+        "anchor": "finance/debt",
+        "who": "characters/cat_surprised",
+        "caption": "Nợ hộ gia đình cao nhất thế giới"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "debt approaching GDP",
+        "takeaway": "Root-cause pivot: household debt near GDP."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-020",
+      "narration": "Cuối năm 2025, tổng nợ tín dụng hộ gia đình của Hàn Quốc đã tiến sát mức 2.000 tỷ đô la — một con số khổng lồ.",
+      "purpose": "Land the household-debt hero number.",
+      "emotion": "surprise",
+      "viewerFocus": "the 2000-tỷ figure",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 796,
+        "endWord": 821,
+        "quoteChecksum": "c5fe5f0da0358b2a94d0154fa3b6af25c751c0b894c72786e40170db7ac35b08"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stat": "2.000 TỶ $",
+        "anchor": "finance/debt",
+        "who": "characters/cat_surprised",
+        "caption": "Tổng nợ hộ gia đình, cuối 2025"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the 2000-tỷ figure",
+        "takeaway": "Land the household-debt hero number."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-021",
+      "narration": "Và điều đáng nói là phần lớn số nợ đó liên quan đến nhà ở.",
+      "purpose": "Point the debt story at housing.",
+      "emotion": "concern",
+      "viewerFocus": "debt tied to housing",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 822,
+        "endWord": 838,
+        "quoteChecksum": "a7c8daeafcf56fcceb98fc9e28d916bf0e8e4f2b85bc5fca97ae97fee5e16476"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/real_estate.jpg",
+        "caption": "Phần lớn nợ hộ gia đình gắn với nhà ở"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "debt tied to housing",
+        "takeaway": "Point the debt story at housing."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/real_estate.jpg"
+      }
+    },
+    {
+      "id": "scene-022",
+      "narration": "Hàn Quốc có một mô hình thuê nhà khá đặc biệt gọi là Jeonse. Thay vì trả tiền thuê hằng tháng, người thuê sẽ đưa cho chủ nhà một khoản tiền đặt cọc rất lớn.",
+      "purpose": "Introduce Jeonse with landlord and tenant staged together.",
+      "emotion": "neutral",
+      "viewerFocus": "landlord and tenant at the deposit handoff",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 839,
+        "endWord": 879,
+        "quoteChecksum": "a64b27f61eb66f2dc257cfb05d60b03fde368430a932d760867a1bf2556b931c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "landlord",
+        "seatB": "tenant",
+        "caption": "Jeonse: đặt cọc lớn thay tiền thuê"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "landlord and tenant at the deposit handoff",
+        "takeaway": "Introduce Jeonse with landlord and tenant staged together."
+      },
+      "resolvedAssets": {
+        "who": "landlord",
+        "seatB": "tenant",
+        "stage": "assets/scenes/living_room.svg"
+      }
+    },
+    {
+      "id": "scene-023",
+      "narration": "Nhiều\r\ntrường hợp là lên tới một nửa giá trị\r\ncăn nhà đổi lại thì họ sẽ được ở trong\r\nvài năm mà không phải trả tiền thuê hàng\r\ntháng",
+      "purpose": "Quantify how large the jeonse deposit can be.",
+      "emotion": "surprise",
+      "viewerFocus": "50% of a home's value",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 880,
+        "endWord": 909,
+        "quoteChecksum": "6c6502c13fac5373400cfafb0c326c42cc03a33f6d03740bd0600baefc8183e0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "50%",
+        "anchor": "finance/house",
+        "who": "characters/cat_surprised",
+        "caption": "giá trị căn nhà, trả trước dưới dạng đặt cọc"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "50% of a home's value",
+        "takeaway": "Quantify how large the jeonse deposit can be."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-024",
+      "narration": "Nghe hợp lý đấy, nhưng có một vấn đề: khoản tiền ban đầu rất lớn. Muốn thuê được nhà, bạn phải có sẵn một khoản tiền lớn.",
+      "purpose": "Flag the barrier to entry in jeonse.",
+      "emotion": "concern",
+      "viewerFocus": "the upfront cash requirement",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 910,
+        "endWord": 946,
+        "quoteChecksum": "690f52b7882cb28ee48e3b32d95a7ff63d9ef8b8b583424ae5f976aef9a651f0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bank_interior.svg",
+        "who": "host",
+        "caption": "Cần sẵn một khoản tiền lớn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the upfront cash requirement",
+        "takeaway": "Flag the barrier to entry in jeonse."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/bank_interior.svg"
+      }
+    },
+    {
+      "id": "scene-025",
+      "narration": "Trong thời lãi suất thấp thì chuyện này cũng ổn — tiền rẻ, chủ nhà có thể đem tiền đặt cọc đi đầu tư, người thuê không phải trả tiền hàng tháng, ai cũng vui.",
+      "purpose": "Show the system working fine when rates are low.",
+      "emotion": "hopeful",
+      "viewerFocus": "everyone happy under low rates",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 947,
+        "endWord": 991,
+        "quoteChecksum": "35ff83ced3a9660e67556f3fbcd86719316a7505906b7400f17b40dfc385f8ce"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "landlord",
+        "caption": "Lãi suất thấp: ai cũng vui"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "everyone happy under low rates",
+        "takeaway": "Show the system working fine when rates are low."
+      },
+      "resolvedAssets": {
+        "who": "landlord",
+        "stage": "assets/scenes/living_room.svg"
+      }
+    },
+    {
+      "id": "scene-026",
+      "narration": "Nhưng khi lãi suất tăng, nhiều chủ nhà bắt đầu gặp khó khăn trả lại tiền cọc khi hợp đồng kết thúc — và người chịu áp lực đầu tiên thường là người đi thuê.",
+      "purpose": "Show the system breaking when rates rise.",
+      "emotion": "concern",
+      "viewerFocus": "rates rising, deposits stuck",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 992,
+        "endWord": 1035,
+        "quoteChecksum": "cef0d00f6d9f12854754b189623d508481b6bec728e6a3a640368932b30db57c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Lãi suất tăng",
+        "effect": "Chủ nhà không trả nổi cọc",
+        "causeIcon": "finance/interest_rate",
+        "effectIcon": "finance/house"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rates rising, deposits stuck",
+        "takeaway": "Show the system breaking when rates rise."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/interest_rate",
+        "effectIcon": "finance/house"
+      }
+    },
+    {
+      "id": "scene-027",
+      "narration": "và nếu bạn\r\nlà người trẻ thì câu chuyện nó còn khó\r\nkhăn hơn nữa. Tại vì tỉ lệ có việc làm\r\ncủa thanh niên thì lại thấp hơn đáng kể\r\nso với mặt bằng của nhiều nước phát\r\ntriển",
+      "purpose": "Layer on youth employment weakness.",
+      "emotion": "sad",
+      "viewerFocus": "youth employment lagging",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1036,
+        "endWord": 1075,
+        "quoteChecksum": "1590da6f30f2e3ac2379a16b87433dde3e5ed87e19150b24599f310e8fedee89"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "VIỆC LÀM THẤP HƠN",
+        "anchor": "finance/expense",
+        "who": "characters/cat_sad",
+        "caption": "Thanh niên khó tìm việc ổn định"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "youth employment lagging",
+        "takeaway": "Layer on youth employment weakness."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-028",
+      "narration": "Rất nhiều người phải làm việc\r\ntheo hợp đồng ngắn hạn, làm bán thời\r\ngian hoặc làm những công việc thiếu ổn\r\nđịnh. Vì thế nên là thu nhập của họ tăng\r\nrất là chậm trong khi chi phí sinh hoạt\r\nvà giá tài sản thì vẫn tiếp tục đi lên",
+      "purpose": "Three symptoms of precarious youth employment.",
+      "emotion": "sad",
+      "viewerFocus": "the three job precarity symptoms",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 1076,
+        "endWord": 1126,
+        "quoteChecksum": "c142f5eb9a1558fd390b40488845cf5a59b32a380bde5612136a8ec1fc803854"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Hợp đồng ngắn hạn|Bán thời gian|Thu nhập tăng chậm",
+        "icons": "props/calendar|finance/wallet|finance/trending_down"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the three job precarity symptoms",
+        "takeaway": "Three symptoms of precarious youth employment."
+      },
+      "resolvedAssets": {
+        "icon0": "props/calendar",
+        "icon1": "finance/wallet",
+        "icon2": "finance/trending_down"
+      }
+    },
+    {
+      "id": "scene-029",
+      "narration": "Và điều này tạo ra một cảm giác khá là\r\nphổ biến trong giới trẻ Hàn Quốc là dù\r\ncó học hành tử tế, làm việc chăm chỉ thì\r\ncuộc sống vẫn ngày càng xa khỏi những\r\ncái gì mà thế hệ cha mẹ đã từng đạt\r\nđược",
+      "purpose": "Name the generational gap feeling.",
+      "emotion": "sad",
+      "viewerFocus": "falling behind despite hard work",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 1127,
+        "endWord": 1174,
+        "quoteChecksum": "683bebb256b448f0366aaffc0f74b7db681cbbfa9c35b416b3c56cb284a942b0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/city_street.jpg",
+        "caption": "Chăm chỉ vẫn tụt lại phía sau"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "falling behind despite hard work",
+        "takeaway": "Name the generational gap feeling."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/city_street.jpg"
+      }
+    },
+    {
+      "id": "scene-030",
+      "narration": "Mua nhà ngày càng khó, tích lũy\r\ntài sản ngày càng khó hơn và cái khoảng\r\ncách đó thì cứ lớn dần theo thời gian",
+      "purpose": "Contrast parents' generation vs. today's youth.",
+      "emotion": "sad",
+      "viewerFocus": "the growing generational wealth gap",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 1175,
+        "endWord": 1199,
+        "quoteChecksum": "221bf5cd5e27d7b5232e83924674bae866ed4718499d6901f2e480aa211f6cd1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Thế hệ cha mẹ",
+        "right": "Thế hệ trẻ hôm nay",
+        "leftAsset": "finance/house",
+        "rightAsset": "finance/debt"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the growing generational wealth gap",
+        "takeaway": "Contrast parents' generation vs. today's youth."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/house",
+        "rightAsset": "finance/debt"
+      }
+    },
+    {
+      "id": "scene-031",
+      "narration": "Trong bối cảnh đó, thị trường tài chính trông rất hấp dẫn. Ngoài việc muốn làm giàu nhanh, nhiều người còn cảm thấy họ không còn nhiều lựa chọn khác.",
+      "purpose": "Pivot: markets look like the only remaining option.",
+      "emotion": "concern",
+      "viewerFocus": "no other options left",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1200,
+        "endWord": 1243,
+        "quoteChecksum": "ea3cb61cb20ba12138df72e943ee99f80117e547b6ec8cfca9636cdca8a12365"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "host",
+        "caption": "Không còn nhiều lựa chọn khác"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "no other options left",
+        "takeaway": "Pivot: markets look like the only remaining option."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/street.svg"
+      }
+    },
+    {
+      "id": "scene-032",
+      "narration": "Nếu mà tiền lương mà tăng chậm hơn giá\r\ntài sản thì cái việc chăm chỉ đi làm nó\r\nkhông còn đủ nữa mà phải đi thêm những\r\ncon đường khác và chứng khoán nó bắt đầu\r\ntrông giống một con đường tắt",
+      "purpose": "Wages lagging assets pushes people toward stocks.",
+      "emotion": "concern",
+      "viewerFocus": "wages vs. asset prices gap",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 1244,
+        "endWord": 1286,
+        "quoteChecksum": "73b79d52ab35ca13e5f684173fe0dcc54f82e5bf59ceca9fc4c9bb362e3821d7"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Lương tăng chậm hơn giá tài sản",
+        "effect": "Chứng khoán trở thành đường tắt",
+        "causeIcon": "finance/wallet",
+        "effectIcon": "finance/stock"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "wages vs. asset prices gap",
+        "takeaway": "Wages lagging assets pushes people toward stocks."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/wallet",
+        "effectIcon": "finance/stock"
+      }
+    },
+    {
+      "id": "scene-033",
+      "narration": "Còn margin thì giống như đưa cho bạn một chiếc xe nhanh hơn để đi con đường tắt đó. Nhưng tốc độ cao luôn đi kèm rủi ro cao.",
+      "purpose": "Margin as the faster, riskier vehicle metaphor.",
+      "emotion": "concern",
+      "viewerFocus": "speed vs. risk",
+      "visualGrammar": "CHAR_PROP",
+      "sourceRange": {
+        "startWord": 1287,
+        "endWord": 1320,
+        "quoteChecksum": "cb51d164b2e9b466775d6fe0bb69f336bc195b566164b5246c0d3b43ecf77e52"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "investor",
+        "prop": "finance/loan",
+        "label": "Tốc độ cao = rủi ro cao"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "speed vs. risk",
+        "takeaway": "Margin as the faster, riskier vehicle metaphor."
+      },
+      "resolvedAssets": {
+        "who": "investor",
+        "prop": "finance/loan"
+      }
+    },
+    {
+      "id": "scene-034",
+      "narration": "Người trẻ Hàn Quốc có một cách diễn đạt khá thú vị cho cảm giác này: cảm giác bị bỏ lại phía sau.",
+      "purpose": "Name the 'left behind' feeling that drives risk-taking.",
+      "emotion": "sad",
+      "viewerFocus": "being left behind",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 1321,
+        "endWord": 1347,
+        "quoteChecksum": "9f8d3e02fc2175787f5e1da32707d37343431b6ad1ecfb4b209dd49731cd0fc3"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/city_skyline.jpg",
+        "caption": "Cảm giác bị bỏ lại phía sau"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "being left behind",
+        "takeaway": "Name the 'left behind' feeling that drives risk-taking."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/city_skyline.jpg"
+      }
+    },
+    {
+      "id": "scene-035",
+      "narration": "Mọi thứ xung quanh đều tăng tốc, giá\r\nnhà, giá tài sản, những người mà đã sở\r\nhữu tài sản thì ngày càng giàu hơn trong\r\nkhi bản thân mình thì vẫn đứng nguyên\r\ntại một chỗ",
+      "purpose": "Those with assets get richer, those without stand still.",
+      "emotion": "sad",
+      "viewerFocus": "asset-holders vs. everyone else",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 1348,
+        "endWord": 1384,
+        "quoteChecksum": "20eea77fa9f4722e3197ef5b0374fdd697021094296deee707acbe9600eb1a7d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Có tài sản: ngày càng giàu hơn",
+        "right": "Không có: đứng nguyên một chỗ",
+        "leftAsset": "finance/chart_up",
+        "rightAsset": "characters/cat_sad"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "asset-holders vs. everyone else",
+        "takeaway": "Those with assets get richer, those without stand still."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/chart_up",
+        "rightAsset": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-036",
+      "narration": "Và khi mà cảm giác đó đã\r\nlan rộng ra cả một thế hệ thì nó sẽ bắt\r\nđầu ảnh hưởng đến cách mà người ta ra\r\nquyết định tài chính",
+      "purpose": "That feeling reshapes an entire generation's financial choices.",
+      "emotion": "concern",
+      "viewerFocus": "generation-wide behavior shift",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1385,
+        "endWord": 1415,
+        "quoteChecksum": "9a3851db222aeb62cf0fb09c2e4d8a347455f73e6503e906b473265b29e35fa8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "host",
+        "caption": "Cả thế hệ đổi cách quyết định"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "generation-wide behavior shift",
+        "takeaway": "That feeling reshapes an entire generation's financial choices."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/street.svg"
+      }
+    },
+    {
+      "id": "scene-037",
+      "narration": "Họ sẽ lao vào sau\r\nkhi đã đọc được vài cuốn sách đầu tư này\r\nhoặc là lao vào vì thấy là mình đang bị\r\nthời gian đuổi theo, đang bị giá nhà\r\nđuổi theo, bị chi phí sinh hoạt đuổi\r\ntheo",
+      "purpose": "The three things chasing people into the market.",
+      "emotion": "urgent",
+      "viewerFocus": "time, housing, cost of living all chasing you",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 1416,
+        "endWord": 1457,
+        "quoteChecksum": "c9aca8cf5bfba895075d925efb06a67ce90c27908692ef005f614313d9351d2a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Thời gian đuổi theo|Giá nhà đuổi theo|Chi phí sinh hoạt đuổi theo",
+        "icons": "props/hourglass|finance/house|finance/expense"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "time, housing, cost of living all chasing you",
+        "takeaway": "The three things chasing people into the market."
+      },
+      "resolvedAssets": {
+        "icon0": "props/hourglass",
+        "icon1": "finance/house",
+        "icon2": "finance/expense"
+      }
+    },
+    {
+      "id": "scene-038",
+      "narration": "và nếu mà không chạy nhanh hơn ấ\r\nthì khoảng cách đó sẽ ngày càng lớn hơn",
+      "purpose": "The stakes of not keeping up.",
+      "emotion": "sad",
+      "viewerFocus": "the widening gap",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1458,
+        "endWord": 1474,
+        "quoteChecksum": "5bf16ec2e291f1087858503f239908b7291ada14c7ba456bbacbb27bf807ba25"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/subway_platform.svg",
+        "who": "host",
+        "caption": "Không chạy nhanh hơn = tụt xa hơn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the widening gap",
+        "takeaway": "The stakes of not keeping up."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/subway_platform.svg"
+      }
+    },
+    {
+      "id": "scene-039",
+      "narration": "Nhưng mà đó mới chỉ là một nửa câu\r\nchuyện thôi. Nửa còn lại thì nó nằm ở\r\ncấu trúc của thị trường chứng khoán Hàn\r\nQuốc",
+      "purpose": "Pivot to part two: market structure itself.",
+      "emotion": "neutral",
+      "viewerFocus": "the second half of the story",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1475,
+        "endWord": 1501,
+        "quoteChecksum": "04c500c2ccfc93b8a5297d9385cfcef1784da3bbbe927cb2996da50fb285c99c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/boardroom.svg",
+        "who": "host",
+        "caption": "Nửa còn lại: cấu trúc thị trường"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the second half of the story",
+        "takeaway": "Pivot to part two: market structure itself."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/boardroom.svg"
+      }
+    },
+    {
+      "id": "scene-040",
+      "narration": "Một cái đặc điểm khá là khác\r\nthường của chứng khoán Hàn Quốc là nhà\r\nđầu tư cá nhân chiếm tỉ trọng rất lớn",
+      "purpose": "Korea's stock market is unusually retail-dominated.",
+      "emotion": "neutral",
+      "viewerFocus": "retail investors dominate",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1502,
+        "endWord": 1525,
+        "quoteChecksum": "a7a667253d64bd49f1730bb8443fcf7b6ac71bbf64e37aab3228cb05b18c9049"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "NHÀ ĐẦU TƯ CÁ NHÂN",
+        "anchor": "characters/cat",
+        "who": "characters/cat_explain",
+        "caption": "Chiếm tỉ trọng rất lớn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "retail investors dominate",
+        "takeaway": "Korea's stock market is unusually retail-dominated."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_explain"
+      }
+    },
+    {
+      "id": "scene-041",
+      "narration": "Ở\r\nnhiều thị trường phát triển ý thì phần\r\nlớn giao dịch hàng ngày đến từ những quỹ\r\nđầu tư, ngân hàng hay là những tổ chức\r\ntài chính lớn. vẫn có nhà đầu tư cá nhân\r\nnhưng mà sẽ không phải lực lượng quyết\r\nđịnh xu hướng ngắn hạn của thị trường",
+      "purpose": "Contrast developed markets (institutions) vs. Korea (retail).",
+      "emotion": "neutral",
+      "viewerFocus": "institutions vs. retail dominance",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 1526,
+        "endWord": 1578,
+        "quoteChecksum": "d21212a602254ff0943e590cff9b49dc21dbbc4b386f9cddbcd5ebbd7d6eeaf0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Thị trường phát triển: quỹ, ngân hàng",
+        "right": "Hàn Quốc: nhà đầu tư cá nhân",
+        "leftAsset": "people/company",
+        "rightAsset": "characters/cat"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "institutions vs. retail dominance",
+        "takeaway": "Contrast developed markets (institutions) vs. Korea (retail)."
+      },
+      "resolvedAssets": {
+        "leftAsset": "people/company",
+        "rightAsset": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-042",
+      "narration": "Còn ở Hàn Quốc ấy thì trong nhiều năm\r\nnhà đầu tư cá nhân luôn chiếm phần lớn\r\nthanh khoản trên thị trường. Năm 2020\r\nthì họ từng chiếm khoảng 2/3 khối lượng\r\ngiao dịch",
+      "purpose": "2020 data point: 2/3 of trading volume.",
+      "emotion": "neutral",
+      "viewerFocus": "2/3 of 2020 volume",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1579,
+        "endWord": 1614,
+        "quoteChecksum": "a9d0f41dbee66fbb7177f293f8ad1b3869a22891e8623e799f3e9a864c3f7fe7"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "2/3",
+        "anchor": "finance/chart_up",
+        "who": "characters/cat_explain",
+        "caption": "Khối lượng giao dịch năm 2020"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "2/3 of 2020 volume",
+        "takeaway": "2020 data point: 2/3 of trading volume."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_explain"
+      }
+    },
+    {
+      "id": "scene-043",
+      "narration": "Đến năm 2026, con số này vẫn thường xuyên dao động quanh mức 60%. Tức là cứ 10 lệnh mua bán trên thị trường thì có sáu lệnh đến từ nhà đầu tư cá nhân.",
+      "purpose": "2026 data point: still 60% of orders.",
+      "emotion": "neutral",
+      "viewerFocus": "60% of orders in 2026",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 1615,
+        "endWord": 1652,
+        "quoteChecksum": "5cbd5797a377f03dcf011686ad9b8e3d2bb5139ea04c15c316fac40843540314"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "60%",
+        "anchor": "finance/portfolio",
+        "who": "characters/cat_explain",
+        "caption": "Lệnh mua bán năm 2026"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "60% of orders in 2026",
+        "takeaway": "2026 data point: still 60% of orders."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_explain"
+      }
+    },
+    {
+      "id": "scene-044",
+      "narration": "Đây là một tỉ lệ rất là cao\r\nvà nó kéo thêm một hệ quả ấy là khi mà\r\nnhà đầu tư cá nhân hưng phấn ấ thì tiền\r\nsẽ đổ vào thị trường rất là mạnh",
+      "purpose": "Retail euphoria drives money in fast.",
+      "emotion": "hopeful",
+      "viewerFocus": "euphoria pushing money in",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 1653,
+        "endWord": 1689,
+        "quoteChecksum": "0baf4bfb9c737cdbdcd3596136ca729e6f93c4691f1584ecb2d69ef133516eb8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Nhà đầu tư cá nhân hưng phấn",
+        "effect": "Tiền đổ vào ồ ạt",
+        "causeIcon": "characters/cat_happy",
+        "effectIcon": "finance/chart_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "euphoria pushing money in",
+        "takeaway": "Retail euphoria drives money in fast."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_happy",
+        "effectIcon": "finance/chart_up"
+      }
+    },
+    {
+      "id": "scene-045",
+      "narration": "Và khi họ hoảng loạn, lực bán cũng xuất hiện với tốc độ tương tự. Thị trường vì thế phản ứng nhạy hơn nhiều với tâm lý đám đông.",
+      "purpose": "Panic drives selling just as fast — market volatility source.",
+      "emotion": "urgent",
+      "viewerFocus": "panic driving equally fast selling",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 1690,
+        "endWord": 1721,
+        "quoteChecksum": "f03f265fc301ce67d8f2ad5689fc300e028234765cc25512ce0caa188b9b3523"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Nhà đầu tư hoảng loạn",
+        "effect": "Lực bán ồ ạt",
+        "causeIcon": "characters/cat_surprised",
+        "effectIcon": "finance/trending_down"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "panic driving equally fast selling",
+        "takeaway": "Panic drives selling just as fast — market volatility source."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat_surprised",
+        "effectIcon": "finance/trending_down"
+      }
+    },
+    {
+      "id": "scene-046",
+      "narration": "Người Hàn Quốc thậm chí có một biệt danh cho nhóm nhà đầu tư này: \"gaemi\", nghĩa là đàn kiến.",
+      "purpose": "The gaemi ants reveal — a defining hero beat.",
+      "emotion": "neutral",
+      "viewerFocus": "the nickname reveal",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1722,
+        "endWord": 1745,
+        "quoteChecksum": "570e813b6e969f51d01da5ada792e57c485b03d52ec9736b7d5f0979b9b2b07f"
+      },
+      "heroVisual": true,
+      "slots": {
+        "stage": "assets/scenes/street.svg",
+        "who": "host",
+        "caption": "\"Gaemi\" — đàn kiến"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the nickname reveal",
+        "takeaway": "The gaemi ants reveal — a defining hero beat."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/street.svg"
+      }
+    },
+    {
+      "id": "scene-047",
+      "narration": "Nghe thì có vẻ nhỏ bé, nhưng nếu một triệu con kiến cùng chạy về một hướng, chúng cũng tạo ra một lực đẩy rất lớn.",
+      "purpose": "One ant vs. a million ants moving together.",
+      "emotion": "surprise",
+      "viewerFocus": "small ants, huge combined force",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 1746,
+        "endWord": 1780,
+        "quoteChecksum": "09379ca73bdac4d29afe6f4f3feac2ed55c78c1eb5e2a5e03c8e26808efd8177"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Một con kiến rất nhỏ",
+        "payoff": "Triệu con kiến cùng hướng = lực đẩy khổng lồ",
+        "leftAsset": "characters/cat",
+        "rightAsset": "finance/chart_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "small ants, huge combined force",
+        "takeaway": "One ant vs. a million ants moving together."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat",
+        "rightAsset": "finance/chart_up"
+      }
+    },
+    {
+      "id": "scene-048",
+      "narration": "Đặc biệt là khi\r\nphần lớn trong số đó thì lại đang mang\r\ntheo đoàn bảy tài chính",
+      "purpose": "The ants are carrying margin — danger multiplier.",
+      "emotion": "concern",
+      "viewerFocus": "ants carrying leverage",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1781,
+        "endWord": 1798,
+        "quoteChecksum": "c7d3f7528a5e6ae349ef83d5355526d6107c581054089c93fb52eaa3992123d7"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/park.svg",
+        "who": "host",
+        "caption": "Đàn kiến mang theo margin"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "ants carrying leverage",
+        "takeaway": "The ants are carrying margin — danger multiplier."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/park.svg"
+      }
+    },
+    {
+      "id": "scene-049",
+      "narration": "Những nghiên\r\ncứu về hành vi đầu tư tại Hàn Quốc cho\r\nthấy là nhà đầu tư cá nhân thì thường\r\nmắc những sai lầm rất là quen thuộc, dễ\r\nbị ảnh hưởng bởi đám đông này",
+      "purpose": "Cite behavioral research on retail mistakes.",
+      "emotion": "neutral",
+      "viewerFocus": "the research citation",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 1799,
+        "endWord": 1835,
+        "quoteChecksum": "33fb8099ba87de1d68b8bdf1a8b639f50c58c33be483e836698f5279ea713f61"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Nghiên cứu hành vi đầu tư",
+        "body": "Nhà đầu tư cá nhân dễ mắc sai lầm quen thuộc, dễ bị cuốn theo đám đông"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the research citation",
+        "takeaway": "Cite behavioral research on retail mistakes."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-050",
+      "narration": "Thấy người khác mua thì cũng FOMO, thấy cổ phiếu tăng mạnh thì cũng FOMO.",
+      "purpose": "Name FOMO as the first behavioral trap.",
+      "emotion": "surprise",
+      "viewerFocus": "FOMO buying",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 1836,
+        "endWord": 1853,
+        "quoteChecksum": "0a0c1971600704309c7534db63e029e77117927539c0dba1c43411aa6e2200fb"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#9B59B6",
+        "caption": "FOMO",
+        "who": "investor"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "FOMO buying",
+        "takeaway": "Name FOMO as the first behavioral trap."
+      },
+      "resolvedAssets": {
+        "who": "investor",
+        "content": "#9B59B6"
+      }
+    },
+    {
+      "id": "scene-051",
+      "narration": "Nhiều người lại thích săn những\r\nmã cổ phiếu nhỏ, rủi ro cao nhưng mà lại\r\ncó khả năng tăng giá nhanh. Nó như kiểu\r\nlà mua vé số xong hi vọng chúng độc đắc\r\nấy",
+      "purpose": "Chasing small risky stocks like a lottery ticket.",
+      "emotion": "concern",
+      "viewerFocus": "lottery-ticket investing",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 1854,
+        "endWord": 1889,
+        "quoteChecksum": "70a20a55b06fcfa8ecb59bd7b8269ff7ac917108b1305482651b898ebda06ac9"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Săn cổ phiếu nhỏ, rủi ro cao",
+        "payoff": "Như mua vé số, hy vọng trúng độc đắc",
+        "leftAsset": "finance/stock",
+        "rightAsset": "finance/investment"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "lottery-ticket investing",
+        "takeaway": "Chasing small risky stocks like a lottery ticket."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/stock",
+        "rightAsset": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-052",
+      "narration": "Một cái xu hướng khác cũng khá phổ\r\nbiến là bán quá sớm những khoản đầu tư\r\nđang có lời nhưng mà lại cố giữ lại\r\nnhững khoản đang lỗ và hy vọng là giá sẽ\r\nquay đầu",
+      "purpose": "Behavioral bias: sell winners early, hold losers.",
+      "emotion": "concern",
+      "viewerFocus": "disposition effect",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 1890,
+        "endWord": 1927,
+        "quoteChecksum": "4ec5ea514e8307a8b6c6ea4486e5c8ae84e821297fb3d32564ed537d6153afd8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Bán sớm khoản đang lời",
+        "right": "Giữ mãi khoản đang lỗ",
+        "leftAsset": "finance/profit",
+        "rightAsset": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "disposition effect",
+        "takeaway": "Behavioral bias: sell winners early, hold losers."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/profit",
+        "rightAsset": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-053",
+      "narration": "Đây là một cái hiện tượng rất\r\nlà nổi tiếng trong tài chính hành vi và\r\nthực ra nó cũng không chỉ xuất hiện ở\r\nHàn Quốc mà ở đâu thì người ta có thể\r\nmắc phải",
+      "purpose": "Note this bias is global, not unique to Korea.",
+      "emotion": "neutral",
+      "viewerFocus": "a well-known global phenomenon",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1928,
+        "endWord": 1964,
+        "quoteChecksum": "adcd46e07bfcfd34c636dc7344b18eb031ce30c57dcaae48b8bb909a25cd4e43"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Hiện tượng phổ biến toàn cầu"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a well-known global phenomenon",
+        "takeaway": "Note this bias is global, not unique to Korea."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    },
+    {
+      "id": "scene-054",
+      "narration": "Nhưng ở Hàn Quốc, mọi thứ cực đoan hơn khi margin xuất hiện, bởi nhóm dùng margin thường chính là nhóm giao dịch tích cực nhất.",
+      "purpose": "Margin amplifies the bias in Korea specifically.",
+      "emotion": "concern",
+      "viewerFocus": "margin users are the most active traders",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 1965,
+        "endWord": 2002,
+        "quoteChecksum": "b07d72bc3e9e44d969c3b9dcb5d01d958977c84f4a0943245b415c012bb71b53"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Margin: nhóm giao dịch tích cực nhất"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "margin users are the most active traders",
+        "takeaway": "Margin amplifies the bias in Korea specifically."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-055",
+      "narration": "Theo những nghiên cứu tại\r\nKCMI thì những người dùng Marin chỉ\r\nchiếm một phần rất là nhỏ trong tổng số\r\nnhà đầu tư cá nhân nhưng mà số lượng\r\ngiao dịch họ tạo ra thì lại lớn hơn rất\r\nlà nhiều",
+      "purpose": "Cite KCMI research on margin users' outsized activity.",
+      "emotion": "neutral",
+      "viewerFocus": "the KCMI data point",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 2003,
+        "endWord": 2044,
+        "quoteChecksum": "ddfedd550b67bc4823b7dcb65c9dd4be2a65940c25dcf90b86f2b465b380007f"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Nghiên cứu tại KCMI",
+        "body": "Người dùng margin: số lượng ít, nhưng khối lượng giao dịch vượt trội"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the KCMI data point",
+        "takeaway": "Cite KCMI research on margin users' outsized activity."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-056",
+      "narration": "Tại vì là đội này thì mua bán\r\nthường xuyên hơn rồi là thích những cổ\r\nphiếu biến động mạnh hơn, danh mục đầu\r\ntư cũng tập trung hơn và chấp nhận rủi\r\nro cao hơn",
+      "purpose": "Three traits of the margin-heavy trading group.",
+      "emotion": "concern",
+      "viewerFocus": "frequent trading, volatile stocks, concentrated risk",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 2045,
+        "endWord": 2080,
+        "quoteChecksum": "37d26ae21c262f595d7ef503c999c1621e2feb0626aaba4680ac4423301395f1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Giao dịch thường xuyên|Cổ phiếu biến động mạnh|Rủi ro tập trung cao",
+        "icons": "finance/stock|finance/chart_up|finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "frequent trading, volatile stocks, concentrated risk",
+        "takeaway": "Three traits of the margin-heavy trading group."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/stock",
+        "icon1": "finance/chart_up",
+        "icon2": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-057",
+      "narration": "Đây là nhóm 'đạp ga' mạnh nhất trên thị trường. Nhưng vấn đề là chiếc xe của họ lại chạy bằng tiền đi vay.",
+      "purpose": "The most aggressive traders run on borrowed money.",
+      "emotion": "concern",
+      "viewerFocus": "borrowed money fueling the fastest traders",
+      "visualGrammar": "CHAR_PROP",
+      "sourceRange": {
+        "startWord": 2081,
+        "endWord": 2111,
+        "quoteChecksum": "bc29811d869f6300f0c4aa9f1e5b25516762b297072e1e4d4d759be86227100a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "investor",
+        "prop": "finance/loan",
+        "label": "Đạp ga mạnh nhất — bằng tiền đi vay"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "borrowed money fueling the fastest traders",
+        "takeaway": "The most aggressive traders run on borrowed money."
+      },
+      "resolvedAssets": {
+        "who": "investor",
+        "prop": "finance/loan"
+      }
+    },
+    {
+      "id": "scene-058",
+      "narration": "Thì khi mà thị\r\ntrường ổn ngon thì không sao, họ sẽ kiếm\r\nđược nhiều tiền hơn người khác. Nhưng mà\r\nkhi mà thị trường lao dốc thì đây là\r\nnhững người gặp tai nạn đầu tiên và\r\nthường là tai nạn thảm khốc nhất",
+      "purpose": "Good markets reward them most; crashes hurt them first.",
+      "emotion": "concern",
+      "viewerFocus": "asymmetric upside/downside for margin users",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2112,
+        "endWord": 2156,
+        "quoteChecksum": "38109b6afe087a550c44e4b97dc281339c3336a718c000ce9695b59736ab6b8f"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Thị trường tốt: lãi nhiều hơn",
+        "right": "Thị trường sập: tai nạn đầu tiên",
+        "leftAsset": "finance/chart_up",
+        "rightAsset": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "asymmetric upside/downside for margin users",
+        "takeaway": "Good markets reward them most; crashes hurt them first."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/chart_up",
+        "rightAsset": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-059",
+      "narration": "Và cái\r\nđiều buồn cười là sau khi cộng tất cả\r\nnhững chi phí lại từ phí giao dịch, lãi\r\nvay marin cho đến những khoản lỗ phát\r\nsinh ấy thì hiệu quả của nhóm này thường\r\nkhông tốt hơn những người đầu tư bình\r\nthường và nhiều trường hợp còn thấp hơn",
+      "purpose": "Net of fees and interest, margin users don't even outperform.",
+      "emotion": "sarcastic",
+      "viewerFocus": "underperformance after costs",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 2157,
+        "endWord": 2209,
+        "quoteChecksum": "444a55415f50395910ecb4638d6e9cdba4ada94932465b948871dbb6ba534e78"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "HIỆU QUẢ THẤP HƠN",
+        "anchor": "finance/loss",
+        "who": "characters/cat_shrug",
+        "caption": "Sau phí giao dịch và lãi vay"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "underperformance after costs",
+        "takeaway": "Net of fees and interest, margin users don't even outperform."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_shrug"
+      }
+    },
+    {
+      "id": "scene-060",
+      "narration": "Tức là họ chấp nhận nhiều rủi ro hơn,\r\ncăng thẳng hơn, giao dịch nhiều hơn\r\nnhưng mà kết quả cuối cùng thì lại không\r\nhẳn là tốt hơn. Và đó cũng là một trong\r\nnhững nghịch lý lớn nhất của con sốt\r\nMarin tại Hàn Quốc",
+      "purpose": "State the paradox plainly.",
+      "emotion": "sarcastic",
+      "viewerFocus": "more risk, more stress, no better results",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 2210,
+        "endWord": 2256,
+        "quoteChecksum": "61d1a1e938ade186d83cdeef075d96947b125d90de2e0d0ea0554f647527e8fa"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/money_counting.jpg",
+        "caption": "Rủi ro cao hơn, kết quả không tốt hơn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "more risk, more stress, no better results",
+        "takeaway": "State the paradox plainly."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/money_counting.jpg"
+      }
+    },
+    {
+      "id": "scene-061",
+      "narration": "Thế thì tại sao\r\nnhiều nhà đầu tư Hàn Quốc lại sẵn sàng\r\nchơi cái ván cược to như thế? Thì câu\r\ntrả lời nằm ở rất là nhiều nguyên nhân",
+      "purpose": "Pivot to the 'why' section — root causes.",
+      "emotion": "curious",
+      "viewerFocus": "why take such a big bet",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 2257,
+        "endWord": 2287,
+        "quoteChecksum": "bc1911ed99bf03cea0aa3d379697eb179ab2026efd572ed4cc127c0916bd3103"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Tại sao vẫn sẵn sàng cược lớn?",
+        "a": "Có bốn nguyên nhân chính..."
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "why take such a big bet",
+        "takeaway": "Pivot to the 'why' section — root causes."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-062",
+      "narration": "Đầu tiên là áp lực tài sản. Như chúng ta\r\nđã nói ở phần trước thì khi mà giá nhà\r\ntăng quá nhanh, con đường tích lũy\r\ntruyền thống ngày càng quá xa vời thì\r\ncon người sẽ phải tự nhiên đi tìm đường\r\nkhác thôi",
+      "purpose": "Preview the four root causes before detailing each.",
+      "emotion": "neutral",
+      "viewerFocus": "the four causes overview",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 2288,
+        "endWord": 2333,
+        "quoteChecksum": "9aa8b9bc1ce9f43877a736caed9d48c1ba4240c9bfb3a8d7223792e1232018ba"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Áp lực tài sản|Korea Discount|Bán khống bất công|Quá dễ tham gia",
+        "icons": "finance/house|finance/stock|finance/loss|finance/investment"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the four causes overview",
+        "takeaway": "Preview the four root causes before detailing each."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/house",
+        "icon1": "finance/stock",
+        "icon2": "finance/loss",
+        "icon3": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-063",
+      "narration": "Và chứng khoán là một trong\r\nnhững số ít nơi mà một người bình thường\r\nvẫn có cảm giác là mình còn có cơ hội\r\nđổi đời",
+      "purpose": "Stocks feel like the last real shot at closing the wealth gap.",
+      "emotion": "concern",
+      "viewerFocus": "stocks as a last chance",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2334,
+        "endWord": 2360,
+        "quoteChecksum": "924cb086ad423b32388abd5970da6de089bb2fbdf1d2b2ab4f2c82d5f88258ce"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Chứng khoán = cơ hội đổi đời"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "stocks as a last chance",
+        "takeaway": "Stocks feel like the last real shot at closing the wealth gap."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-064",
+      "narration": "Chỉ cần một chiếc điện thoại, một tài khoản giao dịch, bấm vài nút là đã có thể tham gia cuộc chơi.",
+      "purpose": "Show how frictionless entry has become.",
+      "emotion": "neutral",
+      "viewerFocus": "entering the market in seconds",
+      "visualGrammar": "CHAR_PROP",
+      "sourceRange": {
+        "startWord": 2361,
+        "endWord": 2384,
+        "quoteChecksum": "efb4d23ba8e3e56dc0bcbef4f36675a4ea47919fa66b331fcf969e9f817fdd88"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "investor",
+        "prop": "finance/investment",
+        "label": "Chỉ cần vài cú chạm để tham gia"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "entering the market in seconds",
+        "takeaway": "Show how frictionless entry has become."
+      },
+      "resolvedAssets": {
+        "who": "investor",
+        "prop": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-065",
+      "narration": "Trong suy nghĩ của nhiều người trẻ thì\r\nđây gần như là cơ hội thực tế cuối cùng\r\nđể thu hẹp khoảng cách tài sản",
+      "purpose": "Framing: this feels like the last real chance.",
+      "emotion": "sad",
+      "viewerFocus": "the last realistic chance",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 2385,
+        "endWord": 2409,
+        "quoteChecksum": "fafa2ddf84cfac5a350ff9f35db42dad5f9dd3759b76732db822c21ceb69b762"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/home_study.jpg",
+        "caption": "Cơ hội thực tế cuối cùng để đổi đời"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the last realistic chance",
+        "takeaway": "Framing: this feels like the last real chance."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/home_study.jpg"
+      }
+    },
+    {
+      "id": "scene-066",
+      "narration": "Và cũng\r\nnhư đã nói rất là nhiều rồi thì cơ hội\r\nlớn thường đi kèm rủi ro lớn và rủi ro\r\nthì thường rất là lớn ấy. Rồi là khi\r\nMarin xuất hiện ấy thì nó còn lớn hơn\r\nnữa, lãi to hơn, mất cũng nhanh hơn",
+      "purpose": "Big opportunity, bigger risk — margin makes both extreme.",
+      "emotion": "concern",
+      "viewerFocus": "opportunity vs. amplified risk",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2410,
+        "endWord": 2457,
+        "quoteChecksum": "8b1ef42854d03106bc1f3a2327f2362b79b604b4b04b18f3a98aec52d6c70e8e"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Cơ hội lớn",
+        "right": "Rủi ro lớn hơn khi có margin",
+        "leftAsset": "finance/profit",
+        "rightAsset": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "opportunity vs. amplified risk",
+        "takeaway": "Big opportunity, bigger risk — margin makes both extreme."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/profit",
+        "rightAsset": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-067",
+      "narration": "Gốc rễ thứ hai là một khái niệm nổi tiếng ở Hàn Quốc: \"Korea Discount\".",
+      "purpose": "Introduce Korea Discount as root cause #2.",
+      "emotion": "neutral",
+      "viewerFocus": "the term Korea Discount",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 2458,
+        "endWord": 2475,
+        "quoteChecksum": "a34f793a10a3dc4126f2d103a45ebf8087a365b9ff64951eadc1e5e13e68e59a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#2C3E50",
+        "caption": "\"Korea Discount\"",
+        "who": "host"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the term Korea Discount",
+        "takeaway": "Introduce Korea Discount as root cause #2."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "content": "#2C3E50"
+      }
+    },
+    {
+      "id": "scene-068",
+      "narration": "Đây\r\nlà cách mà giới đầu tư mô tả về cổ phiếu\r\nHàn Quốc thường được định giá thấp hơn\r\nnhiều doanh nghiệp tương tự ở những nước\r\nphát triển khác",
+      "purpose": "Korean stocks trade at a discount to comparable foreign firms.",
+      "emotion": "neutral",
+      "viewerFocus": "Korean stocks undervalued vs. peers abroad",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2476,
+        "endWord": 2506,
+        "quoteChecksum": "6f7c8baca3ade20c244d690d06235d90a1313341d2483844d5b03a0b988969a1"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Cổ phiếu Hàn Quốc",
+        "right": "Doanh nghiệp tương tự nước ngoài",
+        "leftAsset": "finance/stock",
+        "rightAsset": "finance/chart_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "Korean stocks undervalued vs. peers abroad",
+        "takeaway": "Korean stocks trade at a discount to comparable foreign firms."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/stock",
+        "rightAsset": "finance/chart_up"
+      }
+    },
+    {
+      "id": "scene-069",
+      "narration": "Nguyên nhân một phần đến từ cấu trúc của các tập đoàn chaebol, một phần đến từ tranh cãi kéo dài về quyền lợi cổ đông nhỏ.",
+      "purpose": "Two structural causes of the Korea Discount.",
+      "emotion": "neutral",
+      "viewerFocus": "chaebol structure and shareholder disputes",
+      "visualGrammar": "DIAGRAM",
+      "sourceRange": {
+        "startWord": 2507,
+        "endWord": 2538,
+        "quoteChecksum": "f040d824b0e32e5aa9aef23d4b333ab08bc3b188d6c6dda5c373525f53b4a7e8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Cấu trúc tập đoàn chaebol|Tranh cãi quyền cổ đông nhỏ",
+        "icons": "people/company|finance/stock"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "chaebol structure and shareholder disputes",
+        "takeaway": "Two structural causes of the Korea Discount."
+      },
+      "resolvedAssets": {
+        "icon0": "people/company",
+        "icon1": "finance/stock"
+      }
+    },
+    {
+      "id": "scene-070",
+      "narration": "Nhưng mà cái điều quan trọng là nhiều\r\nnhà đầu tư tin rằng nó tồn tại và khi mà\r\nngười ta không tin thị trường sẽ tưởng\r\nthưởng xứng đáng cho việc nắm giữ dài\r\nhạn ấy thì họ sẽ có xu hướng tìm kiếm\r\nlợi nhuận ở những con sóng ngắn hơn",
+      "purpose": "Belief in the discount pushes people to short-term trading.",
+      "emotion": "concern",
+      "viewerFocus": "distrust in long-term holding",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2539,
+        "endWord": 2591,
+        "quoteChecksum": "a8d10d8d305e78d4f9f98e28cc9eef5bd0d715ee76f1dcc68a09de808cb25346"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Không tin dài hạn, chơi ngắn hạn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "distrust in long-term holding",
+        "takeaway": "Belief in the discount pushes people to short-term trading."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-071",
+      "narration": "Yếu\r\ntố thứ ba là câu chuyện bán khống hay\r\ncòn gọi là short selling",
+      "purpose": "Introduce short selling as root cause #3.",
+      "emotion": "neutral",
+      "viewerFocus": "the term short selling",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2592,
+        "endWord": 2606,
+        "quoteChecksum": "0a68b545336bfd613f8d96b61df4914ccec2586f79774b43cbf360dd335e99dd"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/boardroom.svg",
+        "who": "host",
+        "caption": "Bán khống (Short Selling)"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the term short selling",
+        "takeaway": "Introduce short selling as root cause #3."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/boardroom.svg"
+      }
+    },
+    {
+      "id": "scene-072",
+      "narration": "Về lý thuyết\r\nthì đây là một công cụ hoàn toàn bình\r\nthường trên những cái thị trường tài\r\nchính giúp thị trường phát hiện ra những\r\ncái mức giá phi lý và hạn chế cái tình\r\ntrạng cổ phiếu bị thổi phồng quá mức",
+      "purpose": "Short selling's legitimate theoretical role.",
+      "emotion": "neutral",
+      "viewerFocus": "the theoretical case for short selling",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 2607,
+        "endWord": 2651,
+        "quoteChecksum": "095b3d791c7f9718029899213f5274e9860902cff50de54dacb281d0fa43ea0b"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Về lý thuyết",
+        "body": "Bán khống giúp phát hiện giá phi lý, hạn chế cổ phiếu bị thổi phồng"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the theoretical case for short selling",
+        "takeaway": "Short selling's legitimate theoretical role."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-073",
+      "narration": "Nhưng mà trong mắt nhiều nhà đầu tư cá\r\nnhân của Hàn Quốc thì bán khống lại là\r\nsân chơi của những tổ chức lớn, đặc biệt\r\nlà những quỹ nước ngoài",
+      "purpose": "Retail sees short selling as a rigged playing field.",
+      "emotion": "concern",
+      "viewerFocus": "retail vs. foreign institutional funds",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2652,
+        "endWord": 2683,
+        "quoteChecksum": "a93bfbdad32f9976361e22b20c4d9665806edf0f79ec7be610fd91f3bc0d4215"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Nhà đầu tư cá nhân",
+        "right": "Quỹ nước ngoài & tổ chức lớn",
+        "leftAsset": "characters/cat",
+        "rightAsset": "people/company"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "retail vs. foreign institutional funds",
+        "takeaway": "Retail sees short selling as a rigged playing field."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat",
+        "rightAsset": "people/company"
+      }
+    },
+    {
+      "id": "scene-074",
+      "narration": "Những cái bê\r\nbối liên quan đến bán khống trong nhiều\r\nnăm qua càng khiến sự nghi ngờ tăng lên",
+      "purpose": "Scandals deepen distrust of fairness.",
+      "emotion": "sad",
+      "viewerFocus": "short-selling scandals eroding trust",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2684,
+        "endWord": 2703,
+        "quoteChecksum": "b678addf7fb1335ba5518c7d61f55d3e4d8e466188412cff6ce1c7f6b52ddc80"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/courtroom.svg",
+        "who": "host",
+        "caption": "Bê bối bán khống, nghi ngờ tăng"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "short-selling scandals eroding trust",
+        "takeaway": "Scandals deepen distrust of fairness."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/courtroom.svg"
+      }
+    },
+    {
+      "id": "scene-075",
+      "narration": "Và khi mà niềm tin và tính công bằng của\r\nthị trường suy giảm thì người ta sẽ\r\nkhông muốn chơi đường dài nữa. Họ muốn\r\nkiếm tiền nhanh trước khi trở thành\r\nthanh khoản cho người khác",
+      "purpose": "Eroded fairness pushes people to grab quick gains.",
+      "emotion": "concern",
+      "viewerFocus": "distrust driving short-termism",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 2704,
+        "endWord": 2741,
+        "quoteChecksum": "d649e3e3b359b06c303a514d3464ffbab1ed2b73cc4f2568e8d58a6a63d431dd"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Niềm tin công bằng suy giảm",
+        "effect": "Chơi ngắn hạn, kiếm nhanh",
+        "causeIcon": "finance/loss",
+        "effectIcon": "finance/investment"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "distrust driving short-termism",
+        "takeaway": "Eroded fairness pushes people to grab quick gains."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/loss",
+        "effectIcon": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-076",
+      "narration": "Và cuối cùng\r\ncũng là yếu tố quan trọng nhất là cái\r\ntrò này quá là dễ. Chưa bao giờ trong\r\nlịch sử cái việc đặt cược vào thị trường\r\nnó lại thuận tiện như bây giờ",
+      "purpose": "Root cause #4: sheer ease of access.",
+      "emotion": "neutral",
+      "viewerFocus": "accessibility as the most important factor",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 2742,
+        "endWord": 2778,
+        "quoteChecksum": "0d336a696e9bca38b45595afe421a1ef0ca87087b3d162ba4e93b1168df1db35"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/office_trading.jpg",
+        "caption": "Yếu tố quan trọng nhất: quá dễ"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "accessibility as the most important factor",
+        "takeaway": "Root cause #4: sheer ease of access."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/office_trading.jpg"
+      }
+    },
+    {
+      "id": "scene-077",
+      "narration": "Ngày\r\ntrước mà muốn mua bán cổ phiếu thì phải\r\ngọi điện cho mỗi giới chờ xác nhận giao\r\ndịch và trả những khoản phí rất là to",
+      "purpose": "Old friction: calling a broker, paying high fees.",
+      "emotion": "neutral",
+      "viewerFocus": "the old way of trading",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 2779,
+        "endWord": 2806,
+        "quoteChecksum": "3cca4215db23a5108cb25c7b6a8f648b1abbb90d99a05d34ded0722b33bb7a56"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Ngày xưa: gọi môi giới, phí cao"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the old way of trading",
+        "takeaway": "Old friction: calling a broker, paying high fees."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-078",
+      "narration": "Còn bây giờ thì cứ điện thoại thôi, mọi\r\nthứ nắm sẵn trước mặt rồi, mua vài giây,\r\nbán vài giây",
+      "purpose": "Contrast old friction vs. today's instant trading.",
+      "emotion": "neutral",
+      "viewerFocus": "seconds to trade today",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 2807,
+        "endWord": 2827,
+        "quoteChecksum": "d457f4e20f848201fb245a538245582055d087deddee0a7a25f4183d62cecfee"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Ngày xưa: gọi môi giới",
+        "right": "Bây giờ: vài giây trên điện thoại",
+        "leftAsset": "props/computer_desk",
+        "rightAsset": "finance/investment"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "seconds to trade today",
+        "takeaway": "Contrast old friction vs. today's instant trading."
+      },
+      "resolvedAssets": {
+        "leftAsset": "props/computer_desk",
+        "rightAsset": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-079",
+      "narration": "Thêm vào đấy thì những cái\r\nnội dung tài chính xuất hiện khắp nơi từ\r\nvideo phân tích, livestream nhận định,\r\nnhóm cộng đồng diễn đàn, tin tức, khuyến\r\nnghị, dự đoán",
+      "purpose": "Financial content is everywhere, reinforcing the pull.",
+      "emotion": "neutral",
+      "viewerFocus": "constant financial content",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 2828,
+        "endWord": 2859,
+        "quoteChecksum": "05d0ac9a69f73bb695a72af13c9a982aa99293783ca9686df47aaf3abbc0585a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Video phân tích|Livestream nhận định|Diễn đàn cộng đồng",
+        "icons": "props/computer_desk|finance/chart_up|people/person"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "constant financial content",
+        "takeaway": "Financial content is everywhere, reinforcing the pull."
+      },
+      "resolvedAssets": {
+        "icon0": "props/computer_desk",
+        "icon1": "finance/chart_up",
+        "icon2": "people/person"
+      }
+    },
+    {
+      "id": "scene-080",
+      "narration": "Mỗi ngày thì người ta\r\nliên tục được nhắc rằng là thị trường\r\nđang có cơ hội đấy. Một mã sắp tăng rồi,\r\nsắp có trend mới rồi anh em ơi. Sắp có\r\nsóng mới rồi",
+      "purpose": "Dramatize the hype-chatter pulling people in daily.",
+      "emotion": "sarcastic",
+      "viewerFocus": "hype talk between traders",
+      "visualGrammar": "DIALOGUE_QA",
+      "sourceRange": {
+        "startWord": 2860,
+        "endWord": 2895,
+        "quoteChecksum": "d77648069aea2dc2ce9163189757017a27ae72beba3f6acd449c51f324ee0dff"
+      },
+      "heroVisual": false,
+      "slots": {
+        "asker": "broker",
+        "askerText": "Mã này sắp tăng rồi anh em ơi!",
+        "answerer": "investor",
+        "answererText": "Sắp có sóng mới thật à?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "hype talk between traders",
+        "takeaway": "Dramatize the hype-chatter pulling people in daily."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-081",
+      "narration": "Và khi mà tất cả những cái\r\nthứ đấy nó kết hợp lại thì thị trường nó\r\nlại trông giống một cái mạng xã hội hơn\r\nlà một nơi để đầu tư",
+      "purpose": "The market starts feeling like a social feed.",
+      "emotion": "sarcastic",
+      "viewerFocus": "market as social media",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 2896,
+        "endWord": 2927,
+        "quoteChecksum": "2b318de22709d214036a310a122ac239bbb85bb358b43c2ab7731e5468b80bb0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/coffee_shop.jpg",
+        "caption": "Thị trường giờ giống mạng xã hội hơn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "market as social media",
+        "takeaway": "The market starts feeling like a social feed."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/coffee_shop.jpg"
+      }
+    },
+    {
+      "id": "scene-082",
+      "narration": "Ai cũng nhìn bảng\r\ngiá, cập nhật thông tin rồi là đám đông\r\nphản ứng thế nào cũng hóng theo và càng\r\nnhiều phản ứng thì người lại càng giao\r\ndịch",
+      "purpose": "Crowd reaction feeds more trading, in a loop.",
+      "emotion": "neutral",
+      "viewerFocus": "crowd-following trading loop",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 2928,
+        "endWord": 2958,
+        "quoteChecksum": "4402d90e3eaf4a9eeae4dd57e05bf3796a8f2a7f7d1e75cd1eccb7c8996842fc"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "Đám đông phản ứng",
+        "effect": "Càng nhiều người giao dịch theo",
+        "causeIcon": "characters/cat",
+        "effectIcon": "finance/stock"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "crowd-following trading loop",
+        "takeaway": "Crowd reaction feeds more trading, in a loop."
+      },
+      "resolvedAssets": {
+        "causeIcon": "characters/cat",
+        "effectIcon": "finance/stock"
+      }
+    },
+    {
+      "id": "scene-083",
+      "narration": "Tức là toàn bộ hệ thống đã làm cho\r\ncái việc đầu tư trở nên dễ dàng đến mức\r\nmà không còn ma sát. Và khi mà việc đặt\r\nmột cái lệnh mua nó chỉ khó ngang với\r\nviệc bấm like thôi thì cái số quyết định\r\ndở hơi nó cũng tăng theo",
+      "purpose": "Frictionless trading = frictionless bad decisions.",
+      "emotion": "concern",
+      "viewerFocus": "buying like tapping 'like'",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 2959,
+        "endWord": 3011,
+        "quoteChecksum": "3d2692299fc5f437e94c1afbc1beaa069c970dc3648efd8a6e23e4279b7923f8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Đặt lệnh mua = bấm nút like",
+        "payoff": "Quyết định dở hơi cũng tăng theo",
+        "leftAsset": "finance/investment",
+        "rightAsset": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "buying like tapping 'like'",
+        "takeaway": "Frictionless trading = frictionless bad decisions."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/investment",
+        "rightAsset": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-084",
+      "narration": "Và bốn yếu tố\r\nnày khi ghép lại với nhau sẽ tạo ra một\r\nmôi trường rất là đặc biệt",
+      "purpose": "Recap the four combined root causes.",
+      "emotion": "neutral",
+      "viewerFocus": "the four factors combined",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 3012,
+        "endWord": 3031,
+        "quoteChecksum": "7c0cd5112c797cc789a231a86a3355c054e4ba57c728ac5b04b77a965b0ece48"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Áp lực tài sản|Korea Discount|Bán khống bất công|Quá dễ tham gia",
+        "icons": "finance/house|finance/stock|finance/loss|finance/investment"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the four factors combined",
+        "takeaway": "Recap the four combined root causes."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/house",
+        "icon1": "finance/stock",
+        "icon2": "finance/loss",
+        "icon3": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-085",
+      "narration": "Một bên là\r\náp lực kiếm tiền nhanh này, một bên là\r\ncảm giác luật chơi lại không hoàn toàn\r\ncông bằng. Và ở giữa là hàng loạt công\r\ncụ tài chính có thể giúp bạn gọi là cân\r\nbằng cuộc chơi",
+      "purpose": "Pressure to get rich fast vs. feeling of an unfair system.",
+      "emotion": "concern",
+      "viewerFocus": "pressure vs. perceived unfairness",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 3032,
+        "endWord": 3073,
+        "quoteChecksum": "9b868cce1ec3dd83e2cafcb5d4a5b192c876bc0af140f0d7c6338e1fbc97e684"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Áp lực kiếm tiền nhanh",
+        "right": "Luật chơi không công bằng",
+        "leftAsset": "finance/wallet",
+        "rightAsset": "finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "pressure vs. perceived unfairness",
+        "takeaway": "Pressure to get rich fast vs. feeling of an unfair system."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/wallet",
+        "rightAsset": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-086",
+      "narration": "Và khi mà ba thứ đấy\r\nxuất hiện cùng một lúc thì thị trường\r\nchắc chắn sẽ sinh ra những cái sản phẩm\r\nđể đáp ứng nhu cầu đầu tư. Một cái ví dụ\r\nrất là điển hình là vụ bê bối CFD vào\r\nnăm 2023",
+      "purpose": "Introduce the concrete 2023 CFD scandal example.",
+      "emotion": "neutral",
+      "viewerFocus": "the CFD scandal case study",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 3074,
+        "endWord": 3119,
+        "quoteChecksum": "ca598839bdce19216ccf13779a795ef903ee4b8b1957bd2ebbf6954a513afbcd"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Vụ bê bối CFD, năm 2023",
+        "body": "Một ví dụ điển hình của sản phẩm đòn bẩy rủi ro cao đáp ứng nhu cầu này"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the CFD scandal case study",
+        "takeaway": "Introduce the concrete 2023 CFD scandal example."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-087",
+      "narration": "CFD là viết tắt của Contracts\r\nfor difference là hợp đồng chênh lệch.\r\nĐơn giản hóa thì đây là một cái công cụ\r\ncho phép bạn đặt cược vào cái việc là\r\ngiá tài sản sẽ tăng hay giảm mà không\r\ncần thực sự sở hữu tài sản đó",
+      "purpose": "Define CFD plainly.",
+      "emotion": "neutral",
+      "viewerFocus": "what a CFD is",
+      "visualGrammar": "FRAMEBOX",
+      "sourceRange": {
+        "startWord": 3120,
+        "endWord": 3168,
+        "quoteChecksum": "e50309dea7fcc06b9db99939e7825d8ef9b2f1ea972781ab73db8e3aa74e30d9"
+      },
+      "heroVisual": false,
+      "slots": {
+        "content": "#3B5998",
+        "caption": "CFD: cược giá, không sở hữu",
+        "who": "investor"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "what a CFD is",
+        "takeaway": "Define CFD plainly."
+      },
+      "resolvedAssets": {
+        "who": "investor",
+        "content": "#3B5998"
+      }
+    },
+    {
+      "id": "scene-088",
+      "narration": "Và giống\r\nnhư rất là nhiều sản phẩm đầu cơ khác\r\nthì CFD thường đi kèm với đòn 7 rất là\r\nto. Nguy hiểm đúng không",
+      "purpose": "CFDs come with very high leverage.",
+      "emotion": "surprise",
+      "viewerFocus": "high leverage on CFDs",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3169,
+        "endWord": 3194,
+        "quoteChecksum": "bc0b52d3636ab4e68920010ebae78872bff1d7ade8898ddf38343d9f3c9f3867"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "ĐÒN BẨY RẤT CAO",
+        "anchor": "finance/loss",
+        "who": "characters/cat_surprised",
+        "caption": "CFD thường đi kèm rủi ro rất lớn"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "high leverage on CFDs",
+        "takeaway": "CFDs come with very high leverage."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-089",
+      "narration": "Theo cơ quan\r\nquản lý tài chính ở Hàn Quốc ấ thì phần\r\nlớn người tham gia CFD thực chất là nhà\r\nđầu tư cá nhân nhưng mà trên dữ liệu\r\ngiao dịch ấ thì nhiều lệnh lại được ghi\r\nnhận dưới danh nghĩa là tổ chức hoặc là\r\nnhà đầu tư nước ngoài",
+      "purpose": "Regulator finding: retail trades mislabeled as institutional.",
+      "emotion": "concern",
+      "viewerFocus": "mislabeled retail CFD trades",
+      "visualGrammar": "EVIDENCE",
+      "sourceRange": {
+        "startWord": 3195,
+        "endWord": 3248,
+        "quoteChecksum": "d94ce381de85756c4c2f6f4cd95bcfa8b95d1c87a0cb8de454ca622520b6c303"
+      },
+      "heroVisual": false,
+      "slots": {
+        "title": "Cơ quan quản lý tài chính Hàn Quốc",
+        "body": "Nhiều lệnh CFD của cá nhân bị ghi nhận nhầm dưới danh nghĩa tổ chức nước ngoài"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "mislabeled retail CFD trades",
+        "takeaway": "Regulator finding: retail trades mislabeled as institutional."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-090",
+      "narration": "Và điều này khiến\r\nthị trường lại trở nên méo mó. Khi mà\r\nnhìn vào dữ liệu thì chả ai biết là ai\r\nđang mua cả, ai đang bán và ai mới là\r\nngười đang ngánh rủi ro thực sự",
+      "purpose": "No one can tell who's really holding the risk.",
+      "emotion": "sarcastic",
+      "viewerFocus": "opaque, distorted market data",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3249,
+        "endWord": 3288,
+        "quoteChecksum": "df6ba1db05d9da25c6feb873d5183705cdfe7d0978ea4f730d33c0b0573ec51c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Dữ liệu méo mó, ai gánh rủi ro?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "opaque, distorted market data",
+        "takeaway": "No one can tell who's really holding the risk."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-091",
+      "narration": "Khi vụ việc bị phanh phui, cơ quan quản lý phản ứng theo cách quen thuộc: xuất quy định mới, tăng yêu cầu ký quỹ, nâng chuẩn tham gia và tăng cường giám sát.",
+      "purpose": "List the regulator's standard response measures.",
+      "emotion": "neutral",
+      "viewerFocus": "the regulatory crackdown steps",
+      "visualGrammar": "POLICY_LIST",
+      "sourceRange": {
+        "startWord": 3289,
+        "endWord": 3326,
+        "quoteChecksum": "250de79423d155434eeaae8c332928c66831aade6a5bd84652b3ef22f54f1eb8"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Quy định mới|Tăng yêu cầu ký quỹ|Nâng chuẩn tham gia|Tăng giám sát",
+        "icons": "props/book|finance/interest_rate|finance/investment|finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the regulatory crackdown steps",
+        "takeaway": "List the regulator's standard response measures."
+      },
+      "resolvedAssets": {
+        "icon0": "props/book",
+        "icon1": "finance/interest_rate",
+        "icon2": "finance/investment",
+        "icon3": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-092",
+      "narration": "Nhưng mà những cái đấy thì nó\r\ncũng chỉ là xử lý phần ngọn thôi, trong\r\nkhi là cái nhu cầu đầu cơ vẫn còn nguyên\r\nvà nếu mà cánh cửa này bị đóng lại thì\r\nngười ta lại tìm đến một cánh cửa khác",
+      "purpose": "Closing one door just opens another — regulation treats symptoms.",
+      "emotion": "sarcastic",
+      "viewerFocus": "closing one door, opening another",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 3327,
+        "endWord": 3371,
+        "quoteChecksum": "ac2345a3ca06ef7966d308f05f6b3eb80ee643c54aefa5385c66a8d92a13942a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Đóng một cánh cửa",
+        "payoff": "Người ta tìm cánh cửa khác",
+        "leftAsset": "finance/loss",
+        "rightAsset": "finance/investment"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "closing one door, opening another",
+        "takeaway": "Closing one door just opens another — regulation treats symptoms."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/loss",
+        "rightAsset": "finance/investment"
+      }
+    },
+    {
+      "id": "scene-093",
+      "narration": "Khi CFD bị siết chặt, tiền chảy sang những sản phẩm đòn bẩy khác — một phần sang thị trường nước ngoài, một phần sang những công cụ phức tạp và khó giám sát hơn.",
+      "purpose": "Capital flows to riskier, less-regulated channels.",
+      "emotion": "concern",
+      "viewerFocus": "capital flowing to unregulated channels",
+      "visualGrammar": "CAUSE_EFFECT",
+      "sourceRange": {
+        "startWord": 3372,
+        "endWord": 3411,
+        "quoteChecksum": "16255310a9b45ce3278fe195deff28060e1a6bd37d1751a1720f702726ff0f91"
+      },
+      "heroVisual": false,
+      "slots": {
+        "cause": "CFD bị siết chặt",
+        "effect": "Tiền chảy sang kênh khác, khó giám sát hơn",
+        "causeIcon": "finance/loss",
+        "effectIcon": "finance/exchange"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "capital flowing to unregulated channels",
+        "takeaway": "Capital flows to riskier, less-regulated channels."
+      },
+      "resolvedAssets": {
+        "causeIcon": "finance/loss",
+        "effectIcon": "finance/exchange"
+      }
+    },
+    {
+      "id": "scene-094",
+      "narration": "Đến cuối năm 2024\r\nthì lượng cổ phiếu nước ngoài do nhà đầu\r\ntư cá nhân Hàn Quốc nắm giữ đã đạt quy\r\nmô rất là lớn",
+      "purpose": "Retail capital flowing into foreign stocks at scale.",
+      "emotion": "surprise",
+      "viewerFocus": "foreign-held stock scale",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 3412,
+        "endWord": 3438,
+        "quoteChecksum": "ef6b79b7375168138dd30578a4ab941bbf9ca5cccf3abac5bb7140cdb94011b2"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "QUY MÔ RẤT LỚN",
+        "anchor": "finance/exchange",
+        "who": "characters/cat_surprised",
+        "caption": "Cổ phiếu nước ngoài, cuối 2024"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "foreign-held stock scale",
+        "takeaway": "Retail capital flowing into foreign stocks at scale."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_surprised"
+      }
+    },
+    {
+      "id": "scene-095",
+      "narration": "Trong đó thì ngày càng\r\nxuất hiện nhiều sản phẩm có mức độ rủi\r\nro cao bao gồm cả những cái dạng đòn bảy\r\nmà ngay tại Hàn Quốc đã bị hạn chế hoặc\r\nlà kiểm soát chặt",
+      "purpose": "People chase leverage products banned at home, abroad.",
+      "emotion": "concern",
+      "viewerFocus": "seeking banned leverage abroad",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3439,
+        "endWord": 3476,
+        "quoteChecksum": "6fa7ee768dd1d7d3176aaa7627e91af477b01bf67f3a8cac327b23ba3488ba25"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/airport.svg",
+        "who": "host",
+        "caption": "Né kiểm soát bằng cách ra nước ngoài"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "seeking banned leverage abroad",
+        "takeaway": "People chase leverage products banned at home, abroad."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/airport.svg"
+      }
+    },
+    {
+      "id": "scene-096",
+      "narration": "Không được chơi ở sân nhà thì người ta đi tìm sân khác. Đây cũng là lý do nhiều chuyên gia ví đầu cơ giống như dòng nước chảy.",
+      "purpose": "The water-flow metaphor for speculation finding new paths.",
+      "emotion": "neutral",
+      "viewerFocus": "speculation as flowing water",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "sourceRange": {
+        "startWord": 3477,
+        "endWord": 3513,
+        "quoteChecksum": "dd07e913c957829b41ecc00a6e5e88be9f638f65db3820451b5b6894130da0a9"
+      },
+      "heroVisual": false,
+      "slots": {
+        "setup": "Ngăn một dòng nước",
+        "payoff": "Nước tự tìm đường khác để chảy",
+        "leftAsset": "finance/loss",
+        "rightAsset": "finance/exchange"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "speculation as flowing water",
+        "takeaway": "The water-flow metaphor for speculation finding new paths."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/loss",
+        "rightAsset": "finance/exchange"
+      }
+    },
+    {
+      "id": "scene-097",
+      "narration": "Bạn có thể ngăn chặn\r\nmột dọc nước nhưng mà nước nó lại tự tìm\r\nthằng khác nó đi. Càng chặn mạnh thì nó\r\nlại càng tìm cách để luồn qua những khe\r\nhẹp hơn",
+      "purpose": "The harder you block it, the more it finds hidden gaps.",
+      "emotion": "sarcastic",
+      "viewerFocus": "blocking harder just redirects the flow",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3514,
+        "endWord": 3548,
+        "quoteChecksum": "c8be6a32b7eff687ae6dfb88f11f83005e981cf06883f7ba9b1cec61b2f442f0"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bank_interior.svg",
+        "who": "host",
+        "caption": "Càng chặn, càng luồn qua khe hẹp"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "blocking harder just redirects the flow",
+        "takeaway": "The harder you block it, the more it finds hidden gaps."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/bank_interior.svg"
+      }
+    },
+    {
+      "id": "scene-098",
+      "narration": "và đôi khi nó sẽ chảy tới những\r\ncái nơi mà khó kiểm soát hơn cả cái điểm\r\nxuất phát ban đầu. Vì vậy thì cấm một\r\nsản phẩm tài chính chưa chắc đã làm nhu\r\ncầu đầu cơ biến mất mà nó chỉ khiến nhu\r\ncầu đó đổi sang một hình thức khác",
+      "purpose": "Banning one product doesn't kill speculative demand.",
+      "emotion": "sad",
+      "viewerFocus": "demand just shifts form",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 3549,
+        "endWord": 3602,
+        "quoteChecksum": "1282720c36e6af18727fe67ebde8c46b9357aaa5d922556503990619d87bbb04"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/city_skyline.jpg",
+        "caption": "Cấm 1 sản phẩm không diệt nhu cầu đầu cơ"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "demand just shifts form",
+        "takeaway": "Banning one product doesn't kill speculative demand."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/city_skyline.jpg"
+      }
+    },
+    {
+      "id": "scene-099",
+      "narration": "thường là xa hơn, phức tạp hơn và khó\r\nnhìn thấy hơn",
+      "purpose": "Where displaced speculation tends to end up.",
+      "emotion": "concern",
+      "viewerFocus": "farther, more complex, harder to see",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 3603,
+        "endWord": 3614,
+        "quoteChecksum": "8cc146227cbced3639029cdb727a90ae825e612dd43cbe51f813a6d474962b21"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Xa hơn|Phức tạp hơn|Khó nhìn thấy hơn",
+        "icons": "finance/exchange|finance/loss|finance/debt"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "farther, more complex, harder to see",
+        "takeaway": "Where displaced speculation tends to end up."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/exchange",
+        "icon1": "finance/loss",
+        "icon2": "finance/debt"
+      }
+    },
+    {
+      "id": "scene-100",
+      "narration": "Nhưng mà tất cả những gì\r\nmà chúng ta vừa nói ở trên ấy thì cũng\r\nkhông đồng nghĩa với cái việc là người\r\nHàn Quốc tham lam hoặc là thích làm giàu\r\nnhanh",
+      "purpose": "Empathy pivot: this isn't about Korean greed.",
+      "emotion": "neutral",
+      "viewerFocus": "reframing away from greed",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 3615,
+        "endWord": 3648,
+        "quoteChecksum": "88a07b1c387f31c0a7b2833ed43190ebbbf653bb20abaaad5a44ec3b359ea777"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/finance_desk.jpg",
+        "caption": "Không phải vì tham lam"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "reframing away from greed",
+        "takeaway": "Empathy pivot: this isn't about Korean greed."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/finance_desk.jpg"
+      }
+    },
+    {
+      "id": "scene-101",
+      "narration": "Tại vì là khi mà cả một hệ thống\r\nđang tạo áp lực lên chúng ta mỗi ngày\r\nthì những cái lựa chọn mà trông với\r\nngười ngoài là vô lý thì với người trong\r\ncuộc lại rất là dễ hiểu",
+      "purpose": "Systemic pressure makes 'irrational' choices understandable.",
+      "emotion": "concern",
+      "viewerFocus": "system pressure explaining choices",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 3649,
+        "endWord": 3689,
+        "quoteChecksum": "d6d8d72855ff010b1153162aa34c0d02f3f9d63b64d4c2915d3d9c4942003e03"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/home_study.jpg",
+        "caption": "Người ngoài thấy vô lý, trong cuộc thấy dễ hiểu"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "system pressure explaining choices",
+        "takeaway": "Systemic pressure makes 'irrational' choices understandable."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/home_study.jpg"
+      }
+    },
+    {
+      "id": "scene-102",
+      "narration": "Bây giờ, giả sử bạn là một người Hàn Quốc khoảng 28 tuổi, công việc không ổn định, hợp đồng ký lại mỗi năm, chẳng biết tương lai ra sao.",
+      "purpose": "Second-person persona scene: the precarious 28-year-old.",
+      "emotion": "sad",
+      "viewerFocus": "a young worker with an unstable job",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3690,
+        "endWord": 3720,
+        "quoteChecksum": "d4ab1a74909ce18bfb756db1d4ae573acb6655e04523820de0f1f086c2e2dba4"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "youngperson",
+        "caption": "28 tuổi, tương lai mờ mịt"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "a young worker with an unstable job",
+        "takeaway": "Second-person persona scene: the precarious 28-year-old."
+      },
+      "resolvedAssets": {
+        "who": "youngperson",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-103",
+      "narration": "Trong khi đó, chẳng biết bao giờ mới mua được nhà vì giá nhà cứ tăng vọt, còn mỗi ngày mở điện thoại lại thấy thị trường tăng, người ta khoe lợi nhuận suốt.",
+      "purpose": "Rising home prices vs. endless online profit-flexing.",
+      "emotion": "sad",
+      "viewerFocus": "house prices out of reach, feeds full of gains",
+      "visualGrammar": "CHAR_PROP",
+      "sourceRange": {
+        "startWord": 3721,
+        "endWord": 3760,
+        "quoteChecksum": "35d9fea7344defde4ea38de9903bb50663bea118fb1b818865ed538ca46debcd"
+      },
+      "heroVisual": false,
+      "slots": {
+        "who": "youngperson",
+        "prop": "finance/house",
+        "label": "Giá nhà tăng vọt, ai cũng khoe lợi nhuận"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "house prices out of reach, feeds full of gains",
+        "takeaway": "Rising home prices vs. endless online profit-flexing."
+      },
+      "resolvedAssets": {
+        "who": "youngperson",
+        "prop": "finance/house"
+      }
+    },
+    {
+      "id": "scene-104",
+      "narration": "ấy những câu chuyện\r\nđổi đời xuất hiện khắp nơi thì trong cái\r\nhoàn cảnh đấy rất là khó để đứng ngoài\r\ncuộc chơi",
+      "purpose": "Rags-to-riches stories everywhere make it hard to sit out.",
+      "emotion": "sad",
+      "viewerFocus": "impossible to stay on the sidelines",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 3761,
+        "endWord": 3784,
+        "quoteChecksum": "2764172f5c1d654a5355ec44d8cc258e0d6d8f2114e29a266e394f1612b27555"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/living_room.jpg",
+        "caption": "Rất khó để đứng ngoài cuộc chơi"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "impossible to stay on the sidelines",
+        "takeaway": "Rags-to-riches stories everywhere make it hard to sit out."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/living_room.jpg"
+      }
+    },
+    {
+      "id": "scene-105",
+      "narration": "Cái đáng sợ nhất không phải\r\nlà Marin mà là lý do khiến người ta tìm\r\nđến Marin",
+      "purpose": "The video's thesis sentence.",
+      "emotion": "concern",
+      "viewerFocus": "the real thing to fear",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 3785,
+        "endWord": 3802,
+        "quoteChecksum": "c333cea0b04f6ebbc602d4d4db6d9d055ea13e539162cfe8c24e5b10d20f2b64"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Cái đáng sợ nhất là gì?",
+        "a": "Không phải margin — mà là LÝ DO khiến người ta tìm đến nó"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the real thing to fear",
+        "takeaway": "The video's thesis sentence."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-106",
+      "narration": "Nếu một thế hệ lớn lên với\r\ncảm giác rằng là làm việc chăm chỉ chưa\r\nchắc đã sống thoải mái, tiết kiệm nhiều\r\nnăm chưa chắc đã mua nổi một cái nhà tử\r\ntế, đi đúng luột chơi cũ nhưng mà sẽ vẫn\r\nbị bỏ lại phía sau ấy",
+      "purpose": "Three beliefs that define this generation's disillusionment.",
+      "emotion": "sad",
+      "viewerFocus": "hard work not paying off",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 3803,
+        "endWord": 3852,
+        "quoteChecksum": "739984ed04b16dcf1658caeb8dc5ebbd634f5ab5e3f21ae90fe44f71af1b0fa3"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Chăm chỉ chưa chắc đủ sống|Tiết kiệm chưa chắc mua nổi nhà|Đi đúng luật vẫn tụt lại",
+        "icons": "finance/wallet|finance/house|finance/trending_down"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "hard work not paying off",
+        "takeaway": "Three beliefs that define this generation's disillusionment."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/wallet",
+        "icon1": "finance/house",
+        "icon2": "finance/trending_down"
+      }
+    },
+    {
+      "id": "scene-107",
+      "narration": "thì cái việc họ\r\nbắt đầu tìm kiếm những lựa chọn rủi ro\r\nhơn là điều tất yếu. Nó không phải là\r\nlòng tham mà nó là cảm giác bất lực, nỗi\r\nsợ bị tụt lại và niềm tin rằng là nếu mà\r\nkhông tăng tốc thì mình sẽ không bao giờ\r\nbắt kịp",
+      "purpose": "Reframe risk-taking as helplessness, not greed.",
+      "emotion": "sad",
+      "viewerFocus": "helplessness, not greed",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 3853,
+        "endWord": 3906,
+        "quoteChecksum": "63f25685da8a9fd1b0ca4e9bb6ad238da6694f0ca2bb2f21ace46c7d8357d5a4"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/city_street.jpg",
+        "caption": "Không phải tham lam, là bất lực và sợ tụt lại"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "helplessness, not greed",
+        "takeaway": "Reframe risk-taking as helplessness, not greed."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/city_street.jpg"
+      }
+    },
+    {
+      "id": "scene-108",
+      "narration": "Và điều trớ trêu là thị trường lại thường thưởng cho những suy nghĩ đó — trong ngắn hạn.",
+      "purpose": "The market rewards this risk-taking, temporarily.",
+      "emotion": "sarcastic",
+      "viewerFocus": "short-term rewards reinforcing risk",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3907,
+        "endWord": 3926,
+        "quoteChecksum": "f06fa3b2bff8377e167be86edcc3bb4b1535c2e0fca3cf816f999dc5376b057f"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/bar.svg",
+        "who": "host",
+        "caption": "Thị trường thưởng cho liều lĩnh, tạm thời"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "short-term rewards reinforcing risk",
+        "takeaway": "The market rewards this risk-taking, temporarily."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/bar.svg"
+      }
+    },
+    {
+      "id": "scene-109",
+      "narration": "Mỗi lần thị trường giảm rồi bật tăng trở lại, người dùng đòn bẩy lại cảm thấy: 'À, mình đúng rồi! Mình đầu tư giỏi thật, nhìn tài khoản lợi nhuận một đống đây này.'",
+      "purpose": "Dramatize the false confidence after a rebound.",
+      "emotion": "hopeful",
+      "viewerFocus": "traders bragging after a rebound",
+      "visualGrammar": "DIALOGUE_QA",
+      "sourceRange": {
+        "startWord": 3927,
+        "endWord": 3969,
+        "quoteChecksum": "7c903623826f05e679f8f96a2538dab4e1ef4aa12c66c0c462772e6bac592d36"
+      },
+      "heroVisual": false,
+      "slots": {
+        "asker": "investor",
+        "askerText": "Mình đầu tư giỏi thật đấy chứ!",
+        "answerer": "gaemi",
+        "answererText": "Lợi nhuận một đống luôn!"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "traders bragging after a rebound",
+        "takeaway": "Dramatize the false confidence after a rebound."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-110",
+      "narration": "Rồi lại nghĩ: 'Lần sau phải làm mạnh hơn nữa.' Và đây là một điểm chí mạng của thị trường — nó khiến người ta nhầm lẫn giữa may mắn và năng lực.",
+      "purpose": "Name the luck-vs-skill confusion trap.",
+      "emotion": "sarcastic",
+      "viewerFocus": "confusing luck with skill",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 3970,
+        "endWord": 4010,
+        "quoteChecksum": "1d4e36f8a34b4ccae8a18130593d89394e0badd516e8bed7e3d8c336bacc7714"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/office_desk.svg",
+        "who": "host",
+        "caption": "Nhầm lẫn giữa may mắn và năng lực"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "confusing luck with skill",
+        "takeaway": "Name the luck-vs-skill confusion trap."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/office_desk.svg"
+      }
+    },
+    {
+      "id": "scene-111",
+      "narration": "Thắng một phát không nghĩa là bạn là\r\nthiên tài chứng khoán mà chỉ đơn giản là\r\nbạn đang đứng đúng chỗ trong một giai\r\nđoạn thị trường thuận lợi thôi",
+      "purpose": "A single win means good timing, not genius.",
+      "emotion": "sarcastic",
+      "viewerFocus": "genius illusion vs. lucky timing",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 4011,
+        "endWord": 4041,
+        "quoteChecksum": "94910926a2aaaefb570d116e5f34e7a32d36e140d798025c27c700a22800da6b"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "\"Mình là thiên tài chứng khoán\"",
+        "right": "Chỉ là đứng đúng chỗ, đúng lúc",
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "finance/chart_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "genius illusion vs. lucky timing",
+        "takeaway": "A single win means good timing, not genius."
+      },
+      "resolvedAssets": {
+        "leftAsset": "characters/cat_happy",
+        "rightAsset": "finance/chart_up"
+      }
+    },
+    {
+      "id": "scene-112",
+      "narration": "Một hai\r\nlần ăn có thể ngon đấy nhưng mà chỉ một\r\nvài lần mất thôi ấ thì khoản quanh vẫn\r\ncòn nguyên, tiền lãi vẫn tiếp tục chạy\r\nvà thời gian thì lại luôn không đứng về\r\nphía người đang dùng đoàn bảy",
+      "purpose": "Debt and interest keep running regardless of a few wins.",
+      "emotion": "sad",
+      "viewerFocus": "debt and interest still running",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 4042,
+        "endWord": 4085,
+        "quoteChecksum": "87ab0fdcf782dacd4e7eeab54e2e3587a33742ece75fd5f331b5c39acba43162"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "LÃI VẪN CHẠY",
+        "anchor": "finance/debt",
+        "who": "characters/cat_sad",
+        "caption": "Thắng hay thua, lãi vay vẫn chạy"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "debt and interest still running",
+        "takeaway": "Debt and interest keep running regardless of a few wins."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-113",
+      "narration": "Về mặt\r\ncốt lõi thì đây vẫn là một trong những\r\nhệ quả của cái việc là giá tài sản tăng\r\nnhanh hơn thu nhập trong một thời gian\r\ndài",
+      "purpose": "Restate the root cause: assets outpacing income.",
+      "emotion": "neutral",
+      "viewerFocus": "the underlying structural cause",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 4086,
+        "endWord": 4115,
+        "quoteChecksum": "d736c4838f227e39a475c9b9d2addd89c0842e1d16a71cf7c57a3022b3da1111"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/stock_chart.jpg",
+        "caption": "Cốt lõi: tài sản tăng nhanh hơn thu nhập"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the underlying structural cause",
+        "takeaway": "Restate the root cause: assets outpacing income."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/stock_chart.jpg"
+      }
+    },
+    {
+      "id": "scene-114",
+      "narration": "Nợ tăng dần qua từng năm này, giá\r\ntài sản tăng nhanh hơn thu nhập, tiền rẻ\r\ntồn tại quá lâu và dòng vốn liên tục chỉ\r\nvào những cái tài sản rủi ro hơn",
+      "purpose": "Recap the three structural forces feeding the cycle.",
+      "emotion": "concern",
+      "viewerFocus": "rising debt, cheap money, risk-seeking capital",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 4116,
+        "endWord": 4150,
+        "quoteChecksum": "a856cf09560d907ff40aeded387267df399900b6f42c3db1071a0039f18dc6df"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Nợ tăng dần|Tiền rẻ kéo dài|Vốn chảy vào tài sản rủi ro",
+        "icons": "finance/debt|finance/interest_rate|finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "rising debt, cheap money, risk-seeking capital",
+        "takeaway": "Recap the three structural forces feeding the cycle."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/debt",
+        "icon1": "finance/interest_rate",
+        "icon2": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-115",
+      "narration": "Và\r\ntrong suốt quá trình đó rất nhiều người\r\ntin rằng là mình sẽ là người kịp bước\r\nxuống trước khi mọi chuyện trở nên tồi\r\ntệ",
+      "purpose": "The universal belief 'I'll get out in time'.",
+      "emotion": "concern",
+      "viewerFocus": "the belief you'll exit in time",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 4151,
+        "endWord": 4177,
+        "quoteChecksum": "146287a82c594a1ee9462482322ecbbb4d060a323192845ff4ae3f0e1ded2e97"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/office_trading.jpg",
+        "caption": "\"Mình sẽ kịp thoát trước khi tồi tệ\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the belief you'll exit in time",
+        "takeaway": "The universal belief 'I'll get out in time'."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/office_trading.jpg"
+      }
+    },
+    {
+      "id": "scene-116",
+      "narration": "Và đó cũng là suy nghĩ xuất hiện\r\ntrong hầu hết những cơn sốt đầu cơ trong\r\nlịch sử. Và thường là niềm tin này lại\r\ncũng chính là thứ mà khiến mọi thứ\r\ntoang",
+      "purpose": "This belief recurs across history's speculative manias.",
+      "emotion": "concern",
+      "viewerFocus": "the recurring pattern across speculative bubbles",
+      "visualGrammar": "HISTORY_TIMELINE",
+      "sourceRange": {
+        "startWord": 4178,
+        "endWord": 4212,
+        "quoteChecksum": "a8575058dc29f5718d8a6831623cdfae58769e7681d10c7a5b6dbbed80e36a16"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Niềm tin \"mình sẽ kịp thoát\"|Xuất hiện ở mọi cơn sốt đầu cơ|Chính là thứ khiến mọi thứ sụp đổ",
+        "icons": "characters/cat_think|finance/chart_up|finance/loss"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the recurring pattern across speculative bubbles",
+        "takeaway": "This belief recurs across history's speculative manias."
+      },
+      "resolvedAssets": {
+        "icon0": "characters/cat_think",
+        "icon1": "finance/chart_up",
+        "icon2": "finance/loss"
+      }
+    },
+    {
+      "id": "scene-117",
+      "narration": "Thế thì bao giờ người Hàn Quốc\r\nmới nhận ra và bỏ cuộc chơi này? Thì\r\nthực ra là người Hàn Quốc tôi nghĩ là họ\r\nbiết đấy. Nhưng mà câu trả lời là cũng\r\nchưa biết",
+      "purpose": "Pivot to the present/future outlook.",
+      "emotion": "curious",
+      "viewerFocus": "when will people stop",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 4213,
+        "endWord": 4249,
+        "quoteChecksum": "4194d68dc13cba3a2ab2781d22137d7d93e079eb1e792800404d904cf641110a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Bao giờ họ mới dừng lại?",
+        "a": "Có lẽ họ biết rồi — nhưng vẫn chưa dừng"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "when will people stop",
+        "takeaway": "Pivot to the present/future outlook."
+      },
+      "resolvedAssets": {
+        "character": "characters/cat"
+      }
+    },
+    {
+      "id": "scene-118",
+      "narration": "Bước sang năm 2026, thị trường Hàn Quốc vẫn tiếp tục biến động rất mạnh. Một bên là nhà đầu tư nước ngoài liên tục rút vốn, bên còn lại là nhà đầu tư cá nhân vẫn kiên trì mua vào.",
+      "purpose": "Present-day split: foreign outflows vs. retail buying the dip.",
+      "emotion": "neutral",
+      "viewerFocus": "foreign selling vs. retail buying",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 4250,
+        "endWord": 4293,
+        "quoteChecksum": "7a8b8289344e3c93325a807607908447efff508b5405e83f9ea5c7d92a2d1018"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Nhà đầu tư nước ngoài: rút vốn",
+        "right": "Nhà đầu tư cá nhân: vẫn mua vào",
+        "leftAsset": "finance/trending_down",
+        "rightAsset": "finance/trending_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "foreign selling vs. retail buying",
+        "takeaway": "Present-day split: foreign outflows vs. retail buying the dip."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/trending_down",
+        "rightAsset": "finance/trending_up"
+      }
+    },
+    {
+      "id": "scene-119",
+      "narration": "Về quan điểm đầu tư thì mỗi\r\nngười lại nghĩ một kiểu. Nhiều người tin\r\nrằng là thị trường đang giảm giá, tương\r\nlai vẫn còn ở phía trước",
+      "purpose": "Views on where the market goes next diverge widely.",
+      "emotion": "neutral",
+      "viewerFocus": "diverging market opinions",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 4294,
+        "endWord": 4322,
+        "quoteChecksum": "711951bb12bc90363b130de0faa91769e581d05b318c79aef7cefb0cebb1be6d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/stock_chart.jpg",
+        "caption": "Mỗi người một niềm tin khác nhau"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "diverging market opinions",
+        "takeaway": "Views on where the market goes next diverge widely."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/stock_chart.jpg"
+      }
+    },
+    {
+      "id": "scene-120",
+      "narration": "Thậm chí là có\r\nnhững người vẫn tiếp tục vay tiền để đầu\r\ntư, tin rằng là cú hồi phục tiếp theo sẽ\r\nxuất hiện. Và biết đâu lần này mình là\r\nngười đúng thì sao",
+      "purpose": "Some are still borrowing, betting on the next rebound.",
+      "emotion": "concern",
+      "viewerFocus": "still borrowing, still betting",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 4323,
+        "endWord": 4358,
+        "quoteChecksum": "38cdab22317330320453e09cf9dadf619c17d6372103bd8ff3b4ab585540330d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/living_room.svg",
+        "who": "investor",
+        "caption": "\"Biết đâu lần này mình đúng?\""
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "still borrowing, still betting",
+        "takeaway": "Some are still borrowing, betting on the next rebound."
+      },
+      "resolvedAssets": {
+        "who": "investor",
+        "stage": "assets/scenes/living_room.svg"
+      }
+    },
+    {
+      "id": "scene-121",
+      "narration": "Tất nhiên là kịch\r\nbản lạc quan thì vẫn hoàn toàn có thể\r\nxảy ra. Tại vì Hàn Quốc vẫn sở hữu những\r\ndoanh nghiệp hàng đầu thế giới, vẫn có\r\nngành bán dẫn, vẫn có AI, vẫn có những\r\ncái động lực tăng trưởng rất là mạnh\r\ntrong dài hạn",
+      "purpose": "The hopeful, balanced note — Korea's real long-term upside.",
+      "emotion": "hopeful",
+      "viewerFocus": "semiconductors and AI as genuine strengths",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 4359,
+        "endWord": 4409,
+        "quoteChecksum": "ffd30f99ae587dd6871372126d3c71c4b030cc22b5e6fd8ab0e2f474b8db8384"
+      },
+      "heroVisual": true,
+      "slots": {
+        "who": "characters/cat_happy",
+        "items": "Doanh nghiệp hàng đầu thế giới|Ngành bán dẫn|Trí tuệ nhân tạo (AI)",
+        "icons": "people/company|finance/chart_up|props/brain"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "semiconductors and AI as genuine strengths",
+        "takeaway": "The hopeful, balanced note — Korea's real long-term upside."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_happy",
+        "icon0": "people/company",
+        "icon1": "finance/chart_up",
+        "icon2": "props/brain"
+      }
+    },
+    {
+      "id": "scene-122",
+      "narration": "Nếu mà mọi thứ diễn ra\r\nthuận lợi thì thị trường hoàn toàn có\r\nthể tiếp tục đi lên sau giai đoạn điều\r\nchỉnh. Nhưng mà có cơ hội thì luôn có\r\nrủi ro",
+      "purpose": "Balance the upside case against the ever-present risk.",
+      "emotion": "neutral",
+      "viewerFocus": "upside potential vs. lingering risk",
+      "visualGrammar": "COMPARE",
+      "sourceRange": {
+        "startWord": 4410,
+        "endWord": 4443,
+        "quoteChecksum": "bcaa6b5ee3a97928e42301a17f8eab0e2e27afd41b7201b3da93609bb946598c"
+      },
+      "heroVisual": false,
+      "slots": {
+        "left": "Cơ hội: tăng trưởng dài hạn",
+        "right": "Rủi ro: vẫn còn đó",
+        "leftAsset": "finance/trending_up",
+        "rightAsset": "finance/trending_down"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "upside potential vs. lingering risk",
+        "takeaway": "Balance the upside case against the ever-present risk."
+      },
+      "resolvedAssets": {
+        "leftAsset": "finance/trending_up",
+        "rightAsset": "finance/trending_down"
+      }
+    },
+    {
+      "id": "scene-123",
+      "narration": "Đoàn bảy hiện nặng ở mức rất là\r\ncao, nợ hộ gia đình vẫn thuộc nhóm cao\r\nnhất thế giới. Trong khi nền kinh tế\r\nthực thì lại phục hồi chậm hơn nhiều\r\nngười kỳ vọng",
+      "purpose": "Restate the risk baseline: leverage and debt still high.",
+      "emotion": "concern",
+      "viewerFocus": "leverage and debt still elevated",
+      "visualGrammar": "STAT_REVEAL",
+      "sourceRange": {
+        "startWord": 4444,
+        "endWord": 4479,
+        "quoteChecksum": "06761489864b12664464e64b4971f5289dbee2d5e0013deb45c09424662f3bdb"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stat": "MARGIN VẪN Ở MỨC CAO",
+        "anchor": "finance/debt",
+        "who": "characters/cat_sad",
+        "caption": "Nợ cao, kinh tế phục hồi chậm"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "leverage and debt still elevated",
+        "takeaway": "Restate the risk baseline: leverage and debt still high."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_sad"
+      }
+    },
+    {
+      "id": "scene-124",
+      "narration": "Và khi mà một hệ thống đã\r\nchất đầy đoàn bảy thì mọi cú sốc đều trở\r\nnên nhạy cảm hơn rất là nhiều",
+      "purpose": "A leverage-loaded system is sensitive to any shock.",
+      "emotion": "concern",
+      "viewerFocus": "sensitivity to shocks",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "sourceRange": {
+        "startWord": 4480,
+        "endWord": 4503,
+        "quoteChecksum": "c6025c8528dc385ce561d837a88a62e3e3f0a4e2c7c686ced35fa8e10c28984a"
+      },
+      "heroVisual": false,
+      "slots": {
+        "photo": "backgrounds/office_trading.jpg",
+        "caption": "Hệ thống đầy margin, nhạy cảm mọi cú sốc"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "sensitivity to shocks",
+        "takeaway": "A leverage-loaded system is sensitive to any shock."
+      },
+      "resolvedAssets": {
+        "photo": "backgrounds/office_trading.jpg"
+      }
+    },
+    {
+      "id": "scene-125",
+      "narration": "Có thể là một cú sốc lãi suất toàn cầu, có thể là biến động địa chính trị, có thể là một cú sốc bất ngờ trong ngành chip, hoặc đơn giản là tâm lý thị trường đổi chiều.",
+      "purpose": "List the possible shock triggers.",
+      "emotion": "concern",
+      "viewerFocus": "possible shock triggers",
+      "visualGrammar": "ICON_TRIPLE",
+      "sourceRange": {
+        "startWord": 4504,
+        "endWord": 4545,
+        "quoteChecksum": "8ea58898532e47546e6c7da08b9d47a978e11252d1d3d648a14195b3958da2f2"
+      },
+      "heroVisual": false,
+      "slots": {
+        "items": "Sốc lãi suất toàn cầu|Địa chính trị|Ngành chip đảo chiều",
+        "icons": "finance/interest_rate|finance/exchange|finance/chart_up"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "possible shock triggers",
+        "takeaway": "List the possible shock triggers."
+      },
+      "resolvedAssets": {
+        "icon0": "finance/interest_rate",
+        "icon1": "finance/exchange",
+        "icon2": "finance/chart_up"
+      }
+    },
+    {
+      "id": "scene-126",
+      "narration": "Điều đáng quan sát nhất trong những năm tới là: liệu Hàn Quốc có tìm được cách giúp người trẻ xây dựng tài sản, mà không phải đánh cược ngày càng lớn hay không?",
+      "purpose": "Closing outlook question — the video's final open thought.",
+      "emotion": "curious",
+      "viewerFocus": "the closing question",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 4546,
+        "endWord": 4583,
+        "quoteChecksum": "73b739bffd4a44b5f7261fb937818dae406cfd7925208971c93e89acdd4a0d6e"
+      },
+      "heroVisual": true,
+      "slots": {
+        "who": "characters/cat_think",
+        "q": "Liệu có cách nào xây dựng tài sản khác?",
+        "a": "Không cần đánh cược ngày càng lớn?"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the closing question",
+        "takeaway": "Closing outlook question — the video's final open thought."
+      },
+      "resolvedAssets": {
+        "who": "characters/cat_think"
+      }
+    },
+    {
+      "id": "scene-127",
+      "narration": "Cảm ơn các bạn\r\nđã theo dõi video là nhiều. Đừng quên\r\nđăng ký để không bỏ lỡ bất kỳ video nào",
+      "purpose": "Standard channel sign-off and subscribe CTA.",
+      "emotion": "happy",
+      "viewerFocus": "the sign-off",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 4584,
+        "endWord": 4605,
+        "quoteChecksum": "8f20cc53b5f181d918d24deb1f2f9f18659a4146739a46f9cbe89ce0332790ea"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "host",
+        "caption": "Cảm ơn đã xem! Đăng ký nhé!"
+      },
+      "semanticVisual": {
+        "subject": "cat",
+        "action": "the sign-off",
+        "takeaway": "Standard channel sign-off and subscribe CTA."
+      },
+      "resolvedAssets": {
+        "who": "host",
+        "stage": "assets/scenes/library.svg"
+      }
+    }
+  ]
+}

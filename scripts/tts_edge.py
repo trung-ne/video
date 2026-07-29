@@ -79,13 +79,27 @@ def write_wav(path: str, samples: list, sr: int):
         wf.writeframes(packed)
 
 
-async def speak_scene(text: str, voice: str, out_path: str):
-    """Generate TTS for one scene and save to out_path (.mp3)."""
-    communicate = edge_tts.Communicate(text, voice)
-    with open(out_path, "wb") as f:
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                f.write(chunk["data"])
+async def speak_scene(text: str, voice: str, out_path: str, retries: int = 4):
+    """Generate TTS for one scene and save to out_path (.mp3).
+
+    edge-tts occasionally drops the websocket mid-batch (NoAudioReceived) under
+    sustained sequential load; this is transient, not content-related, so retry
+    with backoff before giving up.
+    """
+    last_err = None
+    for attempt in range(retries):
+        try:
+            communicate = edge_tts.Communicate(text, voice)
+            with open(out_path, "wb") as f:
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        f.write(chunk["data"])
+            return
+        except Exception as e:
+            last_err = e
+            print(f" [retry {attempt+1}/{retries}: {e}]", end="", flush=True)
+            await asyncio.sleep(1.5 * (attempt + 1))
+    raise last_err
 
 
 def mp3_duration_sec(path: str) -> float:

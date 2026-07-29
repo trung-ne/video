@@ -153,6 +153,21 @@ const DEFAULT_FOCAL_OCCUPANCY: Record<string, number> = {
   QA_REVEAL: 0.22,
   DIALOGUE_QA: 0.20,
   FRAMEBOX: 0.28,
+  TABLEAU: 0.18,
+  CHAR_PROP: 0.20,
+  EVIDENCE: 0.15,
+  VISUAL_METAPHOR: 0.18,
+  HISTORY_TIMELINE: 0.18,
+  SURVEY_CARD: 0.15,
+  MAP_FLOW: 0.15,
+  DATA_CHART: 0.15,
+  SCREEN_CAPTURE: 0.15,
+  FULL_SCENE_ACTION: 0.20,
+  // Deliberately character-free registers (V4.1: full-bleed photo/quiet beat,
+  // the image tells the story on its own) — a 0.25 default target treats an
+  // intentional empty-of-character frame as a defect it isn't.
+  PHOTO_EVIDENCE: 0.05,
+  BEAT: 0.05,
 };
 
 function importanceToEmphasis(imp: number): { animation: "pulse" | "shake" | "bounce"; duration: number; value?: number } {
