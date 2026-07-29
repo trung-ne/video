@@ -553,7 +553,11 @@ const GRAMMAR_REQUIRED_SLOTS: Record<string, string[][]> = {
   QA_REVEAL: [["question", "q"]],
   ICON_TRIPLE: [["items"]],
   BEAT: [],     // image falls back
-  SOLO: [],
+  // Without a keyword, SOLO compiles to a bare character on a flat field — the
+  // state that measured 100% flat frames. The keyword is the scene's teaching
+  // point and the only thing the grammar can build a focal card from, so it is
+  // required on every route, not just schema v2.
+  SOLO: [["keyword"]],
   MAP_FLOW: [["map"], ["items"], ["icons"]],
   DATA_CHART: [["chart"]],
   SURVEY_CARD: [["body"]],
@@ -1566,7 +1570,12 @@ export function measureTeachingTextCoverage(scene: any): TeachingTextCoverage {
     intervals.push([start, clamp(end)]);
   }
 
-  for (const layer of scene?.cards ?? []) addPersistentLayer(layer);
+  // Only a card that actually says something counts as teaching coverage. An
+  // icon-or-label-less card is a coloured box; crediting it let DIALOGUE_QA's
+  // backdrop panels report full coverage and silence this gate entirely.
+  for (const layer of scene?.cards ?? []) {
+    if (layer.label) addPersistentLayer(layer);
+  }
   for (const layer of scene?.paperCards ?? []) addPersistentLayer(layer);
   for (const layer of scene?.frameBoxes ?? []) addPersistentLayer(layer);
 

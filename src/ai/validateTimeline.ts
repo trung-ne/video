@@ -210,6 +210,12 @@ export function validateSceneTimeline(input: any): ValidationResult {
         if (!card.position || typeof card.position.x !== "number" || typeof card.position.y !== "number") {
           errors.push(`${cp} missing numeric position`);
         }
+        // ConceptCard draws an icon and one label; with neither it is a bordered
+        // coloured box that tells the viewer nothing while still occupying frame
+        // area — and it used to count as teaching coverage, silencing that gate.
+        if (!card.label && !card.iconSrc) {
+          errors.push(`${cp} has neither label nor iconSrc — renders as an empty box`);
+        }
         if (card.iconSrc) {
           const assetPath = resolveAssetPath(card.iconSrc, assetsDir);
           if (!fs.existsSync(assetPath)) {

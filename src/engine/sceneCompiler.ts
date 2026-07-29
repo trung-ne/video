@@ -591,6 +591,8 @@ function compileSpeechBubble(
     style: sb.style ?? "speech",
     direction: sb.direction ?? "right",
     exitFrame,
+    fontSize: sb.fontSize,
+    widthRatio: sb.widthRatio,
   } as SpeechBubbleEvent);
 }
 

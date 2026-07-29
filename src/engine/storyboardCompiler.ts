@@ -213,16 +213,18 @@ function compileBrief(
   }
   const result = grammarFn(brief, ctx);
   applyShot(result, brief.shot);
-  if (timing.frames >= fps * 8 && result.cards?.length) {
-    if (result.cards.length > 1) {
-      result.cards.forEach((card, index) => {
-        card.delay = index === 0
-          ? Math.min(card.delay ?? 8, 12)
-          : Math.min(timing.frames - 45, index * fps * 4);
-      });
-    } else if (brief.visualGrammar === "SOLO") {
-      result.cards[0].delay = Math.min(timing.frames - 45, fps * 4);
-    }
+  // Stagger multi-card reveals so a long scene keeps changing. A LONE card gets
+  // no such treatment: delaying the only element four seconds just leaves the
+  // opening of every long scene as background plus one character — which is why
+  // SOLO measured 100% flat frames. Mid-scene change for a single-card scene has
+  // to come from something that holds state (a pose beat, a swap), not from the
+  // one piece of content arriving late.
+  if (timing.frames >= fps * 8 && (result.cards?.length ?? 0) > 1) {
+    result.cards!.forEach((card, index) => {
+      card.delay = index === 0
+        ? Math.min(card.delay ?? 8, 12)
+        : Math.min(timing.frames - 45, index * fps * 4);
+    });
   }
 
   // Layer beat-emphasis onto the focal entity at the aligned frame.

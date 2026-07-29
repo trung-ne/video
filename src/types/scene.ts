@@ -195,6 +195,15 @@ export interface SceneSpeechBubble {
   direction?: "left" | "right" | "top";   // tail direction, default right
   delay?: number;            // frames after scene start
   duration?: number;         // frames visible; omit = until scene end
+  /**
+   * Type size for the line. Defaults to 22px, which is legible but occupies
+   * almost no frame area — too small to carry a scene on its own. DIALOGUE_QA
+   * relies on this because its dialogue is the content, so the bubble has to be
+   * the focal element rather than a tag on a character.
+   */
+  fontSize?: number;
+  /** Bubble width cap as a fraction of canvas width. Defaults to 0.38. */
+  widthRatio?: number;
 }
 
 // ─── Transition between scenes ───────────────────────────────

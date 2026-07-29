@@ -24,16 +24,69 @@ def scene_at(timeline, seconds):
 def percentile(np, values, q):
     return round(float(np.percentile(values, q)), 4)
 
-def focal_occupancy(np, pixels, edge_mask):
-    """Largest connected non-background/edge component bbox as frame fraction."""
+def extract_samples(ffmpeg, video, tmp, offset, step, scale_width=320):
+    """Extract one frame per sample with an accurate seek, returning (seconds, path).
+
+    The previous implementation did a single input seek and then let a
+    `fps=1/{step}` filter thin the stream, assuming output frame i was taken at
+    `offset + i*step` seconds. It was not: the filter resamples from the seeked
+    stream's own timebase and the decoded pixels drift from the nominal time —
+    measured on output/video-003-tai-sao-eng-v5-claude/video.mp4, the sample
+    labelled t=40 was pixel-identical to a frame-accurate t=45, and the sample
+    labelled t=145 reported a uniform frame while t=145 actually shows a card and
+    a character. Every per-scene attribution built on that mapping was wrong.
+
+    Seeking per sample is slower but exact, and the timestamp is then correct by
+    construction rather than by assumption. Input `-ss` has been frame-accurate
+    since ffmpeg 2.1 (keyframe seek, then decode-and-discard to the target), so
+    this stays fast. Extraction stops at the first sample past the end of the
+    file, which also removes the need to probe the duration.
+    """
+    samples = []
+    index = 0
+    while True:
+        seconds = offset + index * step
+        out = Path(tmp) / f"frame_{index:05d}.jpg"
+        result = subprocess.run([
+            ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
+            "-ss", f"{seconds:.6f}",
+            "-i", str(video),
+            "-frames:v", "1",
+            "-vf", f"scale={scale_width}:-1",
+            "-q:v", "4", str(out),
+        ], capture_output=True)
+        if result.returncode != 0 or not out.is_file() or out.stat().st_size == 0:
+            break
+        samples.append((seconds, out))
+        index += 1
+    return samples
+
+
+def focal_occupancy(np, pixels):
+    """Painted area of the largest non-background component, as a frame fraction.
+
+    Two earlier mistakes made this metric unable to fail, which defeated its whole
+    purpose of turning the authored `focalOccupancyTarget` from a self-graded
+    promise into a measurement:
+
+    1. It returned the component's BOUNDING BOX, so any diagonal or bridged
+       structure reported a frame-spanning box around very little paint.
+    2. It unioned `edge_mask` into the foreground, so a textured or full-bleed
+       stage background formed one giant connected component spanning the frame.
+
+    Together those put the median at exactly 1.000 with 192 of 287 samples above
+    0.95 — including frames measuring `dominantColor 1.000`, i.e. a single uniform
+    colour reporting 100% focal content. Foreground is now decided by colour
+    distance from the dominant background alone, and the returned figure is the
+    component's own painted area.
+    """
     quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
     colors, counts = np.unique(quantized, axis=0, return_counts=True)
     background = colors[counts.argmax()].astype(np.float32) * 24 + 12
     color_distance = np.linalg.norm(pixels - background, axis=2)
-    mask = (color_distance > 42) | edge_mask
+    mask = color_distance > 42
     height, width = mask.shape
     seen = np.zeros_like(mask, dtype=bool)
-    best_bbox = None
     best_size = 0
     for y in range(height):
         for x in range(width):
@@ -42,24 +95,15 @@ def focal_occupancy(np, pixels, edge_mask):
             stack = [(y, x)]
             seen[y, x] = True
             size = 0
-            min_x = max_x = x
-            min_y = max_y = y
             while stack:
                 cy, cx = stack.pop()
                 size += 1
-                min_x, max_x = min(min_x, cx), max(max_x, cx)
-                min_y, max_y = min(min_y, cy), max(max_y, cy)
                 for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
                     if 0 <= ny < height and 0 <= nx < width and mask[ny, nx] and not seen[ny, nx]:
                         seen[ny, nx] = True
                         stack.append((ny, nx))
-            if size > best_size:
-                best_size = size
-                best_bbox = (min_x, min_y, max_x, max_y)
-    if not best_bbox:
-        return 0.0
-    min_x, min_y, max_x, max_y = best_bbox
-    return ((max_x - min_x + 1) * (max_y - min_y + 1)) / (width * height)
+            best_size = max(best_size, size)
+    return best_size / (width * height)
 
 
 def main() -> int:
@@ -106,23 +150,18 @@ def main() -> int:
     maximum_below_focal_target = float(profile.get("maximumBelowFocalTargetRatio", 0.25))
 
     with tempfile.TemporaryDirectory(prefix="cat-video-audit-") as tmp:
-        pattern = str(Path(tmp) / "frame_%05d.jpg")
-        subprocess.run([
-            args.ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
-            "-ss", str(max(0.0, args.sample_offset)),
-            "-i", str(video),
-            "-vf", f"fps=1/{args.sample_seconds},scale=320:-1",
-            "-q:v", "4", pattern,
-        ], check=True)
-        paths = sorted(Path(tmp).glob("*.jpg"))
-        if len(paths) < 4:
+        samples = extract_samples(
+            args.ffmpeg, video, tmp,
+            max(0.0, args.sample_offset), args.sample_seconds,
+        )
+        if len(samples) < 4:
             print("Visual audit skipped: fewer than four sampled frames.")
             return 0
 
         rows = []
         thumbs = []
         contact_frames = []
-        for index, frame_path in enumerate(paths):
+        for seconds, frame_path in samples:
             full = Image.open(frame_path).convert("RGB").resize((320, 180))
             content_height = max(1, round(full.height * args.subtitle_band_top))
             image = full.crop((0, 0, full.width, content_height)).resize((160, 68))
@@ -134,12 +173,11 @@ def main() -> int:
             edges = np.asarray(image.convert("L").filter(ImageFilter.FIND_EDGES)).astype(np.float32)
             edge_mask = edges > 35
             edge_density = float(np.mean(edge_mask))
-            occupancy = float(focal_occupancy(np, pixels, edge_mask))
+            occupancy = float(focal_occupancy(np, pixels))
             quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
             _, color_counts = np.unique(quantized, axis=0, return_counts=True)
             dominant_color = float(color_counts.max() / len(quantized))
             flat = dominant_color > 0.55 or (edge_density < 0.10 and saturation < 0.12)
-            seconds = args.sample_offset + index * args.sample_seconds
             scene_id = scene_at(timeline, seconds)
             target = scene_lookup.get(scene_id, {}).get("focalOccupancyTarget")
             rows.append({

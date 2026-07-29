@@ -60,7 +60,8 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "DIAGRAM", purpose: "Explain a directional multi-step mechanism",
-    requiredSlots: ["items", "icons", "relations"], optionalSlots: [],
+    // `relations` is not read by grammarDiagram — arrows are unlabelled today.
+    requiredSlots: ["items", "icons"], optionalSlots: ["relations"],
     supportedRegisters: ["infographic"],
     semanticRequirements: ["Nodes need semantic icons and arrows need relation labels."],
   },
@@ -90,7 +91,11 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "SOLO", purpose: "Use one character for direct address with a meaningful action",
-    requiredSlots: ["who", "action", "keyword"], optionalSlots: ["prop"],
+    // `action` was required but read by no grammar, so authoring it changed
+    // nothing on screen while still failing the gate — a requirement nothing
+    // consumes teaches authors to ignore the registry. `keyword` is what the
+    // grammar actually builds its focal card from.
+    requiredSlots: ["who", "keyword"], optionalSlots: ["prop"],
     supportedRegisters: ["character_action"],
     semanticRequirements: ["A neutral pose plus keyword alone is not sufficient."],
   },

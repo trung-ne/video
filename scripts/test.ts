@@ -193,13 +193,26 @@ test("scene-end text hold survives beyond legacy hardcoded durations", () => {
 });
 
 test("teaching text coverage counts persistent cards but exempts title tails", () => {
+  // `label` is the only text channel ConceptCard renders — this fixture used
+  // `title`, a field SceneConceptCard does not define, so it was asserting that a
+  // card which draws nothing still counts as teaching coverage. That is the same
+  // confusion that let DIALOGUE_QA's blank backdrop panels silence this gate.
   const persistent = measureTeachingTextCoverage({
     durationFrames: 300,
     texts: [],
-    cards: [{ id: "answer", title: "Answer", delay: 30 }],
+    cards: [{ id: "answer", label: "Answer", delay: 30 }],
   });
   assert.strictEqual(persistent.layerCount, 1);
   assert.strictEqual(persistent.coverageRatio, 0.9);
+
+  // A card with no renderable content must not be credited.
+  const blankPanel = measureTeachingTextCoverage({
+    durationFrames: 300,
+    texts: [],
+    cards: [{ id: "panel", delay: 4 }],
+  });
+  assert.strictEqual(blankPanel.layerCount, 0);
+  assert.strictEqual(blankPanel.coverageRatio, 0);
 
   const titleOnly = measureTeachingTextCoverage({
     durationFrames: 300,
@@ -207,6 +220,26 @@ test("teaching text coverage counts persistent cards but exempts title tails", (
   });
   assert.strictEqual(titleOnly.coveredFrames, 120);
   assert.strictEqual(titleOnly.coverageRatio, 0.4);
+});
+
+test("a keywordless SOLO is refused on every route, not just schema v2", () => {
+  // SOLO used to require nothing in the version-agnostic table, so route A could
+  // ship a scene that compiles to a bare character on a flat field — the state
+  // that measured 100% flat frames. The registry's v2-only list did demand slots,
+  // but also demanded `action`, which no grammar reads.
+  const withKeyword = runStoryboardCheck({
+    schemaVersion: 1,
+    scenes: [{ id: "ok", visualGrammar: "SOLO", narration: "a b.", slots: { who: "characters/cat", keyword: "Face" } }],
+  });
+  const without = runStoryboardCheck({
+    schemaVersion: 1,
+    scenes: [{ id: "bare", visualGrammar: "SOLO", narration: "a b.", slots: { who: "characters/cat" } }],
+  });
+  const slotIssues = (report: any) => report.checks
+    .flatMap((c: any) => c.issues ?? [])
+    .filter((i: any) => /slot/i.test(i.message));
+  assert.strictEqual(slotIssues(withKeyword).length, 0);
+  assert.ok(slotIssues(without).some((i: any) => /keyword/.test(i.message)));
 });
 
 test("narrator pose swaps persist until the next narration beat", () => {

@@ -37,6 +37,7 @@ export interface SpeechBubbleState {
   exitFrame: number | null;
   enterFrame: number;
   fontSize: number;
+  widthRatio: number;
   background: string;
   textColor: string;
 }
@@ -313,6 +314,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         exitFrame: e.exitFrame ?? null,
         enterFrame: e.frame,
         fontSize: e.fontSize ?? 22,
+        widthRatio: e.widthRatio ?? 0.38,
         background: e.background ?? "white",
         textColor: e.textColor ?? "#1a1a1a",
       });

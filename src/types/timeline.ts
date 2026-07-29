@@ -153,6 +153,7 @@ export interface SpeechBubbleEvent {
   direction?: "left" | "right" | "top";   // tail direction, default right
   exitFrame?: number;
   fontSize?: number;       // default 22
+  widthRatio?: number;     // width cap as fraction of canvas width, default 0.38
   background?: string;     // bubble color, default white
   textColor?: string;      // default #1a1a1a
 }

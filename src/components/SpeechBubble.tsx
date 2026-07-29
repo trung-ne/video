@@ -29,10 +29,12 @@ export const SpeechBubble: React.FC<Props> = ({
 
   const anchorX = anchor.position.x * canvasWidth;
   const anchorY = anchor.position.y * canvasHeight;
-  const assetSize = 160 * anchor.scale;
+  // Must match AnimatedAsset's BASE_ASSET_SIZE, or the bubble is offset from the
+  // character it points at — this was left at the old 160 when assets moved to 200.
+  const assetSize = 200 * anchor.scale;
 
   // Position bubble relative to anchor character
-  const bubbleWidth = Math.min(canvasWidth * 0.38, Math.max(200, bubble.text.length * (bubble.fontSize * 0.55) + 40));
+  const bubbleWidth = Math.min(canvasWidth * bubble.widthRatio, Math.max(200, bubble.text.length * (bubble.fontSize * 0.55) + 40));
   const charsPerLine = Math.max(10, Math.floor((bubbleWidth - 40) / (bubble.fontSize * 0.55)));
   const bubbleHeight = Math.ceil(bubble.text.length / charsPerLine) * (bubble.fontSize + 10) + 40;
 

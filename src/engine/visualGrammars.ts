@@ -153,21 +153,28 @@ function grammarPolicyList(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const a = castSrc(ctx, b.slots?.asker, "characters/cat_talk");
   const c = castSrc(ctx, b.slots?.answerer, "characters/cat_think");
+  // The dialogue itself carries this scene. Two content-free backdrop panels used
+  // to sit behind the cats purely to occupy frame area; they rendered as bordered
+  // empty boxes, and because qualityCheck counted any card as a teaching-text
+  // layer they also silenced the teaching-lifetime gate. Occupancy has to come
+  // from the spoken lines, so the bubbles are sized to hold them instead.
   const bubbles: SceneSpeechBubble[] = [];
   if (b.slots?.askerText)
-    bubbles.push({ id: `${b.id}-qa`, anchorAssetId: `${b.id}-a`, text: b.slots.askerText, direction: "right", delay: 12, duration: 70 });
+    bubbles.push({
+      id: `${b.id}-qa`, anchorAssetId: `${b.id}-a`, text: b.slots.askerText,
+      direction: "right", delay: 12, duration: 70, fontSize: 40, widthRatio: 0.46,
+    });
   if (b.slots?.answererText)
-    bubbles.push({ id: `${b.id}-qb`, anchorAssetId: `${b.id}-b`, text: b.slots.answererText, direction: "left", delay: 90, duration: 70 });
+    bubbles.push({
+      id: `${b.id}-qb`, anchorAssetId: `${b.id}-b`, text: b.slots.answererText,
+      direction: "left", delay: 90, duration: 70, fontSize: 40, widthRatio: 0.46,
+    });
   return {
     layout: "DIALOGUE",
     backgroundSrc: WHITE,
     entities: [
       { assetId: `${b.id}-a`, src: a.src, badge: a.badge, slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
       { assetId: `${b.id}-b`, src: c.src, badge: c.badge, slot: "RIGHT", enterAnimation: "slideRight", enterDelay: 18 },
-    ],
-    cards: [
-      { id: `${b.id}-left-panel`, position: { x: 0.25, y: 0.5 }, background: "#DCEFF2", width: 720, height: 650, delay: 4 },
-      { id: `${b.id}-right-panel`, position: { x: 0.75, y: 0.5 }, background: "#F3DFD8", width: 720, height: 650, delay: 4 },
     ],
     texts: [],
     speechBubbles: bubbles,
@@ -258,16 +265,22 @@ function grammarSolo(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
-    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 1.75, enterAnimation: "popIn", enterDelay: 8 }],
+    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 1.6, enterAnimation: "popIn", enterDelay: 8 }],
+    // A 760×570 card beside one character left ~65% of the content band as bare
+    // background, so every SOLO sample measured flat. The keyword IS the scene's
+    // teaching point, so it becomes the focal element at the size STAT_REVEAL
+    // already proves (1080×650) — the card's border, shadow and large type carry
+    // the contours too. Without a keyword there is nothing to enlarge, and the
+    // scene stays a bare reaction beat by design.
     cards: kw ? [{
       id: `${b.id}-concept`,
-      position: { x: 0.65, y: 0.47 },
+      position: { x: 0.62, y: 0.45 },
       background: "#237A8B",
       iconSrc: prop,
       label: kw,
-      width: 760,
-      height: 570,
-      delay: 14,
+      width: 1080,
+      height: 650,
+      delay: 12,
     }] : undefined,
     texts: [],
     focusAssetId: `${b.id}-cat`,
