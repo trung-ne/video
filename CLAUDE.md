@@ -5,6 +5,11 @@
 Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải thích".
 Pipeline: **Script/URL/Transcript → semantic storyboard → measured TTS/alignment → compiled timeline → Remotion → audited MP4**
 
+> **PRODUCTION POLICY: ROUTE A ONLY.** Route B/API generation is locked.
+> `scripts/generate-timeline.ts`, `npm run generate`, and `new-project.ts --auto`
+> must not be used. Every storyboard is session-authored in
+> `projects/<id>/storyboard-data.ts` before TTS/alignment/compile.
+
 Mục tiêu: Tạo hàng trăm video, chỉ thay script/audio — không vẽ lại asset, không làm lại animation.
 
 ---
@@ -83,7 +88,7 @@ video/
 │       ├── systemPrompt.ts       # buildSystemPrompt() + listAvailableAssets() + buildScriptFromIdea()
 │       └── validateTimeline.ts   # validateTimeline() + printValidationResult()
 ├── scripts/
-│   ├── generate-timeline.ts      # AI pipeline: 3 input modes → timeline.json
+│   ├── generate-timeline.ts      # Route B legacy — locked/fail-closed
 │   └── render.ts                 # timeline.json → MP4 via remotion render
 ├── public/
 │   └── assets/                   # SVG assets (user tự thêm)
@@ -102,7 +107,7 @@ video/
 Mỗi video sống trong `projects/video-XXX-<slug>/` để dễ quản lý hàng trăm video. Tạo bằng [new-project.ts](scripts/new-project.ts):
 
 ```bash
-npx ts-node scripts/new-project.ts --idea "Chủ đề"      # hoặc --transcript <file> | --url <youtube> | --name <slug> | --auto
+npx ts-node scripts/new-project.ts --idea "Chủ đề"      # hoặc --transcript <file> | --url <youtube> | --name <slug>
 ```
 
 Nội dung một folder (những file thực sự sinh ra qua pipeline):
@@ -120,9 +125,9 @@ projects/video-003-tai-sao-eng/
 └── metadata.json       # chỉ new-project.ts tạo lúc khởi tạo
 ```
 
-Generate + render nhận **cả** `--project <id>` lẫn path tường minh:
+Build storyboard + render nhận **cả** `--project <id>` lẫn path tường minh:
 ```bash
-npm run generate -- --project <id> --tts-kokoro                 # route API, timing đo thật
+npx ts-node scripts/build-storyboard.ts --project <id>           # Route A duy nhất
 npx ts-node scripts/render.ts --project <id>                     # hoặc --timeline projects/<id>/timeline.json
 ```
 
@@ -140,16 +145,7 @@ Production luôn dùng `projects/<id>/timeline.json`; `metadata.json` chỉ đư
 # Preview trong Remotion Studio
 npm start
 
-# Generate production timeline từ ý tưởng
-npx ts-node scripts/generate-timeline.ts --idea "Chủ đề video" --tts-kokoro
-
-# Generate từ URL YouTube
-npx ts-node scripts/generate-timeline.ts --url "https://youtube.com/watch?v=..." --tts-kokoro
-
-# Generate từ transcript file
-npx ts-node scripts/generate-timeline.ts --transcript transcript.txt --tts-kokoro
-
-# [Route A] Build storyboard từ storyboard-data.ts viết tay (KHÔNG cần API key)
+# Build storyboard từ storyboard-data.ts viết tay (Route A duy nhất)
 npx ts-node scripts/build-storyboard.ts --project <id>
 
 # Compile storyboard → timeline (cần durations.json + words.json trước)
@@ -164,29 +160,20 @@ npx ts-node scripts/render.ts --project <id>
 npx tsc --noEmit
 ```
 
-**Environment variable:**
-```
-$env:ANTHROPIC_API_KEY = "sk-ant-..."
-```
-Chỉ **route B** (`generate-timeline.ts`) cần key. Route A (`build-storyboard.ts` +
-TTS local + `compile-storyboard.ts` + `render.ts`) chạy hoàn toàn offline.
+Route A (`build-storyboard.ts` + TTS local + `compile-storyboard.ts` +
+`render.ts`) chạy hoàn toàn offline và không dùng API key.
 
 ---
 
-## Pipeline AI → Video
+## Pipeline Route A → Video
 
-Có **2 route authoring**, hội tụ về cùng một đuôi compile/render:
+Chỉ có **1 route authoring** được phép:
 
 ```
                       ROUTE A — session-authored (KHÔNG cần API key)
-Transcript ─┬─→ projects/<id>/storyboard-data.ts   ← agent đọc transcript, viết tay SCENES
-            │      ↓ scripts/build-storyboard.ts --project <id>   (thuần cơ học)
-            │   storyboard.json
-            │
-            │         ROUTE B — API (generate-timeline.ts, cần ANTHROPIC_API_KEY…)
-            └─→ story map → section plan → visualCritic → repair loop
-                   ↓
-                storyboard.json
+Transcript ─→ projects/<id>/storyboard-data.ts   ← agent đọc transcript, viết tay SCENES
+                 ↓ scripts/build-storyboard.ts --project <id>   (thuần cơ học)
+              storyboard.json
                       │
                       ├─ storyboard-to-tts.ts → tts_*.py → voice.wav + durations.json
                       └─ align_words.py → words.json
@@ -205,7 +192,8 @@ Transcript ─┬─→ projects/<id>/storyboard-data.ts   ← agent đọc tran
 **`scenes[]` là định dạng authored duy nhất mà engine phía dưới hiểu.** Mọi thứ ngữ nghĩa (layout presets, `validateTimeline`, `qualityCheck`) đều thao tác trên `scenes[]`. `events[]` chỉ là đích compile tạm thời.
 - Compile `scenes → events` xảy ra ở **đúng 1 nơi**: [loadTimeline.ts](src/engine/loadTimeline.ts) (gọi `compileScenes` + `injectLiveliness`).
 - Cả **preview** ([Root.tsx](src/Root.tsx)) lẫn **render** ([render.ts](scripts/render.ts)) đều đi qua `loadTimeline()` → xem đúng cái sẽ render.
-- **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. `generate-timeline.ts` chỉ ghi `scenes[]`.
+- **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. Route A chỉ ghi authored
+  `storyboard.json`; `timeline.json` vẫn là sản phẩm compile.
 
 **Hai tầng biến đổi (cố ý, đừng nhầm):**
 - **Authoring-time** (chạy lúc generate, GHI ĐÈ scenes trên đĩa): `autoFixBackgrounds` ([backgroundResolver.ts](src/ai/backgroundResolver.ts)) sửa nền lười → được *persist* trước khi compile. Không chạy post-hoc trên timeline có provenance.
@@ -296,7 +284,9 @@ Bộ rule V3 gốc + phân tích 241 frames video mẫu đã chuyển sang [docs
 
 Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có thứ thay đổi (pose mèo, bong bóng, icon, mũi tên, cắt cảnh). Hệ thống hỗ trợ điều này ở 3 tầng:
 
-1. **Scene density** — [generate-timeline.ts](scripts/generate-timeline.ts) ép số scene scale theo thời lượng (~1 scene / 11-15s). Trước đây cap cứng "6-8 scenes" gây ra video 25 phút chỉ 7 scene → cực nhàm. Quality check `SCENE_DENSITY` cảnh báo nếu TB > 45s/scene.
+1. **Scene density** — Route A phải author scene theo từng câu/beat, mục tiêu khoảng
+   1 scene / 11–15s. Trước đây cap cứng "6–8 scenes" gây ra video 25 phút chỉ
+   7 scene → cực nhàm. Quality check `SCENE_DENSITY` cảnh báo nếu TB > 45s/scene.
 
 2. **AI micro-variation** — prompt hướng dẫn AI tự thêm pose swap / bubble / icon pop-in / mũi tên nhân quả / emphasize mỗi 4-8s (section "CHỐNG NHÀM CHÁN" trong systemPrompt).
 

@@ -48,6 +48,22 @@ import { resolveAssetRequests } from "../src/engine/assetResolver";
 import { sha256File } from "../src/audio/prepareAudio";
 import { critiqueSceneBriefs } from "../src/ai/visualCritic";
 
+// Production policy: Route B (API-authored storyboard generation) is disabled.
+// Keep the implementation in-tree for reference only, but fail closed before
+// parsing inputs, reading API keys, writing artifacts, or launching TTS.
+console.error(`
+❌ Route B is locked for this repository.
+
+Only Route A (session-authored) is allowed:
+  1. Author projects/<id>/storyboard-data.ts by hand from the transcript.
+  2. npx ts-node scripts/build-storyboard.ts --project <id>
+  3. Run storyboard preflight/quality checks before TTS.
+  4. Run measured TTS + alignment, then compile and render.
+
+Do not use npm run generate or scripts/generate-timeline.ts for production.
+`);
+process.exit(2);
+
 // --- Parse CLI args ---
 const args = process.argv.slice(2);
 function getArg(flag: string): string | undefined {

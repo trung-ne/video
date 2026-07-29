@@ -163,22 +163,19 @@ console.log(`   └── output/${videoId}/video.mp4 (rendered later)`);
 console.log(`\n🚀 Next steps:`);
 if (!transcript && !url && idea) {
   console.log(`   1. Edit/write transcript: ${projectPath}/transcript.txt`);
-  console.log(`   2. npm run generate -- --project ${videoId} --tts-kokoro`);
+  console.log(`   2. Author ${projectPath}/storyboard-data.ts scene-by-scene`);
 } else {
-  console.log(`   1. npm run generate -- --project ${videoId} --tts-kokoro`);
+  console.log(`   1. Author ${projectPath}/storyboard-data.ts scene-by-scene`);
 }
-console.log(`   2. npm run validate -- projects/${videoId}/timeline.json`);
-console.log(`   3. npm run quality -- projects/${videoId}/timeline.json`);
-console.log(`   4. npm run preview:project -- --project ${videoId}`);
-console.log(`   5. npm run render -- --project ${videoId}`);
+console.log(`   2. npx ts-node scripts/build-storyboard.ts --project ${videoId}`);
+console.log(`   3. Generate measured TTS + word alignment`);
+console.log(`   4. Compile storyboard with durations.json + words.json`);
+console.log(`   5. npm run validate -- projects/${videoId}/timeline.json`);
+console.log(`   6. npm run quality -- projects/${videoId}/timeline.json`);
+console.log(`   7. npm run render -- --project ${videoId}`);
 
 if (auto) {
-  console.log(`\n⏳ Auto mode: generating timeline...`);
-  // Auto-generate timeline (call generate-timeline.ts)
-  try {
-    execSync(`npm run generate -- --project ${videoId} --tts-kokoro`, { stdio: "inherit" });
-    console.log(`\n✅ Measured timeline generated. Next: npm run preview:project -- --project ${videoId} or npm run render -- --project ${videoId}`);
-  } catch (e) {
-    console.error(`❌ Auto-generation failed. Generate manually: npm run generate -- --project ${videoId} --tts-kokoro`);
-  }
+  console.error(`\n❌ --auto is disabled because it used Route B.`);
+  console.error(`   Author ${projectPath}/storyboard-data.ts through Route A, then run build-storyboard.ts.`);
+  process.exitCode = 2;
 }

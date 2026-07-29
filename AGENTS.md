@@ -9,7 +9,7 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
 
 ---
 
-## 6 luật KHÔNG ĐƯỢC VI PHẠM
+## 7 luật KHÔNG ĐƯỢC VI PHẠM
 
 1. **KHÔNG dùng helper modulo/keyword để thay storyboard.** Không sinh scene bằng
    `index % N`, bảng regex từ khoá, hay vòng lặp gán layout máy móc. Mỗi scene phải
@@ -41,9 +41,15 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
    làm wallpaper); một khung hình = một lớp text; pose mèo đổi theo **từng câu**, không
    phải từng scene; SOLO ≤ 40% số scene; 3 giây đầu phải thấy rõ nhân vật/tiêu đề.
 
+7. **CHỈ ROUTE A. ROUTE B/API ĐÃ KHÓA.** Không chạy `npm run generate`,
+   `scripts/generate-timeline.ts`, hay `new-project.ts --auto`. Mọi project phải
+   được agent đọc transcript và viết tay `storyboard-data.ts` theo từng câu/beat,
+   sau đó mới chạy `build-storyboard.ts`. Không được chạy TTS chỉ vì source
+   coverage pass.
+
 ---
 
-## Hai route authoring
+## Một route authoring duy nhất
 
 **Route A — session-authored (KHÔNG cần API key).** Agent tự đọc transcript trong
 phiên chat và viết tay nội dung scene:
@@ -62,15 +68,10 @@ npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.
 npx ts-node scripts/render.ts --project <id>                    # → output/<id>/video.mp4
 ```
 
-**Route B — API.** `generate-timeline.ts` tự chạy story map → section plan →
-visualCritic → repair loop qua API (cần `ANTHROPIC_API_KEY`, có fallback Gemini/Grok/
-DeepSeek). Dùng cho chạy hàng loạt / không giám sát.
+**Route B — API: ĐÃ KHÓA.** `generate-timeline.ts` được giữ trong repo làm mã
+tham khảo nhưng fail-closed trước khi đọc API key hoặc ghi artifact.
 
-```bash
-npm run generate -- --project <id> --tts-kokoro
-```
-
-Cả hai route đều hội tụ về `storyboard.json` rồi đi chung phần đuôi compile/render.
+Route A tạo `storyboard.json`, rồi đi tiếp qua phần đuôi compile/render.
 
 ---
 
@@ -86,8 +87,8 @@ Cả hai route đều hội tụ về `storyboard.json` rồi đi chung phần �
 | `public/assets/` | ⛔ Bộ SVG vẽ tay **đã ngừng dùng** — giữ để tương thích, không thêm mới |
 | `config/reference-quality.json` | Ngưỡng của mọi audit (encoding, audio LUFS, visual density) |
 
-`--project <id>` được hỗ trợ ở `generate-timeline.ts`, `render.ts`,
-`preview-project.ts`, `build-storyboard.ts`. `render.ts` không có `--out` sẽ mặc định
+`--project <id>` được hỗ trợ ở `render.ts`, `preview-project.ts`,
+`build-storyboard.ts`. `render.ts` không có `--out` sẽ mặc định
 ghi ra `output/<id>/video.mp4`.
 
 ---

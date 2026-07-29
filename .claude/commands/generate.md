@@ -1,25 +1,13 @@
 ---
-description: Sinh semantic storyboard v2 cho một project (route API, cần API key)
+description: Route B/API generator — LOCKED, không được sử dụng
 argument-hint: <project-id-or-path>
 ---
 
-# /generate — Semantic storyboard v2
+# /generate — LOCKED
 
-Production command:
+Route B đã bị khóa. Command này không còn là production entry point và
+`scripts/generate-timeline.ts` sẽ thoát với mã lỗi 2 trước khi đọc API key hoặc
+ghi artifact.
 
-```powershell
-npm run generate -- --project <id-or-path> --tts-kokoro
-```
-
-Vietnamese Edge TTS:
-
-```powershell
-npm run generate -- --project <id-or-path> --tts --tts-voice vi-VN-HoaiMyNeural
-```
-
-Pipeline bắt buộc: story map → section plans → source coverage → semantic asset
-resolve → per-scene TTS → word alignment → compile → provenance/hash gate → quality gate. Không tự viết
-timeline bằng modulo/keyword và không bỏ qua blocker/major.
-
-Artifacts nằm trong `projects/<id>/`. Nếu có `asset-requests.json`, generate hoặc
-thêm asset được yêu cầu, chạy `npm run build-assets`, rồi generate lại.
+Mọi video phải dùng Route A: agent viết tay `storyboard-data.ts`, chạy
+`build-storyboard.ts`, rồi mới chạy TTS/alignment/compile/render.
