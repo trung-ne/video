@@ -37,7 +37,7 @@ export function buildSystemPrompt(assetList: string[], durationSeconds: number):
 **Kênh Mèo Giải Thích THẬT dạy qua:**
 1. **PHỤ ĐỀ NARRATION luôn hiện dưới màn hình** — mỗi khoảnh khắc đều có caption lời dẫn (hộp xám mờ, chữ trắng, đáy màn hình). Hệ thống TỰ tạo phụ đề từ trường \`narration\` → **BẮT BUỘC viết narration đầy đủ cho MỖI scene.**
 2. **Dialogue giữa các nhân vật** — mèo hỏi, mèo trả lời, speech bubbles qua lại
-3. **Nền TRẮNG sạch là chủ đạo (~70%)** — nhân vật to biểu cảm mạnh là hero; ảnh thật chỉ làm evidence hoặc emotional beat có chủ đích (xem mục BACKGROUNDS)
+3. **Nền TRẮNG sạch là chủ đạo (~55–65%)** — nhân vật to biểu cảm mạnh là hero; ảnh thật làm evidence hoặc emotional beat có chủ đích (xem mục BACKGROUNDS), không dùng làm wallpaper
 4. **Nhân vật TO, lấp đầy màn hình** — mèo chiếm 40-70% chiều cao frame (KHÔNG để scale nhỏ trôi giữa khoảng trắng)
 5. **Card bằng chứng / khảo sát / khung TV** — dùng \`paperCards\` (evidence/survey) và \`frameBoxes\` (data/map) cho dẫn chứng và số liệu — đây là device đặc trưng của kênh
 6. **Q&A Teaching Pattern** — đặt câu hỏi trước, hiện icon, rồi tiết lộ câu trả lời
@@ -224,7 +224,7 @@ Video mẫu dùng ảnh thật CHỈ trong 2 trường hợp:
 
 **CẤM:** đặt mèo to giữa màn hình đè lên ảnh nền mờ suốt scene — đó là wallpaper vô nghĩa. Nếu ảnh không minh họa TRỰC TIẾP câu narration đang đọc → dùng "#FFFFFF" hoặc "#FAFAF8".
 
-Chỉ dùng 2-4 ảnh thật/video, mỗi lần xuất hiện phải có lý do kể chuyện. Khi dùng ảnh nền có mèo đứng trong cảnh → đặt **nhân vật ở y=0.70–0.78 (đứng dưới)**, scrim nhẹ.
+Với video dài trên 3 phút, dùng ảnh thật/video ở **8–12% số scene**, phân bố đều và mỗi lần xuất hiện phải có lý do kể chuyện. **Không dùng ảnh có khuôn mặt người nhận diện được**; ưu tiên kiến trúc, đồ vật, phong cảnh và không gian trống. Khi dùng ảnh nền có mèo đứng trong cảnh → đặt **nhân vật ở y=0.70–0.78 (đứng dưới)**, scrim nhẹ.
 
 ### ẢNH NỀN CÓ SẴN — CHỈ DÙNG ĐÚNG CÁC PATH NÀY (copy chính xác):
 ${backgroundList.length > 0
@@ -250,7 +250,7 @@ Gradient/màu phẳng CHỈ hợp lệ cho các scene KHÔNG có bối cảnh kh
 
 **Quy tắc (V4):**
 - **Nền trắng/sáng là mặc định** cho scene kể chuyện thông thường — nhân vật to, biểu cảm mạnh là hero.
-- Ảnh thật CHỈ khi là evidence hoặc emotional beat khớp trực tiếp narration; 2-4 ảnh/video là đủ.
+- Ảnh thật CHỈ khi là evidence hoặc emotional beat khớp trực tiếp narration; mục tiêu 8–12% scene ở video dài, không dùng cùng ảnh quá 2 lần và tuyệt đối không có mặt người rõ nét.
 - Đổi background khi bối cảnh câu chuyện thay đổi — không phải theo thời gian.
 - **Khi dùng ảnh nền:** nhân vật y=0.70–0.78, scale 1.4–1.6, KHÔNG che chủ thể ảnh.
 - **Khi dùng trắng/gradient:** nhân vật y=0.52 center, scale lớn (2.0+) như video mẫu.
@@ -271,9 +271,9 @@ Gradient/màu phẳng CHỈ hợp lệ cho các scene KHÔNG có bối cảnh kh
 ### DIALOGUE — Hai nhân vật nói chuyện
 - **Khi dùng:** Q&A, giải thích định nghĩa, kể tình huống, contrast mindset
 - **Auto scale:** 1.65 mỗi bên (SceneCompiler tự áp dụng nếu không set scale)
-- **Vị trí:** y=0.52 trên nền trắng/sáng; y=0.68–0.75 nếu scene này là 1 trong 2-4 cú đấm ảnh thật
+- **Vị trí:** y=0.52 trên nền trắng/sáng; y=0.68–0.75 nếu scene này dùng ảnh thật
 - **Speech bubble:** Dùng \`props/speech_bubble\` thay vì CALLOUT text — đặt phía trên nhân vật đang nói
-- **Background:** nền trắng/sáng là mặc định (V4); ảnh thật chỉ khi dialogue diễn ra trong bối cảnh cần thấy (1 trong 2-4 ảnh/video)
+- **Background:** nền trắng/sáng là mặc định (V4); ảnh thật khi dialogue diễn ra trong bối cảnh cần thấy và narration hưởng lợi từ không gian thật
 - **Text:** CALLOUT trên mỗi nhân vật (CALLOUT_LEFT + CALLOUT_RIGHT) + CAPTION dưới cùng
 - **Action:** Nhân vật đang nói thì pulse, nhân vật kia idle
 
@@ -505,7 +505,7 @@ Transition: không flash — dùng slideUp cho từng icon
 **Bản chất:** Kiến thức truyền qua đối thoại, không qua text giải thích
 \`\`\`
 Layout:     DIALOGUE
-Background: trắng/sáng (mặc định V4); ảnh thật CHỈ nếu đây là 1 trong 2-4 cú đấm ảnh của video
+Background: trắng/sáng (mặc định V4); ảnh thật nếu đây là một cú đấm bối cảnh có chủ đích
 Cat A:      cat_think (đang nghe/hỏi) — x=0.28; y=0.52 (nền sáng) / y=0.70 (nếu ảnh thật); scale ĐỂ TRỐNG (auto 2.3)
 Cat B:      cat_talk (đang trả lời) — x=0.72; cùng y với Cat A; scale ĐỂ TRỐNG (auto 2.3)
 Text:       CALLOUT_LEFT + CALLOUT_RIGHT (speech bubble style)
@@ -537,7 +537,7 @@ Text:       BODY tóm tắt sau khi cả 2 đã xuất hiện
 **Bản chất:** Đặt nhân vật vào không gian cụ thể để người xem hình dung
 \`\`\`
 Layout:     DIALOGUE hoặc CHAR_PROP
-Background: đây là ứng viên tốt cho 1 trong 2-4 cú đấm ảnh thật (bối cảnh cần THẤY); nếu đã đủ quota ảnh → nền sáng + prop bối cảnh
+Background: đây là ứng viên tốt cho một cú đấm ảnh thật (bối cảnh cần THẤY); nếu narration không cần ảnh → nền sáng + prop bối cảnh
 Cat:        costume match vai — y=0.68–0.75 khi có ảnh (đứng trước background, không che)
 Props:      prop phù hợp hành động (dinner_table, computer_desk, round_table...)
 Text:       CAPTION ngắn + speech bubble — KHÔNG dùng BODY giải thích
@@ -952,7 +952,7 @@ Bảng background theo bối cảnh:
 "hy vọng / kết luận"   → "linear-gradient(160deg, #E8F5E9 0%, #F3E5F5 100%)"
 \`\`\`
 
-**⭐ BẢNG MAP ẢNH DƯỚI ĐÂY CHỈ DÙNG CHO 2-4 "CÚ ĐẤM" ẢNH THẬT/VIDEO (xem mục BACKGROUNDS V4)** —
+**⭐ BẢNG MAP ẢNH DƯỚI ĐÂY DÙNG CHO 8–12% "CÚ ĐẤM" ẢNH THẬT/VIDEO Ở VIDEO DÀI (xem mục BACKGROUNDS V4)** —
 khi beat là evidence hoặc emotional beat có bối cảnh không gian khớp trực tiếp narration.
 KHÔNG dùng bảng này để dán ảnh cho mọi scene có bối cảnh — scene kể chuyện thường vẫn là nền trắng/sáng.
 Compiler TỰ blur nhẹ + phủ scrim, TỰ đổi text sang trắng. Khi dùng ảnh, đặt **mèo ở y=0.72 (đứng dưới)** hoặc bỏ mèo.
@@ -1266,7 +1266,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 6. \`id\` của scene, assetId, text.id phải UNIQUE toàn timeline
 7. Tối thiểu ${Math.ceil(durationSeconds / 20)} scenes
 8. Mỗi scene: ít nhất 1 entity + \`backgroundSrc\` — **BẮT BUỘC có backgroundSrc mỗi scene**
-9. **BACKGROUND V4 — TRẮNG MẶC ĐỊNH, ẢNH LÀ CÚ ĐẤM:** Đa số scene dùng nền trắng/sáng ("#FFFFFF", "#FAFAF8", gradient sáng) + nhân vật TO. Ảnh thật (\`backgrounds/*.jpg\`) CHỈ 2-4 lần/video, mỗi lần phải là evidence hoặc emotional beat khớp trực tiếp narration — khi đó mèo đứng y=0.70–0.78 hoặc vắng mặt, KHÔNG che chủ thể ảnh. Mèo to đè giữa ảnh mờ = FAIL.
+9. **BACKGROUND V4 — TRẮNG MẶC ĐỊNH, ẢNH LÀ CÚ ĐẤM:** Đa số scene dùng nền trắng/sáng ("#FFFFFF", "#FAFAF8", gradient sáng) + nhân vật TO. Video dài trên 3 phút phải dùng ảnh thật (\`backgrounds/*.jpg\`) ở **8–12% số scene**, phân bố ít nhất một lần mỗi 30–45 giây; mỗi ảnh phải là evidence hoặc emotional beat khớp trực tiếp narration, không dùng cùng ảnh quá 2 lần. Khi dùng ảnh, mèo đứng y=0.70–0.78 hoặc vắng mặt, KHÔNG che chủ thể ảnh. Mèo to đè giữa ảnh mờ = FAIL.
 10. **LAYOUT VARIETY:** Ít nhất 5 layout khác nhau
 11. **DIALOGUE FIRST:** Giải thích quan trọng → DIALOGUE với 2 nhân vật, speech bubble, không BODY text dài
 12. **CAMERA MINIMAL:** Tối đa 1 ZOOM_IN/video, zoom max 1.15

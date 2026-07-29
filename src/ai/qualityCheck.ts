@@ -229,6 +229,17 @@ function checkBackgroundVariety(scenes: any[]): CheckResult {
       suggestion: "Thêm 1-2 ảnh full-bleed đúng lúc (evidence card / emotional beat) — vẫn giữ nền trắng làm mặc định",
     });
   }
+  // Long-form videos need a deliberate change of visual register, not only
+  // generated stages. Keep this as a MINOR so legacy timelines remain
+  // inspectable while new authoring gets an actionable signal.
+  if (scenes.length >= 30 && photoScenes / scenes.length < 0.08) {
+    issues.push({
+      severity: "MINOR",
+      rule: "BACKGROUND_PHOTO_TARGET",
+      message: `Ảnh thật chỉ chiếm ${(photoScenes / scenes.length * 100).toFixed(1)}% scene — thấp hơn mục tiêu 8–12%`,
+      suggestion: "Thêm BEAT/FRAMEBOX dùng backgrounds/*.jpg theo đúng bối cảnh narration, phân bố mỗi 30–45 giây; không dùng ảnh làm wallpaper.",
+    });
+  }
   const maximumPhotoScenes = Math.max(5, Math.ceil(scenes.length * 0.35));
   if (photoScenes > maximumPhotoScenes) {
     issues.push({

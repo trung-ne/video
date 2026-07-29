@@ -48,10 +48,11 @@ Khai báo "cast": role → { src, badge }. Giữ nguyên xuyên video (người 
 ## QUY TẮC
 - Số scene ~1 mỗi 5-9 giây narration (video ${durationSeconds}s → ~${Math.max(8, Math.round(durationSeconds / 7))} scene). Một scene là một VISUAL SHOT, không phải một đoạn văn dài.
 - Mỗi scene chỉ nên chứa 1-2 câu ngắn, khoảng 12-35 từ. Nếu narration dài hơn 45 từ, BẮT BUỘC tách thành nhiều scene/shot liên tiếp.
-- **ƯU TIÊN TABLEAU / bối cảnh (QUAN TRỌNG — chống "mèo trên nền trắng"):** mọi scene có KHÔNG GIAN VẬT LÝ (ở nhà, quán, phố, lớp học, công viên, văn phòng, cửa hàng, bàn ăn, phòng ngủ) PHẢI dùng TABLEAU với stage. **≥35% scene phải là TABLEAU; TABLEAU + BEAT ≥45%.** SOLO chỉ dùng khi thực sự là lời bình trực tiếp với khán giả — **SOLO ≤20% số scene**.
+- **ƯU TIÊN TABLEAU / bối cảnh (QUAN TRỌNG — chống "mèo trên nền trắng"):** mọi scene có KHÔNG GIAN VẬT LÝ (ở nhà, quán, phố, lớp học, công viên, văn phòng, cửa hàng, bàn ăn, phòng ngủ) PHẢI dùng TABLEAU với stage. **≥30% scene phải là TABLEAU; TABLEAU + BEAT/FRAMEBOX ≥50%.** SOLO chỉ dùng khi thực sự là lời bình trực tiếp với khán giả — **SOLO ≤20% số scene**.
+- **ẢNH THẬT CÓ CHỦ ĐÍCH:** video dài trên 3 phút phải có **8–12% scene** là BEAT/FRAMEBOX dùng \`backgrounds/*.jpg\` khớp trực tiếp narration, ít nhất một cú đấm mỗi 30–45 giây và không dùng cùng ảnh quá 2 lần. Chỉ dùng ảnh không có khuôn mặt người nhận diện được (ưu tiên kiến trúc, đồ vật, phong cảnh, không gian trống). BEAT là ảnh full-bleed không mèo; FRAMEBOX là ảnh/chứng cứ trong khung TV với caption ngắn. Ảnh không liên quan = fail.
 - **MONTAGE tương phản:** KHÔNG 2 STAT_DRAMA liền nhau; sau 1 scene tối (STAT_DRAMA) nên là scene sáng. Xen kẽ năng lượng.
 - narration = ĐÚNG câu transcript của scene (nguồn phụ đề) — không tóm tắt cụt.
-- Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE/FRAMEBOX, ≥2 TABLEAU/DIALOGUE_QA, ≥1 BEAT. Không lặp cùng grammar quá 2 scene. SOLO ≤20%.
+- Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE/FRAMEBOX, ≥2 TABLEAU/DIALOGUE_QA, ≥1 BEAT hoặc FRAMEBOX có ảnh thật. Không lặp cùng grammar quá 2 scene. SOLO ≤20%.
 - Mỗi claim có số liệu/chính sách/khảo sát phải dùng EVIDENCE hoặc FRAMEBOX; không được thay bằng icon trang trí.
 - STAT_REVEAL: số là focal typography, \`anchor\` phải nói rõ số đó đo tiền/dân số/tỷ lệ gì. SOLO phải có keyword đủ mạnh cho concept card; thêm \`prop\` khi narration có danh từ cụ thể.
 - Title/keyword KHÔNG được copy 6+ từ đầu narration. Text overlay phải bổ sung ý, không lặp phụ đề.
