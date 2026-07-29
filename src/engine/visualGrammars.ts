@@ -104,7 +104,19 @@ function grammarCompare(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 // compiler) pulses the STAT on the number's word.
 function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const stat = b.slots?.stat ?? b.slots?.number ?? "";
+  const caption = b.slots?.caption;
   const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
+  const texts: GrammarResult["texts"] = [];
+  if (stat) {
+    texts.push({ id: `${b.id}-stat`, content: stat, style: "STAT", position: { x: 0.42, y: 0.46 }, fontSize: 210, delay: 10, hold: "scene-end" });
+  }
+  if (caption) {
+    // The anchor icon alone reads too small at this scale to say what the number
+    // measures, and enlarging it as pure decoration was the wrong fix — a short
+    // authored caption is real information, placed low in the panel so it never
+    // collides with the giant digit centered above it.
+    texts.push({ id: `${b.id}-caption`, content: caption, style: "CAPTION", position: { x: 0.42, y: 0.68 }, fontSize: 42, color: "#E8C9D0", delay: 30, hold: "scene-end" });
+  }
   return {
     layout: "STAT_DRAMA",
     backgroundSrc: "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
@@ -120,9 +132,7 @@ function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
       height: 650,
       delay: 4,
     }],
-    texts: stat
-      ? [{ id: `${b.id}-stat`, content: stat, style: "STAT", position: { x: 0.42, y: 0.46 }, fontSize: 210, delay: 10, hold: "scene-end" }]
-      : [],
+    texts,
     focusAssetId: `${b.id}-cat`,
     focusTextId: stat ? `${b.id}-stat` : undefined,
   };
@@ -135,14 +145,18 @@ function grammarPolicyList(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const icons = (b.slots?.icons ?? "").split("|").map((s) => s.trim()).filter(Boolean);
   const slots = ["FAR_LEFT", "LEFT", "RIGHT", "FAR_RIGHT"] as const;
   const xs = items.length === 4 ? [0.14, 0.38, 0.62, 0.86] : [0.2, 0.5, 0.8];
+  // Cards used to be 480 tall centered at y:0.47 — only 58% of the content band
+  // (the top 76% of frame, above the subtitle strip), leaving a large empty gap
+  // above them that measured 62% flat. Taller cards centered in the band itself
+  // (y:0.38) leave roughly symmetric 5-6% margins top and bottom instead.
   const cards: SceneConceptCard[] = items.map((label, i) => ({
     id: `${b.id}-i${i}`,
-    position: { x: xs[i], y: 0.47 },
+    position: { x: xs[i], y: 0.38 },
     background: ["#286F7A", "#7B5AA6", "#B56B35", "#B54848"][i],
     iconSrc: semanticAsset(ctx, icons[i], `icons[${i}]`, "characters/cat"),
     label: `${i + 1}. ${label}`,
-    width: items.length === 4 ? 390 : 480,
-    height: 480,
+    width: items.length === 4 ? 430 : 540,
+    height: 700,
     delay: 8 + i * 12,
   }));
   return { layout: "LINEUP", backgroundSrc: WHITE, entities: [], texts: [], cards };

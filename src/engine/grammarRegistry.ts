@@ -18,9 +18,12 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "STAT_REVEAL", purpose: "Reveal one transcript-supported number",
-    requiredSlots: ["stat", "anchor"], optionalSlots: ["who"],
+    requiredSlots: ["stat", "anchor"], optionalSlots: ["who", "caption"],
     supportedRegisters: ["infographic", "evidence"],
-    semanticRequirements: ["The number must occur in the source range; anchor must visualize what the figure measures."],
+    semanticRequirements: [
+      "The number must occur in the source range; anchor must visualize what the figure measures.",
+      "At the panel's scale the anchor icon alone reads too small to convey that — author a short caption (e.g. \"children per woman\") stating what the number measures.",
+    ],
   },
   {
     id: "POLICY_LIST", purpose: "Show two to four distinct actors or items",
