@@ -66,6 +66,11 @@ const outPath = getArg("--out", defaultOutPath());
 const compositionId = getArg("--composition", "CatExplainer");
 const isProxy = args.includes("--proxy");
 const framesArg = getArg("--frames", "");
+const frameRangeStart = framesArg ? Number(framesArg.split("-")[0]) : 0;
+if (!Number.isFinite(frameRangeStart) || frameRangeStart < 0) {
+  console.error(`Invalid --frames start: ${framesArg}`);
+  process.exit(1);
+}
 const referenceBaselinePath = path.resolve("config/reference-visual-baseline.json");
 if (!fs.existsSync(referenceBaselinePath)) {
   console.error(`Reference baseline not found: ${referenceBaselinePath}`);
@@ -369,7 +374,7 @@ try {
     const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
     if (fs.existsSync(auditScript)) {
       execSync(
-        `python "${auditScript}" --video "${path.resolve(stagedOut)}" --record-video-path "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(stagedOut.replace(/\.mp4$/i, ".contact.jpg"))}" --record-contact-sheet "${path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg"))}"`,
+        `python "${auditScript}" --video "${path.resolve(stagedOut)}" --record-video-path "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --timeline-offset-seconds "${frameRangeStart / timeline.fps}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(stagedOut.replace(/\.mp4$/i, ".contact.jpg"))}" --record-contact-sheet "${path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg"))}"`,
         { stdio: "inherit", cwd: process.cwd() }
       );
     }

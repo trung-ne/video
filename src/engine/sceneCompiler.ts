@@ -139,7 +139,11 @@ function compileScene(
       overlay: clampOverlayAlpha(
         scene.backgroundOverlay ?? (isPhoto ? "rgba(0,0,0,0.28)" : undefined)
       ),
-      duration: 25,
+      // A hard scene clear removes the old focal immediately. Crossfading the
+      // new background for another 25 frames then exposes a blank canvas at
+      // every cut. With no authored transition, make the replacement atomic;
+      // explicit transitions keep the gentle background crossfade.
+      duration: scene.clearPrevious && !scene.transition ? 1 : 25,
     } as BackgroundEvent);
   }
 

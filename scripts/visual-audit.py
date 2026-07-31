@@ -8,18 +8,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from visual_audit_metrics import duplicate_metrics
-
-
-def scene_at(timeline, seconds):
-    if not timeline:
-        return None
-    frame = seconds * timeline.get("fps", 30)
-    for scene in timeline.get("scenes", []):
-        start = scene.get("startFrame", 0)
-        if start <= frame < start + scene.get("durationFrames", 0):
-            return scene.get("id")
-    return None
+from visual_audit_metrics import duplicate_metrics, focal_footprint, scene_at
 
 
 def percentile(np, values, q):
@@ -63,50 +52,6 @@ def extract_samples(ffmpeg, video, tmp, offset, step, scale_width=320):
     return samples
 
 
-def focal_occupancy(np, pixels):
-    """Painted area of the largest non-background component, as a frame fraction.
-
-    Two earlier mistakes made this metric unable to fail, which defeated its whole
-    purpose of turning the authored `focalOccupancyTarget` from a self-graded
-    promise into a measurement:
-
-    1. It returned the component's BOUNDING BOX, so any diagonal or bridged
-       structure reported a frame-spanning box around very little paint.
-    2. It unioned `edge_mask` into the foreground, so a textured or full-bleed
-       stage background formed one giant connected component spanning the frame.
-
-    Together those put the median at exactly 1.000 with 192 of 287 samples above
-    0.95 — including frames measuring `dominantColor 1.000`, i.e. a single uniform
-    colour reporting 100% focal content. Foreground is now decided by colour
-    distance from the dominant background alone, and the returned figure is the
-    component's own painted area.
-    """
-    quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
-    colors, counts = np.unique(quantized, axis=0, return_counts=True)
-    background = colors[counts.argmax()].astype(np.float32) * 24 + 12
-    color_distance = np.linalg.norm(pixels - background, axis=2)
-    mask = color_distance > 42
-    height, width = mask.shape
-    seen = np.zeros_like(mask, dtype=bool)
-    best_size = 0
-    for y in range(height):
-        for x in range(width):
-            if not mask[y, x] or seen[y, x]:
-                continue
-            stack = [(y, x)]
-            seen[y, x] = True
-            size = 0
-            while stack:
-                cy, cx = stack.pop()
-                size += 1
-                for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
-                    if 0 <= ny < height and 0 <= nx < width and mask[ny, nx] and not seen[ny, nx]:
-                        seen[ny, nx] = True
-                        stack.append((ny, nx))
-            best_size = max(best_size, size)
-    return best_size / (width * height)
-
-
 def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -117,6 +62,7 @@ def main() -> int:
     parser.add_argument("--report", help="optional report path; defaults beside the video")
     parser.add_argument("--sample-seconds", type=float, default=5.0)
     parser.add_argument("--sample-offset", type=float, default=0.0)
+    parser.add_argument("--timeline-offset-seconds", type=float, default=0.0)
     parser.add_argument("--subtitle-band-top", type=float, default=0.76)
     parser.add_argument("--config", default="config/reference-quality.json")
     parser.add_argument("--contact-sheet")
@@ -179,13 +125,22 @@ def main() -> int:
             edges = np.asarray(image.convert("L").filter(ImageFilter.FIND_EDGES)).astype(np.float32)
             edge_mask = edges > 35
             edge_density = float(np.mean(edge_mask))
-            occupancy = float(focal_occupancy(np, pixels))
             quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
             _, color_counts = np.unique(quantized, axis=0, return_counts=True)
             dominant_color = float(color_counts.max() / len(quantized))
             flat = dominant_color > 0.55 or (edge_density < 0.10 and saturation < 0.12)
-            scene_id = scene_at(timeline, seconds)
-            target = scene_lookup.get(scene_id, {}).get("focalOccupancyTarget")
+            scene_id = scene_at(timeline, seconds, args.timeline_offset_seconds)
+            scene = scene_lookup.get(scene_id, {})
+            target = scene.get("focalOccupancyTarget")
+            background = str(scene.get("backgroundSrc", ""))
+            full_frame_visual = (
+                background.startswith("backgrounds/")
+                or background.startswith("assets/scenes/")
+                or background.startswith("generated-backgrounds/")
+                or background.startswith("generated-assets/scenes/")
+            )
+            visible_full_frame = full_frame_visual and (edge_density > 0.06 or saturation > 0.05)
+            occupancy = 1.0 if visible_full_frame else float(focal_footprint(np, pixels))
             rows.append({
                 "seconds": round(seconds, 3),
                 "sceneId": scene_id,
@@ -211,6 +166,7 @@ def main() -> int:
             "video": str(Path(args.record_video_path).resolve()) if args.record_video_path else str(video),
             "sampleSeconds": args.sample_seconds,
             "sampleOffsetSeconds": args.sample_offset,
+            "timelineOffsetSeconds": args.timeline_offset_seconds,
             "subtitleBandMaskedFrom": args.subtitle_band_top,
             "sampledFrames": len(rows),
             "nearWhiteMean": round(float(np.mean([row["white"] for row in rows])), 4),

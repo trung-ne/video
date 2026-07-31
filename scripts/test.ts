@@ -26,7 +26,7 @@ import {
   hasBlocker,
 } from "../src/engine/timingIntegrity";
 import { canonicalJsonChecksum, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
-import { promoteArtifacts } from "../src/engine/promoteArtifacts";
+import { promoteArtifacts, shouldPreserveFailedMp4 } from "../src/engine/promoteArtifacts";
 import { acquireRenderLock } from "../src/engine/renderLock";
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import { VISUAL_GRAMMARS } from "../src/engine/visualGrammars";
@@ -84,6 +84,11 @@ test("artifact promotion archives the previous canonical set and publishes repor
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("failed visual audits preserve the staged MP4 for re-audit", () => {
+  assert.strictEqual(shouldPreserveFailedMp4("Command failed: visual-audit.py"), true);
+  assert.strictEqual(shouldPreserveFailedMp4("storyboard quality gate failed"), false);
 });
 
 test("render lock refuses a concurrent writer and names the absolute lock", () => {
@@ -274,6 +279,20 @@ test("scene-end text hold survives beyond legacy hardcoded durations", () => {
   });
   const text = compiled.events.find((event: any) => event.type === "text") as any;
   assert.strictEqual(text.exitFrame, 299);
+});
+
+test("hard scene clears do not crossfade through a blank background", () => {
+  const scene = {
+    id: "cut", label: "cut", startFrame: 0, durationFrames: 150,
+    layout: "TABLEAU" as const, narration: "A new place.",
+    entities: [], texts: [], backgroundSrc: "assets/scenes/park.svg",
+    clearPrevious: true,
+  };
+  const compiled = compileScenes({
+    fps: 30, width: 1920, height: 1080, durationInFrames: 150, scenes: [scene],
+  });
+  const background = compiled.events.find((event: any) => event.type === "background") as any;
+  assert.strictEqual(background.duration, 1);
 });
 
 test("teaching text coverage counts persistent cards but exempts title tails", () => {

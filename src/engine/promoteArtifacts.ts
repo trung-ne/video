@@ -76,6 +76,10 @@ function removeLargeArtifacts(dir: string, preserveMp4: boolean): void {
   }
 }
 
+export function shouldPreserveFailedMp4(error: string): boolean {
+  return /timing|encoding|unreadable|visual[- ]audit/i.test(error);
+}
+
 /** Keep one previous MP4, ten successful evidence sets, and two small failed runs. */
 export function pruneRunHistory(finalDir: string): void {
   const runsDir = path.join(finalDir, ".runs");
@@ -104,7 +108,7 @@ export function pruneRunHistory(finalDir: string): void {
     if (report) {
       try {
         const error = String(JSON.parse(fs.readFileSync(report, "utf8")).error ?? "");
-        preserveMp4 = /timing|encoding|unreadable/i.test(error);
+        preserveMp4 = shouldPreserveFailedMp4(error);
       } catch {
         preserveMp4 = false;
       }

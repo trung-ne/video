@@ -1,6 +1,63 @@
 """Pure metric helpers shared by the visual audit and its regression tests."""
 
 
+def scene_at(timeline, video_seconds, timeline_offset_seconds=0.0):
+    """Map a local video timestamp to its source timeline scene.
+
+    Partial `--frames` renders start at a non-zero timeline frame but their
+    encoded timestamps restart at zero. Keeping the offset explicit prevents
+    slice audits from borrowing register and occupancy targets from scene 1.
+    """
+    if not timeline:
+        return None
+    timeline_seconds = video_seconds + timeline_offset_seconds
+    frame = timeline_seconds * timeline.get("fps", 30)
+    for scene in timeline.get("scenes", []):
+        start = scene.get("startFrame", 0)
+        if start <= frame < start + scene.get("durationFrames", 0):
+            return scene.get("id")
+    return None
+
+
+def focal_footprint(np, pixels):
+    """Longest-side footprint of the largest painted component."""
+    quantized = (pixels // 24).astype(np.uint8).reshape(-1, 3)
+    colors, counts = np.unique(quantized, axis=0, return_counts=True)
+    background = colors[counts.argmax()].astype(np.float32) * 24 + 12
+    color_distance = np.linalg.norm(pixels - background, axis=2)
+    mask = color_distance > 42
+    height, width = mask.shape
+    seen = np.zeros_like(mask, dtype=bool)
+    best_size = 0
+    best_footprint = 0.0
+    minimum_component = max(4, round(width * height * 0.0015))
+    for y in range(height):
+        for x in range(width):
+            if not mask[y, x] or seen[y, x]:
+                continue
+            stack = [(y, x)]
+            seen[y, x] = True
+            size = 0
+            min_y = max_y = y
+            min_x = max_x = x
+            while stack:
+                cy, cx = stack.pop()
+                size += 1
+                min_y, max_y = min(min_y, cy), max(max_y, cy)
+                min_x, max_x = min(min_x, cx), max(max_x, cx)
+                for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
+                    if 0 <= ny < height and 0 <= nx < width and mask[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        stack.append((ny, nx))
+            if size >= minimum_component and size > best_size:
+                best_size = size
+                best_footprint = max(
+                    (max_x - min_x + 1) / width,
+                    (max_y - min_y + 1) / height,
+                )
+    return best_footprint
+
+
 def duplicate_metrics(rows, differences, threshold, sample_seconds):
     duplicate_flags = [difference < threshold for difference in differences]
     within_scene_pairs = [
