@@ -164,7 +164,7 @@ export interface Storyboard {
   audio?: string;
   // Casting table — role name → { src costume, badge }. Kept stable so a
   // character reads as the same person across scenes (reference-video style).
-  cast?: Record<string, { src: string; badge?: string }>;
+  cast?: Record<string, { src: string; badge?: string; poseFamily?: "narrator" }>;
   sections?: StorySection[];
   claims?: StoryClaim[];
   visualTreatmentPlan?: VisualTreatmentPlan;

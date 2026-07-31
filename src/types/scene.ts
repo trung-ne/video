@@ -231,6 +231,8 @@ export interface Scene {
   beatTimingSource?: SceneBeatTimingSource;
   semanticTakeaway?: string;
   semanticAction?: string;
+  semanticObject?: string;
+  semanticRelation?: string;
   semanticSetting?: string;
   semanticAssetIds?: string[];
   claimIds?: string[];

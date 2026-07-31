@@ -58,10 +58,16 @@ const WHITE = "#FFFFFF";
 
 // Resolve a cast role name → character src (falls back to a neutral cat).
 function castSrc(ctx: GrammarContext, role: string | undefined, fallback: string): { src: string; badge?: string } {
-  if (role && ctx.cast && ctx.cast[role]) return ctx.cast[role];
+  if (!role) return { src: fallback };
+  if (role && ctx.cast && ctx.cast[role]) {
+    const cast = ctx.cast[role];
+    return cast.poseFamily === "narrator"
+      ? { src: fallback, badge: cast.badge }
+      : cast;
+  }
   if (role && role.includes("/")) return { src: role };
   if (ctx.strict) {
-    throw new Error(`Unresolved cast role or character asset "${role ?? "(missing)"}"`);
+    throw new Error(`Unresolved cast role or character asset "${role}"`);
   }
   return { src: fallback };
 }
@@ -171,8 +177,28 @@ function grammarPolicyList(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 // ── DIALOGUE_QA ─────────────────────────────────────────────
 // Two cats trade lines. 180°-rule: A left→right, B right→left.
 function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
-  const a = castSrc(ctx, b.slots?.asker, "characters/cat_talk");
-  const c = castSrc(ctx, b.slots?.answerer, "characters/cat_think");
+  const responsePose: Record<Emotion, string> = {
+    neutral: "characters/cat_talk",
+    surprise: "characters/cat_surprised",
+    concern: "characters/cat_sad",
+    sad: "characters/cat_shrug",
+    hopeful: "characters/cat_talk",
+    sarcastic: "characters/cat_explain",
+    curious: "characters/cat_talk",
+    urgent: "characters/cat_talk",
+    happy: "characters/cat_happy",
+  };
+  const a = castSrc(ctx, b.slots?.asker, emotionPose(b.emotion));
+  const c = castSrc(
+    ctx,
+    b.slots?.answerer,
+    responsePose[b.emotion ?? "neutral"],
+  );
+  const stage = b.slots?.stage;
+  const stageAnchors = stage ? (STAGE_ANCHORS[stage] ?? {}) : {};
+  const anchorKeys = Object.keys(stageAnchors);
+  const anchorA = b.slots?.anchorA ?? anchorKeys[0];
+  const anchorB = b.slots?.anchorB ?? anchorKeys[1] ?? anchorKeys[0];
   // The dialogue itself carries this scene. Two content-free backdrop panels used
   // to sit behind the cats purely to occupy frame area; they rendered as bordered
   // empty boxes, and because qualityCheck counted any card as a teaching-text
@@ -191,10 +217,18 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     });
   return {
     layout: "DIALOGUE",
-    backgroundSrc: WHITE,
+    backgroundSrc: stage ?? WHITE,
     entities: [
-      { assetId: `${b.id}-a`, src: a.src, badge: a.badge, slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
-      { assetId: `${b.id}-b`, src: c.src, badge: c.badge, slot: "RIGHT", enterAnimation: "slideRight", enterDelay: 18 },
+      {
+        assetId: `${b.id}-a`, src: a.src, badge: a.badge,
+        ...(stage && anchorA ? { anchor: anchorA } : { slot: "LEFT" as const }),
+        enterAnimation: "slideLeft", enterDelay: 8,
+      },
+      {
+        assetId: `${b.id}-b`, src: c.src, badge: c.badge,
+        ...(stage && anchorB ? { anchor: anchorB } : { slot: "RIGHT" as const }),
+        enterAnimation: "slideRight", enterDelay: 18,
+      },
     ],
     texts: [],
     speechBubbles: bubbles,
@@ -394,11 +428,12 @@ function grammarCauseEffect(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarQaReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const q = b.slots?.question ?? b.slots?.q ?? "";
   const a = b.slots?.answer ?? b.slots?.a ?? "";
+  const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
   return {
     layout: "QA_REVEAL",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: "characters/cat_think", slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 8,
+      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 8,
         emphasize: { animation: "bounce", delay: 60, duration: 20 } },
     ],
     cards: [

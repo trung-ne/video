@@ -40,7 +40,8 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "DIALOGUE_QA", purpose: "Show an actual question-answer relationship",
-    requiredSlots: ["asker", "answerer", "askerText", "answererText"], optionalSlots: ["stage"], focalSource: "asset",
+    requiredSlots: ["asker", "answerer", "askerText", "answererText"],
+    optionalSlots: ["stage", "anchorA", "anchorB"], focalSource: "asset",
     supportedRegisters: ["character_action", "full_tableau"],
     semanticRequirements: ["The two characters need different roles and dialogue functions."],
   },
@@ -83,7 +84,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "QA_REVEAL", purpose: "Pose a question and reveal a concise answer",
-    requiredSlots: ["question", "answer"], optionalSlots: ["answerAsset"], focalSource: "component",
+    requiredSlots: ["question|q", "answer|a"], optionalSlots: ["answerAsset", "who"], focalSource: "component",
     supportedRegisters: ["infographic", "character_action"],
     semanticRequirements: ["The reveal must answer the question from the source range."],
   },

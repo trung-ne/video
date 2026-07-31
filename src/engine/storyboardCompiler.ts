@@ -332,6 +332,8 @@ function compileBrief(
     beatTimingSource,
     semanticTakeaway: brief.semanticVisual?.takeaway,
     semanticAction: brief.semanticVisual?.action,
+    semanticObject: brief.semanticVisual?.object,
+    semanticRelation: brief.semanticVisual?.relation,
     semanticSetting: brief.semanticVisual?.setting,
     // Record what the compiler actually put on screen. Authored role tokens and
     // stage anchors are not assets; conversely, component grammars may render a

@@ -1,6 +1,10 @@
 import { AssetRequest } from "../types/storyboard";
 
-export type StoryboardCast = Record<string, { src: string; badge?: string }>;
+export type StoryboardCast = Record<string, {
+  src: string;
+  badge?: string;
+  poseFamily?: "narrator";
+}>;
 
 const CHARACTER_SLOTS = new Set(["who", "seatB", "asker", "answerer"]);
 const DIRECT_ASSET_SLOTS = new Set([

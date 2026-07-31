@@ -200,6 +200,44 @@ test("DIALOGUE_QA bubbles persist instead of disappearing early in long scenes",
   assert.ok(result.speechBubbles?.every((bubble) => bubble.duration === undefined));
 });
 
+test("DIALOGUE_QA consumes its authored stage and anchors", () => {
+  const result = VISUAL_GRAMMARS.DIALOGUE_QA({
+    id: "qa-stage", narration: "A asks B.", purpose: "acted exchange",
+    emotion: "curious", viewerFocus: "the handoff", visualGrammar: "DIALOGUE_QA",
+    slots: {
+      asker: "characters/cat_talk", answerer: "characters/cat_think",
+      askerText: "Why?", answererText: "Because.",
+      stage: "assets/scenes/cafe.svg",
+      anchorA: "counter_left", anchorB: "counter_right",
+    },
+  } as any, { cast: {}, index: 0, strict: true });
+  assert.strictEqual(result.backgroundSrc, "assets/scenes/cafe.svg");
+  assert.strictEqual(result.entities[0].anchor, "counter_left");
+  assert.strictEqual(result.entities[1].anchor, "counter_right");
+});
+
+test("narrator cast roles preserve identity while following the authored emotion pose", () => {
+  const result = VISUAL_GRAMMARS.CHAR_PROP({
+    id: "pose-family", narration: "This is bad.", purpose: "show concern",
+    emotion: "sad", viewerFocus: "the sad host", visualGrammar: "CHAR_PROP",
+    slots: { who: "host", prop: "finance/loss" },
+  } as any, {
+    cast: { host: { src: "characters/cat_explain", poseFamily: "narrator" } },
+    index: 0,
+    strict: true,
+  });
+  assert.strictEqual(result.entities[0].src, "characters/cat_sad");
+});
+
+test("QA_REVEAL may omit its optional character role in strict mode", () => {
+  const result = VISUAL_GRAMMARS.QA_REVEAL({
+    id: "qa-fallback", narration: "Why? Because.", purpose: "reveal an answer",
+    emotion: "curious", viewerFocus: "the answer", visualGrammar: "QA_REVEAL",
+    slots: { q: "Why?", a: "Because." },
+  } as any, { cast: {}, index: 0, strict: true });
+  assert.strictEqual(result.entities[0].src, "characters/cat_think");
+});
+
 test("long multi-card scenes stage persistent reveals about four seconds apart", () => {
   const storyboard = timingFixture(["scene-001"]);
   storyboard.scenes[0].visualGrammar = "CAUSE_EFFECT";

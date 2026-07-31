@@ -1953,9 +1953,15 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
     source.startsWith("characters/") || source.startsWith("generated-assets/characters/");
   const genericPairs = scenes.filter((scene) => {
     const entities = scene.entities ?? [];
-    const characters = entities.filter((entity: any) => isCharacter(String(entity.src ?? "")));
+    const characters = [...new Map(
+      entities
+        .filter((entity: any) => isCharacter(String(entity.src ?? "")))
+        .map((entity: any) => [String(entity.assetId ?? entity.src), entity]),
+    ).values()];
     const semanticProps = entities.filter((entity: any) => !isCharacter(String(entity.src ?? "")));
-    const relation = String(scene.semanticTakeaway ?? "");
+    const relation = [
+      scene.semanticRelation, scene.semanticAction, scene.semanticTakeaway,
+    ].filter(Boolean).join(" ");
     return characters.length >= 2 &&
       semanticProps.length === 0 &&
       (scene.speechBubbles?.length ?? 0) === 0 &&
@@ -2052,8 +2058,16 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   const cfg = referenceQuality.composition;
   const isCharacter = (source: string): boolean =>
     /(^|\/)(characters|character)\//.test(source) || source.includes("generated-assets/characters/");
+  const uniqueEntities = (scene: any): any[] => {
+    const byAsset = new Map<string, any>();
+    for (const entity of scene.entities ?? []) {
+      const key = String(entity.assetId ?? `${entity.src}:${entity.slot}`);
+      if (!byAsset.has(key)) byAsset.set(key, entity);
+    }
+    return [...byAsset.values()];
+  };
   const characters = scenes.map((scene) =>
-    (scene.entities ?? []).filter((entity: any) => isCharacter(String(entity.src ?? "")))
+    uniqueEntities(scene).filter((entity: any) => isCharacter(String(entity.src ?? "")))
   );
   const characterSceneCount = characters.filter((items) => items.length > 0).length;
   if (scenes.length >= 20 && characterSceneCount / scenes.length > cfg.maximumCharacterPresenceRatio) {
@@ -2066,7 +2080,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
 
   const signatures = new Map<string, any[]>();
   for (const [index, scene] of scenes.entries()) {
-    const entities = scene.entities ?? [];
+    const entities = uniqueEntities(scene);
     const charCount = characters[index].length;
     const propCount = entities.length - charCount;
     const componentCount = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
@@ -2088,6 +2102,11 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     return map;
   }, new Map<string, number>());
   const poseCounts = countSources(characters.flat().map((entity: any) => String(entity.src ?? "")));
+  const poseVariants = new Set<string>(scenes.flatMap((scene) =>
+    (scene.entities ?? [])
+      .filter((entity: any) => isCharacter(String(entity.src ?? "")))
+      .map((entity: any) => String(entity.src ?? ""))
+  ));
   const poseLimit = Math.max(3, Math.floor(scenes.length * cfg.maximumPoseRatio));
   for (const [pose, count] of poseCounts) {
     if (scenes.length >= 20 && count > poseLimit) {
@@ -2098,10 +2117,10 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     }
   }
   if ((timeline.durationInFrames ?? 0) / (timeline.fps ?? 30) > 600 &&
-      poseCounts.size < cfg.minimumLongVideoPoseVariants) {
+      poseVariants.size < cfg.minimumLongVideoPoseVariants) {
     issues.push({
       severity: "MAJOR", rule: "POSE_VARIANT_SHORTAGE",
-      message: `${poseCounts.size} character pose/costume variants; long videos require ${cfg.minimumLongVideoPoseVariants}.`,
+      message: `${poseVariants.size} character pose/costume variants; long videos require ${cfg.minimumLongVideoPoseVariants}.`,
     });
   }
 
@@ -2118,8 +2137,9 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   }
   const sparseStages = scenes.filter((scene) =>
     String(scene.backgroundSrc ?? "").startsWith("assets/scenes/") &&
-    (!scene.semanticAction || !scene.semanticSetting ||
-      ((scene.entities?.length ?? 0) < 2 && (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) === 0))
+    (!scene.semanticAction ||
+      (uniqueEntities(scene).length < 2 &&
+       (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) + (scene.cards?.length ?? 0) === 0))
   );
   if (sparseStages.length) {
     issues.push({
@@ -2149,11 +2169,14 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   const qualifiesHero = (scene: any): boolean => {
     const background = String(scene.backgroundSrc ?? "");
     const hasPhoto = /\.(jpg|jpeg|png|webp)$/i.test(background);
-    const cards = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0);
-    const nodes = scene.entities?.length ?? 0;
+    const cards = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
+      (scene.cards?.length ?? 0);
+    const nodes = uniqueEntities(scene).length;
     const fullScene = background.startsWith("assets/scenes/") && nodes >= 2 && !!scene.semanticAction;
     const gag = (scene.speechBubbles?.length ?? 0) >= 1 && nodes >= 2;
-    return hasPhoto || cards > 0 || nodes >= 3 || fullScene || gag;
+    const meaningfulPair = nodes >= 2 && !!scene.semanticAction &&
+      !!(scene.semanticObject || scene.semanticRelation);
+    return hasPhoto || cards > 0 || nodes >= 3 || fullScene || gag || meaningfulPair;
   };
   const fakeHeroes = scenes.filter((scene) => scene.heroVisual && !qualifiesHero(scene));
   if (fakeHeroes.length) {
@@ -2166,7 +2189,8 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   const componentMismatch = scenes.filter((scene) => {
     switch (scene.visualRegister) {
       case "evidence":
-        return (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) === 0;
+        return (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
+          (scene.cards?.length ?? 0) === 0;
       case "framebox":
       case "photo_broll":
         return (scene.frameBoxes?.length ?? 0) === 0 &&
@@ -2174,9 +2198,12 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
       case "full_tableau":
         return !String(scene.backgroundSrc ?? "").startsWith("assets/scenes/") || !scene.semanticAction;
       case "infographic":
-        return (scene.entities?.length ?? 0) < 2;
+        return uniqueEntities(scene).length + (scene.cards?.length ?? 0) +
+          (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) < 2;
       case "visual_gag":
-        return (scene.speechBubbles?.length ?? 0) === 0 && (scene.entities?.length ?? 0) < 3;
+        return (scene.speechBubbles?.length ?? 0) === 0 &&
+          (uniqueEntities(scene).length + (scene.cards?.length ?? 0) < 2 ||
+           (!scene.semanticAction || (!scene.semanticObject && !scene.semanticRelation)));
       default:
         return false;
     }
