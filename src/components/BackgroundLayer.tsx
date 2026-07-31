@@ -3,7 +3,7 @@ import { interpolate, useCurrentFrame } from "remotion";
 import { BackgroundState } from "../engine/timelineEngine";
 
 interface Props {
-  backgrounds: BackgroundState[];
+  backgrounds: Array<BackgroundState & { saturationScale?: number }>;
   defaultBackground: string;
   width: number;
   height: number;
@@ -54,6 +54,10 @@ export const BackgroundLayer: React.FC<Props> = ({
         const opacity = isLast
           ? interpolate(crossfadeProgress, [0, 1], [0, bg.opacity])
           : bg.opacity;
+        const isPhoto = /(?:^|\/)backgrounds\//.test(bg.src) && !bg.src.includes("generated-backgrounds/");
+        const isGeneratedStage = bg.src.includes("generated-backgrounds/") || bg.src.includes("generated-assets/scenes/");
+        const age = Math.max(0, frame - bg.enterFrame);
+        const photoPan = Math.min(1, age / 300);
 
         if (isCSS(bg.src)) {
           return (
@@ -89,8 +93,17 @@ export const BackgroundLayer: React.FC<Props> = ({
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
-                filter: bg.blur > 0 ? `blur(${bg.blur}px)` : undefined,
-                transform: bg.blur > 0 ? "scale(1.06)" : undefined,
+                filter: [
+                  bg.blur > 0 ? `blur(${bg.blur}px)` : "",
+                  (isPhoto || isGeneratedStage) && bg.saturationScale !== undefined
+                    ? `saturate(${bg.saturationScale}) contrast(${isPhoto ? 0.98 : 1})`
+                    : "",
+                ].filter(Boolean).join(" ") || undefined,
+                // Photo treatment gets a fixed safe overscan plus a slow pan;
+                // there is no automatic scene-wide zoom or camera event.
+                transform: isPhoto
+                  ? `scale(1.035) translateX(${(photoPan - 0.5) * 1.8}%)`
+                  : bg.blur > 0 ? "scale(1.06)" : undefined,
               }}
             />
             {bg.overlay && (

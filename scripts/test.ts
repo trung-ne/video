@@ -35,6 +35,7 @@ import { injectLiveliness } from "../src/engine/liveliness";
 import { resolveAuthoredAssets } from "../src/engine/authoredAssets";
 import { approvedPhotoPaths, isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
 import { fitTextToBox } from "../src/engine/textLayout";
+import { getPaletteSaturationScale } from "../src/engine/assetPaths";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -157,6 +158,13 @@ test("video-004 representative acceptance stays inside reference deltas", () => 
   assert.ok(acceptance.directionCoverage.visualModes >= 6);
   assert.ok(acceptance.directionCoverage.photoTreatments >= 5);
   assert.ok(Object.values(acceptance.manualContactSheetReview).every(Boolean));
+});
+
+test("palette normalization mutes only assets above the editorial source target", () => {
+  const saturatedPhoto = getPaletteSaturationScale("backgrounds/trading_workstation.jpg");
+  const editorialStage = getPaletteSaturationScale("assets/scenes/office_desk.svg");
+  assert.ok(saturatedPhoto >= 0.5 && saturatedPhoto <= 0.55);
+  assert.strictEqual(editorialStage, 1);
 });
 
 test("occupancy pilot grammars emit semantic frame-filling components", () => {
@@ -480,7 +488,7 @@ test("quality gate blocks unreviewed photos and repeated photo wallpaper", () =>
   assert.ok(rules.includes("PHOTO_REPEAT"));
 });
 
-test("narrator pose swaps persist until the next narration beat", () => {
+test("narrator pose and composition changes persist at narration beats", () => {
   const timeline: any = {
     fps: 30,
     width: 1920,
@@ -503,12 +511,20 @@ test("narrator pose swaps persist until the next narration beat", () => {
       "characters/cat_explain",
       "characters/cat_think",
     ]),
+    sceneSpans: [{
+      start: 0,
+      end: 500,
+      narrationBeatFrames: [90, 180, 300],
+    }],
   });
   const swaps = timeline.events.filter((event: any) => event.type === "swap");
-  assert.strictEqual(result.swapsAdded, 3);
-  assert.strictEqual(result.movesAdded, 0);
+  const moves = timeline.events.filter((event: any) => event.type === "move");
+  assert.strictEqual(result.swapsAdded, 4);
+  assert.strictEqual(result.movesAdded, 4);
   assert.strictEqual(result.cameraMovesAdded, 0);
-  assert.strictEqual(swaps.length, 3);
+  assert.strictEqual(swaps.length, 4);
+  assert.strictEqual(moves.length, 4);
+  assert.deepStrictEqual(moves.slice(0, 3).map((event: any) => event.frame), [90, 180, 300]);
 
   const costumed: any = {
     ...timeline,
@@ -554,6 +570,28 @@ test("liveliness resets camera between scenes without inventing zoom beats", () 
     .map((event: any) => event.frame);
   assert.deepStrictEqual(cameraFrames, [120, 300]);
   assert.strictEqual(result.cameraMovesAdded, 1);
+});
+
+test("tableau stage focus changes persist at measured narration boundaries", () => {
+  const timeline: any = {
+    fps: 30,
+    width: 1920,
+    height: 1080,
+    durationInFrames: 360,
+    events: [{
+      frame: 0,
+      type: "background",
+      src: "assets/scenes/street.svg",
+      duration: 1,
+    }],
+  };
+  const result = injectLiveliness(timeline, {
+    sceneSpans: [{ start: 0, end: 360, narrationBeatFrames: [90, 210] }],
+  });
+  const backgrounds = timeline.events.filter((event: any) => event.type === "background");
+  assert.strictEqual(result.backgroundBeatsAdded, 2);
+  assert.deepStrictEqual(backgrounds.map((event: any) => event.frame), [0, 90, 210]);
+  assert.ok(backgrounds.slice(1).every((event: any) => event.duration === 18));
 });
 
 test("indexes Unicode words with stable indices", () => {

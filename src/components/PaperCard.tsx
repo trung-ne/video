@@ -46,6 +46,8 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
   const isSurvey = card.variant === "survey";
   const evidenceAge = Math.max(0, frame - card.enterFrame);
   const evidencePhase = Math.floor(evidenceAge / (fps * 4)) % 3;
+  const evidenceX = evidencePhase === 0 ? 0 : evidencePhase === 1 ? -88 : 88;
+  const evidenceScale = evidencePhase === 0 ? 1 : evidencePhase === 1 ? 1.05 : 0.95;
   const paperBackground = isSurvey
     ? ["#FFF1CF", "#F7E3AF", "#E8F3F1"][evidencePhase]
     : ["#FFFFFF", "#FFF4C7", "#E8F3F1"][evidencePhase];
@@ -57,7 +59,7 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
         left: x - w / 2,
         top: y,
         width: w,
-        transform: `translateY(-50%) rotate(${card.rotation}deg) scale(${progress})`,
+        transform: `translate(${evidenceX}px, -50%) rotate(${card.rotation}deg) scale(${progress * evidenceScale})`,
         transformOrigin: "center center",
         zIndex: 12,
         // Shadow is a separate offset silhouette below; no per-frame blur.

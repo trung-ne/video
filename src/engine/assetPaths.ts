@@ -21,6 +21,14 @@ import manifest from "../../public/assets.manifest.json";
 const ALIASES: Record<string, string> = (manifest as { aliases?: Record<string, string> }).aliases ?? {};
 const CONTENT_SCALES: Record<string, number> =
   (manifest as { contentScales?: Record<string, number> }).contentScales ?? {};
+const ASSET_ENTRIES = (manifest as {
+  entries?: Array<{ path: string; visualMetrics?: { meanSaturation?: number } }>;
+}).entries ?? [];
+const SATURATION_BY_PATH = new Map(
+  ASSET_ENTRIES
+    .filter((entry) => typeof entry.visualMetrics?.meanSaturation === "number")
+    .map((entry) => [entry.path, entry.visualMetrics!.meanSaturation!] as const),
+);
 
 const HAS_EXTENSION = /\.(?:png|jpe?g|webp|gif|svg)$/i;
 
@@ -76,6 +84,19 @@ export function resolveAssetSrcStrict(src: string): {
 export function getContentScale(src: string): number {
   if (!src) return 1;
   return CONTENT_SCALES[resolveAssetSrc(src)] ?? 1;
+}
+
+/**
+ * Per-asset chroma normalization for raster stages/photos. The manifest audit
+ * measures source saturation, so a highly saturated workstation photo is
+ * muted more than an already editorial asset. This is deliberately applied
+ * by image components, never as a whole-video filter.
+ */
+export function getPaletteSaturationScale(src: string, target = 0.45): number {
+  if (!src) return 1;
+  const measured = SATURATION_BY_PATH.get(resolveAssetSrc(src));
+  if (!measured || measured <= target) return 1;
+  return Math.max(0.3, Math.min(0.92, target / measured));
 }
 
 /** Every logical ref that currently maps to production art. */

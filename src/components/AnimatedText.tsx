@@ -77,13 +77,16 @@ export const AnimatedText: React.FC<Props> = ({
   // CALLOUT: pill with background
   if (style === "CALLOUT") {
     const bg = text.background ?? "#FF6B35";
+    const focusPhase = Math.floor(Math.max(0, localFrame) / (fps * 4)) % 3;
+    const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -170 : 170;
+    const focusScale = focusPhase === 0 ? 1 : focusPhase === 1 ? 1.18 : 0.82;
     return (
       <div
         style={{
           position: "absolute",
           left: pixelX,
           top: pixelY,
-          transform: `translate(-50%, -50%) translateY(${translateY}px) scale(${scale})`,
+          transform: `translate(-50%, -50%) translate(${focusX}px, ${translateY}px) scale(${scale * focusScale})`,
           opacity,
           zIndex: 60,
           pointerEvents: "none",

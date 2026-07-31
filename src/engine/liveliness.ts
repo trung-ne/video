@@ -8,6 +8,7 @@ import {
   SwapEvent,
   MoveEvent,
   CameraEvent,
+  BackgroundEvent,
   EmphasizeType,
 } from "../types/timeline";
 
@@ -74,6 +75,7 @@ export interface LivelinessReport {
   swapsAdded: number;
   movesAdded: number;
   cameraMovesAdded: number;
+  backgroundBeatsAdded: number;
   charactersTouched: number;
 }
 
@@ -81,8 +83,15 @@ interface Span {
   assetId: string;
   src: string;
   position: { x: number; y: number };
+  scale: number;
   start: number;
   end: number;
+}
+
+interface SceneSpan {
+  start: number;
+  end: number;
+  narrationBeatFrames?: number[];
 }
 
 // Build the active [start,end) span of every asset, honoring exit + clear-all.
@@ -108,6 +117,7 @@ function computeAssetSpans(events: TimelineEvent[], total: number): Span[] {
         assetId: e.assetId,
         src: e.src,
         position: { ...e.position },
+        scale: e.scale,
         start: e.frame,
         end: total,
       });
@@ -173,9 +183,22 @@ export function injectLiveliness(
   let swapsAdded = 0;
   let movesAdded = 0;
   let cameraMovesAdded = 0;
+  let backgroundBeatsAdded = 0;
   const touched = new Set<string>();
 
-  for (const span of spans) {
+  const clearFrames = timeline.events
+    .filter((event) => event.type === "clear")
+    .map((event) => event.frame)
+    .filter((frame, index, values) => index === 0 || frame !== values[index - 1])
+    .sort((a, b) => a - b);
+  const fallbackStarts = clearFrames[0] === 0 ? clearFrames : [0, ...clearFrames];
+  const sceneSpans: SceneSpan[] = opts.sceneSpans ?? fallbackStarts.map((start, sceneIndex) => ({
+    start,
+    end: fallbackStarts[sceneIndex + 1] ?? total,
+    narrationBeatFrames: [],
+  }));
+
+  for (const [spanIndex, span] of spans.entries()) {
     const windowLen = span.end - span.start;
     if (windowLen < minWindow) continue;
 
@@ -185,17 +208,59 @@ export function injectLiveliness(
     const existing = existingBeatFrames(timeline.events, span.assetId);
     const near = (f: number) => existing.some((x) => Math.abs(x - f) < interval * 0.5);
 
-    // Place beats from start+buffer, every `interval`, up to end-buffer.
+    const ownerScene = sceneSpans.find(
+      (scene) => span.start >= scene.start && span.start < scene.end,
+    );
+    const narrationFrames = (ownerScene?.narrationBeatFrames ?? [])
+      .filter((frame) => frame >= span.start + 55 && frame < span.end - 35)
+      .sort((a, b) => a - b)
+      .filter((frame, index, values) => index === 0 || frame - values[index - 1] >= 55);
+    const fallbackFrames: number[] = [];
+    for (let f = span.start + Math.round(interval * 0.9); f < span.end - 40; f += interval) {
+      fallbackFrames.push(f);
+    }
+    // Subtitle cues are derived from measured word alignment. They are the
+    // editorial beat source; the periodic list only fills unusually long gaps.
+    const candidateFrames = [...narrationFrames];
+    for (const frame of fallbackFrames) {
+      if (!candidateFrames.some((candidate) => Math.abs(candidate - frame) < 75)) {
+        candidateFrames.push(frame);
+      }
+    }
+    candidateFrames.sort((a, b) => a - b);
+
+    // Persistent moves/swaps survive until the following narration beat. The
+    // old short emphasize-only pulse disappeared between 5-second audit samples.
     let currentPose = span.src;
     let beatIndex = 0;
-    for (let f = span.start + Math.round(interval * 0.9); f < span.end - 40; f += interval) {
+    for (const f of candidateFrames) {
       if (near(f)) { beatIndex++; continue; }
       touched.add(span.assetId);
 
-      // Alternate: even beats → emphasize; odd beats → pose swap (narrator only)
       const doSwap = isNarratorCat || isInvestorCat;
-      const doPersistentMove =
-        isCharacter && !doSwap;
+      const direction = (spanIndex + beatIndex) % 2 === 0 ? 1 : -1;
+      // The move must read as a changed relationship, not sub-pixel idle
+      // drift. At 1080p the former 0.04–0.055 shift left successive poses
+      // heavily overlapping and measured under 1% structural change.
+      const isCenterFocal = Math.abs(span.position.x - 0.5) < 0.18;
+      const displacement = isCharacter
+        ? (isCenterFocal ? 0.22 : 0.10)
+        : (isCenterFocal ? 0.16 : 0.075);
+
+      // Every focal asset changes its spatial relation to the rest of the
+      // composition. This is component motion, not a global camera shortcut.
+      added.push({
+        frame: f,
+        type: "move",
+        assetId: span.assetId,
+        position: {
+          x: Math.max(0.08, Math.min(0.92, span.position.x + direction * displacement)),
+          y: Math.max(0.12, Math.min(0.86, span.position.y + ((beatIndex % 3) - 1) * 0.018)),
+        },
+        scale: span.scale * (direction > 0 ? 1.22 : 0.80),
+        duration: 18,
+      } as MoveEvent);
+      movesAdded++;
 
       if (doSwap) {
         // choose next talking pose different from current, that exists
@@ -218,40 +283,50 @@ export function injectLiveliness(
           added.push(makeEmphasize(f, span.assetId, beatIndex));
           emphasizesAdded++;
         }
-      } else if (doPersistentMove) {
-        const direction = beatIndex % 2 === 0 ? 1 : -1;
-        added.push({
-          frame: f,
-          type: "move",
-          assetId: span.assetId,
-          position: {
-            x: Math.max(0.08, Math.min(0.92, span.position.x + direction * 0.09)),
-            y: span.position.y,
-          },
-          duration: 18,
-        } as MoveEvent);
-        movesAdded++;
       } else {
-        added.push(makeEmphasize(f, span.assetId, beatIndex));
-        emphasizesAdded++;
+        // A brief emphasis lands the word; the move above keeps the resulting
+        // composition changed after the emphasis ends.
+        if (isCharacter || beatIndex % 2 === 0) {
+          added.push(makeEmphasize(f, span.assetId, beatIndex));
+          emphasizesAdded++;
+        }
       }
       beatIndex++;
     }
   }
 
+  // Illustrated TABLEAU stages occupy most pixels, so foreground-only motion
+  // can still read as the same shot. At measured narration boundaries, wash
+  // the stage back briefly/persistently so the authored focal cat/prop becomes
+  // the visual sentence. This changes a component state, never the camera.
+  for (const scene of sceneSpans) {
+    const baseBackground = timeline.events
+      .filter((event): event is BackgroundEvent => event.type === "background" && event.frame === scene.start)
+      .at(-1);
+    if (!baseBackground || !/(?:^|\/)assets\/scenes\//.test(baseBackground.src)) continue;
+    const cueFrames = (scene.narrationBeatFrames ?? [])
+      .filter((frame) => frame >= scene.start + 55 && frame < scene.end - 30)
+      .sort((a, b) => a - b)
+      .filter((frame, index, values) => index === 0 || frame - values[index - 1] >= 95)
+      .slice(0, 2);
+    cueFrames.forEach((frame, index) => {
+      added.push({
+        frame,
+        type: "background",
+        src: baseBackground.src,
+        blur: baseBackground.blur,
+        opacity: baseBackground.opacity,
+        overlay: index % 2 === 0
+          ? "rgba(255,255,255,0.16)"
+          : "rgba(255,255,255,0.03)",
+        duration: 18,
+      } as BackgroundEvent);
+      backgroundBeatsAdded++;
+    });
+  }
+
   // Camera changes persist between narration beats. Prefer real authored scene
   // spans; clear events are only a fallback for legacy event-only timelines.
-  const clearFrames = timeline.events
-    .filter((event) => event.type === "clear")
-    .map((event) => event.frame)
-    .filter((frame, index, values) => index === 0 || frame !== values[index - 1])
-    .sort((a, b) => a - b);
-  const fallbackStarts = clearFrames[0] === 0 ? clearFrames : [0, ...clearFrames];
-  const sceneSpans = opts.sceneSpans ?? fallbackStarts.map((start, sceneIndex) => ({
-    start,
-    end: fallbackStarts[sceneIndex + 1] ?? total,
-    narrationBeatFrames: [] as number[],
-  }));
   sceneSpans.forEach(({ start, end }) => {
     if (end - start < minWindow) return;
     const authoredCameraFrames = timeline.events
@@ -280,6 +355,7 @@ export function injectLiveliness(
     swapsAdded,
     movesAdded,
     cameraMovesAdded,
+    backgroundBeatsAdded,
     charactersTouched: touched.size,
   };
 }
@@ -298,6 +374,6 @@ function makeEmphasize(frame: number, assetId: string, beatIndex: number): Empha
 export function printLivelinessReport(r: LivelinessReport): void {
   console.log(`\n✨ Liveliness injector:`);
   console.log(
-    `   ${r.charactersTouched} character(s) enlivened · +${r.emphasizesAdded} emphasize · +${r.swapsAdded} pose-swap · +${r.movesAdded} persistent move · +${r.cameraMovesAdded} camera beats`
+    `   ${r.charactersTouched} character(s) enlivened · +${r.emphasizesAdded} emphasize · +${r.swapsAdded} pose-swap · +${r.movesAdded} persistent move · +${r.backgroundBeatsAdded} stage-focus beats · +${r.cameraMovesAdded} camera beats`
   );
 }

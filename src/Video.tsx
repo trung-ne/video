@@ -16,7 +16,7 @@ import { ConceptCard } from "./components/ConceptCard";
 import { PaperCard } from "./components/PaperCard";
 import { FrameBox } from "./components/FrameBox";
 import { TransitionOverlay } from "./components/TransitionOverlay";
-import { resolveAssetSrc } from "./engine/assetPaths";
+import { getPaletteSaturationScale, resolveAssetSrc } from "./engine/assetPaths";
 
 interface Props {
   timeline: Timeline;
@@ -52,10 +52,14 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
     s.startsWith("linear-gradient") ||
     s.startsWith("radial-gradient");
 
-  const resolvedBackgrounds = state.backgrounds.map((bg) => ({
-    ...bg,
-    src: isCSSValue(bg.src) ? bg.src : staticFile(resolveAssetSrc(bg.src)),
-  }));
+  const resolvedBackgrounds = state.backgrounds.map((bg) => {
+    const logicalSrc = bg.src;
+    return {
+      ...bg,
+      src: isCSSValue(logicalSrc) ? logicalSrc : staticFile(resolveAssetSrc(logicalSrc)),
+      saturationScale: isCSSValue(logicalSrc) ? 1 : getPaletteSaturationScale(logicalSrc),
+    };
+  });
 
   return (
     <AbsoluteFill style={{ overflow: "hidden", background: defaultBg }}>

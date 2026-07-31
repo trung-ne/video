@@ -25,6 +25,11 @@ export const SpeechBubble: React.FC<Props> = ({
     fps,
     config: { damping: 14, stiffness: 200 },
   });
+  const bubbleAge = Math.max(0, frame - bubble.enterFrame);
+  const focusPhase = Math.floor(bubbleAge / (fps * 4)) % 3;
+  const focusOffset = focusPhase === 0 ? 0 : focusPhase === 1 ? -36 : 36;
+  const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -64 : 64;
+  const focusRotate = focusPhase === 0 ? 0 : focusPhase === 1 ? -1.2 : 1.2;
 
   if (!anchor) return null;
 
@@ -60,7 +65,7 @@ export const SpeechBubble: React.FC<Props> = ({
         left: bubbleX,
         top: bubbleY,
         width: bubbleWidth,
-        transform: `scale(${progress})`,
+        transform: `translate(${focusX}px, ${focusOffset}px) rotate(${focusRotate}deg) scale(${progress})`,
         transformOrigin: bubble.direction === "left" ? "right bottom" : "left bottom",
         zIndex: 100,
       }}

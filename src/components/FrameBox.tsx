@@ -1,7 +1,7 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { FrameBoxState } from "../engine/timelineEngine";
-import { resolveAssetSrc } from "../engine/assetPaths";
+import { getPaletteSaturationScale, resolveAssetSrc } from "../engine/assetPaths";
 
 interface Props {
   frameBox: FrameBoxState;
@@ -21,11 +21,14 @@ export const FrameBox: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const progress = spring({
+  const entranceProgress = spring({
     frame: frame - frameBox.enterFrame,
     fps,
     config: { damping: 14, stiffness: 160 },
   });
+  // A FrameBox is the evidence focal, so the scene must never open on only
+  // its blurred/dimmed background while the monitor scales up from zero.
+  const progress = Math.max(0.82, entranceProgress);
 
   const x = frameBox.position.x * canvasWidth;
   const y = frameBox.position.y * canvasHeight;
@@ -36,8 +39,12 @@ export const FrameBox: React.FC<Props> = ({
   // large ON the screen. Otherwise it's an image path to display.
   const isColor = frameBox.contentSrc.startsWith("#") || frameBox.contentSrc.startsWith("rgb");
   const src = isColor ? frameBox.contentSrc : staticFile(resolveAssetSrc(frameBox.contentSrc));
+  const saturationScale = isColor ? 1 : getPaletteSaturationScale(frameBox.contentSrc);
   const contentAge = Math.max(0, frame - frameBox.enterFrame);
   const panPhase = Math.min(1, contentAge / (fps * 10));
+  const focusPhase = Math.floor(contentAge / (fps * 4)) % 3;
+  const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -76 : 76;
+  const focusScale = focusPhase === 0 ? 1 : focusPhase === 1 ? 1.04 : 0.96;
   const photoScale = 1 + panPhase * 0.24;
   const photoX = 38 + panPhase * 24;
 
@@ -48,7 +55,7 @@ export const FrameBox: React.FC<Props> = ({
         left: x - w / 2,
         top: y - h / 2,
         width: w,
-        transform: `scale(${progress})`,
+        transform: `translateX(${focusX}px) scale(${progress * focusScale})`,
         transformOrigin: "center center",
         zIndex: 11,
         display: "flex",
@@ -103,6 +110,7 @@ export const FrameBox: React.FC<Props> = ({
             <img src={src} style={{
               width: "100%", height: "100%", objectFit: frameBox.objectFit, background: "#FFFFFF",
               transform: `scale(${photoScale})`, transformOrigin: `${photoX}% 50%`,
+              filter: `saturate(${saturationScale}) contrast(0.98)`,
             }} />
           )}
         </div>

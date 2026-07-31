@@ -31,6 +31,9 @@ export const ConceptCard: React.FC<Props> = ({
   const w = card.width * card.scale;
   const h = card.height * card.scale;
   const iconPath = card.iconSrc ? resolveAssetSrc(card.iconSrc) : "";
+  const contentAge = Math.max(0, frame - card.enterFrame);
+  const focusPhase = Math.floor(contentAge / (fps * 4)) % 3;
+  const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -72 : 72;
   const labelFit = card.label
     ? fitTextToBox(card.label, Math.min(52, w * 0.1), 24, w - 44,
         h * (card.iconSrc ? 0.30 : 0.72), card.iconSrc ? 3 : 5)
@@ -44,7 +47,7 @@ export const ConceptCard: React.FC<Props> = ({
         top: y - h / 2,
         width: w,
         height: h,
-        transform: `scale(${progress})`,
+        transform: `translateX(${focusX}px) scale(${progress})`,
         transformOrigin: "center center",
         zIndex: 10,
       }}
@@ -80,6 +83,14 @@ export const ConceptCard: React.FC<Props> = ({
             gap: 8,
             paddingLeft: card.iconSrc && !card.label ? 54 : 0,
             boxSizing: "border-box",
+            filter: focusPhase === 0
+              ? "brightness(1)"
+              : focusPhase === 1 ? "brightness(1.14)" : "brightness(0.84)",
+            transform: `translateY(${focusPhase === 0 ? 0 : focusPhase === 1 ? -18 : 18}px)`,
+            transition: "none",
+            boxShadow: focusPhase === 0
+              ? "inset 0 0 0 0 rgba(255,255,255,0)"
+              : `inset 0 ${focusPhase === 1 ? -18 : 18}px 0 rgba(255,255,255,0.42)`,
           }}
         >
           {/* Icon */}

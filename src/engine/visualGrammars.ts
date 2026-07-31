@@ -274,7 +274,7 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   // keyword, like SOLO does) — sits in the top band, clear of the subtitle.
   const caption = b.slots?.caption ?? b.slots?.keyword;
   const texts: SceneText[] = caption
-    ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, hold: "title" }]
+    ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, hold: "scene-end" }]
     : [];
 
   return { layout: "TABLEAU", backgroundSrc: stage, entities, texts, speechBubbles: bubbles, focusAssetId: entities[0]?.assetId };
