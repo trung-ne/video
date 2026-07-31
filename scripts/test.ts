@@ -106,7 +106,10 @@ test("reference comparison names the robust baseline and emits signed deltas", (
       flatFrameRatio: 0.6,
       edgeDensity: { mean: 0.14 },
       nearDuplicateRatio: 0.3,
+      longestNearDuplicateRunSeconds: 15,
       saturation: { mean: 0.2 },
+      nearWhiteMean: 0.2,
+      whiteDominantRatio: 0.1,
     },
     {
       reference: "refer/meo.mp4",
@@ -117,7 +120,10 @@ test("reference comparison names the robust baseline and emits signed deltas", (
           flatFrameRatio: { mean: 0.45 },
           edgeDensity: { mean: 0.19 },
           nearDuplicateRatio: { mean: 0.18 },
+          longestNearDuplicateRunSeconds: { mean: 10 },
           saturation: { mean: 0.18 },
+          nearWhiteMean: { mean: 0.44 },
+          whiteDominantRatio: { mean: 0.43 },
         },
       },
     }
@@ -125,6 +131,8 @@ test("reference comparison names the robust baseline and emits signed deltas", (
   assert.strictEqual(result.baseline, "robustBaseline");
   assert.strictEqual(result.deltaCandidateMinusReference.flatFrameRatio, 0.15);
   assert.strictEqual(result.deltaCandidateMinusReference.edgeDensity, -0.05);
+  assert.strictEqual(result.deltaCandidateMinusReference.nearWhiteMean, -0.24);
+  assert.strictEqual(result.deltaCandidateMinusReference.longestNearDuplicateRunSeconds, 5);
 });
 
 test("occupancy pilot grammars emit semantic frame-filling components", () => {

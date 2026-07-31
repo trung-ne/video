@@ -13,7 +13,10 @@
     "flatFrameRatio": 0.4564,
     "edgeDensity": 0.1938,
     "nearDuplicateRatio": 0.2125,
-    "saturation": 0.1832
+    "longestNearDuplicateRunSeconds": 15.0,
+    "saturation": 0.1832,
+    "nearWhiteMean": 0.4497,
+    "whiteDominantRatio": 0.4357
   },
   "robustBaseline": {
     "definition": "mean/variance/min/max across phase offsets",
@@ -23,21 +26,30 @@
         "flatFrameRatio": 0.4564,
         "edgeDensity": 0.1938,
         "nearDuplicateRatio": 0.2125,
-        "saturation": 0.1832
+        "longestNearDuplicateRunSeconds": 15.0,
+        "saturation": 0.1832,
+        "nearWhiteMean": 0.4497,
+        "whiteDominantRatio": 0.4357
       },
       {
         "offsetSeconds": 1.7,
         "flatFrameRatio": 0.4583,
         "edgeDensity": 0.1955,
         "nearDuplicateRatio": 0.205,
-        "saturation": 0.1832
+        "longestNearDuplicateRunSeconds": 15.0,
+        "saturation": 0.1832,
+        "nearWhiteMean": 0.4513,
+        "whiteDominantRatio": 0.4417
       },
       {
         "offsetSeconds": 3.3,
         "flatFrameRatio": 0.4583,
         "edgeDensity": 0.1928,
         "nearDuplicateRatio": 0.1757,
-        "saturation": 0.177
+        "longestNearDuplicateRunSeconds": 15.0,
+        "saturation": 0.177,
+        "nearWhiteMean": 0.4534,
+        "whiteDominantRatio": 0.4375
       }
     ],
     "metrics": {
@@ -59,11 +71,29 @@
         "min": 0.1757,
         "max": 0.2125
       },
+      "longestNearDuplicateRunSeconds": {
+        "mean": 15.0,
+        "variance": 0.0,
+        "min": 15.0,
+        "max": 15.0
+      },
       "saturation": {
         "mean": 0.1811,
         "variance": 9e-06,
         "min": 0.177,
         "max": 0.1832
+      },
+      "nearWhiteMean": {
+        "mean": 0.4515,
+        "variance": 2e-06,
+        "min": 0.4497,
+        "max": 0.4534
+      },
+      "whiteDominantRatio": {
+        "mean": 0.4383,
+        "variance": 6e-06,
+        "min": 0.4357,
+        "max": 0.4417
       }
     }
   }

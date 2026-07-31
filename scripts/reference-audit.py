@@ -15,7 +15,10 @@ METRICS = {
     "flatFrameRatio": lambda report: report["flatFrameRatio"],
     "edgeDensity": lambda report: report["edgeDensity"]["mean"],
     "nearDuplicateRatio": lambda report: report["nearDuplicateRatio"],
+    "longestNearDuplicateRunSeconds": lambda report: report["longestNearDuplicateRunSeconds"],
     "saturation": lambda report: report["saturation"]["mean"],
+    "nearWhiteMean": lambda report: report["nearWhiteMean"],
+    "whiteDominantRatio": lambda report: report["whiteDominantRatio"],
 }
 
 

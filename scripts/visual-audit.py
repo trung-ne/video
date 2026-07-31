@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from visual_audit_metrics import duplicate_metrics
 
 
 def scene_at(timeline, seconds):
@@ -144,8 +145,13 @@ def main() -> int:
     if args.config and Path(args.config).is_file():
         profile = json.loads(Path(args.config).read_text(encoding="utf-8-sig")).get("visualAudit", {})
     minimum_saturation = float(profile.get("minimumSaturation", 0.15))
+    maximum_saturation = float(profile.get("maximumSaturation", 1.0))
+    minimum_near_white = float(profile.get("minimumNearWhiteMean", 0.0))
+    minimum_white_dominant = float(profile.get("minimumWhiteDominantRatio", 0.0))
     minimum_edges = float(profile.get("minimumEdgeDensity", 0.16))
     maximum_duplicates = float(profile.get("maximumNearDuplicateRatio", 0.22))
+    maximum_within_scene_duplicates = float(profile.get("maximumWithinSceneNearDuplicateRatio", 1.0))
+    maximum_static_run_seconds = float(profile.get("maximumStaticRunSeconds", float("inf")))
     maximum_flat = float(profile.get("maximumFlatFrameRatio", 0.50))
     maximum_below_focal_target = float(profile.get("maximumBelowFocalTargetRatio", 0.25))
 
@@ -196,12 +202,8 @@ def main() -> int:
             contact_frames.append(full.resize((320, 180)))
 
         differences = [float(np.mean(np.abs(a - b))) for a, b in zip(thumbs, thumbs[1:])]
-        duplicate_flags = [difference < 0.025 for difference in differences]
-        longest_duplicate_run = 0
-        current_run = 0
-        for duplicate in duplicate_flags:
-            current_run = current_run + 1 if duplicate else 0
-            longest_duplicate_run = max(longest_duplicate_run, current_run)
+        duplicate_stats = duplicate_metrics(rows, differences, 0.025, args.sample_seconds)
+        duplicate_flags = duplicate_stats["duplicateFlags"]
 
         saturation_values = [row["saturation"] for row in rows]
         edge_values = [row["edges"] for row in rows]
@@ -224,8 +226,23 @@ def main() -> int:
                 "p10": percentile(np, edge_values, 10),
                 "p50": percentile(np, edge_values, 50),
             },
-            "nearDuplicateRatio": round(float(np.mean(duplicate_flags)), 4),
-            "longestNearDuplicateRunSeconds": round(longest_duplicate_run * args.sample_seconds, 2),
+            "nearDuplicateRatio": round(duplicate_stats["nearDuplicateRatio"], 4),
+            "withinSceneNearDuplicateRatio": round(
+                duplicate_stats["withinSceneNearDuplicateRatio"], 4
+            ),
+            "crossSceneNearDuplicateRatio": round(
+                duplicate_stats["crossSceneNearDuplicateRatio"], 4
+            ),
+            "withinScenePairCount": duplicate_stats["withinScenePairCount"],
+            "withinSceneDuplicateCount": duplicate_stats["withinSceneDuplicateCount"],
+            "crossScenePairCount": duplicate_stats["crossScenePairCount"],
+            "crossSceneDuplicateCount": duplicate_stats["crossSceneDuplicateCount"],
+            "longestNearDuplicateRunSeconds": round(
+                duplicate_stats["longestNearDuplicateRunSeconds"], 2
+            ),
+            "longestWithinSceneNearDuplicateRunSeconds": round(
+                duplicate_stats["longestWithinSceneNearDuplicateRunSeconds"], 2
+            ),
             "structuralChangeMean": round(float(np.mean(differences)), 4),
             "samples": rows,
         }
@@ -319,10 +336,26 @@ def main() -> int:
     failures = []
     if metrics["saturation"]["mean"] < minimum_saturation:
         failures.append(f"LOW_COLOUR_REGISTER: content saturation mean <{minimum_saturation}")
+    if metrics["saturation"]["mean"] > maximum_saturation:
+        failures.append(f"OVER_SATURATED: content saturation mean >{maximum_saturation}")
+    if metrics["nearWhiteMean"] < minimum_near_white:
+        failures.append(f"WHITE_REGISTER_SHORTAGE: near-white content mean <{minimum_near_white}")
+    if metrics["whiteDominantRatio"] < minimum_white_dominant:
+        failures.append(f"WHITE_DOMINANT_SHORTAGE: white-dominant frame ratio <{minimum_white_dominant}")
     if metrics["edgeDensity"]["mean"] < minimum_edges:
         failures.append(f"LOW_VISUAL_DENSITY: content edge density mean <{minimum_edges}")
     if metrics["nearDuplicateRatio"] > maximum_duplicates:
         failures.append(f"FRAME_SIMILARITY: adjacent near-duplicate ratio >{maximum_duplicates:.0%}")
+    if metrics["withinSceneNearDuplicateRatio"] > maximum_within_scene_duplicates:
+        failures.append(
+            "WITHIN_SCENE_SIMILARITY: same-scene near-duplicate ratio "
+            f">{maximum_within_scene_duplicates:.0%}"
+        )
+    if metrics["longestWithinSceneNearDuplicateRunSeconds"] > maximum_static_run_seconds:
+        failures.append(
+            "STATIC_SCENE_RUN: longest same-scene near-duplicate run "
+            f">{maximum_static_run_seconds:.1f}s"
+        )
     if metrics["flatFrameRatio"] > maximum_flat:
         failures.append(f"FLAT_REGISTER: sampled content flat ratio >{maximum_flat:.0%}")
     if (metrics["focalOccupancy"]["belowDeclaredTargetRatio"] is not None
@@ -342,7 +375,12 @@ def main() -> int:
     print(f"   Mean saturation:     {metrics['saturation']['mean']:.3f}")
     print(f"   Mean edge density:   {metrics['edgeDensity']['mean']:.3f}")
     print(f"   Near-duplicate:      {metrics['nearDuplicateRatio'] * 100:.1f}%")
-    print(f"   Longest static run:  {metrics['longestNearDuplicateRunSeconds']:.1f}s")
+    print(f"   Within-scene dup:    {metrics['withinSceneNearDuplicateRatio'] * 100:.1f}%")
+    static_run = (
+        metrics["longestWithinSceneNearDuplicateRunSeconds"]
+        if timeline else metrics["longestNearDuplicateRunSeconds"]
+    )
+    print(f"   Longest static run:  {static_run:.1f}s")
     print(f"   Report:              {report_path}")
     for failure in failures:
         print(f"   FAIL {failure}")
