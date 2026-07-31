@@ -1327,7 +1327,7 @@
       },
       "heroVisual": true,
       "slots": {
-        "photo": "backgrounds/real_estate.jpg",
+        "photo": "backgrounds/korea_apartments.jpg",
         "caption": "Phần lớn nợ hộ gia đình gắn với nhà ở"
       },
       "visualRegister": "photo_broll",
@@ -1341,24 +1341,24 @@
       "silentFrameTakeaway": "housing is the main pressure behind the debt story",
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/real_estate.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/korea_apartments.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/real_estate.jpg",
+          "query": "backgrounds/korea_apartments.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/real_estate.jpg",
+          "preferredAssetId": "backgrounds/korea_apartments.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/real_estate.jpg"
+        "photo": "backgrounds/korea_apartments.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/real_estate.jpg"
+        "asset:backgrounds/korea_apartments.jpg"
       ]
     },
     {
@@ -1855,7 +1855,7 @@
       },
       "heroVisual": true,
       "slots": {
-        "photo": "backgrounds/city_street.jpg",
+        "photo": "backgrounds/urban_apartments.jpg",
         "caption": "Chăm chỉ vẫn tụt lại phía sau"
       },
       "visualRegister": "photo_broll",
@@ -1869,24 +1869,24 @@
       "silentFrameTakeaway": "many young Koreans feel permanently behind their parents",
       "focalOccupancyTarget": 0.74,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/city_street.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/urban_apartments.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/city_street.jpg",
+          "query": "backgrounds/urban_apartments.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/city_street.jpg",
+          "preferredAssetId": "backgrounds/urban_apartments.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/city_street.jpg"
+        "photo": "backgrounds/urban_apartments.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/city_street.jpg"
+        "asset:backgrounds/urban_apartments.jpg"
       ]
     },
     {
@@ -3444,7 +3444,7 @@
       "purpose": "Margin amplifies the bias in Korea specifically.",
       "emotion": "concern",
       "viewerFocus": "margin users are the most active traders",
-      "visualGrammar": "TABLEAU",
+      "visualGrammar": "PHOTO_EVIDENCE",
       "sourceRange": {
         "startWord": 1965,
         "endWord": 2002,
@@ -3452,59 +3452,39 @@
       },
       "heroVisual": true,
       "slots": {
-        "stage": "assets/scenes/office_desk.svg",
-        "who": "analyst",
-        "anchorA": "desk_right",
-        "prop": "finance/loan",
+        "photo": "backgrounds/market_monitor.jpg",
         "caption": "Margin: nhóm giao dịch tích cực nhất"
       },
-      "visualRegister": "full_tableau",
+      "visualRegister": "photo_broll",
       "semanticVisual": {
-        "subject": "leveraged trader at a desk",
-        "action": "magnifies the same behavioural bias with borrowed money",
+        "subject": "market monitor showing leveraged volatility",
+        "action": "fills the frame without a presenter",
         "takeaway": "margin makes an ordinary bias more extreme",
         "object": "borrowed exposure",
-        "setting": "office finance"
+        "setting": "market monitor"
       },
-      "focalType": "full_scene",
+      "focalType": "photo",
       "silentFrameTakeaway": "margin makes an ordinary bias more extreme",
-      "focalOccupancyTarget": 0.48,
-      "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|prop=finance/loan|stage=assets/scenes/office_desk.svg|who=characters/cat_teacher",
+      "focalOccupancyTarget": 0.78,
+      "characterRequired": false,
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/market_monitor.jpg",
       "assetRequests": [
         {
-          "role": "character",
-          "slot": "who",
-          "query": "characters/cat_teacher",
+          "role": "photo",
+          "slot": "photo",
+          "query": "backgrounds/market_monitor.jpg",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat_teacher",
-          "allowGenerate": false
-        },
-        {
-          "role": "prop",
-          "slot": "prop",
-          "query": "finance/loan",
-          "requiredTags": [],
-          "preferredAssetId": "finance/loan",
-          "allowGenerate": false
-        },
-        {
-          "role": "stage",
-          "slot": "stage",
-          "query": "assets/scenes/office_desk.svg",
-          "requiredTags": [],
-          "preferredAssetId": "assets/scenes/office_desk.svg",
+          "preferredAssetId": "backgrounds/market_monitor.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "who": "characters/cat_teacher",
-        "prop": "finance/loan",
-        "stage": "assets/scenes/office_desk.svg"
+        "photo": "backgrounds/market_monitor.jpg"
       },
       "noveltyFromPrevious": [
-        "asset:finance/loan",
-        "asset:assets/scenes/office_desk.svg"
+        "grammar:PHOTO_EVIDENCE",
+        "register:photo_broll",
+        "asset:backgrounds/market_monitor.jpg"
       ]
     },
     {
@@ -4784,7 +4764,7 @@
       },
       "heroVisual": false,
       "slots": {
-        "photo": "backgrounds/office_trading.jpg",
+        "photo": "backgrounds/mobile_trading_flatlay.jpg",
         "caption": "Yếu tố quan trọng nhất: quá dễ"
       },
       "visualRegister": "photo_broll",
@@ -4798,24 +4778,24 @@
       "silentFrameTakeaway": "the fourth root is effortless access to trading",
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/office_trading.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/mobile_trading_flatlay.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/office_trading.jpg",
+          "query": "backgrounds/mobile_trading_flatlay.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/office_trading.jpg",
+          "preferredAssetId": "backgrounds/mobile_trading_flatlay.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/office_trading.jpg"
+        "photo": "backgrounds/mobile_trading_flatlay.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/office_trading.jpg"
+        "asset:backgrounds/mobile_trading_flatlay.jpg"
       ]
     },
     {
@@ -5106,7 +5086,7 @@
       },
       "heroVisual": true,
       "slots": {
-        "photo": "backgrounds/coffee_shop.jpg",
+        "photo": "backgrounds/trading_workstation.jpg",
         "caption": "Thị trường giờ giống mạng xã hội hơn"
       },
       "visualRegister": "photo_broll",
@@ -5120,24 +5100,24 @@
       "silentFrameTakeaway": "the market starts to feel like a social platform",
       "focalOccupancyTarget": 0.78,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/coffee_shop.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/trading_workstation.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/coffee_shop.jpg",
+          "query": "backgrounds/trading_workstation.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/coffee_shop.jpg",
+          "preferredAssetId": "backgrounds/trading_workstation.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/coffee_shop.jpg"
+        "photo": "backgrounds/trading_workstation.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/coffee_shop.jpg"
+        "asset:backgrounds/trading_workstation.jpg"
       ]
     },
     {
@@ -5926,7 +5906,7 @@
       "purpose": "People chase leverage products banned at home, abroad.",
       "emotion": "concern",
       "viewerFocus": "seeking banned leverage abroad",
-      "visualGrammar": "TABLEAU",
+      "visualGrammar": "PHOTO_EVIDENCE",
       "sourceRange": {
         "startWord": 3439,
         "endWord": 3476,
@@ -5934,61 +5914,39 @@
       },
       "heroVisual": false,
       "slots": {
-        "stage": "assets/scenes/airport.svg",
-        "who": "regulator",
-        "anchorA": "stand_left",
-        "prop": "finance/exchange",
+        "photo": "backgrounds/airport.jpg",
         "caption": "Né kiểm soát bằng cách ra nước ngoài"
       },
-      "visualRegister": "full_tableau",
+      "visualRegister": "photo_broll",
       "semanticVisual": {
-        "subject": "Korean investor at an airport-like departure point",
-        "action": "reaches for leveraged products available abroad",
+        "subject": "empty airport departure view",
+        "action": "signals capital leaving for overseas products",
         "takeaway": "investors can chase overseas products banned at home",
         "object": "overseas leveraged product",
         "setting": "travel airport"
       },
-      "focalType": "full_scene",
+      "focalType": "photo",
       "silentFrameTakeaway": "investors can chase overseas products banned at home",
-      "focalOccupancyTarget": 0.48,
-      "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|prop=finance/exchange|stage=assets/scenes/airport.svg|who=characters/cat_police",
+      "focalOccupancyTarget": 0.78,
+      "characterRequired": false,
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/airport.jpg",
       "assetRequests": [
         {
-          "role": "character",
-          "slot": "who",
-          "query": "characters/cat_police",
+          "role": "photo",
+          "slot": "photo",
+          "query": "backgrounds/airport.jpg",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat_police",
-          "allowGenerate": false
-        },
-        {
-          "role": "prop",
-          "slot": "prop",
-          "query": "finance/exchange",
-          "requiredTags": [],
-          "preferredAssetId": "finance/exchange",
-          "allowGenerate": false
-        },
-        {
-          "role": "stage",
-          "slot": "stage",
-          "query": "assets/scenes/airport.svg",
-          "requiredTags": [],
-          "preferredAssetId": "assets/scenes/airport.svg",
+          "preferredAssetId": "backgrounds/airport.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "who": "characters/cat_police",
-        "prop": "finance/exchange",
-        "stage": "assets/scenes/airport.svg"
+        "photo": "backgrounds/airport.jpg"
       },
       "noveltyFromPrevious": [
-        "grammar:TABLEAU",
-        "register:full_tableau",
-        "asset:characters/cat_police",
-        "asset:assets/scenes/airport.svg"
+        "grammar:PHOTO_EVIDENCE",
+        "register:photo_broll",
+        "asset:backgrounds/airport.jpg"
       ]
     },
     {
@@ -6047,7 +6005,8 @@
       "noveltyFromPrevious": [
         "grammar:VISUAL_METAPHOR",
         "register:visual_gag",
-        "asset:finance/loss"
+        "asset:finance/loss",
+        "asset:finance/exchange"
       ]
     },
     {
@@ -6135,7 +6094,7 @@
       },
       "heroVisual": true,
       "slots": {
-        "photo": "backgrounds/city_skyline.jpg",
+        "photo": "backgrounds/korea_apartments.jpg",
         "caption": "Cấm 1 sản phẩm không diệt nhu cầu đầu cơ"
       },
       "visualRegister": "photo_broll",
@@ -6149,24 +6108,24 @@
       "silentFrameTakeaway": "displaced demand may end up where it is harder to control",
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/city_skyline.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/korea_apartments.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/city_skyline.jpg",
+          "query": "backgrounds/korea_apartments.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/city_skyline.jpg",
+          "preferredAssetId": "backgrounds/korea_apartments.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/city_skyline.jpg"
+        "photo": "backgrounds/korea_apartments.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/city_skyline.jpg"
+        "asset:backgrounds/korea_apartments.jpg"
       ]
     },
     {
@@ -7100,7 +7059,7 @@
       },
       "heroVisual": false,
       "slots": {
-        "photo": "backgrounds/office_trading.jpg",
+        "photo": "backgrounds/market_monitor.jpg",
         "caption": "\"Mình sẽ kịp thoát trước khi tồi tệ\""
       },
       "visualRegister": "photo_broll",
@@ -7114,24 +7073,24 @@
       "silentFrameTakeaway": "many participants assume they will leave in time",
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/office_trading.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/market_monitor.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/office_trading.jpg",
+          "query": "backgrounds/market_monitor.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/office_trading.jpg",
+          "preferredAssetId": "backgrounds/market_monitor.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/office_trading.jpg"
+        "photo": "backgrounds/market_monitor.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/office_trading.jpg"
+        "asset:backgrounds/market_monitor.jpg"
       ]
     },
     {
@@ -7337,7 +7296,7 @@
       },
       "heroVisual": true,
       "slots": {
-        "photo": "backgrounds/stock_chart.jpg",
+        "photo": "backgrounds/stock_board.jpg",
         "caption": "Mỗi người một niềm tin khác nhau"
       },
       "visualRegister": "photo_broll",
@@ -7351,24 +7310,24 @@
       "silentFrameTakeaway": "investors disagree sharply about what happens next",
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/stock_chart.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo=backgrounds/stock_board.jpg",
       "assetRequests": [
         {
           "role": "photo",
           "slot": "photo",
-          "query": "backgrounds/stock_chart.jpg",
+          "query": "backgrounds/stock_board.jpg",
           "requiredTags": [],
-          "preferredAssetId": "backgrounds/stock_chart.jpg",
+          "preferredAssetId": "backgrounds/stock_board.jpg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "photo": "backgrounds/stock_chart.jpg"
+        "photo": "backgrounds/stock_board.jpg"
       },
       "noveltyFromPrevious": [
         "grammar:PHOTO_EVIDENCE",
         "register:photo_broll",
-        "asset:backgrounds/stock_chart.jpg"
+        "asset:backgrounds/stock_board.jpg"
       ]
     },
     {

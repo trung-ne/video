@@ -207,7 +207,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "concern",
     purpose: "Point the debt story at housing.",
     viewerFocus: "debt tied to housing",
-    slots: { photo: "backgrounds/real_estate.jpg", caption: "Phần lớn nợ hộ gia đình gắn với nhà ở" } },
+    slots: { photo: "backgrounds/korea_apartments.jpg", caption: "Phần lớn nợ hộ gia đình gắn với nhà ở" } },
 
   { marker: "Hàn Quốc có một mô hình thuê nhà khá đặc biệt",
     narrationOverride: "Hàn Quốc có một mô hình thuê nhà khá đặc biệt gọi là Jeonse. Thay vì trả tiền thuê hằng tháng, người thuê sẽ đưa cho chủ nhà một khoản tiền đặt cọc rất lớn.",
@@ -259,7 +259,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "sad",
     purpose: "Name the generational gap feeling.",
     viewerFocus: "falling behind despite hard work",
-    slots: { photo: "backgrounds/city_street.jpg", caption: "Chăm chỉ vẫn tụt lại phía sau" } },
+    slots: { photo: "backgrounds/urban_apartments.jpg", caption: "Chăm chỉ vẫn tụt lại phía sau" } },
 
   { marker: "Mua nhà ngày càng khó, tích lũy tài sản",
     grammar: "DIALOGUE_QA", emotion: "sad",
@@ -414,10 +414,10 @@ const BASE_SCENES: DraftScene[] = [
 
   { marker: "Nhưng mà ở Hàn Quốc ấy thì mọi thứ lại cực đoan hơn",
     narrationOverride: "Nhưng ở Hàn Quốc, mọi thứ cực đoan hơn khi margin xuất hiện, bởi nhóm dùng margin thường chính là nhóm giao dịch tích cực nhất.",
-    grammar: "TABLEAU", emotion: "concern",
+    grammar: "PHOTO_EVIDENCE", emotion: "concern",
     purpose: "Margin amplifies the bias in Korea specifically.",
     viewerFocus: "margin users are the most active traders",
-    slots: { stage: "assets/scenes/office_desk.svg", who: "analyst", anchorA: "desk_right", prop: "finance/loan", caption: "Margin: nhóm giao dịch tích cực nhất" } },
+    slots: { photo: "backgrounds/market_monitor.jpg", caption: "Margin: nhóm giao dịch tích cực nhất" } },
 
   { marker: "Theo những nghiên cứu tại KCMI",
     grammar: "EVIDENCE", emotion: "neutral",
@@ -552,7 +552,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "neutral",
     purpose: "Root cause #4: sheer ease of access.",
     viewerFocus: "accessibility as the most important factor",
-    slots: { photo: "backgrounds/office_trading.jpg", caption: "Yếu tố quan trọng nhất: quá dễ" } },
+    slots: { photo: "backgrounds/mobile_trading_flatlay.jpg", caption: "Yếu tố quan trọng nhất: quá dễ" } },
 
   { marker: "Ngày trước mà muốn mua bán cổ phiếu thì phải gọi điện",
     grammar: "TABLEAU", emotion: "neutral",
@@ -582,7 +582,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "sarcastic",
     purpose: "The market starts feeling like a social feed.",
     viewerFocus: "market as social media",
-    slots: { photo: "backgrounds/coffee_shop.jpg", caption: "Thị trường giờ giống mạng xã hội hơn" } },
+    slots: { photo: "backgrounds/trading_workstation.jpg", caption: "Thị trường giờ giống mạng xã hội hơn" } },
 
   { marker: "Ai cũng nhìn bảng giá, cập nhật thông tin",
     grammar: "DIALOGUE_QA", emotion: "neutral",
@@ -664,10 +664,10 @@ const BASE_SCENES: DraftScene[] = [
     slots: { stat: "QUY MÔ RẤT LỚN", anchor: "finance/exchange", who: "characters/cat_surprised", caption: "Cổ phiếu nước ngoài, cuối 2024" } },
 
   { marker: "Trong đó thì ngày càng xuất hiện nhiều sản phẩm",
-    grammar: "TABLEAU", emotion: "concern",
+    grammar: "PHOTO_EVIDENCE", emotion: "concern",
     purpose: "People chase leverage products banned at home, abroad.",
     viewerFocus: "seeking banned leverage abroad",
-    slots: { stage: "assets/scenes/airport.svg", who: "regulator", anchorA: "stand_left", prop: "finance/exchange", caption: "Né kiểm soát bằng cách ra nước ngoài" } },
+    slots: { photo: "backgrounds/airport.jpg", caption: "Né kiểm soát bằng cách ra nước ngoài" } },
 
   { marker: "Tức là khi mà không được chơi xong sân nhà",
     narrationOverride: "Không được chơi ở sân nhà thì người ta đi tìm sân khác. Đây cũng là lý do nhiều chuyên gia ví đầu cơ giống như dòng nước chảy.",
@@ -686,7 +686,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "sad",
     purpose: "Banning one product doesn't kill speculative demand.",
     viewerFocus: "demand just shifts form",
-    slots: { photo: "backgrounds/city_skyline.jpg", caption: "Cấm 1 sản phẩm không diệt nhu cầu đầu cơ" } },
+    slots: { photo: "backgrounds/korea_apartments.jpg", caption: "Cấm 1 sản phẩm không diệt nhu cầu đầu cơ" } },
 
   { marker: "thường là xa hơn, phức tạp hơn và khó nhìn thấy hơn",
     grammar: "CHAR_PROP", emotion: "concern",
@@ -793,7 +793,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "concern",
     purpose: "The universal belief 'I'll get out in time'.",
     viewerFocus: "the belief you'll exit in time",
-    slots: { photo: "backgrounds/office_trading.jpg", caption: "\"Mình sẽ kịp thoát trước khi tồi tệ\"" } },
+    slots: { photo: "backgrounds/market_monitor.jpg", caption: "\"Mình sẽ kịp thoát trước khi tồi tệ\"" } },
 
   { marker: "Và đó cũng là suy nghĩ xuất hiện trong hầu hết những cơn sốt",
     grammar: "HISTORY_TIMELINE", emotion: "concern",
@@ -818,7 +818,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "PHOTO_EVIDENCE", emotion: "neutral",
     purpose: "Views on where the market goes next diverge widely.",
     viewerFocus: "diverging market opinions",
-    slots: { photo: "backgrounds/stock_chart.jpg", caption: "Mỗi người một niềm tin khác nhau" } },
+    slots: { photo: "backgrounds/stock_board.jpg", caption: "Mỗi người một niềm tin khác nhau" } },
 
   { marker: "Thậm chí là có những người vẫn tiếp tục vay tiền để đầu tư",
     grammar: "TABLEAU", emotion: "concern",
@@ -966,7 +966,7 @@ const DIRECTIONS: Direction[] = [
   direct("visual_gag", "visual_gag", "retail trader and lottery-like stock", "chases a tiny risky ticker as if it were a jackpot", "small speculative stocks can feel like lottery tickets", 0.50, true, { relation: "stock chase mirrors gambling" }),
   direct("character_action", "character_action", "retail trader", "sells a small winner but hugs a large loser", "investors often sell winners early and hold losers too long", 0.50, true, { relation: "opposite treatment of gains and losses" }),
   direct("full_tableau", "full_scene", "host in a classroom", "labels the disposition effect on a board", "the bias is famous worldwide, not uniquely Korean", 0.46, true, { object: "disposition effect", setting: "school classroom" }),
-  direct("full_tableau", "full_scene", "leveraged trader at a desk", "magnifies the same behavioural bias with borrowed money", "margin makes an ordinary bias more extreme", 0.48, true, { object: "borrowed exposure", setting: "office finance" }),
+  direct("photo_broll", "photo", "market monitor showing leveraged volatility", "fills the frame without a presenter", "margin makes an ordinary bias more extreme", 0.78, false, { object: "borrowed exposure", setting: "market monitor" }),
   direct("evidence", "evidence", "KCMI study card", "shows margin users trading more aggressively", "KCMI research identifies outsized activity among margin users", 0.56, false, { object: "KCMI margin research" }),
   direct("character_action", "character_action", "margin trader", "rapidly switches among frequent trades, risky stocks and large positions", "margin users trade more often, riskier and bigger", 0.50, true, { object: "three aggressive behaviours" }),
   direct("visual_gag", "visual_gag", "driver-like investor", "presses the accelerator while carrying a debt tank", "the most aggressive traders are powered by borrowed money", 0.48, true, { object: "debt accelerator" }),
@@ -1015,7 +1015,7 @@ const DIRECTIONS: Direction[] = [
   direct("visual_gag", "visual_gag", "speculation stream", "escapes through another door as one closes", "rules that treat symptoms can redirect rather than remove demand", 0.54, true, { relation: "closed door opens another route" }),
   direct("visual_gag", "visual_gag", "investor and exchange prop", "redirect money from restricted CFDs toward another channel", "tightening one product can push money into less regulated channels", 0.52, true, { object: "cross-border exchange" }),
   direct("evidence", "chart", "foreign-stock holdings figure", "rises on a cross-border flow card", "retail money moved into foreign stocks at large scale by late 2024", 0.52, false, { object: "foreign stock holdings" }),
-  direct("full_tableau", "full_scene", "Korean investor at an airport-like departure point", "reaches for leveraged products available abroad", "investors can chase overseas products banned at home", 0.48, true, { object: "overseas leveraged product", setting: "travel airport" }),
+  direct("photo_broll", "photo", "empty airport departure view", "signals capital leaving for overseas products", "investors can chase overseas products banned at home", 0.78, false, { object: "overseas leveraged product", setting: "travel airport" }),
   direct("visual_gag", "visual_gag", "water-like speculative demand", "flows around a barrier into a foreign channel", "speculation changes route when the home route closes", 0.54, false, { relation: "water represents displaced demand" }),
   direct("full_tableau", "full_scene", "host at a bank barrier", "points at hidden gaps around the restriction", "harder barriers create harder-to-see escape routes", 0.48, true, { relation: "barrier redirects flow", setting: "finance bank" }),
   direct("photo_broll", "photo", "distant airport concourse without faces", "suggests capital moving beyond domestic oversight", "displaced demand may end up where it is harder to control", 0.76, false, { setting: "travel airport" }),
