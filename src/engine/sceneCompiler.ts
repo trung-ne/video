@@ -638,10 +638,16 @@ function compileCamera(
 ): void {
   const camFrame = sceneStart + (camera.delay ?? 40);
   const duration = camera.duration ?? 30;
+  const safeZoom = (requested: number | undefined, fallback: number) =>
+    Math.max(1, Math.min(1.08, requested ?? fallback));
+  const safeCenter = (value: number | undefined, axis: "x" | "y") => {
+    const [min, max] = axis === "x" ? [0.46, 0.54] : [0.44, 0.52];
+    return Math.max(min, Math.min(max, value ?? 0.5));
+  };
 
   switch (camera.action) {
     case "ZOOM_IN": {
-      const zoom = camera.zoom ?? 1.25;
+      const zoom = safeZoom(camera.zoom, 1.06);
       // Find target entity position for center
       const targetEntity = camera.target
         ? scene.entities.find((e) => e.assetId === camera.target)
@@ -651,8 +657,8 @@ function compileCamera(
         frame: camFrame,
         type: "camera",
         zoom,
-        centerX: pos?.x ?? 0.5,
-        centerY: pos?.y ?? 0.4,
+        centerX: safeCenter(pos?.x, "x"),
+        centerY: safeCenter(pos?.y, "y"),
         duration,
       } as CameraEvent);
       break;
@@ -662,7 +668,7 @@ function compileCamera(
       events.push({
         frame: camFrame,
         type: "camera",
-        zoom: camera.zoom ?? 0.9,
+        zoom: 1,
         centerX: 0.5,
         centerY: 0.5,
         duration,
@@ -678,9 +684,9 @@ function compileCamera(
       events.push({
         frame: camFrame,
         type: "camera",
-        zoom: camera.zoom ?? 1.3,
-        centerX: pos?.x ?? 0.5,
-        centerY: pos?.y ?? 0.35,
+        zoom: safeZoom(camera.zoom, 1.06),
+        centerX: safeCenter(pos?.x, "x"),
+        centerY: safeCenter(pos?.y, "y"),
         duration,
       } as CameraEvent);
       break;
@@ -703,17 +709,17 @@ function compileCamera(
       events.push({
         frame: camFrame,
         type: "camera",
-        zoom: camera.zoom ?? 1.15,
-        centerX: 0.25,
-        centerY: 0.4,
+        zoom: safeZoom(camera.zoom, 1.04),
+        centerX: 0.47,
+        centerY: 0.48,
         duration,
       } as CameraEvent);
       events.push({
         frame: camFrame + duration + 30,
         type: "camera",
-        zoom: camera.zoom ?? 1.15,
-        centerX: 0.75,
-        centerY: 0.4,
+        zoom: safeZoom(camera.zoom, 1.04),
+        centerX: 0.53,
+        centerY: 0.48,
         duration,
       } as CameraEvent);
       break;

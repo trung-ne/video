@@ -208,12 +208,12 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   if (b.slots?.askerText)
     bubbles.push({
       id: `${b.id}-qa`, anchorAssetId: `${b.id}-a`, text: b.slots.askerText,
-      direction: "right", delay: 12, fontSize: 44, widthRatio: 0.44,
+      direction: "right", delay: 12, duration: 48, fontSize: 44, widthRatio: 0.38,
     });
   if (b.slots?.answererText)
     bubbles.push({
       id: `${b.id}-qb`, anchorAssetId: `${b.id}-b`, text: b.slots.answererText,
-      direction: "left", delay: 90, fontSize: 44, widthRatio: 0.44,
+      direction: "left", delay: 72, fontSize: 44, widthRatio: 0.38,
     });
   return {
     layout: "DIALOGUE",

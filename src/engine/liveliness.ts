@@ -245,7 +245,7 @@ export function injectLiveliness(
     end: fallbackStarts[sceneIndex + 1] ?? total,
     narrationBeatFrames: [] as number[],
   }));
-  sceneSpans.forEach(({ start, end, narrationBeatFrames = [] }) => {
+  sceneSpans.forEach(({ start, end }) => {
     if (end - start < minWindow) return;
     const authoredCameraFrames = timeline.events
       .filter((event) => event.type === "camera" && event.frame >= start && event.frame < end)
@@ -261,30 +261,8 @@ export function injectLiveliness(
       } as CameraEvent);
       cameraMovesAdded++;
     }
-    let cameraBeat = 0;
-    for (let target = start + Math.round(interval * 0.9); target < end - 12; target += interval) {
-      const nearbyNarrationBeat = narrationBeatFrames
-        .filter((frame) => frame >= start + 30 && frame < end - 12)
-        .sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      const frame = nearbyNarrationBeat !== undefined
-        && Math.abs(nearbyNarrationBeat - target) <= interval * 0.25
-        ? nearbyNarrationBeat
-        : target;
-      if (authoredCameraFrames.some((authored) => Math.abs(authored - frame) < interval * 0.45)) {
-        cameraBeat++;
-        continue;
-      }
-      added.push({
-        frame,
-        type: "camera",
-        zoom: cameraBeat % 2 === 0 ? 1.06 : 1.11,
-        centerX: cameraBeat % 2 === 0 ? 0.47 : 0.53,
-        centerY: 0.485,
-        duration: 24,
-      } as CameraEvent);
-      cameraMovesAdded++;
-      cameraBeat++;
-    }
+    // Camera motion is not a generic liveliness substitute. Authored camera
+    // beats survive; the injector only resets the viewport between scenes.
   });
 
   timeline.events.push(...added);

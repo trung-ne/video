@@ -2,6 +2,7 @@ import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { SpeechBubbleState } from "../engine/timelineEngine";
 import { AssetState } from "../types/timeline";
+import { fitTextToBox } from "../engine/textLayout";
 
 interface Props {
   bubble: SpeechBubbleState;
@@ -34,9 +35,9 @@ export const SpeechBubble: React.FC<Props> = ({
   const assetSize = 200 * anchor.scale;
 
   // Position bubble relative to anchor character
-  const bubbleWidth = Math.min(canvasWidth * bubble.widthRatio, Math.max(200, bubble.text.length * (bubble.fontSize * 0.55) + 40));
-  const charsPerLine = Math.max(10, Math.floor((bubbleWidth - 40) / (bubble.fontSize * 0.55)));
-  const bubbleHeight = Math.ceil(bubble.text.length / charsPerLine) * (bubble.fontSize + 10) + 40;
+  const bubbleWidth = Math.min(canvasWidth * bubble.widthRatio, Math.max(260, bubble.text.length * (bubble.fontSize * 0.55) + 40));
+  const textFit = fitTextToBox(bubble.text, bubble.fontSize, 28, bubbleWidth - 44, canvasHeight * 0.23, 3, 1.28);
+  const bubbleHeight = textFit.lines.length * textFit.fontSize * 1.28 + 40;
 
   let bubbleX = anchorX + assetSize * 0.3;
   let bubbleY = anchorY - assetSize * 0.6 - bubbleHeight;
@@ -73,7 +74,7 @@ export const SpeechBubble: React.FC<Props> = ({
               borderRadius: "50%",
               padding: "16px 20px",
               border: "3px solid #1a1a1a",
-              fontSize: bubble.fontSize,
+              fontSize: textFit.fontSize,
               color: bubble.textColor,
               fontFamily: "'Segoe UI', Arial, sans-serif",
               fontWeight: 600,
@@ -82,7 +83,7 @@ export const SpeechBubble: React.FC<Props> = ({
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
             }}
           >
-            {bubble.text}
+            {textFit.lines.map((line, index) => <React.Fragment key={line + index}>{index > 0 && <br />}{line}</React.Fragment>)}
           </div>
           {/* Thought dots */}
           <div style={{
@@ -106,7 +107,7 @@ export const SpeechBubble: React.FC<Props> = ({
               borderRadius: 16,
               padding: "14px 18px",
               border: "3px solid #1a1a1a",
-              fontSize: bubble.fontSize,
+              fontSize: textFit.fontSize,
               color: bubble.textColor,
               fontFamily: "'Segoe UI', Arial, sans-serif",
               fontWeight: 600,
@@ -115,7 +116,7 @@ export const SpeechBubble: React.FC<Props> = ({
               boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
             }}
           >
-            {bubble.text}
+            {textFit.lines.map((line, index) => <React.Fragment key={line + index}>{index > 0 && <br />}{line}</React.Fragment>)}
           </div>
           {/* Tail */}
           <svg

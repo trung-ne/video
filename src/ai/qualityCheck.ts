@@ -1501,7 +1501,7 @@ function checkCameraUsage(scenes: any[]): CheckResult {
   for (const s of scenes) {
     if (!s.camera) continue;
     const zoom = s.camera.zoom ?? 1;
-    if (zoom > 1.2) {
+    if (zoom > 1.08) {
       issues.push({
         severity: "MINOR",
         rule: "CAMERA_MINIMAL",

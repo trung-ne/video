@@ -34,6 +34,7 @@ import { compileScenes } from "../src/engine/sceneCompiler";
 import { injectLiveliness } from "../src/engine/liveliness";
 import { resolveAuthoredAssets } from "../src/engine/authoredAssets";
 import { approvedPhotoPaths, isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
+import { fitTextToBox } from "../src/engine/textLayout";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -193,7 +194,7 @@ test("STAT is light by default, dark only when authored, with separated measure 
   assert.ok(Math.abs((light.cards?.[0].position.x ?? 0) - (light.texts[0].position?.x ?? 0)) > 0.16);
 });
 
-test("DIALOGUE_QA bubbles persist instead of disappearing early in long scenes", () => {
+test("DIALOGUE_QA hands off between non-overlapping bubbles", () => {
   const result = VISUAL_GRAMMARS.DIALOGUE_QA({
     id: "qa", narration: "Why? Because debt.", purpose: "teach through dialogue",
     emotion: "curious", viewerFocus: "the answer", visualGrammar: "DIALOGUE_QA",
@@ -203,7 +204,19 @@ test("DIALOGUE_QA bubbles persist instead of disappearing early in long scenes",
     },
   } as any, { cast: {}, index: 0, strict: true });
   assert.strictEqual(result.speechBubbles?.length, 2);
-  assert.ok(result.speechBubbles?.every((bubble) => bubble.duration === undefined));
+  assert.strictEqual(result.speechBubbles?.[0].duration, 48);
+  assert.strictEqual(result.speechBubbles?.[1].duration, undefined);
+  assert.ok(
+    (result.speechBubbles?.[0].delay ?? 0) + (result.speechBubbles?.[0].duration ?? 0)
+      < (result.speechBubbles?.[1].delay ?? 0),
+  );
+});
+
+test("word-safe text fitting keeps Vietnamese words intact", () => {
+  const fit = fitTextToBox("và tiền vay cộng lãi vay vẫn phải trả đủ", 44, 24, 390, 150, 3);
+  assert.ok(fit.fits);
+  assert.ok(fit.lines.some((line) => line.endsWith("đủ")));
+  assert.ok(!fit.lines.some((line) => line === "đ" || line === "ủ"));
 });
 
 test("DIALOGUE_QA consumes its authored stage and anchors", () => {
@@ -475,7 +488,7 @@ test("narrator pose swaps persist until the next narration beat", () => {
   const swaps = timeline.events.filter((event: any) => event.type === "swap");
   assert.strictEqual(result.swapsAdded, 3);
   assert.strictEqual(result.movesAdded, 0);
-  assert.strictEqual(result.cameraMovesAdded, 3);
+  assert.strictEqual(result.cameraMovesAdded, 0);
   assert.strictEqual(swaps.length, 3);
 
   const costumed: any = {
@@ -492,11 +505,11 @@ test("narrator pose swaps persist until the next narration beat", () => {
   };
   const costumedResult = injectLiveliness(costumed);
   assert.strictEqual(costumedResult.movesAdded, 3);
-  assert.strictEqual(costumedResult.cameraMovesAdded, 3);
+  assert.strictEqual(costumedResult.cameraMovesAdded, 0);
   assert.strictEqual(costumed.events.filter((event: any) => event.type === "move").length, 3);
 });
 
-test("liveliness uses authored scene spans and keeps late narration beats", () => {
+test("liveliness resets camera between scenes without inventing zoom beats", () => {
   const timeline: any = {
     fps: 30,
     width: 1920,
@@ -520,8 +533,8 @@ test("liveliness uses authored scene spans and keeps late narration beats", () =
   const cameraFrames = timeline.events
     .filter((event: any) => event.type === "camera")
     .map((event: any) => event.frame);
-  assert.deepStrictEqual(cameraFrames, [120, 260, 300, 420, 560]);
-  assert.strictEqual(result.cameraMovesAdded, 4);
+  assert.deepStrictEqual(cameraFrames, [120, 300]);
+  assert.strictEqual(result.cameraMovesAdded, 1);
 });
 
 test("indexes Unicode words with stable indices", () => {

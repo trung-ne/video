@@ -2,6 +2,7 @@ import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { CardState } from "../engine/timelineEngine";
 import { resolveAssetSrc } from "../engine/assetPaths";
+import { fitTextToBox } from "../engine/textLayout";
 
 interface Props {
   card: CardState;
@@ -30,6 +31,10 @@ export const ConceptCard: React.FC<Props> = ({
   const w = card.width * card.scale;
   const h = card.height * card.scale;
   const iconPath = card.iconSrc ? resolveAssetSrc(card.iconSrc) : "";
+  const labelFit = card.label
+    ? fitTextToBox(card.label, Math.min(52, w * 0.1), 24, w - 44,
+        h * (card.iconSrc ? 0.30 : 0.72), card.iconSrc ? 3 : 5)
+    : undefined;
 
   return (
     <div
@@ -92,17 +97,21 @@ export const ConceptCard: React.FC<Props> = ({
           {card.label && (
             <div
               style={{
-                fontSize: w * 0.1,
+                fontSize: labelFit?.fontSize ?? w * 0.1,
                 fontWeight: 800,
                 color: "white",
                 fontFamily: "'Segoe UI', Arial, sans-serif",
                 textShadow: "2px 2px 0 rgba(0,0,0,0.3)",
                 textAlign: "center",
                 padding: "0 10px",
-                letterSpacing: 1,
+                letterSpacing: 0.3,
+                lineHeight: 1.18,
+                overflow: "hidden",
               }}
             >
-              {card.label}
+              {labelFit?.lines.map((line, index) => (
+                <React.Fragment key={line + index}>{index > 0 && <br />}{line}</React.Fragment>
+              )) ?? card.label}
             </div>
           )}
         </div>

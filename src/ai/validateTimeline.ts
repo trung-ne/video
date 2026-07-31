@@ -267,6 +267,9 @@ export function validateSceneTimeline(input: any): ValidationResult {
       if (!validCameraActions.includes(scene.camera.action)) {
         warnings.push(`${sp} unknown camera action "${scene.camera.action}"`);
       }
+      if ((scene.camera.zoom ?? 1) > 1.08) {
+        errors.push(`${sp} camera zoom ${(scene.camera.zoom ?? 1)} exceeds production maximum 1.08`);
+      }
     }
 
     if (scene.transition) {
