@@ -44,6 +44,11 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
     "polygon(0% 3%, 3% 1%, 8% 4%, 14% 1%, 22% 3%, 30% 0%, 40% 3%, 50% 1%, 60% 3%, 70% 0%, 80% 3%, 88% 1%, 95% 4%, 99% 1%, 100% 5%, 99% 95%, 100% 99%, 92% 97%, 84% 100%, 75% 97%, 66% 100%, 56% 97%, 47% 100%, 38% 97%, 28% 100%, 19% 97%, 10% 100%, 4% 97%, 1% 99%, 0% 95%)";
 
   const isSurvey = card.variant === "survey";
+  const evidenceAge = Math.max(0, frame - card.enterFrame);
+  const evidencePhase = Math.floor(evidenceAge / (fps * 4)) % 3;
+  const paperBackground = isSurvey
+    ? ["#FFF1CF", "#F7E3AF", "#E8F3F1"][evidencePhase]
+    : ["#FFFFFF", "#FFF4C7", "#E8F3F1"][evidencePhase];
 
   return (
     <div
@@ -71,7 +76,7 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
       <div
         style={{
           width: "100%",
-          background: isSurvey ? "#FFF1CF" : "#FFFFFF",
+          background: paperBackground,
           clipPath: tornClip,
           padding: isSurvey ? "56px 64px" : "48px 56px",
           boxSizing: "border-box",
@@ -122,8 +127,8 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
             fontStyle: isSurvey ? "normal" : "italic",
             opacity: bodyProgress,
             transform: `translateY(${(1 - bodyProgress) * 18}px)`,
-            background: isSurvey ? "rgba(255, 214, 102, 0.34)" : undefined,
-            borderLeft: isSurvey ? `${Math.max(5, w * 0.008)}px solid #E03131` : undefined,
+            background: isSurvey ? "rgba(255, 214, 102, 0.34)" : evidencePhase > 0 ? "rgba(255,255,255,0.62)" : undefined,
+            borderLeft: isSurvey || evidencePhase > 0 ? `${Math.max(5, w * 0.008)}px solid ${isSurvey ? "#E03131" : "#286F7A"}` : undefined,
             borderRadius: isSurvey ? 10 : undefined,
             padding: isSurvey ? "18px 22px" : undefined,
           }}

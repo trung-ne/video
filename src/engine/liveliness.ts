@@ -49,6 +49,11 @@ const TALK_CYCLE = [
   "characters/cat_explain",
   "characters/cat_think",
 ];
+const INVESTOR_POSE_FAMILY = [
+  "characters/cat_investor_phone",
+  "characters/cat_investor_contract",
+  "characters/cat_investor_panic",
+];
 
 const EMPHASIZE_CYCLE: EmphasizeType[] = ["pulse", "bounce", "pulse", "shake"];
 
@@ -175,6 +180,7 @@ export function injectLiveliness(
     if (windowLen < minWindow) continue;
 
     const isNarratorCat = NARRATOR_POSE_FAMILY.includes(span.src);
+    const isInvestorCat = INVESTOR_POSE_FAMILY.includes(span.src);
     const isCharacter = span.src.startsWith("characters/");
     const existing = existingBeatFrames(timeline.events, span.assetId);
     const near = (f: number) => existing.some((x) => Math.abs(x - f) < interval * 0.5);
@@ -187,13 +193,14 @@ export function injectLiveliness(
       touched.add(span.assetId);
 
       // Alternate: even beats → emphasize; odd beats → pose swap (narrator only)
-      const doSwap = isNarratorCat;
+      const doSwap = isNarratorCat || isInvestorCat;
       const doPersistentMove =
-        isCharacter && !isNarratorCat;
+        isCharacter && !doSwap;
 
       if (doSwap) {
         // choose next talking pose different from current, that exists
-        const candidates = TALK_CYCLE.filter(
+        const poseCycle = isInvestorCat ? INVESTOR_POSE_FAMILY : TALK_CYCLE;
+        const candidates = poseCycle.filter(
           (p) => p !== currentPose && (!poses || poses.has(p))
         );
         const pick = candidates.length

@@ -35,9 +35,9 @@ export const SpeechBubble: React.FC<Props> = ({
   const assetSize = 200 * anchor.scale;
 
   // Position bubble relative to anchor character
-  const bubbleWidth = Math.min(canvasWidth * bubble.widthRatio, Math.max(260, bubble.text.length * (bubble.fontSize * 0.55) + 40));
+  const bubbleWidth = Math.min(canvasWidth * bubble.widthRatio, Math.max(420, bubble.text.length * (bubble.fontSize * 0.55) + 56));
   const textFit = fitTextToBox(bubble.text, bubble.fontSize, 28, bubbleWidth - 44, canvasHeight * 0.23, 3, 1.28);
-  const bubbleHeight = textFit.lines.length * textFit.fontSize * 1.28 + 40;
+  const bubbleHeight = Math.max(132, textFit.lines.length * textFit.fontSize * 1.28 + 52);
 
   let bubbleX = anchorX + assetSize * 0.3;
   let bubbleY = anchorY - assetSize * 0.6 - bubbleHeight;

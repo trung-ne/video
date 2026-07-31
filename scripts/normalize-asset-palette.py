@@ -36,6 +36,9 @@ def main():
             usage[physical] += 1
 
     selected = []
+    override_path = Path(args.overrides)
+    existing_payload = json.loads(override_path.read_text(encoding="utf-8")) if override_path.exists() else {}
+    existing_by_path = {item["path"]: item for item in existing_payload.get("assets", [])}
     public = Path(args.public)
     factor = 1.0 - args.reduction
     for relative, uses in usage.most_common():
@@ -47,6 +50,12 @@ def main():
         if not path.exists() or path.suffix.lower() != ".png" or not relative.startswith("generated-"):
             continue
         before = sha256(path)
+        previous = existing_by_path.get(relative)
+        # Palette normalization is a versioned migration, not a render filter.
+        # If the on-disk asset is already the reviewed v2 hash, never compound
+        # the chroma reduction on a later video build.
+        if previous and previous.get("sha256") == before:
+            continue
         with Image.open(path) as source:
             image = source.convert("RGBA")
             output = []
@@ -67,12 +76,12 @@ def main():
             "sha256": sha256(path),
         })
 
-    override_path = Path(args.overrides)
+    merged = {**existing_by_path, **{item["path"]: item for item in selected}}
     payload = {
         "schemaVersion": 1,
         "paletteProfile": "editorial-muted-v2",
         "sourceStoryboard": str(Path(args.storyboard).as_posix()),
-        "assets": selected,
+        "assets": sorted(merged.values(), key=lambda item: item["path"]),
     }
     override_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Normalized {len(selected)} high-use assets; wrote {override_path}")

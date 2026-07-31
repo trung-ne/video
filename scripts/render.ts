@@ -247,6 +247,7 @@ if (raw.audio && !isProxy && !args.includes("--skip-audio-prepare")) {
 
 // Scan which cat poses actually exist so pose-swaps never reference a missing asset.
 const charDir = path.join(process.cwd(), "public", "assets", "characters");
+const generatedCharDir = path.join(process.cwd(), "public", "generated-assets", "characters");
 const availablePoses = new Set<string>();
 if (fs.existsSync(charDir)) {
   for (const f of fs.readdirSync(charDir)) {
@@ -475,4 +476,9 @@ try {
     fs.unlinkSync(propsTmpFile);
   }
   renderLock.release();
+}
+if (fs.existsSync(generatedCharDir)) {
+  for (const f of fs.readdirSync(generatedCharDir)) {
+    if (f.endsWith(".png")) availablePoses.add(`characters/${f.replace(".png", "")}`);
+  }
 }

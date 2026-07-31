@@ -12,7 +12,7 @@
 // preserving exact meaning and figures.
 
 import type {
-  AuthoredScene, FocalType, SemanticVisual, VisualRegister, VisualTreatmentPlan,
+  AuthoredScene, FocalType, PhotoTreatment, SemanticVisual, VisualRegister, VisualTreatmentPlan,
 } from "../../src/types/storyboard";
 
 export const CAST = {
@@ -22,12 +22,12 @@ export const CAST = {
   hostShrug: { src: "characters/cat_shrug" },
   hostHappy: { src: "characters/cat_happy" },
   broker: { src: "characters/cat_business" },
-  investor: { src: "characters/cat", poseFamily: "narrator" as const },
-  plainInvestor: { src: "characters/cat" },
-  gaemi: { src: "characters/cat", poseFamily: "narrator" as const },
+  investor: { src: "characters/cat_investor_phone" },
+  plainInvestor: { src: "characters/cat_investor_contract" },
+  gaemi: { src: "characters/cat_investor_panic" },
   landlord: { src: "characters/cat_dad" },
-  tenant: { src: "characters/cat_worker" },
-  youngperson: { src: "characters/cat_worker" },
+  tenant: { src: "characters/cat_debt_burden" },
+  youngperson: { src: "characters/cat_homebuyer" },
   parent: { src: "characters/cat_mom" },
   regulator: { src: "characters/cat_police" },
   analyst: { src: "characters/cat_teacher" },
@@ -66,6 +66,20 @@ export const VISUAL_TREATMENT_PLAN: VisualTreatmentPlan = {
     "the same photo or stage used as consecutive wallpaper",
     "a character standing idle beside an unrelated icon",
   ],
+  usageBudgets: {
+    maximumAssetUses: 10,
+    maximumStageRatio: 0.05,
+    maximumPoseRatio: 0.08,
+    maximumConsecutiveSameStage: 2,
+    maximumPhotoTreatmentRatio: 0.35,
+    maximumStatRevealRatio: 0.08,
+  },
+  requiredVisualModes: [
+    "character_action", "full_tableau", "evidence", "photo_broll",
+    "infographic", "visual_gag", "screen", "document", "map",
+  ],
+  heroCadenceSeconds: 45,
+  paletteProfile: "editorial-muted-v2",
 };
 
 type DraftScene = Omit<AuthoredScene,
@@ -1126,8 +1140,165 @@ if (BASE_SCENES.length !== DIRECTIONS.length) {
   throw new Error(`Direction count ${DIRECTIONS.length} does not match scene count ${BASE_SCENES.length}`);
 }
 
-export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => ({
-  ...scene,
-  ...DIRECTIONS[index],
-  heroVisual: scene.heroVisual || HERO_SCENE_MARKERS.has(scene.marker),
-}));
+const PHOTO_DIRECTIONS: Record<string, { photo: string; treatment: PhotoTreatment }> = {
+  "Và đó chính xác là những gì đã xảy ra": { photo: "backgrounds/evidence-market-pexels-10653886.jpg", treatment: "screen" },
+  "Và cái điều đangng nói là phần lớn": { photo: "backgrounds/korea_apartments.jpg", treatment: "full_bleed" },
+  "Và điều này tạo ra một cảm giác khá là phổ biến": { photo: "backgrounds/urban_apartments.jpg", treatment: "cutaway" },
+  "và người trẻ Hàn Quốc có một cách dẫn đạt": { photo: "backgrounds/evidence-street-pexels-37319814.jpg", treatment: "full_bleed" },
+  "Nhưng mà ở Hàn Quốc ấy thì mọi thứ lại cực đoan hơn": { photo: "backgrounds/market_monitor.jpg", treatment: "screen" },
+  "Tức là họ chấp nhận nhiều rủi ro hơn, căng thẳng hơn": { photo: "backgrounds/evidence-document-pexels-33175657.jpg", treatment: "document" },
+  "Trong suy nghĩ của nhiều người trẻ thì đây gần như": { photo: "backgrounds/evidence-document-pexels-8296970.jpg", treatment: "document" },
+  "Và cuối cùng cũng là yếu tố quan trọng nhất": { photo: "backgrounds/mobile_trading_flatlay.jpg", treatment: "cutaway" },
+  "Và khi mà tất cả những cái thứ đấy nó kết hợp lại": { photo: "backgrounds/trading_workstation.jpg", treatment: "screen" },
+  "Trong đó thì ngày càng xuất hiện nhiều sản phẩm": { photo: "backgrounds/evidence-map-01.jpg", treatment: "map" },
+  "và đôi khi nó sẽ chảy tới những cái nơi mà khó kiểm soát hơn": { photo: "backgrounds/evidence-map-03.jpg", treatment: "map" },
+  "Nhưng mà tất cả những gì mà chúng ta vừa nói ở trên": { photo: "backgrounds/evidence-document-pexels-4386292.jpg", treatment: "document" },
+  "Tại vì là khi mà cả một hệ thống": { photo: "backgrounds/evidence-document-pexels-8296974.jpg", treatment: "document" },
+  "ấy những câu chuyện đổi đời xuất hiện khắp nơi": { photo: "backgrounds/evidence-housing-pexels-5505895.jpg", treatment: "full_bleed" },
+  "thì cái việc họ bắt đầu tìm kiếm những lựa chọn rủi ro hơn": { photo: "backgrounds/evidence-street-pexels-37319834.jpg", treatment: "full_bleed" },
+  "Về mặt cốt lõi thì đây vẫn là một trong những hệ quả": { photo: "backgrounds/evidence-market-pexels-16594724.jpg", treatment: "headline" },
+  "Và trong suốt quá trình đó rất nhiều người tin rằng": { photo: "backgrounds/evidence-market-pexels-28682356.jpg", treatment: "screen" },
+  "Về quan điểm đầu tư thì mỗi người lại nghĩ một kiểu": { photo: "backgrounds/stock_board.jpg", treatment: "headline" },
+  "Và khi mà một hệ thống đã chất đầy đoàn bảy": { photo: "backgrounds/evidence-market-pexels-10653886.jpg", treatment: "screen" },
+};
+
+const SCENE_OVERRIDES: Record<string, Partial<AuthoredScene>> = {
+  "Nhưng mà vấn đề không phải là bạn cứ vay tiền": {
+    grammar: "CAUSE_EFFECT",
+    slots: { cause: "Cổ phiếu giảm", effect: "Lỗ x2, nợ vẫn còn", causeIcon: "finance/trending_down", effectIcon: "finance/debt", relation: "khuếch đại" },
+  },
+  "và nếu bạn là người trẻ thì câu chuyện": {
+    grammar: "EVIDENCE",
+    slots: { title: "Việc làm thanh niên", body: "Khó tìm việc ổn định; thu nhập dài hạn yếu hơn", source: "Narration evidence" },
+  },
+  "Một cái đặc điểm khá là khác thường của chứng khoán": {
+    grammar: "EVIDENCE",
+    slots: { title: "Thị trường do cá nhân dẫn dắt", body: "Nhà đầu tư cá nhân chiếm tỷ trọng giao dịch rất lớn", source: "Narration evidence" },
+  },
+  "Và cái điều buồn cười là sau khi cộng tất cả": {
+    grammar: "EVIDENCE",
+    slots: { title: "Hiệu quả ròng", body: "Sau phí giao dịch và lãi vay, kết quả thường thấp hơn", source: "Narration evidence" },
+  },
+  "Đến cuối năm 2024 thì lượng cổ phiếu nước ngoài": {
+    grammar: "EVIDENCE",
+    slots: { title: "Dòng tiền ra nước ngoài", body: "Quy mô nắm giữ cổ phiếu nước ngoài tăng rất lớn cuối 2024", source: "Narration evidence" },
+  },
+};
+
+// Explicit editorial substitutions for the over-used office/street stages.
+// These are authored per narration beat; the numeric keys are stable scene
+// ordinals in this locked transcript, not a modulo/layout generator.
+const STAGE_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
+  4: { stage: "assets/scenes/classroom.svg", who: "hostShrug", anchorA: "board", prop: "props/brain", caption: "Tại sao lại là Hàn Quốc?" },
+  9: { stage: "assets/scenes/bank_interior.svg", asker: "hostPoint", answerer: "investor", askerText: "Bạn có 100 triệu?", answererText: "Vay thêm, tôi mua được 200.", anchorA: "counter_left", anchorB: "counter_right" },
+  14: { stage: "assets/scenes/bank_interior.svg", asker: "broker", answerer: "skeptic", askerText: "Nộp thêm tiền, ngay bây giờ.", answererText: "Không đủ? Cổ phiếu bị bán.", anchorA: "counter_left", anchorB: "counter_right" },
+  34: { stage: "assets/scenes/subway_platform.svg", asker: "studentGirl", answerer: "landlord", askerText: "Sao tài sản cứ chạy xa?", answererText: "Người sở hữu giàu lên trước.", anchorA: "stand_left", anchorB: "stand" },
+  43: { stage: "assets/scenes/shop_counter.svg", asker: "host", answerer: "investor", askerText: "Giá đang tăng, anh làm gì?", answererText: "Tôi đổ tiền vào ngay!", anchorA: "counter_left", anchorB: "counter_right" },
+  55: { stage: "assets/scenes/cafe.svg", asker: "broker", answerer: "investor", askerText: "Dùng margin thì giao dịch sao?", answererText: "Nhiều hơn, lớn hơn, rủi ro hơn.", anchorA: "counter_left", anchorB: "counter_right" },
+  62: { stage: "assets/scenes/bank_interior.svg", who: "regulator", anchorA: "counter_left", prop: "finance/stock", caption: "Chứng khoán = cơ hội đổi đời" },
+  69: { stage: "assets/scenes/library.svg", who: "analyst", anchorA: "table_left", prop: "props/calendar", caption: "Không tin dài hạn, chơi ngắn hạn" },
+  89: { stage: "assets/scenes/boardroom.svg", who: "host", anchorA: "center", prop: "props/thought_bubble", caption: "Dữ liệu méo mó, ai gánh rủi ro?" },
+  109: { stage: "assets/scenes/bar.svg", who: "host", anchorA: "counter_right", prop: "props/trophy", caption: "Nhầm lẫn giữa may mắn và năng lực" },
+};
+
+const SEMANTIC_SETTING_OVERRIDES: Record<number, string> = {
+  4: "classroom",
+  62: "bank interior",
+  69: "library",
+  89: "office boardroom",
+  109: "bar",
+};
+
+const ROLE_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
+  40: { answerer: "gaemi" },       // retail participation becomes a crowd behavior
+  44: { answerer: "gaemi" },       // panic selling acts against the falling arrow
+  49: { who: "gaemi" },            // FOMO is shown as a physical market reaction
+  86: { who: "plainInvestor" },    // the contract reader explains CFD ownership
+  110: { answerer: "plainInvestor" }, // skeptical receipt-checking undercuts luck
+};
+
+const EDITORIAL_OVERRIDES: Record<number, Partial<AuthoredScene>> = {
+  52: {
+    grammar: "PHOTO_EVIDENCE",
+    visualRegister: "photo_broll",
+    focalType: "screenshot",
+    characterRequired: false,
+    photoTreatment: "document",
+    slots: {
+      photo: "backgrounds/evidence-document-pexels-4386292.jpg",
+      caption: "Thiên kiến quen thuộc và hành vi bầy đàn là hiện tượng toàn cầu",
+      source: "Behavioral finance research",
+    },
+  },
+  57: {
+    grammar: "CAUSE_EFFECT",
+    visualRegister: "infographic",
+    focalType: "chart",
+    characterRequired: false,
+    slots: {
+      cause: "Thị trường tăng: lãi mạnh nhất",
+      effect: "Thị trường sập: đau nhất",
+      causeIcon: "finance/trending_up",
+      effectIcon: "finance/trending_down",
+      relation: "đòn bẩy khuếch đại cả hai chiều",
+    },
+  },
+  58: {
+    grammar: "CAUSE_EFFECT",
+    visualRegister: "infographic",
+    focalType: "chart",
+    characterRequired: false,
+    slots: {
+      cause: "Lợi nhuận trước chi phí",
+      effect: "Phí + lãi vay → hiệu quả ròng thấp",
+      causeIcon: "finance/investment",
+      effectIcon: "finance/debt",
+      relation: "chi phí bào mòn kết quả",
+    },
+  },
+  61: {
+    grammar: "POLICY_LIST",
+    visualRegister: "infographic",
+    focalType: "diagram",
+    characterRequired: false,
+    slots: {
+      items: "Áp lực tài sản|Việc làm bất ổn|Công nghệ giao dịch|Văn hóa đổi đời",
+      icons: "finance/house|characters/cat_worker|characters/cat_investor_phone|finance/investment",
+    },
+  },
+};
+
+export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => {
+  const photo = PHOTO_DIRECTIONS[scene.marker];
+  const markerOverride = SCENE_OVERRIDES[scene.marker] ?? {};
+  const editorialOverride = EDITORIAL_OVERRIDES[index] ?? {};
+  const override = { ...markerOverride, ...editorialOverride };
+  const direction = DIRECTIONS[index];
+  const semanticSetting = SEMANTIC_SETTING_OVERRIDES[index];
+  const authoredSlots = {
+    ...(scene.slots ?? {}),
+    ...(STAGE_OVERRIDES[index] ?? {}),
+    ...(ROLE_OVERRIDES[index] ?? {}),
+    ...(markerOverride.slots ?? {}),
+    ...(editorialOverride.slots ?? {}),
+  };
+  return {
+    ...scene,
+    ...direction,
+    ...(semanticSetting ? {
+      semanticVisual: { ...direction.semanticVisual, setting: semanticSetting },
+    } : {}),
+    ...override,
+    slots: authoredSlots,
+    ...(photo ? {
+      photoTreatment: photo.treatment,
+      slots: { ...authoredSlots, photo: photo.photo },
+    } : {}),
+    heroVisual: scene.heroVisual || HERO_SCENE_MARKERS.has(scene.marker),
+  };
+});
+
+const missingPhotoDirection = SCENES.filter((scene) => scene.grammar === "PHOTO_EVIDENCE" && !scene.photoTreatment);
+if (missingPhotoDirection.length) {
+  throw new Error(`Missing authored photo treatment for ${missingPhotoDirection.map((scene) => scene.marker).join(", ")}`);
+}

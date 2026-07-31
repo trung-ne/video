@@ -260,6 +260,13 @@ function compileEntity(
   // A stage anchor carries its own tuned scale (cat must FIT the furniture).
   let scale =
     stageAnchor?.scale ?? entity.scale ?? defaultScaleForLayout(scene.layout, entityIndex);
+  if (stageAnchor && entity.src.startsWith("characters/")) {
+    // The stage registry was tuned for the retired SVG cats, whose opaque
+    // footprint filled more of each nominal square. Production PNG actors
+    // otherwise read as tiny stickers inside a detailed set. Keep furniture
+    // anchors, but restore the reference-like 25–40% character footprint.
+    scale = Math.min(2.4, scale * 1.35);
+  }
 
   // Anti-tiny-cat clamp: AI-generated timelines sometimes hand-write small
   // scales (0.5–1.2) on characters, overriding auto-scale and leaving a

@@ -208,12 +208,12 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   if (b.slots?.askerText)
     bubbles.push({
       id: `${b.id}-qa`, anchorAssetId: `${b.id}-a`, text: b.slots.askerText,
-      direction: "right", delay: 12, duration: 48, fontSize: 44, widthRatio: 0.38,
+      direction: "right", delay: 12, duration: 48, fontSize: 46, widthRatio: 0.50,
     });
   if (b.slots?.answererText)
     bubbles.push({
       id: `${b.id}-qb`, anchorAssetId: `${b.id}-b`, text: b.slots.answererText,
-      direction: "left", delay: 72, fontSize: 44, widthRatio: 0.38,
+      direction: "left", delay: 72, fontSize: 46, widthRatio: 0.50,
     });
   return {
     layout: "DIALOGUE",
@@ -377,8 +377,8 @@ function grammarCharProp(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "CHAR_PROP",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "LEFT", enterAnimation: "slideLeft", enterDelay: 8 },
-      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 1.7, label, enterAnimation: "popIn", enterDelay: 24,
+      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "LEFT", scale: 2.8, enterAnimation: "slideLeft", enterDelay: 8 },
+      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 2.2, label, enterAnimation: "popIn", enterDelay: 24,
         emphasize: { animation: "pulse", delay: 30, duration: 20 } },
     ],
     texts: [],

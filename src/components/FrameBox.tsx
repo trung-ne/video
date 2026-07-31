@@ -36,6 +36,10 @@ export const FrameBox: React.FC<Props> = ({
   // large ON the screen. Otherwise it's an image path to display.
   const isColor = frameBox.contentSrc.startsWith("#") || frameBox.contentSrc.startsWith("rgb");
   const src = isColor ? frameBox.contentSrc : staticFile(resolveAssetSrc(frameBox.contentSrc));
+  const contentAge = Math.max(0, frame - frameBox.enterFrame);
+  const panPhase = Math.min(1, contentAge / (fps * 10));
+  const photoScale = 1 + panPhase * 0.24;
+  const photoX = 38 + panPhase * 24;
 
   return (
     <div
@@ -96,7 +100,10 @@ export const FrameBox: React.FC<Props> = ({
               </div>
             )
           ) : (
-            <img src={src} style={{ width: "100%", height: "100%", objectFit: frameBox.objectFit, background: "#FFFFFF" }} />
+            <img src={src} style={{
+              width: "100%", height: "100%", objectFit: frameBox.objectFit, background: "#FFFFFF",
+              transform: `scale(${photoScale})`, transformOrigin: `${photoX}% 50%`,
+            }} />
           )}
         </div>
       </div>
