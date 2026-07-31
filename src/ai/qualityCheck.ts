@@ -579,7 +579,9 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         message: `${brief.id}: missing focal type, silent-frame takeaway, fingerprint, novelty, or focal occupancy target.`,
       });
     }
-    if (!Array.isArray(brief.assetRequests) || brief.assetRequests.length === 0) {
+    const focalSource = definition?.focalSource;
+    if (focalSource === "asset" &&
+        (!Array.isArray(brief.assetRequests) || brief.assetRequests.length === 0)) {
       semanticIssues.push({
         severity: "MAJOR", rule: "ASSET_REQUEST", scene: brief.id,
         message: `${brief.id}: no semantic asset request; compiler would have to guess`,

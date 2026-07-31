@@ -32,6 +32,7 @@ import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import { VISUAL_GRAMMARS } from "../src/engine/visualGrammars";
 import { compileScenes } from "../src/engine/sceneCompiler";
 import { injectLiveliness } from "../src/engine/liveliness";
+import { resolveAuthoredAssets } from "../src/engine/authoredAssets";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -240,6 +241,46 @@ test("a keywordless SOLO is refused on every route, not just schema v2", () => {
     .filter((i: any) => /slot/i.test(i.message));
   assert.strictEqual(slotIssues(withKeyword).length, 0);
   assert.ok(slotIssues(without).some((i: any) => /keyword/.test(i.message)));
+});
+
+test("authored asset bookkeeping resolves cast roles and excludes stage anchors", () => {
+  const resolved = resolveAuthoredAssets({
+    who: "host",
+    seatB: "characters/cat_worker",
+    stage: "assets/scenes/cafe.svg",
+    anchorA: "seat_left",
+    anchorB: "seat_right",
+    prop: "finance/money",
+  }, {
+    host: { src: "characters/cat_explain" },
+  });
+  assert.deepStrictEqual(resolved, {
+    who: "characters/cat_explain",
+    seatB: "characters/cat_worker",
+    prop: "finance/money",
+    stage: "assets/scenes/cafe.svg",
+  });
+  assert.ok(!Object.values(resolved).includes("seat_left"));
+  assert.ok(!Object.values(resolved).includes("host"));
+});
+
+test("component-backed evidence does not need a decorative asset request", () => {
+  const report = runStoryboardCheck({
+    schemaVersion: 2,
+    scenes: [{
+      id: "evidence", narration: "A documented claim.", purpose: "show the claim",
+      emotion: "neutral", viewerFocus: "the evidence card", visualGrammar: "EVIDENCE",
+      slots: { body: "A documented claim." },
+      sourceRange: { startWord: 0, endWord: 2, quoteChecksum: "x" },
+      visualRegister: "evidence", focalType: "evidence",
+      semanticVisual: { subject: "claim", action: "appears on a paper card", takeaway: "the claim is documented" },
+      silentFrameTakeaway: "the claim is documented", focalOccupancyTarget: 0.4,
+      noveltyFromPrevious: ["opening"], visualFingerprint: "EVIDENCE|evidence|card",
+      assetRequests: [], resolvedAssets: {},
+    }],
+  });
+  const issues = report.checks.flatMap((check) => check.issues ?? []);
+  assert.ok(!issues.some((issue) => issue.rule === "ASSET_REQUEST"));
 });
 
 test("narrator pose swaps persist until the next narration beat", () => {
@@ -697,6 +738,17 @@ function timingFixture(ids: string[]): Storyboard {
     })),
   } as Storyboard;
 }
+
+test("strict asset resolution keeps sentence-aligned pose swaps enabled", () => {
+  const storyboard = timingFixture(["scene-001"]);
+  storyboard.scenes[0].narration = "The cat explains the risk. Then the cat reacts to the result.";
+  const timeline = compileStoryboard(storyboard, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+  });
+  const cats = timeline.scenes[0].entities.filter((entity) => entity.assetId === "scene-001-cat");
+  assert.ok(cats.length >= 2, "expected the focal cat plus a sentence-aligned pose swap");
+  assert.ok(new Set(cats.map((entity) => entity.src)).size >= 2);
+});
 
 test("compiler refuses estimated timing by default (the v5-codex signature)", () => {
   // Storyboard keyed scene-NNN, durations keyed v4-NNN: the exact incident.

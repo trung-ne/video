@@ -177,6 +177,29 @@ export interface Storyboard {
   scenes: SceneBrief[];
 }
 
+/**
+ * Route A's hand-authored source shape. Creative/semantic fields are required
+ * here so every project uses the same contract instead of copying a local
+ * interface that can drift from build-storyboard.ts.
+ */
+export interface AuthoredScene {
+  marker: string;
+  narrationOverride?: string;
+  grammar: VisualGrammar;
+  emotion: Emotion;
+  purpose: string;
+  viewerFocus: string;
+  slots?: Record<string, string>;
+  heroVisual?: boolean;
+  shot?: Shot;
+  visualRegister: VisualRegister;
+  focalType: FocalType;
+  semanticVisual: SemanticVisual;
+  silentFrameTakeaway: string;
+  focalOccupancyTarget: number;
+  characterRequired?: boolean;
+}
+
 export interface StorySection {
   id: string;
   sourceRange: SourceRange;

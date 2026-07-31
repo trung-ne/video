@@ -265,7 +265,7 @@ function compileBrief(
   // grins. Each swap re-enters the same assetId (sceneCompiler treats a repeat
   // assetId as an in-place pose change).
   const charEntities = entities.filter((e) => e.src.startsWith("characters/"));
-  if (!ctx.strict && focal && charEntities.length === 1 && focal === charEntities[0]) {
+  if (focal && charEntities.length === 1 && focal === charEntities[0]) {
     const cycle = POSE_CYCLE[brief.emotion ?? "neutral"] ?? [];
     if (cycle.length >= 2) {
       const sentences = brief.narration.split(/(?<=[.?!])\s+/).map((s) => s.trim()).filter((s) => s.length > 8);
@@ -301,7 +301,16 @@ function compileBrief(
     semanticTakeaway: brief.semanticVisual?.takeaway,
     semanticAction: brief.semanticVisual?.action,
     semanticSetting: brief.semanticVisual?.setting,
-    semanticAssetIds: Object.values(brief.resolvedAssets ?? {}),
+    // Record what the compiler actually put on screen. Authored role tokens and
+    // stage anchors are not assets; conversely, component grammars may render a
+    // deliberate built-in character without an authored asset request.
+    semanticAssetIds: [
+      ...entities.map((entity) => entity.src),
+      ...(result.cards ?? []).map((card) => card.iconSrc).filter((src): src is string => !!src),
+      ...(result.frameBoxes ?? []).map((box) => box.contentSrc).filter(Boolean),
+      ...(!/^#|^rgba?\(|gradient\(/i.test(result.backgroundSrc ?? "") && result.backgroundSrc
+        ? [result.backgroundSrc] : []),
+    ],
     claimIds: brief.claimIds,
     heroVisual: brief.heroVisual,
     focalType: brief.focalType,

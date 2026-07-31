@@ -20,6 +20,9 @@ import { indexTranscript, makeSourceRange, sourceExcerpt, checksumText } from ".
 import {
   getGrammarDefinition, isKnownGrammar, knownGrammarIds, missingRequiredSlots,
 } from "../src/engine/grammarRegistry";
+import {
+  resolveAuthoredAssets, roleForAuthoredAssetSlot,
+} from "../src/engine/authoredAssets";
 import referenceQuality from "../config/reference-quality.json";
 
 const args = process.argv.slice(2);
@@ -109,44 +112,6 @@ for (let i = 0; i < ranges.length; i++) {
   }
 }
 
-// Slot keys that carry an actual asset/background reference (as opposed to
-// plain label/caption/question strings) — used to surface each scene's real
-// visual anchor(s) into resolvedAssets, so the story-arc check can see what
-// every scene already has instead of re-deriving it from nothing.
-// Kept in sync with the asset-bearing slots in GRAMMAR_REGISTRY. Slots missing
-// from this list used to vanish before resolvedAssets, so a scene whose only
-// visual was e.g. STAT_REVEAL's `anchor` looked asset-less and picked up the
-// generic-cat fallback below.
-const ASSET_SLOT_KEYS = [
-  "who", "seatB", "asker", "answerer", "prop", "leftAsset", "rightAsset",
-  "causeIcon", "effectIcon", "anchor", "anchorA", "anchorB", "answerAsset",
-  "stage", "content", "image", "chart", "map", "photo",
-];
-
-function resolvedAssetsFor(slots: Record<string, string>): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const key of ASSET_SLOT_KEYS) {
-    const value = slots[key];
-    if (value) out[key] = value;
-  }
-  const icons = slots.icons;
-  if (icons) {
-    icons.split("|").map((v) => v.trim()).filter(Boolean).forEach((v, i) => { out[`icon${i}`] = v; });
-  }
-  return out;
-}
-
-// Role for an asset request, inferred from which slot the ref sits in. This is
-// bookkeeping about an already-chosen asset, not a creative decision.
-function roleForSlot(key: string): "character" | "prop" | "stage" | "photo" | "chart" | "ui" {
-  if (key === "stage") return "stage";
-  if (key === "who" || key === "seatB" || key === "asker" || key === "answerer") return "character";
-  if (key === "photo") return "photo";
-  if (key === "chart" || key === "map") return "chart";
-  if (key === "content" || key === "image") return "ui";
-  return "prop";
-}
-
 // A stable dedup key for "have we already shown this exact frame recipe?".
 // Derived from decisions the author already made — deriving it does not invent
 // intent, unlike the old hardcoded `semanticVisual: { subject: "cat", ... }`.
@@ -197,8 +162,8 @@ const scenes = SCENES.map((s, i) => {
     fail(`focalOccupancyTarget must be a number >= ${minFocal} (how much frame the focal fills)`);
   }
 
-  const resolvedAssets = resolvedAssetsFor(slots);
-  if (Object.keys(resolvedAssets).length === 0) {
+  const resolvedAssets = resolveAuthoredAssets(slots, CAST);
+  if (definition?.focalSource === "asset" && Object.keys(resolvedAssets).length === 0) {
     fail(`no slot resolves to a visual asset — the scene would render as text on an empty field`);
   }
   const fingerprint = fingerprintOf(String(s.grammar), String(s.visualRegister ?? ""), resolvedAssets);
@@ -222,7 +187,7 @@ const scenes = SCENES.map((s, i) => {
     characterRequired: s.characterRequired,
     visualFingerprint: fingerprint,
     assetRequests: Object.entries(resolvedAssets).map(([slot, query]) => ({
-      role: roleForSlot(slot), slot, query, requiredTags: [], preferredAssetId: query,
+      role: roleForAuthoredAssetSlot(slot), slot, query, requiredTags: [], preferredAssetId: query,
       allowGenerate: false,
     })),
     resolvedAssets,
