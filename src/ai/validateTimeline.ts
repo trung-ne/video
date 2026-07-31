@@ -115,21 +115,22 @@ export function validateSceneTimeline(input: any): ValidationResult {
     if (!validLayouts.includes(scene.layout)) {
       errors.push(`${sp} invalid layout "${scene.layout}". Valid: ${validLayouts.join(", ")}`);
     }
-    if (input.schemaVersion === 2) {
-      if (!scene.sourceRange || !Number.isInteger(scene.sourceRange.startWord) || !Number.isInteger(scene.sourceRange.endWord)) {
-        errors.push(`${sp} schema v2 scene requires sourceRange`);
-      }
-      if (!scene.visualRegister) errors.push(`${sp} schema v2 scene requires visualRegister`);
-      if (!scene.semanticTakeaway) errors.push(`${sp} schema v2 scene requires semanticTakeaway`);
-      if (!scene.semanticAction) errors.push(`${sp} schema v2 scene requires semanticAction`);
-      if (!Array.isArray(scene.semanticAssetIds)) errors.push(`${sp} schema v2 scene requires semanticAssetIds`);
-      if (!scene.focalType) errors.push(`${sp} schema v2 scene requires focalType`);
-      if (!scene.visualFingerprint) errors.push(`${sp} schema v2 scene requires visualFingerprint`);
-      if (!scene.silentFrameTakeaway) errors.push(`${sp} schema v2 scene requires silentFrameTakeaway`);
-      if (typeof scene.focalOccupancyTarget !== "number") errors.push(`${sp} schema v2 scene requires focalOccupancyTarget`);
-      if (!Array.isArray(scene.noveltyFromPrevious)) errors.push(`${sp} schema v2 scene requires noveltyFromPrevious`);
-      if ((scene.unresolvedAssets?.length ?? 0) > 0) errors.push(`${sp} has unresolvedAssets`);
+    // Semantic contract. Both production routes now emit schemaVersion 2; a
+    // timeline that omits these is not a "legacy" timeline to be waved through,
+    // it is a timeline the semantic gates cannot measure at all.
+    if (!scene.sourceRange || !Number.isInteger(scene.sourceRange.startWord) || !Number.isInteger(scene.sourceRange.endWord)) {
+      errors.push(`${sp} requires sourceRange`);
     }
+    if (!scene.visualRegister) errors.push(`${sp} requires visualRegister`);
+    if (!scene.semanticTakeaway) errors.push(`${sp} requires semanticTakeaway`);
+    if (!scene.semanticAction) errors.push(`${sp} requires semanticAction`);
+    if (!Array.isArray(scene.semanticAssetIds)) errors.push(`${sp} requires semanticAssetIds`);
+    if (!scene.focalType) errors.push(`${sp} requires focalType`);
+    if (!scene.visualFingerprint) errors.push(`${sp} requires visualFingerprint`);
+    if (!scene.silentFrameTakeaway) errors.push(`${sp} requires silentFrameTakeaway`);
+    if (typeof scene.focalOccupancyTarget !== "number") errors.push(`${sp} requires focalOccupancyTarget`);
+    if (!Array.isArray(scene.noveltyFromPrevious)) errors.push(`${sp} requires noveltyFromPrevious`);
+    if ((scene.unresolvedAssets?.length ?? 0) > 0) errors.push(`${sp} has unresolvedAssets`);
 
     // Background sanity: track real images vs gradients, catch broken image paths
     if (scene.backgroundSrc) {

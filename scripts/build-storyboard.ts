@@ -17,6 +17,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { indexTranscript, makeSourceRange, sourceExcerpt, checksumText } from "../src/ai/transcriptCoverage";
+import {
+  getGrammarDefinition, isKnownGrammar, knownGrammarIds, missingRequiredSlots,
+} from "../src/engine/grammarRegistry";
+import referenceQuality from "../config/reference-quality.json";
 
 const args = process.argv.slice(2);
 function getArg(flag: string, defaultVal?: string): string | undefined {
@@ -109,8 +113,13 @@ for (let i = 0; i < ranges.length; i++) {
 // plain label/caption/question strings) — used to surface each scene's real
 // visual anchor(s) into resolvedAssets, so the story-arc check can see what
 // every scene already has instead of re-deriving it from nothing.
+// Kept in sync with the asset-bearing slots in GRAMMAR_REGISTRY. Slots missing
+// from this list used to vanish before resolvedAssets, so a scene whose only
+// visual was e.g. STAT_REVEAL's `anchor` looked asset-less and picked up the
+// generic-cat fallback below.
 const ASSET_SLOT_KEYS = [
-  "who", "seatB", "prop", "leftAsset", "rightAsset", "causeIcon", "effectIcon",
+  "who", "seatB", "asker", "answerer", "prop", "leftAsset", "rightAsset",
+  "causeIcon", "effectIcon", "anchor", "anchorA", "anchorB", "answerAsset",
   "stage", "content", "image", "chart", "map", "photo",
 ];
 
@@ -124,18 +133,78 @@ function resolvedAssetsFor(slots: Record<string, string>): Record<string, string
   if (icons) {
     icons.split("|").map((v) => v.trim()).filter(Boolean).forEach((v, i) => { out[`icon${i}`] = v; });
   }
-  // Every grammar we use renders a focal character even without an explicit
-  // `who` override (emotion-pose fallback in visualGrammars.ts) — record it.
-  if (Object.keys(out).length === 0) out.character = "characters/cat";
   return out;
 }
 
+// Role for an asset request, inferred from which slot the ref sits in. This is
+// bookkeeping about an already-chosen asset, not a creative decision.
+function roleForSlot(key: string): "character" | "prop" | "stage" | "photo" | "chart" | "ui" {
+  if (key === "stage") return "stage";
+  if (key === "who" || key === "seatB" || key === "asker" || key === "answerer") return "character";
+  if (key === "photo") return "photo";
+  if (key === "chart" || key === "map") return "chart";
+  if (key === "content" || key === "image") return "ui";
+  return "prop";
+}
+
+// A stable dedup key for "have we already shown this exact frame recipe?".
+// Derived from decisions the author already made — deriving it does not invent
+// intent, unlike the old hardcoded `semanticVisual: { subject: "cat", ... }`.
+function fingerprintOf(grammar: string, register: string, assets: Record<string, string>): string {
+  const refs = Object.entries(assets)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`);
+  return [grammar, register, ...refs].join("|");
+}
+
+const authorErrors: string[] = [];
+
 const scenes = SCENES.map((s, i) => {
+  const id = `${idPrefix}${String(i + 1).padStart(3, "0")}`;
   const range = makeSourceRange(words, ranges[i].startWord, ranges[i].endWord);
   const narration = s.narrationOverride ?? sourceExcerpt(transcript, words, range);
   const slots = s.slots ?? {};
+  const fail = (msg: string) => authorErrors.push(`${id}: ${msg}`);
+
+  // ── Route A authoring contract. These are creative decisions; the builder
+  // refuses to invent them. Previously they were silently absent, which made
+  // every semantic gate downstream vacuous.
+  if (!isKnownGrammar(s.grammar)) {
+    fail(`unknown visualGrammar "${s.grammar}". Valid: ${knownGrammarIds().join(", ")}`);
+  }
+  const definition = getGrammarDefinition(s.grammar);
+  if (definition) {
+    for (const slot of missingRequiredSlots(definition, slots)) {
+      fail(`grammar ${s.grammar} requires slot "${slot}"`);
+    }
+    if (!s.visualRegister) {
+      fail(`missing visualRegister (supported: ${definition.supportedRegisters.join(", ")})`);
+    } else if (!definition.supportedRegisters.includes(s.visualRegister)) {
+      fail(`${s.grammar} does not support register "${s.visualRegister}" ` +
+           `(supported: ${definition.supportedRegisters.join(", ")})`);
+    }
+  }
+  const sv = s.semanticVisual;
+  if (!sv?.subject?.trim() || !sv?.action?.trim() || !sv?.takeaway?.trim()) {
+    fail("semanticVisual needs subject, action and takeaway — what visibly happens on screen");
+  }
+  if (!s.focalType) fail("missing focalType");
+  if (!s.silentFrameTakeaway?.trim()) {
+    fail("missing silentFrameTakeaway — what a muted viewer understands from this frame");
+  }
+  const minFocal = referenceQuality.composition.minimumFocalOccupancy;
+  if (typeof s.focalOccupancyTarget !== "number" || s.focalOccupancyTarget < minFocal) {
+    fail(`focalOccupancyTarget must be a number >= ${minFocal} (how much frame the focal fills)`);
+  }
+
+  const resolvedAssets = resolvedAssetsFor(slots);
+  if (Object.keys(resolvedAssets).length === 0) {
+    fail(`no slot resolves to a visual asset — the scene would render as text on an empty field`);
+  }
+  const fingerprint = fingerprintOf(String(s.grammar), String(s.visualRegister ?? ""), resolvedAssets);
+
   return {
-    id: `${idPrefix}${String(i + 1).padStart(3, "0")}`,
+    id,
     narration,
     purpose: s.purpose,
     emotion: s.emotion,
@@ -145,20 +214,57 @@ const scenes = SCENES.map((s, i) => {
     heroVisual: s.heroVisual ?? false,
     shot: s.shot,
     slots,
-    semanticVisual: { subject: "cat", action: s.viewerFocus, takeaway: s.purpose },
-    resolvedAssets: resolvedAssetsFor(slots),
+    visualRegister: s.visualRegister,
+    semanticVisual: sv,
+    focalType: s.focalType,
+    silentFrameTakeaway: s.silentFrameTakeaway,
+    focalOccupancyTarget: s.focalOccupancyTarget,
+    characterRequired: s.characterRequired,
+    visualFingerprint: fingerprint,
+    assetRequests: Object.entries(resolvedAssets).map(([slot, query]) => ({
+      role: roleForSlot(slot), slot, query, requiredTags: [], preferredAssetId: query,
+      allowGenerate: false,
+    })),
+    resolvedAssets,
   };
 });
 
+// noveltyFromPrevious: what actually changed against the previous scene's
+// recipe. Computed, not asserted — an empty list is a truthful signal that the
+// scene repeats its predecessor, and the register/repeat gates read it.
+const withNovelty = scenes.map((scene, i) => {
+  if (i === 0) return { ...scene, noveltyFromPrevious: ["opening scene"] };
+  const previous = scenes[i - 1];
+  const novelty: string[] = [];
+  if (scene.visualGrammar !== previous.visualGrammar) novelty.push(`grammar:${scene.visualGrammar}`);
+  if (scene.visualRegister !== previous.visualRegister) novelty.push(`register:${scene.visualRegister}`);
+  const previousRefs = new Set(Object.values(previous.resolvedAssets));
+  for (const ref of new Set(Object.values(scene.resolvedAssets))) {
+    if (!previousRefs.has(ref)) novelty.push(`asset:${ref}`);
+  }
+  return { ...scene, noveltyFromPrevious: novelty };
+});
+
+if (authorErrors.length) {
+  console.error(`❌ ${authorErrors.length} authoring error(s) in ${dataPath}:\n`);
+  for (const line of authorErrors) console.error(`   ${line}`);
+  console.error(
+    `\nRoute A now emits schemaVersion 2, so every scene must carry the semantic\n` +
+    `contract the production gates read (visualRegister, semanticVisual, focalType,\n` +
+    `silentFrameTakeaway, focalOccupancyTarget) plus its grammar's required slots.`
+  );
+  process.exit(1);
+}
+
 const storyboard = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   transcriptChecksum: checksumText(transcript),
   promptVersion: "session-authored",
   fps: 30,
   width: 1920,
   height: 1080,
   cast: CAST,
-  scenes,
+  scenes: withNovelty,
 };
 
 fs.mkdirSync(path.dirname(outPath), { recursive: true });

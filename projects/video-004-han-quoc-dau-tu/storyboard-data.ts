@@ -21,7 +21,32 @@ export interface AuthoredScene {
   slots?: Record<string, string>;
   heroVisual?: boolean;
   shot?: "wide" | "medium" | "close";
+
+  // ── Required semantic contract (schemaVersion 2) ──
+  // build-storyboard.ts refuses to synthesize these: they are what the
+  // production gates measure, and inventing them is what let a 100/100 score
+  // coexist with a video that reads as a slide deck.
+  visualRegister: VisualRegister;
+  focalType: FocalType;
+  // What visibly happens — subject/action/takeaway, not a layout name.
+  semanticVisual: {
+    subject: string; action: string; takeaway: string;
+    object?: string; relation?: string; setting?: string;
+  };
+  // What a viewer with the sound off takes away from this frame.
+  silentFrameTakeaway: string;
+  // Fraction of frame the focal element fills (>= 0.18).
+  focalOccupancyTarget: number;
+  characterRequired?: boolean;
 }
+
+export type VisualRegister =
+  | "character_action" | "infographic" | "evidence"
+  | "photo_broll" | "framebox" | "visual_gag" | "full_tableau";
+
+export type FocalType =
+  | "character_action" | "full_scene" | "chart" | "map" | "diagram"
+  | "evidence" | "photo" | "screenshot" | "visual_gag";
 
 export const CAST = {
   host: { src: "characters/cat_explain" },

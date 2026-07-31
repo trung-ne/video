@@ -447,11 +447,18 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     );
   }
 
-  const ctx: GrammarContext = { cast: sb.cast, index: 0, strict: sb.schemaVersion === 2 };
+  // Strict on every route. Non-strict compiling substituted a generic cat or
+  // icon for a missing semantic asset, so an under-authored storyboard still
+  // produced a plausible-looking timeline instead of an error.
+  const ctx: GrammarContext = { cast: sb.cast, index: 0, strict: true };
   const scenes: Scene[] = sb.scenes.map((brief, i) =>
     compileBrief(brief, timings[i], { ...ctx, index: i }, fps, opts.words)
   );
 
+  // Legacy (schemaVersion 1) artifacts only. enrichBackgrounds is what replaced
+  // every plain-white background with a SOFT_BGS pastel — the mechanism behind
+  // whiteDominantRatio 0.095 vs the reference's 0.429. Both production routes
+  // now emit schemaVersion 2, so neither rewrite runs on authored work.
   if (sb.schemaVersion !== 2) {
     enforceDistinctStages(scenes);
     enrichBackgrounds(scenes);

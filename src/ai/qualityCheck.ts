@@ -3,7 +3,9 @@ import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { resolveAssetSrcStrict } from "../engine/assetPaths";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
-import { getGrammarDefinition } from "../engine/grammarRegistry";
+import {
+  getGrammarDefinition, isKnownGrammar, knownGrammarIds, missingRequiredSlots,
+} from "../engine/grammarRegistry";
 import { stageMatchesSetting } from "../engine/stageRegistry";
 import referenceQuality from "../../config/reference-quality.json";
 
@@ -538,41 +540,18 @@ function checkV5Registers(scenes: any[]): CheckResult {
 // Intent lives in the storyboard; once compiled to scenes[] the grammar/beat
 // info is baked away. So these two gates operate on the Storyboard object.
 
-// Required slot keys per visual grammar (at least one of each group).
-const GRAMMAR_REQUIRED_SLOTS: Record<string, string[][]> = {
-  COMPARE: [["left"], ["right"]],
-  STAT_REVEAL: [["stat", "number"]],
-  POLICY_LIST: [["items"]],
-  DIALOGUE_QA: [["askerText", "answererText"]],
-  TABLEAU: [["stage"]],
-  EVIDENCE: [], // body falls back to narration
-  FRAMEBOX: [["content", "image"]],
-  CHAR_PROP: [["prop"]],
-  DIAGRAM: [["items"]],
-  CAUSE_EFFECT: [["cause"], ["effect"]],
-  QA_REVEAL: [["question", "q"]],
-  ICON_TRIPLE: [["items"]],
-  BEAT: [],     // image falls back
-  // Without a keyword, SOLO compiles to a bare character on a flat field — the
-  // state that measured 100% flat frames. The keyword is the scene's teaching
-  // point and the only thing the grammar can build a focal card from, so it is
-  // required on every route, not just schema v2.
-  SOLO: [["keyword"]],
-  MAP_FLOW: [["map"], ["items"], ["icons"]],
-  DATA_CHART: [["chart"]],
-  SURVEY_CARD: [["body"]],
-  PHOTO_EVIDENCE: [["photo"]],
-  SCREEN_CAPTURE: [["content"]],
-  FULL_SCENE_ACTION: [["stage"], ["who"], ["anchorA"], ["prop"]],
-  HISTORY_TIMELINE: [["items"], ["icons"]],
-  VISUAL_METAPHOR: [["setup"], ["payoff"], ["leftAsset"], ["rightAsset"]],
-  FREEFORM: [],
-};
+// Required slots live in exactly one place: GRAMMAR_REGISTRY. A second, looser
+// copy used to live here, so a scene could satisfy this table and still be
+// missing what the compiler needed (and vice versa). Alias groups such as
+// "stat|number" are expressed in the registry entry itself.
 const GRAMMARS_WITHOUT_FOCAL = new Set(["BEAT"]); // no entity → beats can't anchor
 
+// Runs on every authored storyboard. It used to bail unless schemaVersion === 2,
+// which meant Route A — the only production route — was scored with all of its
+// semantic gates skipped, and still reported "passed".
 function checkSemanticStoryboard(storyboard: any): CheckResult[] {
-  if (storyboard?.schemaVersion !== 2) return [];
   const briefs: any[] = Array.isArray(storyboard?.scenes) ? storyboard.scenes : [];
+  if (briefs.length === 0) return [];
   const semanticIssues: QualityIssue[] = [];
   const registerIssues: QualityIssue[] = [];
 
@@ -614,13 +593,11 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
       });
     }
     if (definition) {
-      for (const slot of definition.requiredSlots) {
-        if (!String(brief.slots?.[slot] ?? "").trim()) {
-          semanticIssues.push({
-            severity: "MAJOR", rule: "SEMANTIC_SLOT", scene: brief.id,
-            message: `${brief.id} (${brief.visualGrammar}) is missing required semantic slot "${slot}"`,
-          });
-        }
+      for (const slot of missingRequiredSlots(definition, brief.slots)) {
+        semanticIssues.push({
+          severity: "MAJOR", rule: "SEMANTIC_SLOT", scene: brief.id,
+          message: `${brief.id} (${brief.visualGrammar}) is missing required semantic slot "${slot}"`,
+        });
       }
       if (!brief.visualRegister) {
         registerIssues.push({
@@ -755,21 +732,22 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
   for (const b of briefs) {
     const g = b.visualGrammar;
     // INTENT_REALIZED — grammar known + required slots filled.
-    if (!g || !(g in GRAMMAR_REQUIRED_SLOTS)) {
+    if (!isKnownGrammar(g)) {
       intentIssues.push({
         severity: "BLOCKER", rule: "INTENT_REALIZED", scene: b.id,
         message: `${b.id}: visualGrammar "${g}" không hợp lệ`,
-        suggestion: `Dùng 1 trong: ${Object.keys(GRAMMAR_REQUIRED_SLOTS).join(", ")}`,
+        suggestion: `Dùng 1 trong: ${knownGrammarIds().join(", ")}`,
       });
       continue;
     }
     const slots = b.slots ?? {};
-    for (const group of GRAMMAR_REQUIRED_SLOTS[g]) {
-      if (!group.some((k) => (slots[k] ?? "").toString().trim().length > 0)) {
+    const grammarDefinition = getGrammarDefinition(g);
+    if (grammarDefinition) {
+      for (const slot of missingRequiredSlots(grammarDefinition, slots)) {
         intentIssues.push({
           severity: "MAJOR", rule: "INTENT_REALIZED", scene: b.id,
-          message: `${b.id} (${g}): thiếu slot bắt buộc "${group.join("|")}"`,
-          suggestion: `Grammar ${g} cần slot ${group.join(" hoặc ")} để bung đúng`,
+          message: `${b.id} (${g}): thiếu slot bắt buộc "${slot}"`,
+          suggestion: `Grammar ${g} cần slot ${slot.split("|").join(" hoặc ")} để bung đúng`,
         });
       }
     }
@@ -1890,8 +1868,8 @@ function checkOverlayNarrationDuplication(scenes: any[]): CheckResult {
 
 function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
-  if (timeline?.schemaVersion !== 2 || scenes.length === 0) {
-    return { name: "Semantic production gates (schema v2)", passed: true, issues };
+  if (scenes.length === 0) {
+    return { name: "Semantic production gates", passed: true, issues };
   }
   const isCharacter = (source: string): boolean =>
     source.startsWith("characters/") || source.startsWith("generated-assets/characters/");
@@ -1985,12 +1963,12 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
     });
   }
 
-  return { name: "Semantic production gates (schema v2)", passed: issues.length === 0, issues };
+  return { name: "Semantic production gates", passed: issues.length === 0, issues };
 }
 
 function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
-  if (timeline?.schemaVersion !== 2 || scenes.length < 8) {
+  if (scenes.length < 8) {
     return { name: "Rendered-intent proxies", passed: true, issues };
   }
   const cfg = referenceQuality.composition;

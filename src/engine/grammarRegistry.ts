@@ -3,6 +3,11 @@ import { VisualGrammar, VisualRegister } from "../types/storyboard";
 export interface GrammarDefinition {
   id: Exclude<VisualGrammar, "FREEFORM">;
   purpose: string;
+  // A slot entry may name ONE intentional alias group with "|" (e.g.
+  // "stat|number"): the requirement is satisfied when any alternative is
+  // filled. Aliases exist only where two names are genuinely the same concept
+  // — this is the single required-slot table, so a second looser copy can no
+  // longer drift away from it.
   requiredSlots: string[];
   optionalSlots: string[];
   supportedRegisters: VisualRegister[];
@@ -18,7 +23,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "STAT_REVEAL", purpose: "Reveal one transcript-supported number",
-    requiredSlots: ["stat", "anchor"], optionalSlots: ["who", "caption"],
+    requiredSlots: ["stat|number", "anchor", "caption"], optionalSlots: ["who"],
     supportedRegisters: ["infographic", "evidence"],
     semanticRequirements: [
       "The number must occur in the source range; anchor must visualize what the figure measures.",
@@ -51,7 +56,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "FRAMEBOX", purpose: "Show a photo, chart, map, or screenshot in a screen",
-    requiredSlots: ["content"], optionalSlots: ["caption", "source"],
+    requiredSlots: ["content|image"], optionalSlots: ["caption", "source"],
     supportedRegisters: ["framebox", "photo_broll", "evidence"],
     semanticRequirements: ["Content must resolve to a real manifest asset."],
   },
@@ -154,6 +159,33 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
 
 export function getGrammarDefinition(grammar: VisualGrammar): GrammarDefinition | undefined {
   return GRAMMAR_REGISTRY.find((definition) => definition.id === grammar);
+}
+
+export function isKnownGrammar(grammar: unknown): boolean {
+  return grammar === "FREEFORM" || GRAMMAR_REGISTRY.some((d) => d.id === grammar);
+}
+
+export function knownGrammarIds(): string[] {
+  return [...GRAMMAR_REGISTRY.map((d) => d.id), "FREEFORM"];
+}
+
+/** The alternatives of one required-slot entry ("stat|number" → ["stat","number"]). */
+export function slotAlternatives(slotEntry: string): string[] {
+  return slotEntry.split("|").map((s) => s.trim()).filter(Boolean);
+}
+
+/**
+ * Required slot entries the given slots object does not satisfy. An entry is
+ * satisfied when ANY of its alternatives holds a non-blank value. Returns the
+ * raw entries (e.g. "stat|number") so callers can report the alias group.
+ */
+export function missingRequiredSlots(
+  definition: GrammarDefinition,
+  slots: Record<string, unknown> | undefined,
+): string[] {
+  return definition.requiredSlots.filter((entry) =>
+    !slotAlternatives(entry).some((key) => String(slots?.[key] ?? "").trim().length > 0)
+  );
 }
 
 export function grammarPromptTable(): string {

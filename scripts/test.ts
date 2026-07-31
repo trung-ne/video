@@ -683,10 +683,17 @@ test("detects scenes reordered after TTS, which keeps their old start frames", (
 
 function timingFixture(ids: string[]): Storyboard {
   return {
-    schemaVersion: 1, fps: 30, width: 1920, height: 1080,
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080,
     scenes: ids.map((id) => ({
       id, narration: "one two three four five", purpose: "p", emotion: "neutral",
-      viewerFocus: "f", visualGrammar: "SOLO", slots: { keyword: "k" },
+      viewerFocus: "f", visualGrammar: "SOLO",
+      slots: { who: "characters/cat", keyword: "k" },
+      visualRegister: "character_action", focalType: "character_action",
+      semanticVisual: { subject: "cat", action: "points at the keyword", takeaway: "t" },
+      silentFrameTakeaway: "t", focalOccupancyTarget: 0.3, noveltyFromPrevious: ["opening"],
+      visualFingerprint: `SOLO|character_action|${id}`,
+      assetRequests: [{ role: "character", slot: "who", query: "characters/cat", requiredTags: [], allowGenerate: false }],
+      resolvedAssets: { who: "characters/cat" },
     })),
   } as Storyboard;
 }
@@ -780,6 +787,10 @@ test("schema validation treats provenance as a checked field, not an extra", () 
     scenes: [{
       id: "s1", layout: "SOLO", backgroundSrc: "#FFFFFF", startFrame: 0, durationFrames: 100,
       narration: "n", entities: [], texts: [],
+      sourceRange: { startWord: 0, endWord: 1, quoteChecksum: "x" },
+      visualRegister: "character_action", semanticTakeaway: "t", semanticAction: "a",
+      semanticAssetIds: [], focalType: "character_action", visualFingerprint: "fp",
+      silentFrameTakeaway: "t", focalOccupancyTarget: 0.3, noveltyFromPrevious: [],
     }],
   };
   assert.ok(validateTimeline({ ...base }).valid);
