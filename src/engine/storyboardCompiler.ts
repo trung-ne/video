@@ -13,7 +13,7 @@
 
 import { Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, TimingProvenance } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
-import { VISUAL_GRAMMARS, applyShot, GrammarContext } from "./visualGrammars";
+import { VISUAL_GRAMMARS, applyShot, GrammarContext, GrammarResult } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
 import {
   SceneTimingSource,
@@ -53,6 +53,37 @@ export interface CompileStoryboardOpts {
     durationsChecksum?: string;
     wordsChecksum?: string;
   };
+}
+
+function isCssBackground(value: string | undefined): boolean {
+  return !value || /^#|^rgba?\(|gradient\(/i.test(value);
+}
+
+/**
+ * clearPrevious removes the old shot at the cut. On a CSS background, delaying
+ * every focal layer creates a genuinely empty flash. Keep later staging, but
+ * make the earliest layer land within two frames. Photos and illustrated stages
+ * already carry meaning at frame zero and do not need normalization.
+ */
+function ensureImmediateFocal(result: GrammarResult): void {
+  if (!isCssBackground(result.backgroundSrc)) return;
+  const layers: Array<{ delay?: number; enterDelay?: number }> = [
+    ...(result.entities ?? []),
+    ...(result.texts ?? []),
+    ...(result.cards ?? []),
+    ...(result.paperCards ?? []),
+    ...(result.frameBoxes ?? []),
+    ...(result.speechBubbles ?? []),
+  ];
+  if (!layers.length) return;
+  const delayOf = (layer: { delay?: number; enterDelay?: number }) =>
+    layer.enterDelay ?? layer.delay ?? 0;
+  const earliest = Math.min(...layers.map(delayOf));
+  if (earliest <= 2) return;
+  for (const layer of layers.filter((item) => delayOf(item) === earliest)) {
+    if (layer.enterDelay !== undefined) layer.enterDelay = 2;
+    else layer.delay = 2;
+  }
 }
 
 function buildAlignedSceneTimings(
@@ -228,6 +259,7 @@ function compileBrief(
   }
   const result = grammarFn(brief, ctx);
   applyShot(result, brief.shot);
+  ensureImmediateFocal(result);
   // Stagger multi-card reveals so a long scene keeps changing. A LONE card gets
   // no such treatment: delaying the only element four seconds just leaves the
   // opening of every long scene as background plus one character — which is why

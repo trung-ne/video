@@ -176,7 +176,9 @@ test("long multi-card scenes stage persistent reveals about four seconds apart",
   const timeline = compileStoryboard(storyboard, {
     durations: [{ id: "scene-001", startFrame: 0, frames: 360 }],
   });
-  assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 8);
+  // The first focal appears immediately after clearPrevious; later cards keep
+  // the persistent ~4-second staging that prevents a static long scene.
+  assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 2);
   assert.strictEqual(timeline.scenes[0].cards?.[1].delay, 120);
   assert.deepStrictEqual(timeline.timingProvenance?.beatTimingSummary, {
     "source-range-proportional": 1,
@@ -289,6 +291,36 @@ test("component-backed evidence does not need a decorative asset request", () =>
   });
   const issues = report.checks.flatMap((check) => check.issues ?? []);
   assert.ok(!issues.some((issue) => issue.rule === "ASSET_REQUEST"));
+});
+
+test("quality gate catches a blank scene opening and card-icon text collision", () => {
+  const report = runQualityCheck({
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080, durationInFrames: 300,
+    audio: "audio/test.wav",
+    scenes: [{
+      id: "scene", label: "collision", startFrame: 0, durationFrames: 300,
+      layout: "STAT_DRAMA", narration: "A number.", backgroundSrc: "#FFFFFF",
+      clearPrevious: true,
+      entities: [], paperCards: [], frameBoxes: [], speechBubbles: [],
+      cards: [{
+        id: "panel", position: { x: 0.5, y: 0.45 }, background: "#333333",
+        iconSrc: "finance/money", width: 1000, height: 600, delay: 8,
+      }],
+      texts: [{
+        id: "stat", content: "100", style: "STAT",
+        position: { x: 0.5, y: 0.45 }, delay: 10, duration: 100,
+      }],
+      sourceRange: { startWord: 0, endWord: 1, quoteChecksum: "x" },
+      visualRegister: "infographic", visualGrammar: "STAT_REVEAL",
+      semanticTakeaway: "a number", semanticAction: "number appears",
+      semanticAssetIds: ["finance/money"], focalType: "diagram",
+      visualFingerprint: "stat", silentFrameTakeaway: "a number",
+      focalOccupancyTarget: 0.3, noveltyFromPrevious: ["opening"],
+    }],
+  });
+  const rules = report.checks.flatMap((check) => check.issues ?? []).map((issue) => issue.rule);
+  assert.ok(rules.includes("BLANK_SCENE_OPENING"));
+  assert.ok(rules.includes("CARD_ICON_TEXT_COLLISION"));
 });
 
 test("narrator pose swaps persist until the next narration beat", () => {

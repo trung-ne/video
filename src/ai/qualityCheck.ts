@@ -1186,6 +1186,80 @@ function checkStatDrama(scenes: any[]): CheckResult {
   return { name: "STAT_DRAMA: dark bg + clearPrevious + STAT ngắn + không đè nhân vật", passed: issues.length === 0, issues };
 }
 
+function checkImmediateFocalAndCardGeometry(timeline: any, scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+  const width = Number(timeline?.width ?? 1920);
+  const height = Number(timeline?.height ?? 1080);
+  const isCss = (background: string) => !background || /^#|^rgba?\(|gradient\(/i.test(background);
+
+  for (const scene of scenes) {
+    if (scene.clearPrevious !== false && isCss(String(scene.backgroundSrc ?? ""))) {
+      const delays = [
+        ...(scene.entities ?? []).map((layer: any) => layer.enterDelay ?? 0),
+        ...(scene.texts ?? []).map((layer: any) => layer.delay ?? 0),
+        ...(scene.cards ?? []).map((layer: any) => layer.delay ?? 0),
+        ...(scene.paperCards ?? []).map((layer: any) => layer.delay ?? 0),
+        ...(scene.frameBoxes ?? []).map((layer: any) => layer.delay ?? 0),
+        ...(scene.speechBubbles ?? []).map((layer: any) => layer.delay ?? 0),
+      ].filter((delay) => Number.isFinite(delay));
+      const earliest = delays.length ? Math.min(...delays) : Infinity;
+      if (earliest > 2) {
+        issues.push({
+          severity: "MAJOR",
+          rule: "BLANK_SCENE_OPENING",
+          scene: scene.id,
+          message: `${sceneLabel(scene)} clears the previous shot but its first focal layer starts at frame ${earliest}`,
+          suggestion: "Show the first card/character/component by frame 0–2; stagger only subsequent layers.",
+        });
+      }
+    }
+
+    for (const card of scene.cards ?? []) {
+      if (card.width && card.height && card.position) {
+        const left = card.position.x * width - card.width / 2;
+        const right = card.position.x * width + card.width / 2;
+        const top = card.position.y * height - card.height / 2;
+        const bottom = card.position.y * height + card.height / 2;
+        if (left < 0 || right > width || top < 0 || bottom > height) {
+          issues.push({
+            severity: "MAJOR",
+            rule: "CARD_OUT_OF_FRAME",
+            scene: scene.id,
+            message: `${sceneLabel(scene)} card "${card.id}" extends outside the canvas`,
+            suggestion: "Reduce card size or move its normalized position inside the frame.",
+          });
+        }
+      }
+      if (!card.iconSrc || !card.position) continue;
+      for (const text of scene.texts ?? []) {
+        if (!text.position) continue;
+        const sameRegion =
+          Math.abs(card.position.x - text.position.x) < 0.16 &&
+          Math.abs(card.position.y - text.position.y) < 0.16;
+        const cardStart = card.delay ?? 0;
+        const cardEnd = card.duration ? cardStart + card.duration : scene.durationFrames;
+        const textStart = text.delay ?? 0;
+        const textEnd = text.duration ? textStart + text.duration : scene.durationFrames;
+        if (sameRegion && Math.max(cardStart, textStart) < Math.min(cardEnd, textEnd)) {
+          issues.push({
+            severity: "MAJOR",
+            rule: "CARD_ICON_TEXT_COLLISION",
+            scene: scene.id,
+            message: `${sceneLabel(scene)} card icon "${card.id}" and text "${text.id}" occupy the same focal region`,
+            suggestion: "Reserve separate icon, headline and caption zones; do not center the icon beneath the text.",
+          });
+        }
+      }
+    }
+  }
+
+  return {
+    name: "Scene opening and card geometry: no blank flash or focal collision",
+    passed: issues.length === 0,
+    issues,
+  };
+}
+
 // CHECK (V4): background "mood" churn. Every scene changing white ↔ dark ↔
 // photo back-to-back reads as flicker even if each individual background is
 // valid — the reference video holds white for stretches and only cuts to
@@ -2182,6 +2256,7 @@ export function runQualityCheck(timeline: any, timelinePath = "(unknown)"): Qual
     checkIconTriple(scenes),
     checkPaperCardCollision(scenes),
     checkStatDrama(scenes),
+    checkImmediateFocalAndCardGeometry(timeline, scenes),
     checkBackgroundChurn(scenes),
     checkDialogue(scenes),
     checkStagger(scenes),

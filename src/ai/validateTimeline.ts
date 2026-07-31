@@ -211,6 +211,15 @@ export function validateSceneTimeline(input: any): ValidationResult {
         if (!card.position || typeof card.position.x !== "number" || typeof card.position.y !== "number") {
           errors.push(`${cp} missing numeric position`);
         }
+        if (card.position && typeof card.width === "number" && typeof card.height === "number") {
+          const left = card.position.x * input.width - card.width / 2;
+          const right = card.position.x * input.width + card.width / 2;
+          const top = card.position.y * input.height - card.height / 2;
+          const bottom = card.position.y * input.height + card.height / 2;
+          if (left < 0 || right > input.width || top < 0 || bottom > input.height) {
+            errors.push(`${cp} extends outside the ${input.width}x${input.height} canvas`);
+          }
+        }
         // ConceptCard draws an icon and one label; with neither it is a bordered
         // coloured box that tells the viewer nothing while still occupying frame
         // area — and it used to count as teaching coverage, silencing that gate.
