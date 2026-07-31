@@ -287,6 +287,12 @@ function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const title = b.slots?.title;
   const choices = (b.slots?.choices ?? "").split("|").map((s) => s.trim()).filter(Boolean);
   const isSurvey = !!title || choices.length > 0;
+  // Legacy evidence reserved the left third for a presenter cat. Strict Route
+  // A intentionally removes that decorative presenter, so keeping the card at
+  // x=.66 left most of the frame empty. Let the authored evidence itself own
+  // the stage.
+  const evidencePosition = ctx.strict ? { x: 0.5, y: 0.4 } : { x: 0.66, y: 0.4 };
+  const evidenceWidth = ctx.strict ? 1450 : 1100;
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
@@ -297,7 +303,8 @@ function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     paperCards: [
       { id: `${b.id}-ev`, variant: isSurvey ? "survey" : "evidence", title, body,
         source: b.slots?.source, date: b.slots?.date, highlight: b.slots?.highlight,
-        choices: choices.length ? choices : undefined, position: { x: 0.66, y: 0.4 }, delay: 12 },
+        choices: choices.length ? choices : undefined, position: evidencePosition,
+        width: evidenceWidth, delay: 2 },
     ],
     focusAssetId: ctx.strict ? undefined : `${b.id}-cat`,
   };

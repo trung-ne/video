@@ -45,10 +45,12 @@ export const BackgroundLayer: React.FC<Props> = ({
     <>
       {backgrounds.map((bg, i) => {
         const isLast = i === backgrounds.length - 1;
-        const crossfadeProgress = Math.min(
-          1,
-          (frame - bg.enterFrame) / Math.max(bg.duration, 1)
-        );
+        // A one-frame background event is a hard cut, not a one-frame fade.
+        // Starting it at opacity 0 produced a completely empty first frame for
+        // every cleared scene and could create a false cross-scene duplicate.
+        const crossfadeProgress = bg.duration <= 1
+          ? 1
+          : Math.min(1, (frame - bg.enterFrame) / bg.duration);
         const opacity = isLast
           ? interpolate(crossfadeProgress, [0, 1], [0, bg.opacity])
           : bg.opacity;

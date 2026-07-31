@@ -15,11 +15,25 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const progress = spring({
+  const entranceProgress = spring({
     frame: frame - card.enterFrame,
     fps,
     config: { damping: 14, stiffness: 160 },
   });
+  // A paper card is the focal evidence, so it must already read as a card on
+  // its first sampled beat. Starting from scale 0 made white paper disappear
+  // into the white stage even though the semantic component was present.
+  const progress = Math.max(0.82, entranceProgress);
+  // Evidence should unfold with the narration instead of landing as one
+  // frozen slide. Survey cards have a meaningful title to hold the first
+  // beat, then reveal the finding and keep it on screen.
+  const bodyProgress = card.variant === "survey" && card.title
+    ? spring({
+        frame: frame - card.enterFrame - Math.round(fps * 2.4),
+        fps,
+        config: { damping: 18, stiffness: 130 },
+      })
+    : 1;
 
   const x = card.position.x * canvasWidth;
   const y = card.position.y * canvasHeight;
@@ -50,7 +64,7 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
       <div
         style={{
           width: "100%",
-          background: "#FFFFFF",
+          background: isSurvey ? "#FFF1CF" : "#FFFFFF",
           clipPath: tornClip,
           padding: isSurvey ? "56px 64px" : "48px 56px",
           boxSizing: "border-box",
@@ -99,6 +113,12 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
             lineHeight: 1.45,
             textAlign: isSurvey ? "left" : "center",
             fontStyle: isSurvey ? "normal" : "italic",
+            opacity: bodyProgress,
+            transform: `translateY(${(1 - bodyProgress) * 18}px)`,
+            background: isSurvey ? "rgba(255, 214, 102, 0.34)" : undefined,
+            borderLeft: isSurvey ? `${Math.max(5, w * 0.008)}px solid #E03131` : undefined,
+            borderRadius: isSurvey ? 10 : undefined,
+            padding: isSurvey ? "18px 22px" : undefined,
           }}
         >
           {card.body}
@@ -112,6 +132,8 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
               gap: "28px 40px",
               marginTop: 36,
               justifyContent: "flex-start",
+              opacity: bodyProgress,
+              transform: `translateY(${(1 - bodyProgress) * 18}px)`,
             }}
           >
             {card.choices.map((choice, i) => (
