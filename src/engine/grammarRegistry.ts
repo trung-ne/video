@@ -25,7 +25,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "STAT_REVEAL", purpose: "Reveal one transcript-supported number",
-    requiredSlots: ["stat|number", "anchor", "caption"], optionalSlots: ["who"], focalSource: "asset",
+    requiredSlots: ["stat|number", "anchor", "caption"], optionalSlots: ["who", "tone"], focalSource: "asset",
     supportedRegisters: ["infographic", "evidence"],
     semanticRequirements: [
       "The number must occur in the source range; anchor must visualize what the figure measures.",

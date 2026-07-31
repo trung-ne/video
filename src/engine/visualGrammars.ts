@@ -105,31 +105,37 @@ function grammarCompare(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const stat = b.slots?.stat ?? b.slots?.number ?? "";
   const caption = b.slots?.caption;
+  const dramatic = b.slots?.tone === "dramatic";
   const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
   const texts: GrammarResult["texts"] = [];
   if (stat) {
-    texts.push({ id: `${b.id}-stat`, content: stat, style: "STAT", position: { x: 0.42, y: 0.46 }, fontSize: 210, delay: 10, hold: "scene-end" });
-  }
-  if (caption) {
-    // The anchor icon alone reads too small at this scale to say what the number
-    // measures, and enlarging it as pure decoration was the wrong fix — a short
-    // authored caption is real information, placed low in the panel so it never
-    // collides with the giant digit centered above it.
-    texts.push({ id: `${b.id}-caption`, content: caption, style: "CAPTION", position: { x: 0.42, y: 0.68 }, fontSize: 42, color: "#E8C9D0", delay: 30, hold: "scene-end" });
+    texts.push({
+      id: `${b.id}-stat`, content: stat, style: "STAT",
+      position: { x: 0.53, y: 0.45 }, fontSize: 210, delay: 10,
+      color: dramatic ? "#F04444" : "#B3262E", hold: "scene-end",
+    });
   }
   return {
     layout: "STAT_DRAMA",
-    backgroundSrc: "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)",
+    // White is the production default. Dark is an authored climax treatment,
+    // not an automatic property of every number in the transcript.
+    backgroundSrc: dramatic
+      ? "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"
+      : WHITE,
     entities: [
       { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 22 },
     ],
     cards: [{
-      id: `${b.id}-panel`,
-      position: { x: 0.42, y: 0.46 },
-      background: "#351A2B",
+      // Caption and icon are one semantic component on the left; the large
+      // number owns the centre. This prevents the old icon-under-text collision
+      // while keeping one authored text overlay plus the subtitle.
+      id: `${b.id}-measure`,
+      position: { x: 0.20, y: 0.43 },
+      background: dramatic ? "#351A2B" : "#547A80",
       iconSrc: b.slots?.anchor,
-      width: 1080,
-      height: 650,
+      label: caption,
+      width: 430,
+      height: 520,
       delay: 4,
     }],
     texts,
@@ -176,12 +182,12 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   if (b.slots?.askerText)
     bubbles.push({
       id: `${b.id}-qa`, anchorAssetId: `${b.id}-a`, text: b.slots.askerText,
-      direction: "right", delay: 12, duration: 70, fontSize: 40, widthRatio: 0.46,
+      direction: "right", delay: 12, fontSize: 44, widthRatio: 0.44,
     });
   if (b.slots?.answererText)
     bubbles.push({
       id: `${b.id}-qb`, anchorAssetId: `${b.id}-b`, text: b.slots.answererText,
-      direction: "left", delay: 90, duration: 70, fontSize: 40, widthRatio: 0.46,
+      direction: "left", delay: 90, fontSize: 44, widthRatio: 0.44,
     });
   return {
     layout: "DIALOGUE",

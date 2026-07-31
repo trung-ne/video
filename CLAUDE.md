@@ -23,6 +23,7 @@ Video mẫu ~70% thời lượng là **nền trắng sạch + nhân vật to, bi
 - **Evidence**: ảnh chụp bài báo/khảo sát xếp chồng (mở đầu, trích dẫn số liệu)
 - **Emotional beat**: ảnh full-bleed KHÔNG có mèo đè lên (hoàng hôn cô đơn, tòa nhà Samsung, cô gái sang chảnh) — ảnh TỰ kể, mèo tránh ra
 - Ảnh nền mờ đằng sau mèo suốt video = wallpaper vô nghĩa → CẤM. Nếu ảnh không liên quan trực tiếp câu narration đang đọc thì dùng nền trắng.
+- STAT_REVEAL mặc định dùng nền trắng. Nền tối chỉ là treatment có chủ đích cho tối đa 3 climax thật sự trong một video, không phải mặc định cho mọi con số.
 - Khi dùng ảnh full-bleed làm emotional beat: KHÔNG đặt nhân vật che chủ thể ảnh; hoặc để ảnh chạy solo 3-5s, hoặc mèo đứng nhỏ lệch góc (scale ≤1.2, x≤0.35, y≥0.7).
 
 ### V4.2 — MỘT KHUNG HÌNH = MỘT LỚP TEXT

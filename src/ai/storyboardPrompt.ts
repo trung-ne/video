@@ -21,7 +21,7 @@ Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "
 ## VISUAL GRAMMAR (chọn 1/scene, LUÂN PHIÊN — đừng lặp 1 kiểu)
 | grammar | dùng khi | slots cần điền |
 |---|---|---|
-| STAT_REVEAL | 1 con số gây sốc | { "stat": "0.72", "anchor": "<asset thể hiện số đang đo>", "who": "<role?>" } |
+| STAT_REVEAL | 1 con số gây sốc | { "stat": "0.72", "anchor": "<asset thể hiện số đang đo>", "caption": "<số này đo gì>", "who": "<role?>", "tone": "<dramatic?>" } |
 | COMPARE | 2 thứ đối lập | { "left": "...", "right": "..." } |
 | POLICY_LIST | liệt kê 2-4 mục/nhân vật | { "items": "A|B|C" } |
 | DIALOGUE_QA | hỏi–đáp giữa 2 nhân vật | { "asker": "<role>", "answerer": "<role>", "askerText": "≤8 từ", "answererText": "≤8 từ" } |
@@ -54,7 +54,7 @@ Khai báo "cast": role → { src, badge }. Giữ nguyên xuyên video (người 
 - narration = ĐÚNG câu transcript của scene (nguồn phụ đề) — không tóm tắt cụt.
 - Luân phiên grammar: mỗi 8 scene ≥1 EVIDENCE/FRAMEBOX, ≥2 TABLEAU/DIALOGUE_QA, ≥1 BEAT hoặc FRAMEBOX có ảnh thật. Không lặp cùng grammar quá 2 scene. SOLO ≤20%.
 - Mỗi claim có số liệu/chính sách/khảo sát phải dùng EVIDENCE hoặc FRAMEBOX; không được thay bằng icon trang trí.
-- STAT_REVEAL: số là focal typography, \`anchor\` phải nói rõ số đó đo tiền/dân số/tỷ lệ gì. SOLO phải có keyword đủ mạnh cho concept card; thêm \`prop\` khi narration có danh từ cụ thể.
+- STAT_REVEAL: số là focal typography; \`anchor\` minh hoạ và \`caption\` nói rõ số đó đo tiền/dân số/tỷ lệ gì. Mặc định nền trắng; chỉ điền \`tone: "dramatic"\` cho tối đa 3 climax thật sự trong cả video. SOLO phải có keyword đủ mạnh cho concept card; thêm \`prop\` khi narration có danh từ cụ thể.
 - Title/keyword KHÔNG được copy 6+ từ đầu narration. Text overlay phải bổ sung ý, không lặp phụ đề.
 - beats[]: đánh dấu con số/từ khoá quan trọng = substring CHÍNH XÁC của narration + importance 0..1 + kind (number/keyword/turn). Hệ thống sẽ nhấn mạnh đúng khoảnh khắc từ đó được đọc.
 - cold open: scene 1 = câu sốc/hỏi nhất, không chào hỏi. Scene cuối: chốt + sáng.

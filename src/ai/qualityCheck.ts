@@ -1105,10 +1105,11 @@ function checkPaperCardCollision(scenes: any[]): CheckResult {
   return { name: "PaperCard: evidence dài không đè lên nhân vật (V4)", passed: issues.length === 0, issues };
 }
 
-// CHECK 11: STAT_DRAMA must have dark background + clearPrevious
+// CHECK 11: STAT_REVEAL is usually light; dark is a scarce climax treatment.
 function checkStatDrama(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
   const CENTER_SLOTS = new Set(["CENTER_MID", "CENTER"]);
+  let darkCount = 0;
 
   for (const s of scenes.filter((s) => s.layout === "STAT_DRAMA" || s.layout === "STAT")) {
     const bg = s.backgroundSrc ?? "";
@@ -1116,15 +1117,7 @@ function checkStatDrama(scenes: any[]): CheckResult {
       bg.includes("0d0d") || bg.includes("1a0a") || bg.includes("1a1a") ||
       bg.includes("0a0e") || bg.includes("000") || bg === "#000000";
 
-    if (!isDark && isCSSBackground(bg)) {
-      issues.push({
-        severity: "MAJOR",
-        rule: "STAT_DRAMA",
-        scene: s.id,
-        message: `${sceneLabel(s)} STAT_DRAMA không dùng nền tối — con số sẽ không nổi bật`,
-        suggestion: 'backgroundSrc: "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"',
-      });
-    }
+    if (isDark) darkCount++;
 
     if (!s.clearPrevious) {
       issues.push({
@@ -1183,7 +1176,16 @@ function checkStatDrama(scenes: any[]): CheckResult {
     }
   }
 
-  return { name: "STAT_DRAMA: dark bg + clearPrevious + STAT ngắn + không đè nhân vật", passed: issues.length === 0, issues };
+  if (darkCount > 3) {
+    issues.push({
+      severity: "MAJOR",
+      rule: "STAT_DARK_OVERUSE",
+      message: `${darkCount} STAT scenes use a dark treatment; maximum is 3 deliberate climaxes`,
+      suggestion: 'Keep ordinary statistics on white; author slots.tone="dramatic" only for 2–3 true turning points.',
+    });
+  }
+
+  return { name: "STAT_REVEAL: readable, collision-free, dark treatment is scarce", passed: issues.length === 0, issues };
 }
 
 function checkImmediateFocalAndCardGeometry(timeline: any, scenes: any[]): CheckResult {

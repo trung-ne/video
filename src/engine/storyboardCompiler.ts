@@ -366,20 +366,6 @@ function compileBrief(
   };
 }
 
-// Soft, high-luminance tints (dark text + orange cat both stay legible). No two
-// are close, so rotating them makes consecutive "talking" scenes visibly differ
-// instead of a stack of identical white voids — the #1 scale defect.
-const SOFT_BGS = [
-  "#FBF3E9", // cream
-  "#EAF2F8", // light blue
-  "#F0F7EC", // light green
-  "#FBEFF3", // light pink
-  "#F4EFFA", // light lavender
-  "#FEF6E7", // light amber
-  "#EAF6F5", // light teal
-  "#F3ECF7", // light violet
-];
-
 // No-repeat stage enforcement: every TABLEAU in a video must use a DISTINCT
 // stage set (user rule: tuyệt đối không lặp stage). If a stage was already used,
 // reassign the scene to an unused stage and remap its anchors; if the whole
@@ -413,22 +399,6 @@ function enforceDistinctStages(scenes: Scene[]): void {
         e.anchor = newAnchors[Math.min(ai, newAnchors.length - 1)];
         ai++;
       }
-    }
-  }
-}
-
-// Background-variety pass (fix a): plain-white grammar scenes get a rotating
-// soft tint; illustrated stages, photos, BEAT images, and dark STAT_DRAMA
-// gradients are left untouched. Applies to EVERY video via the storyboard route
-// (which — unlike the classic generate path — never ran autoFixBackgrounds).
-function enrichBackgrounds(scenes: Scene[]): void {
-  let tint = 0;
-  for (const s of scenes) {
-    const bg = s.backgroundSrc ?? "";
-    const isPlainWhite = bg === "" || bg === "#FFFFFF" || bg === "#FAFAF8";
-    if (isPlainWhite) {
-      s.backgroundSrc = SOFT_BGS[tint % SOFT_BGS.length];
-      tint++;
     }
   }
 }
@@ -496,13 +466,10 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     compileBrief(brief, timings[i], { ...ctx, index: i }, fps, opts.words)
   );
 
-  // Legacy (schemaVersion 1) artifacts only. enrichBackgrounds is what replaced
-  // every plain-white background with a SOFT_BGS pastel — the mechanism behind
-  // whiteDominantRatio 0.095 vs the reference's 0.429. Both production routes
-  // now emit schemaVersion 2, so neither rewrite runs on authored work.
+  // Legacy schema v1 keeps only its stage de-duplication compatibility pass.
+  // Plain white is never rewritten: authored background intent survives compile.
   if (sb.schemaVersion !== 2) {
     enforceDistinctStages(scenes);
-    enrichBackgrounds(scenes);
   }
 
   // Max end, not the last array element: reordering scenes after TTS would

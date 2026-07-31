@@ -166,6 +166,40 @@ test("occupancy pilot grammars emit semantic frame-filling components", () => {
   assert.strictEqual(stat.cards?.[0].iconSrc, "finance/chart_down");
 });
 
+test("STAT is light by default, dark only when authored, with separated measure card", () => {
+  const ctx = { cast: {}, index: 0, strict: true };
+  const brief: any = {
+    id: "stat", narration: "The market fell 18%.", purpose: "show the fall",
+    emotion: "urgent", viewerFocus: "18%", visualGrammar: "STAT_REVEAL",
+    slots: {
+      stat: "-18%", anchor: "finance/chart_down",
+      caption: "KOSPI in a few days", who: "characters/cat_surprised",
+    },
+  };
+  const light = VISUAL_GRAMMARS.STAT_REVEAL(brief, ctx);
+  const dark = VISUAL_GRAMMARS.STAT_REVEAL({
+    ...brief, slots: { ...brief.slots, tone: "dramatic" },
+  }, ctx);
+  assert.strictEqual(light.backgroundSrc, "#FFFFFF");
+  assert.ok(String(dark.backgroundSrc).includes("0d0d1a"));
+  assert.strictEqual(light.texts.length, 1);
+  assert.strictEqual(light.cards?.[0].label, "KOSPI in a few days");
+  assert.ok(Math.abs((light.cards?.[0].position.x ?? 0) - (light.texts[0].position?.x ?? 0)) > 0.16);
+});
+
+test("DIALOGUE_QA bubbles persist instead of disappearing early in long scenes", () => {
+  const result = VISUAL_GRAMMARS.DIALOGUE_QA({
+    id: "qa", narration: "Why? Because debt.", purpose: "teach through dialogue",
+    emotion: "curious", viewerFocus: "the answer", visualGrammar: "DIALOGUE_QA",
+    slots: {
+      asker: "characters/cat_talk", answerer: "characters/cat_think",
+      askerText: "Why?", answererText: "Because debt.",
+    },
+  } as any, { cast: {}, index: 0, strict: true });
+  assert.strictEqual(result.speechBubbles?.length, 2);
+  assert.ok(result.speechBubbles?.every((bubble) => bubble.duration === undefined));
+});
+
 test("long multi-card scenes stage persistent reveals about four seconds apart", () => {
   const storyboard = timingFixture(["scene-001"]);
   storyboard.scenes[0].visualGrammar = "CAUSE_EFFECT";
