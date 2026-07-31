@@ -55,12 +55,19 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
         transform: `translateY(-50%) rotate(${card.rotation}deg) scale(${progress})`,
         transformOrigin: "center center",
         zIndex: 12,
-        // drop-shadow (not box-shadow) — box-shadow gets CLIPPED by the torn
-        // clip-path below, leaving a white card invisible on white scenes.
-        // filter shadows follow the clipped silhouette instead.
-        filter: "drop-shadow(0 18px 28px rgba(0,0,0,0.30)) drop-shadow(0 2px 6px rgba(0,0,0,0.18))",
+        // Shadow is a separate offset silhouette below; no per-frame blur.
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: "translate(12px, 16px)",
+          background: "rgba(0,0,0,0.24)",
+          clipPath: tornClip,
+          zIndex: -1,
+        }}
+      />
       <div
         style={{
           width: "100%",

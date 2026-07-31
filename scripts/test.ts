@@ -496,6 +496,34 @@ test("narrator pose swaps persist until the next narration beat", () => {
   assert.strictEqual(costumed.events.filter((event: any) => event.type === "move").length, 3);
 });
 
+test("liveliness uses authored scene spans and keeps late narration beats", () => {
+  const timeline: any = {
+    fps: 30,
+    width: 1920,
+    height: 1080,
+    durationInFrames: 600,
+    events: [{
+      frame: 120,
+      type: "camera",
+      zoom: 1.04,
+      centerX: 0.5,
+      centerY: 0.5,
+      duration: 20,
+    }],
+  };
+  const result = injectLiveliness(timeline, {
+    sceneSpans: [
+      { start: 0, end: 300, narrationBeatFrames: [120, 260] },
+      { start: 300, end: 600, narrationBeatFrames: [420, 560] },
+    ],
+  });
+  const cameraFrames = timeline.events
+    .filter((event: any) => event.type === "camera")
+    .map((event: any) => event.frame);
+  assert.deepStrictEqual(cameraFrames, [120, 260, 300, 420, 560]);
+  assert.strictEqual(result.cameraMovesAdded, 4);
+});
+
 test("indexes Unicode words with stable indices", () => {
   const words = indexTranscript("Tại sao cats don't panic?");
   assert.deepStrictEqual(words.map((word) => word.text), ["Tại", "sao", "cats", "don't", "panic"]);

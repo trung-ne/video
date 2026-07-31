@@ -57,6 +57,11 @@ export interface LivelinessOptions {
   beatInterval?: number;        // frames between injected micro-beats (default 140 ≈ 4.7s)
   minWindow?: number;           // only fill quiet windows longer than this (default 200)
   fps?: number;
+  sceneSpans?: Array<{
+    start: number;
+    end: number;
+    narrationBeatFrames?: number[];
+  }>;
 }
 
 export interface LivelinessReport {
@@ -227,23 +232,25 @@ export function injectLiveliness(
     }
   }
 
-  // A shot camera is the fallback for rich full-frame stages where moving a
-  // small actor does not materially change the composition. Skip scenes that
-  // already contain authored camera direction.
+  // Camera changes persist between narration beats. Prefer real authored scene
+  // spans; clear events are only a fallback for legacy event-only timelines.
   const clearFrames = timeline.events
     .filter((event) => event.type === "clear")
     .map((event) => event.frame)
     .filter((frame, index, values) => index === 0 || frame !== values[index - 1])
     .sort((a, b) => a - b);
-  const sceneStarts = clearFrames[0] === 0 ? clearFrames : [0, ...clearFrames];
-  sceneStarts.forEach((start, sceneIndex) => {
-    const end = sceneStarts[sceneIndex + 1] ?? total;
+  const fallbackStarts = clearFrames[0] === 0 ? clearFrames : [0, ...clearFrames];
+  const sceneSpans = opts.sceneSpans ?? fallbackStarts.map((start, sceneIndex) => ({
+    start,
+    end: fallbackStarts[sceneIndex + 1] ?? total,
+    narrationBeatFrames: [] as number[],
+  }));
+  sceneSpans.forEach(({ start, end, narrationBeatFrames = [] }) => {
     if (end - start < minWindow) return;
-    const hasAuthoredCamera = timeline.events.some(
-      (event) => event.type === "camera" && event.frame >= start && event.frame < end,
-    );
-    if (hasAuthoredCamera) return;
-    if (start > 0) {
+    const authoredCameraFrames = timeline.events
+      .filter((event) => event.type === "camera" && event.frame >= start && event.frame < end)
+      .map((event) => event.frame);
+    if (start > 0 && !authoredCameraFrames.some((frame) => Math.abs(frame - start) <= 1)) {
       added.push({
         frame: start,
         type: "camera",
@@ -255,13 +262,24 @@ export function injectLiveliness(
       cameraMovesAdded++;
     }
     let cameraBeat = 0;
-    for (let frame = start + Math.round(interval * 0.9); frame < end - 40; frame += interval) {
+    for (let target = start + Math.round(interval * 0.9); target < end - 12; target += interval) {
+      const nearbyNarrationBeat = narrationBeatFrames
+        .filter((frame) => frame >= start + 30 && frame < end - 12)
+        .sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
+      const frame = nearbyNarrationBeat !== undefined
+        && Math.abs(nearbyNarrationBeat - target) <= interval * 0.25
+        ? nearbyNarrationBeat
+        : target;
+      if (authoredCameraFrames.some((authored) => Math.abs(authored - frame) < interval * 0.45)) {
+        cameraBeat++;
+        continue;
+      }
       added.push({
         frame,
         type: "camera",
-        zoom: cameraBeat % 2 === 0 ? 1.045 : 1.075,
-        centerX: cameraBeat % 2 === 0 ? 0.485 : 0.515,
-        centerY: 0.49,
+        zoom: cameraBeat % 2 === 0 ? 1.06 : 1.11,
+        centerX: cameraBeat % 2 === 0 ? 0.47 : 0.53,
+        centerY: 0.485,
         duration: 24,
       } as CameraEvent);
       cameraMovesAdded++;

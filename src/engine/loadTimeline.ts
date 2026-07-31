@@ -29,11 +29,21 @@ export interface LoadedTimeline {
  *                       preview omits it (no fs) — liveliness then allows any pose.
  */
 export function loadTimeline(raw: any, availablePoses?: Set<string>): LoadedTimeline {
+  const hasScenes = raw && Array.isArray(raw.scenes);
   const timeline: Timeline =
-    raw && Array.isArray(raw.scenes)
+    hasScenes
       ? compileScenes(raw as SceneTimeline)
       : (raw as Timeline);
 
-  const liveliness = injectLiveliness(timeline, { availablePoses });
+  const sceneSpans = hasScenes
+    ? raw.scenes.map((scene: any) => ({
+        start: scene.startFrame,
+        end: scene.startFrame + scene.durationFrames,
+        narrationBeatFrames: (scene.subtitleCues ?? []).map(
+          (cue: any) => scene.startFrame + cue.startFrame,
+        ),
+      }))
+    : undefined;
+  const liveliness = injectLiveliness(timeline, { availablePoses, sceneSpans });
   return { timeline, liveliness };
 }
