@@ -142,6 +142,23 @@ test("reference comparison names the robust baseline and emits signed deltas", (
   assert.strictEqual(result.deltaCandidateMinusReference.longestNearDuplicateRunSeconds, 5);
 });
 
+test("video-004 representative acceptance stays inside reference deltas", () => {
+  const acceptance = JSON.parse(fs.readFileSync(
+    path.join(process.cwd(), "projects", "video-004-han-quoc-dau-tu", "acceptance.json"),
+    "utf8",
+  ));
+  assert.strictEqual(acceptance.result, "pass");
+  assert.ok(acceptance.metrics.saturation >= 0.17 && acceptance.metrics.saturation <= 0.205);
+  assert.ok(acceptance.referenceDeltas.saturation <= 0.025);
+  assert.ok(acceptance.metrics.flatFrameRatio <= 0.50);
+  assert.ok(acceptance.metrics.edgeDensity >= 0.16);
+  assert.ok(acceptance.metrics.nearDuplicateRatio <= 0.22);
+  assert.ok(acceptance.metrics.withinSceneNearDuplicateRatio <= 0.15);
+  assert.ok(acceptance.directionCoverage.visualModes >= 6);
+  assert.ok(acceptance.directionCoverage.photoTreatments >= 5);
+  assert.ok(Object.values(acceptance.manualContactSheetReview).every(Boolean));
+});
+
 test("occupancy pilot grammars emit semantic frame-filling components", () => {
   const ctx = { cast: {}, index: 0, strict: true };
   const cause = VISUAL_GRAMMARS.CAUSE_EFFECT({
