@@ -5,8 +5,11 @@ export type AssetKind = "character" | "prop" | "stage" | "photo" | "chart" | "ui
 // style families, so it is never selected for new work.
 export type AssetStyleFamily =
   | "editorial_cat_v1"  // generated-assets/characters
+  | "editorial_cat_v2"  // restrained-palette character art
   | "flat_icon_v1"      // generated-assets/icons
+  | "flat_icon_v2"      // restrained-palette icon/prop art
   | "flat_stage_v1"     // generated-assets/scenes + generated-backgrounds
+  | "flat_stage_v2"     // restrained-palette stage art
   | "photo"             // backgrounds/*.jpg
   | "legacy";
 
@@ -45,6 +48,14 @@ export interface AssetManifestEntry {
   actionTags?: string[];
   settingTags?: string[];
   isFallback?: boolean;
+  paletteProfile?: "editorial-muted-v2" | "photo-natural" | "legacy-unprofiled";
+  visualMetrics?: {
+    meanSaturation: number;
+    p95Saturation: number;
+    luminanceContrast: number;
+    contentFraction: number;
+    dominantColors: string[];
+  };
 }
 
 export interface AssetManifest {

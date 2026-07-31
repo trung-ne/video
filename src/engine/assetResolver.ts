@@ -13,7 +13,10 @@ export interface AssetResolutionContext {
   maximumUses?: number;
 }
 
-const DEFAULT_STYLE_FAMILIES: AssetStyleFamily[] = ["editorial_cat_v1", "flat_stage_v1", "photo"];
+const DEFAULT_STYLE_FAMILIES: AssetStyleFamily[] = [
+  "editorial_cat_v2", "flat_icon_v2", "flat_stage_v2",
+  "editorial_cat_v1", "flat_icon_v1", "flat_stage_v1", "photo",
+];
 
 function normalizedTokens(values: Array<string | undefined>): Set<string> {
   return new Set(values.flatMap((value) => (value ?? "").toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/u)).filter(Boolean));

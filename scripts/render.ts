@@ -395,6 +395,17 @@ try {
           referenceBaseline,
         )
       : null;
+  if (!isProxy && !framesArg && referenceComparison) {
+    const profile = JSON.parse(fs.readFileSync(path.resolve("config/reference-quality.json"), "utf8"));
+    const deltaLimit = Number(profile.visualAudit?.maximumSaturationAboveReference ?? 0.025);
+    const saturationDelta = Number(referenceComparison.deltaCandidateMinusReference?.saturation);
+    if (Number.isFinite(saturationDelta) && saturationDelta > deltaLimit) {
+      throw new Error(
+        `SATURATION_REFERENCE_DRIFT: candidate exceeds the reference by ${saturationDelta.toFixed(4)} ` +
+        `(maximum ${deltaLimit.toFixed(4)}). Normalize the high-impact art assets; do not filter the MP4.`,
+      );
+    }
+  }
   const durationsManifestPath = path.join(path.dirname(path.resolve(timelinePath)), "durations.json");
   const durationsManifest = fs.existsSync(durationsManifestPath)
     ? JSON.parse(fs.readFileSync(durationsManifestPath, "utf8"))

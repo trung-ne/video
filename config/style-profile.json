@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "id": "editorial-cat-v1",
+  "schemaVersion": 2,
+  "id": "editorial-cat-v2",
   "leadCharacterId": "lead-teal-cat",
   "leadCharacter": {
     "silhouette": "squat body with one folded ear",
@@ -10,11 +10,22 @@
     "assetPrefix": "generated-assets/characters/"
   },
   "allowedStyleFamilies": [
+    "editorial_cat_v2",
+    "flat_icon_v2",
+    "flat_stage_v2",
     "editorial_cat_v1",
     "flat_stage_v1",
     "photo"
   ],
   "legacyStyleFamily": "legacy",
+  "paletteProfile": {
+    "id": "editorial-muted-v2",
+    "preserveLeadColors": ["teal", "rust", "mustard"],
+    "chromaReductionTarget": 0.18,
+    "videoSaturationRange": [0.17, 0.205],
+    "maximumReferenceDelta": 0.025,
+    "maximumAccentScenes": 3
+  },
   "visualPrinciples": [
     "one semantic focal point per scene",
     "props and actions explain narration",
