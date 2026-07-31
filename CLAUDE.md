@@ -149,6 +149,8 @@ npm start
 # Build storyboard từ storyboard-data.ts viết tay (Route A duy nhất)
 npx ts-node scripts/build-storyboard.ts --project <id>
 
+# storyboard-data.ts của video >=8 scene phải export VISUAL_TREATMENT_PLAN
+
 # Compile storyboard → timeline (cần durations.json + words.json trước)
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
   --out projects/<id>/timeline.json --durations projects/<id>/durations.json \

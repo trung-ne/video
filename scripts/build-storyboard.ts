@@ -23,6 +23,7 @@ import {
 import {
   resolveAuthoredAssets, roleForAuthoredAssetSlot,
 } from "../src/engine/authoredAssets";
+import type { VisualTreatmentPlan } from "../src/types/storyboard";
 import referenceQuality from "../config/reference-quality.json";
 
 const args = process.argv.slice(2);
@@ -59,6 +60,7 @@ if (!fs.existsSync(dataPath)) {
 const dataModule = require(path.resolve(dataPath));
 const SCENES: any[] = dataModule.SCENES;
 const CAST: Record<string, any> = dataModule.CAST ?? {};
+const VISUAL_TREATMENT_PLAN: VisualTreatmentPlan | undefined = dataModule.VISUAL_TREATMENT_PLAN;
 if (!Array.isArray(SCENES) || SCENES.length === 0) {
   console.error(`❌ ${dataPath} must export a non-empty \`SCENES\` array`);
   process.exit(1);
@@ -123,6 +125,21 @@ function fingerprintOf(grammar: string, register: string, assets: Record<string,
 }
 
 const authorErrors: string[] = [];
+
+if (SCENES.length >= 8) {
+  const plan = VISUAL_TREATMENT_PLAN;
+  if (!plan ||
+      !plan.registerTargets || Object.keys(plan.registerTargets).length < 3 ||
+      typeof plan.characterFreeTarget !== "number" ||
+      !Array.isArray(plan.heroConcepts) || plan.heroConcepts.length === 0 ||
+      !Array.isArray(plan.visualMotifs) || plan.visualMotifs.length === 0 ||
+      !Array.isArray(plan.forbiddenRepeats) || plan.forbiddenRepeats.length === 0) {
+    authorErrors.push(
+      "video: export VISUAL_TREATMENT_PLAN with >=3 registerTargets, " +
+      "characterFreeTarget, heroConcepts, visualMotifs and forbiddenRepeats",
+    );
+  }
+}
 
 const scenes = SCENES.map((s, i) => {
   const id = `${idPrefix}${String(i + 1).padStart(3, "0")}`;
@@ -229,6 +246,7 @@ const storyboard = {
   width: 1920,
   height: 1080,
   cast: CAST,
+  visualTreatmentPlan: VISUAL_TREATMENT_PLAN,
   scenes: withNovelty,
 };
 

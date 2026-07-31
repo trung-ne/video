@@ -27,6 +27,10 @@ heading `Phân cảnh N` làm toàn bộ scene boundary cho transcript dài. Kh�
 TTS nếu storyboard chỉ pass source coverage nhưng chưa pass granularity/director
 review.
 
+Video từ 8 scene trở lên phải export `VISUAL_TREATMENT_PLAN` cùng `SCENES`:
+ít nhất 3 register target, character-free target, hero concepts, visual motifs
+và các kiểu lặp bị cấm. Builder giữ nguyên plan này trong `storyboard.json`.
+
 Với tiếng Việt, dùng Edge voice phù hợp. Artifact nguồn (storyboard/timeline/tts/
 audio) nằm trong `projects/<id>/`; artifact render (video.mp4, contact.jpg,
 *-audit.json, production-report.json) mặc định vào `output/<id>/`.
