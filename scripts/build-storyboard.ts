@@ -24,6 +24,8 @@ import {
   resolveAuthoredAssets, roleForAuthoredAssetSlot,
 } from "../src/engine/authoredAssets";
 import type { VisualTreatmentPlan } from "../src/types/storyboard";
+import type { AssetManifest } from "../src/types/assets";
+import { resolveAssetRequest } from "../src/engine/assetResolver";
 import referenceQuality from "../config/reference-quality.json";
 
 const args = process.argv.slice(2);
@@ -117,14 +119,24 @@ for (let i = 0; i < ranges.length; i++) {
 // A stable dedup key for "have we already shown this exact frame recipe?".
 // Derived from decisions the author already made — deriving it does not invent
 // intent, unlike the old hardcoded `semanticVisual: { subject: "cat", ... }`.
-function fingerprintOf(grammar: string, register: string, assets: Record<string, string>): string {
+function fingerprintOf(scene: any, assets: Record<string, string>): string {
   const refs = Object.entries(assets)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, value]) => `${key}=${value}`);
-  return [grammar, register, ...refs].join("|");
+  const semantic = scene.semanticVisual ?? {};
+  return [
+    scene.grammar, scene.visualRegister, scene.focalType, scene.photoTreatment ?? "none",
+    semantic.subject, semantic.action, semantic.object ?? "none", semantic.relation ?? "none",
+    scene.slots?.stage ?? "no-stage", scene.slots?.tone ?? "default", ...refs,
+  ].join("|");
 }
 
 const authorErrors: string[] = [];
+const assetNeeds: Array<{ sceneId: string; slot: string; query: string; reason: string }> = [];
+const manifestPath = path.join(process.cwd(), "public", "assets.manifest.json");
+const assetManifest: AssetManifest | undefined = fs.existsSync(manifestPath)
+  ? JSON.parse(fs.readFileSync(manifestPath, "utf8")) : undefined;
+const assetUsage = new Map<string, number>();
 
 if (SCENES.length >= 8) {
   const plan = VISUAL_TREATMENT_PLAN;
@@ -133,10 +145,14 @@ if (SCENES.length >= 8) {
       typeof plan.characterFreeTarget !== "number" ||
       !Array.isArray(plan.heroConcepts) || plan.heroConcepts.length === 0 ||
       !Array.isArray(plan.visualMotifs) || plan.visualMotifs.length === 0 ||
-      !Array.isArray(plan.forbiddenRepeats) || plan.forbiddenRepeats.length === 0) {
+      !Array.isArray(plan.forbiddenRepeats) || plan.forbiddenRepeats.length === 0 ||
+      !plan.usageBudgets || !Array.isArray(plan.requiredVisualModes) || plan.requiredVisualModes.length < 6 ||
+      !(plan.heroCadenceSeconds > 0 && plan.heroCadenceSeconds <= 45) ||
+      plan.paletteProfile !== "editorial-muted-v2") {
     authorErrors.push(
       "video: export VISUAL_TREATMENT_PLAN with >=3 registerTargets, " +
-      "characterFreeTarget, heroConcepts, visualMotifs and forbiddenRepeats",
+      "characterFreeTarget, heroConcepts, visualMotifs, forbiddenRepeats, usageBudgets, " +
+      ">=6 requiredVisualModes, heroCadenceSeconds<=45 and paletteProfile=editorial-muted-v2",
     );
   }
 }
@@ -145,7 +161,7 @@ const scenes = SCENES.map((s, i) => {
   const id = `${idPrefix}${String(i + 1).padStart(3, "0")}`;
   const range = makeSourceRange(words, ranges[i].startWord, ranges[i].endWord);
   const narration = s.narrationOverride ?? sourceExcerpt(transcript, words, range);
-  const slots = s.slots ?? {};
+  const slots = { ...(s.slots ?? {}) };
   const fail = (msg: string) => authorErrors.push(`${id}: ${msg}`);
 
   // ── Route A authoring contract. These are creative decisions; the builder
@@ -180,10 +196,42 @@ const scenes = SCENES.map((s, i) => {
   }
 
   const resolvedAssets = resolveAuthoredAssets(slots, CAST);
+  const assetRequests = Object.entries(resolvedAssets).map(([slot, query]) => {
+    const selection = s.assetSelections?.[slot];
+    return {
+      role: selection?.role ?? roleForAuthoredAssetSlot(slot),
+      slot,
+      query: selection?.query ?? query,
+      requiredTags: selection?.requiredTags ?? [],
+      preferredTags: selection?.preferredTags,
+      preferredAssetId: selection?.preferredAssetId ?? query,
+      lockedAssetId: selection?.lockedAssetId,
+      continuityReason: selection?.continuityReason,
+      allowGenerate: selection?.allowGenerate ?? false,
+    };
+  });
+  const resolutionNotes: string[] = [];
+  if (s.assetSelections && !assetManifest) fail("public/assets.manifest.json is required for semantic asset selection");
+  if (assetManifest) {
+    for (const request of assetRequests.filter((item) => !!s.assetSelections?.[item.slot])) {
+      const result = resolveAssetRequest(request, assetManifest, undefined,
+        { usage: assetUsage, maximumUses: VISUAL_TREATMENT_PLAN?.usageBudgets.maximumAssetUses });
+      if (!result.asset) {
+        const reason = result.unresolvedReason ?? "no compatible asset";
+        fail(`asset slot ${request.slot}: ${reason}`);
+        assetNeeds.push({ sceneId: id, slot: request.slot, query: request.query, reason });
+        continue;
+      }
+      assetUsage.set(result.asset.path, (assetUsage.get(result.asset.path) ?? 0) + 1);
+      resolvedAssets[request.slot] = result.asset.path;
+      if (request.slot in slots) slots[request.slot] = result.asset.path;
+      resolutionNotes.push(`${request.slot}: ${result.reasons?.join("; ") ?? result.asset.path}`);
+    }
+  }
   if (definition?.focalSource === "asset" && Object.keys(resolvedAssets).length === 0) {
     fail(`no slot resolves to a visual asset — the scene would render as text on an empty field`);
   }
-  const fingerprint = fingerprintOf(String(s.grammar), String(s.visualRegister ?? ""), resolvedAssets);
+  const fingerprint = fingerprintOf({ ...s, slots }, resolvedAssets);
 
   return {
     id,
@@ -202,14 +250,23 @@ const scenes = SCENES.map((s, i) => {
     silentFrameTakeaway: s.silentFrameTakeaway,
     focalOccupancyTarget: s.focalOccupancyTarget,
     characterRequired: s.characterRequired,
+    photoTreatment: s.photoTreatment,
     visualFingerprint: fingerprint,
-    assetRequests: Object.entries(resolvedAssets).map(([slot, query]) => ({
-      role: roleForAuthoredAssetSlot(slot), slot, query, requiredTags: [], preferredAssetId: query,
-      allowGenerate: false,
-    })),
+    assetRequests,
     resolvedAssets,
+    assetResolutionNotes: resolutionNotes,
   };
 });
+
+if (VISUAL_TREATMENT_PLAN) {
+  const statRatio = scenes.filter((scene) => scene.visualGrammar === "STAT_REVEAL").length / scenes.length;
+  if (statRatio > VISUAL_TREATMENT_PLAN.usageBudgets.maximumStatRevealRatio) {
+    authorErrors.push(`video: STAT_REVEAL ratio ${statRatio.toFixed(3)} exceeds ` +
+      `${VISUAL_TREATMENT_PLAN.usageBudgets.maximumStatRevealRatio}`);
+  }
+  const registers = new Set(scenes.map((scene) => scene.visualRegister));
+  if (registers.size < 6) authorErrors.push(`video: only ${registers.size} visual modes/registers; require at least 6`);
+}
 
 // noveltyFromPrevious: what actually changed against the previous scene's
 // recipe. Computed, not asserted — an empty list is a truthful signal that the
@@ -228,6 +285,9 @@ const withNovelty = scenes.map((scene, i) => {
 });
 
 if (authorErrors.length) {
+  if (assetNeeds.length) {
+    fs.writeFileSync(path.join(projectDir, "asset-needs.json"), `${JSON.stringify({ schemaVersion: 1, needs: assetNeeds }, null, 2)}\n`, "utf8");
+  }
   console.error(`❌ ${authorErrors.length} authoring error(s) in ${dataPath}:\n`);
   for (const line of authorErrors) console.error(`   ${line}`);
   console.error(

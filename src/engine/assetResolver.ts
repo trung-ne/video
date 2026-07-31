@@ -6,6 +6,7 @@ export interface AssetResolution {
   asset?: AssetManifestEntry;
   score: number;
   unresolvedReason?: string;
+  reasons?: string[];
 }
 
 export interface AssetResolutionContext {
@@ -29,6 +30,11 @@ function assetTokens(asset: AssetManifestEntry): Set<string> {
   ]);
 }
 
+function matchesAssetRef(asset: AssetManifestEntry, value: string | undefined): boolean {
+  if (!value) return false;
+  return asset.id === value || asset.path === value || (asset.aliases ?? []).includes(value);
+}
+
 export function scoreAsset(
   request: AssetRequest,
   asset: AssetManifestEntry,
@@ -36,18 +42,24 @@ export function scoreAsset(
 ): number {
   if (asset.kind !== request.role) return -Infinity;
   if (asset.isFallback) return -Infinity;
+  if (request.lockedAssetId && !matchesAssetRef(asset, request.lockedAssetId)) return -Infinity;
   const tokens = assetTokens(asset);
-  const query = normalizedTokens([request.query, ...request.requiredTags]);
+  const query = normalizedTokens([request.query, ...request.requiredTags, ...(request.preferredTags ?? [])]);
+  for (const tag of request.requiredTags) {
+    const parts = normalizedTokens([tag]);
+    if (![...parts].every((part) => tokens.has(part))) return -Infinity;
+  }
   let score = 0;
   for (const token of query) if (tokens.has(token)) score += 3;
   for (const tag of request.requiredTags) {
     const parts = normalizedTokens([tag]);
     if ([...parts].every((part) => tokens.has(part))) score += 5;
   }
-  if (request.preferredAssetId === asset.id) score += 100;
+  if (matchesAssetRef(asset, request.preferredAssetId)) score += 30;
+  if (matchesAssetRef(asset, request.lockedAssetId)) score += 1000;
   if (asset.styleFamily === "legacy") score -= 20;
   const uses = context.usage?.get(asset.path) ?? 0;
-  if (context.maximumUses !== undefined && uses >= context.maximumUses) score -= 100;
+  if (!request.lockedAssetId && context.maximumUses !== undefined && uses >= context.maximumUses) return -Infinity;
   score -= uses * 6;
   if (asset.actionTags?.some((tag) => query.has(tag))) score += 4;
   if (asset.settingTags?.some((tag) => query.has(tag))) score += 4;
@@ -60,11 +72,8 @@ export function resolveAssetRequest(
   allowedStyles: AssetStyleFamily[] = DEFAULT_STYLE_FAMILIES,
   context: AssetResolutionContext = {},
 ): AssetResolution {
-  if (request.preferredAssetId) {
-    const exact = manifest.entries.find((entry) => entry.id === request.preferredAssetId);
-    if (exact && allowedStyles.includes(exact.styleFamily) && exact.kind === request.role) {
-      return { request, asset: exact, score: 100 };
-    }
+  if (request.lockedAssetId && !request.continuityReason?.trim()) {
+    return { request, score: 0, unresolvedReason: "lockedAssetId requires a continuityReason." };
   }
   const candidates = manifest.entries
     .filter((entry) => allowedStyles.includes(entry.styleFamily))
@@ -80,7 +89,18 @@ export function resolveAssetRequest(
         : "No semantic match and generation is disabled.",
     };
   }
-  return { request, ...candidates[0] };
+  const selected = candidates[0];
+  const uses = context.usage?.get(selected.asset.path) ?? 0;
+  return {
+    request, ...selected,
+    reasons: [
+      `semantic match for ${request.query}`,
+      `style ${selected.asset.styleFamily}`,
+      `usage ${uses}/${context.maximumUses ?? "unbounded"}`,
+      request.preferredAssetId && matchesAssetRef(selected.asset, request.preferredAssetId)
+        ? "preferred asset accepted within budget" : "novel compatible asset",
+    ],
+  };
 }
 
 export function resolveAssetRequests(
@@ -88,5 +108,10 @@ export function resolveAssetRequests(
   manifest: AssetManifest,
   context: AssetResolutionContext = {},
 ): AssetResolution[] {
-  return requests.map((request) => resolveAssetRequest(request, manifest, DEFAULT_STYLE_FAMILIES, context));
+  const usage = new Map(context.usage ?? []);
+  return requests.map((request) => {
+    const result = resolveAssetRequest(request, manifest, DEFAULT_STYLE_FAMILIES, { ...context, usage });
+    if (result.asset) usage.set(result.asset.path, (usage.get(result.asset.path) ?? 0) + 1);
+    return result;
+  });
 }

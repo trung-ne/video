@@ -1,5 +1,5 @@
 import { AnimationType, EmphasizeType, ExitType, TextStyle } from "./timeline";
-import { SourceRange, VisualRegister } from "./storyboard";
+import { SourceRange, VisualRegister, VisualTreatmentPlan, PhotoTreatment } from "./storyboard";
 
 // ============================================================
 // SCENE DSL — High-level schema that AI generates
@@ -233,6 +233,8 @@ export interface Scene {
   semanticAction?: string;
   semanticObject?: string;
   semanticRelation?: string;
+  photoTreatment?: PhotoTreatment;
+  assetResolutionNotes?: string[];
   semanticSetting?: string;
   semanticAssetIds?: string[];
   claimIds?: string[];
@@ -312,6 +314,7 @@ export interface SceneTimeline {
    * those rather than assuming they are fine.
    */
   timingProvenance?: TimingProvenance;
+  visualTreatmentPlan?: VisualTreatmentPlan;
   scenes: Scene[];
 }
 

@@ -14,7 +14,15 @@ export function buildStoryboardPrompt(durationSeconds: number): string {
     .map(([src, anchors]) => `  "${src}" — anchors: ${Object.keys(anchors).join(", ")}`)
     .join("\n");
 
-  return `Bạn là ĐẠO DIỄN cho video "Mèo Giải Thích". Nhiệm vụ: biến transcript thành STORYBOARD (ý đồ kể chuyện) — KHÔNG phải timeline chi tiết.
+  return `ASSET + VISUAL ARC CONTRACT:
+- VisualTreatmentPlan first: editorial-muted-v2, hero cadence <=45s, >=6 visual modes.
+- Use semantic asset query + requiredTags. preferredAssetId remains budgeted.
+- lockedAssetId requires continuityReason; no semantic match means request new art, never fallback.
+- Same stage <=5% and <=2 consecutive scenes; pose <=8%; STAT_REVEAL <=8%.
+- Photo scenes rotate full_bleed/tv_frame/document/screen/map/headline/cutaway.
+- Changing only a label does not create a new visual fingerprint.
+
+Bạn là ĐẠO DIỄN cho video "Mèo Giải Thích". Nhiệm vụ: biến transcript thành STORYBOARD (ý đồ kể chuyện) — KHÔNG phải timeline chi tiết.
 
 Bạn CHỈ quyết định: chia beat, mỗi scene truyền tải gì, chọn "visual grammar", điền concept slot, đánh dấu con số/từ khoá quan trọng. Hệ thống sẽ tự dựng entity/vị trí/animation/frame — bạn KHÔNG cần nghĩ những thứ đó.
 

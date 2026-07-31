@@ -2087,6 +2087,8 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     return { name: "Rendered-intent proxies", passed: true, issues };
   }
   const cfg = referenceQuality.composition;
+  const plan = timeline.visualTreatmentPlan;
+  const budgets = plan?.usageBudgets;
   const isCharacter = (source: string): boolean =>
     /(^|\/)(characters|character)\//.test(source) || source.includes("generated-assets/characters/");
   const uniqueEntities = (scene: any): any[] => {
@@ -2138,7 +2140,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
       .filter((entity: any) => isCharacter(String(entity.src ?? "")))
       .map((entity: any) => String(entity.src ?? ""))
   ));
-  const poseLimit = Math.max(3, Math.floor(scenes.length * cfg.maximumPoseRatio));
+  const poseLimit = Math.max(3, Math.floor(scenes.length * (budgets?.maximumPoseRatio ?? cfg.maximumPoseRatio)));
   for (const [pose, count] of poseCounts) {
     if (scenes.length >= 20 && count > poseLimit) {
       issues.push({
@@ -2157,13 +2159,61 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
 
   const stageCounts = countSources(scenes.map((scene) => String(scene.backgroundSrc ?? ""))
     .filter((source) => source.startsWith("assets/scenes/")));
-  const stageLimit = Math.max(3, Math.floor(scenes.length * cfg.maximumStageRatio));
+  const stageLimit = Math.max(2, Math.ceil(scenes.length * (budgets?.maximumStageRatio ?? cfg.maximumStageRatio)));
   for (const [stage, count] of stageCounts) {
     if (count > stageLimit) {
       issues.push({
         severity: "MAJOR", rule: "STAGE_REUSE",
         message: `${stage} appears in ${count} scenes; maximum is ${stageLimit}.`,
       });
+    }
+  }
+  const maximumStageRun = budgets?.maximumConsecutiveSameStage ?? 2;
+  let runStage = "";
+  let runLength = 0;
+  for (const scene of scenes) {
+    const stage = String(scene.backgroundSrc ?? "");
+    runLength = stage === runStage ? runLength + 1 : 1;
+    runStage = stage;
+    if (stage.startsWith("assets/scenes/") && runLength > maximumStageRun) {
+      issues.push({ severity: "MAJOR", rule: "STAGE_CONSECUTIVE_REUSE", scene: scene.id,
+        message: `${stage} runs for ${runLength} consecutive scenes; maximum is ${maximumStageRun}.` });
+      break;
+    }
+  }
+
+  if (budgets) {
+    const assetCounts = countSources(scenes.flatMap((scene) => scene.semanticAssetIds ?? []));
+    for (const [asset, count] of assetCounts) {
+      if (count > budgets.maximumAssetUses && !String(asset).includes("backgrounds/")) {
+        issues.push({ severity: "MAJOR", rule: "ASSET_REUSE",
+          message: `${asset} appears ${count} times; maximum is ${budgets.maximumAssetUses}.` });
+      }
+    }
+    const statCount = scenes.filter((scene) => scene.visualGrammar === "STAT_REVEAL").length;
+    if (statCount / scenes.length > budgets.maximumStatRevealRatio) {
+      issues.push({ severity: "MAJOR", rule: "STAT_REVEAL_REUSE",
+        message: `${statCount}/${scenes.length} scenes use STAT_REVEAL; maximum ratio is ${budgets.maximumStatRevealRatio}.` });
+    }
+    const photoScenes = scenes.filter((scene) =>
+      scene.visualRegister === "photo_broll" || scene.visualGrammar === "PHOTO_EVIDENCE" || scene.visualGrammar === "BEAT");
+    const missingTreatment = photoScenes.filter((scene) => !scene.photoTreatment);
+    if (missingTreatment.length) {
+      issues.push({ severity: "MAJOR", rule: "PHOTO_TREATMENT_MISSING", scene: missingTreatment[0].id,
+        message: `${missingTreatment.length}/${photoScenes.length} photo scenes do not declare a treatment.` });
+    }
+    const treatmentCounts = countSources(photoScenes.map((scene) => String(scene.photoTreatment ?? "missing")));
+    for (const [treatment, count] of treatmentCounts) {
+      if (photoScenes.length && count / photoScenes.length > budgets.maximumPhotoTreatmentRatio) {
+        issues.push({ severity: "MAJOR", rule: "PHOTO_TREATMENT_REUSE",
+          message: `${treatment} is used by ${count}/${photoScenes.length} photo scenes; maximum ratio is ${budgets.maximumPhotoTreatmentRatio}.` });
+      }
+    }
+    const modes = new Set(scenes.flatMap((scene) => [scene.visualRegister, scene.photoTreatment].filter(Boolean)));
+    const missingModes = (plan.requiredVisualModes ?? []).filter((mode: string) => !modes.has(mode));
+    if (missingModes.length) {
+      issues.push({ severity: "MAJOR", rule: "VISUAL_MODE_MISSING",
+        message: `Required visual modes absent: ${missingModes.join(", ")}.` });
     }
   }
   const sparseStages = scenes.filter((scene) =>

@@ -239,6 +239,15 @@ for (const file of files) {
   if (target) aliases[ref] = target;
 }
 
+// New production-only character art has no retired SVG counterpart by
+// design. Give every generated character the same stable logical ref contract
+// as migrated characters instead of requiring a placeholder file in
+// public/assets/ just to manufacture an alias.
+for (const file of generatedCharacters) {
+  const name = path.basename(file, path.extname(file));
+  aliases[`characters/${name}`] = `generated-assets/characters/${file}`;
+}
+
 const legacyRefs = files.filter((f) => {
   const r = path.relative(publicDir, f).replace(/\\/g, "/");
   return r.startsWith("assets/") && r.endsWith(".svg");

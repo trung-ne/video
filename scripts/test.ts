@@ -4,7 +4,7 @@ import * as os from "os";
 import * as path from "path";
 import { indexTranscript, makeSourceRange, validateStoryboardCoverage } from "../src/ai/transcriptCoverage";
 import { Storyboard } from "../src/types/storyboard";
-import { resolveAssetRequest } from "../src/engine/assetResolver";
+import { resolveAssetRequest, resolveAssetRequests } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
 import {
@@ -748,6 +748,40 @@ test("asset resolver applies a usage budget instead of repeating the top match",
     usage: new Map([["finance/money-a", 3]]), maximumUses: 2,
   });
   assert.strictEqual(result.asset?.path, "finance/money-b");
+});
+
+test("preferred assets remain budgeted while continuity locks require a reason", () => {
+  const manifest: AssetManifest = {
+    schemaVersion: 1, generatedAt: "test",
+    entries: [
+      { id: "money-a", path: "finance/money-a", sha256: "a", kind: "prop", styleFamily: "flat_icon_v2", topics: ["money"] },
+      { id: "money-b", path: "finance/money-b", sha256: "b", kind: "prop", styleFamily: "flat_icon_v2", topics: ["money"] },
+    ],
+  };
+  const base = { role: "prop" as const, slot: "prop", query: "money", requiredTags: ["money"], allowGenerate: false };
+  const preferred = resolveAssetRequest({ ...base, preferredAssetId: "money-a" }, manifest, undefined, {
+    usage: new Map([["finance/money-a", 2]]), maximumUses: 2,
+  });
+  assert.strictEqual(preferred.asset?.id, "money-b");
+  const invalidLock = resolveAssetRequest({ ...base, lockedAssetId: "money-a" }, manifest);
+  assert.match(invalidLock.unresolvedReason ?? "", /continuityReason/);
+  const validLock = resolveAssetRequest({ ...base, lockedAssetId: "money-a", continuityReason: "same ledger in a two-scene sequence" }, manifest, undefined, {
+    usage: new Map([["finance/money-a", 9]]), maximumUses: 2,
+  });
+  assert.strictEqual(validLock.asset?.id, "money-a");
+});
+
+test("batch asset resolution updates usage between requests", () => {
+  const manifest: AssetManifest = {
+    schemaVersion: 1, generatedAt: "test",
+    entries: [
+      { id: "a", path: "finance/a", sha256: "a", kind: "prop", styleFamily: "flat_icon_v2", topics: ["money"] },
+      { id: "b", path: "finance/b", sha256: "b", kind: "prop", styleFamily: "flat_icon_v2", topics: ["money"] },
+    ],
+  };
+  const request = { role: "prop" as const, slot: "prop", query: "money", requiredTags: ["money"], allowGenerate: false };
+  const results = resolveAssetRequests([request, request], manifest, { maximumUses: 1 });
+  assert.deepStrictEqual(results.map((result) => result.asset?.id), ["a", "b"]);
 });
 
 test("visual critic rejects a generic heading and metadata-only hero", () => {

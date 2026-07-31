@@ -299,6 +299,17 @@ Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có th�
 
 ## Asset Library Rules
 
+### V4.9 — Semantic selection + diversity budgets
+
+- Video >=8 scene phải có `VISUAL_TREATMENT_PLAN`: usage budgets, >=6 visual modes,
+  hero cadence <=45s và palette `editorial-muted-v2`.
+- `preferredAssetId` chỉ là ưu tiên và không vượt budget. `lockedAssetId` bắt buộc có
+  `continuityReason`.
+- Cùng stage <=5% video và <=2 scene liên tiếp; pose <=8%; STAT_REVEAL <=8%.
+- Photo scene khai một treatment trong: full_bleed, tv_frame, document, screen, map,
+  headline, cutaway. Một treatment <=35% photo scene; một ảnh <=2 lần.
+- Không có semantic match thì build fail và ghi `asset-needs.json`; cấm fallback.
+
 ### 3 nguồn art production (⛔ `public/assets/` đã ngừng dùng)
 
 | Thư mục | Dùng cho | styleFamily |

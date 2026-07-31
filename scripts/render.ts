@@ -25,6 +25,7 @@ import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/arti
 import { acquireRenderLock } from "../src/engine/renderLock";
 import { promoteArtifacts, pruneRunHistory } from "../src/engine/promoteArtifacts";
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
+import { buildDirectionSummary } from "../src/engine/directionReport";
 import {
   checkRenderMatchesTimeline,
   checkSceneBeatTimingSources,
@@ -431,6 +432,7 @@ try {
       ? null
       : path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
     referenceComparison,
+    directionSummary: buildDirectionSummary(raw),
     ttsMetrics,
   };
   fs.writeFileSync(

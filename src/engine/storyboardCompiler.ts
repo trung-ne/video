@@ -335,6 +335,8 @@ function compileBrief(
     semanticObject: brief.semanticVisual?.object,
     semanticRelation: brief.semanticVisual?.relation,
     semanticSetting: brief.semanticVisual?.setting,
+    photoTreatment: brief.photoTreatment,
+    assetResolutionNotes: brief.assetResolutionNotes,
     // Record what the compiler actually put on screen. Authored role tokens and
     // stage anchors are not assets; conversely, component grammars may render a
     // deliberate built-in character without an authored asset request.
@@ -522,6 +524,7 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
     audio: sb.audio,
     background: opts.background ?? "#FAFAF8",
     timingProvenance,
+    visualTreatmentPlan: sb.visualTreatmentPlan,
     scenes,
   } as SceneTimeline;
 }

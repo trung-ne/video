@@ -7,6 +7,14 @@ argument-hint: <transcript-file> hoặc <project-id>
 
 > **ROUTE A ONLY. Route B/API generation is locked.**
 
+## Production authoring contract
+
+Trước khi viết `SCENES`, bắt buộc export `VISUAL_TREATMENT_PLAN` đầy đủ: usage budgets,
+ít nhất 6 visual modes, hero cadence tối đa 45 giây và `paletteProfile: "editorial-muted-v2"`.
+Asset mới dùng `assetSelections` với semantic query/required tags. `preferredAssetId` không
+khóa asset; chỉ dùng `lockedAssetId` khi có `continuityReason`. Photo scene bắt buộc khai
+`photoTreatment`. Build sinh `asset-needs.json` thì bổ sung/chọn lại asset, không fallback.
+
 ```powershell
 npx ts-node scripts/new-project.ts --transcript <file> --name <slug>
 npx ts-node scripts/build-storyboard.ts --project <id>

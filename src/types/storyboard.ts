@@ -67,12 +67,29 @@ export type FocalType =
   | "screenshot"
   | "visual_gag";
 
+export type PhotoTreatment =
+  | "full_bleed" | "tv_frame" | "document" | "screen"
+  | "map" | "headline" | "cutaway";
+
+export interface VisualUsageBudgets {
+  maximumAssetUses: number;
+  maximumStageRatio: number;
+  maximumPoseRatio: number;
+  maximumConsecutiveSameStage: number;
+  maximumPhotoTreatmentRatio: number;
+  maximumStatRevealRatio: number;
+}
+
 export interface VisualTreatmentPlan {
   registerTargets: Partial<Record<VisualRegister, number>>;
   characterFreeTarget: number;
   heroConcepts: string[];
   visualMotifs: string[];
   forbiddenRepeats: string[];
+  usageBudgets: VisualUsageBudgets;
+  requiredVisualModes: string[];
+  heroCadenceSeconds: number;
+  paletteProfile: "editorial-muted-v2";
 }
 
 export interface SourceRange {
@@ -95,8 +112,15 @@ export interface AssetRequest {
   slot: string;
   query: string;
   requiredTags: string[];
+  preferredTags?: string[];
   preferredAssetId?: string;
+  lockedAssetId?: string;
+  continuityReason?: string;
   allowGenerate: boolean;
+}
+
+export interface AssetSelection extends Omit<AssetRequest, "slot" | "role"> {
+  role?: AssetRequest["role"];
 }
 
 export interface SceneContinuity {
@@ -140,6 +164,8 @@ export interface SceneBrief {
   resolvedAssets?: Record<string, string>;
   unresolvedAssetRequests?: string[];
   continuity?: SceneContinuity;
+  photoTreatment?: PhotoTreatment;
+  assetResolutionNotes?: string[];
   shot?: Shot;            // default: medium
 
   // Concept fills for the chosen grammar. Keys depend on grammar, e.g.
@@ -198,6 +224,8 @@ export interface AuthoredScene {
   silentFrameTakeaway: string;
   focalOccupancyTarget: number;
   characterRequired?: boolean;
+  photoTreatment?: PhotoTreatment;
+  assetSelections?: Record<string, AssetSelection>;
 }
 
 export interface StorySection {
