@@ -33,6 +33,7 @@ import { VISUAL_GRAMMARS } from "../src/engine/visualGrammars";
 import { compileScenes } from "../src/engine/sceneCompiler";
 import { injectLiveliness } from "../src/engine/liveliness";
 import { resolveAuthoredAssets } from "../src/engine/authoredAssets";
+import { approvedPhotoPaths, isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -393,6 +394,39 @@ test("quality gate catches a blank scene opening and card-icon text collision", 
   const rules = report.checks.flatMap((check) => check.issues ?? []).map((issue) => issue.rule);
   assert.ok(rules.includes("BLANK_SCENE_OPENING"));
   assert.ok(rules.includes("CARD_ICON_TEXT_COLLISION"));
+});
+
+test("photo policy exposes reviewed no-face images and rejects unreviewed files", () => {
+  assert.strictEqual(isApprovedNoFacePhoto("backgrounds/korea_apartments.jpg"), true);
+  assert.strictEqual(isApprovedNoFacePhoto("backgrounds/kitchen.jpg"), false);
+  assert.ok(approvedPhotoPaths().includes("backgrounds/mobile_trading_flatlay.jpg"));
+});
+
+test("quality gate blocks unreviewed photos and repeated photo wallpaper", () => {
+  const makeScene = (id: string, startFrame: number, backgroundSrc: string) => ({
+    id, label: id, startFrame, durationFrames: 150, layout: "BEAT",
+    narration: "A deliberate photo beat.", backgroundSrc, clearPrevious: true,
+    entities: [], texts: [], cards: [], paperCards: [], frameBoxes: [],
+    speechBubbles: [], sourceRange: { startWord: 0, endWord: 1, quoteChecksum: "x" },
+    visualRegister: "photo_broll", visualGrammar: "PHOTO_EVIDENCE",
+    semanticTakeaway: "the photo is evidence", semanticAction: "photo fills the frame",
+    semanticAssetIds: [backgroundSrc], focalType: "photo",
+    visualFingerprint: `${id}|photo`, silentFrameTakeaway: "the photo is evidence",
+    focalOccupancyTarget: 0.8, noveltyFromPrevious: ["new photo"],
+  });
+  const report = runQualityCheck({
+    schemaVersion: 2, fps: 30, width: 1920, height: 1080, durationInFrames: 600,
+    audio: "audio/test.wav",
+    scenes: [
+      makeScene("p1", 0, "backgrounds/kitchen.jpg"),
+      makeScene("p2", 150, "backgrounds/office_trading.jpg"),
+      makeScene("p3", 300, "backgrounds/office_trading.jpg"),
+      makeScene("p4", 450, "backgrounds/office_trading.jpg"),
+    ],
+  });
+  const rules = report.checks.flatMap((check) => check.issues ?? []).map((issue) => issue.rule);
+  assert.ok(rules.includes("PHOTO_FACE_POLICY"));
+  assert.ok(rules.includes("PHOTO_REPEAT"));
 });
 
 test("narrator pose swaps persist until the next narration beat", () => {

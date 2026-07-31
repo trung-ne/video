@@ -3,6 +3,7 @@ import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { AssetKind, AssetManifest, AssetManifestEntry, AssetStyleFamily } from "../src/types/assets";
+import { photoPolicyEntry } from "../src/engine/photoPolicy";
 
 // ── Transparent-padding compensation ──────────────────────────────────────
 // The generated PNGs carry uneven transparent margins (measured 56-81% of the
@@ -98,6 +99,7 @@ function buildEntry(file: string): AssetManifestEntry {
   const tags = words(relative);
   const hash = crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
   const generatedLead = relative.startsWith("generated-assets/characters/");
+  const photoPolicy = kind === "photo" ? photoPolicyEntry(sourcePath) : undefined;
   const stat = fs.statSync(file);
   const densityByKind: Record<AssetKind, number> = {
     character: 0.45, prop: 0.3, stage: 0.72, photo: 0.9, chart: 0.68, ui: 0.4,
@@ -112,14 +114,18 @@ function buildEntry(file: string): AssetManifestEntry {
     emotion: kind === "character" ? tags.filter((tag) => ["happy", "sad", "surprised", "think"].includes(tag)) : undefined,
     action: kind === "character" ? tags.filter((tag) => ["explain", "talk", "think", "shrug", "worker", "teacher"].includes(tag)) : undefined,
     topics: kind !== "character" ? tags : undefined,
-    source: relative.startsWith("generated-") ? "generated" : "original",
+    source: relative.startsWith("generated-") ? "generated" : photoPolicy ? "licensed" : "original",
+    sourcePage: photoPolicy?.sourcePage,
+    license: photoPolicy?.license,
+    noRecognizableFaces: photoPolicy?.approved,
     visualDensity: densityByKind[kind],
     recommendedScale: kind === "prop" || kind === "ui" ? 1.35 : 1,
     contentScale: contentScaleFor(contentFractions[relative]),
     semanticRoles: kind === "character" ? ["subject", "actor"] : [kind, "focal"],
     actionTags: kind === "character" ? tags : [],
     settingTags: kind === "stage" ? tags : [],
-    isFallback: /placeholder|fallback|concept.card/i.test(relative) || stat.size < 200,
+    isFallback: /placeholder|fallback|concept.card/i.test(relative) || stat.size < 200 ||
+      (kind === "photo" && !photoPolicy?.approved),
   };
 }
 

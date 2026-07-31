@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { listResolvableRefs } from "../engine/assetPaths";
+import { isApprovedNoFacePhoto } from "../engine/photoPolicy";
 
 // The authoring vocabulary = every logical ref that the manifest can resolve
 // to production art (generated-assets/ + generated-backgrounds/). Derived from
@@ -22,6 +23,7 @@ export function listAvailableBackgrounds(): string[] {
     .readdirSync(bgDir)
     .filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f))
     .map((f) => `backgrounds/${f}`)
+    .filter(isApprovedNoFacePhoto)
     .sort();
 }
 

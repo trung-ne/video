@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { resolveAssetSrc } from "../engine/assetPaths";
+import { isApprovedNoFacePhoto } from "../engine/photoPolicy";
 
 // ============================================================
 // backgroundResolver — real illustrated backgrounds
@@ -31,6 +32,7 @@ export function listAvailableBackgrounds(): string[] {
     .readdirSync(BG_DIR)
     .filter((f) => IMAGE_EXT.test(f))
     .map((f) => `backgrounds/${f}`)
+    .filter(isApprovedNoFacePhoto)
     .sort();
 }
 
@@ -58,6 +60,12 @@ export function backgroundImageExists(src: string): boolean {
 // Each entry maps a background *stem* (filename without extension) to the
 // words that should select it. Scored by hit count, highest wins.
 const BG_KEYWORDS: Record<string, string[]> = {
+  market_monitor: ["market monitor", "market crash", "candlestick", "volatility", "trading screen", "margin call"],
+  stock_board: ["exchange board", "price board", "market data", "stock prices", "index data"],
+  trading_workstation: ["trading app", "trading workstation", "online broker", "digital trading", "retail investor"],
+  mobile_trading_flatlay: ["mobile trading", "investment app", "smartphone", "easy access", "few taps"],
+  korea_apartments: ["korea housing", "seoul apartment", "jeonse", "korean property", "housing debt"],
+  urban_apartments: ["housing gap", "apartment skyline", "urban housing", "property boom"],
   office_01: ["office", "workplace", "work", "job", "career", "employee", "corporate", "văn phòng", "công sở", "đi làm", "nhân viên"],
   office_trading: ["trading", "trader", "stock market", "wall street", "investment", "portfolio", "giao dịch", "chứng khoán", "đầu tư"],
   meeting_room: ["meeting", "conference", "boardroom", "negotiation", "discuss", "team", "họp", "hội nghị", "thảo luận", "bàn bạc"],
@@ -94,12 +102,12 @@ const BG_KEYWORDS: Record<string, string[]> = {
 const LAYOUT_DEFAULT_BG: Record<string, string> = {
   SOLO: "living_room",
   INTRO: "living_room",
-  DIALOGUE: "coffee_shop",
+  DIALOGUE: "meeting_room",
   DUAL_CONTRAST: "city_street",
   CHAR_PROP: "home_study",
   LINEUP: "city_street",
   QA_REVEAL: "living_room",
-  STORY_SCENE: "restaurant",
+  STORY_SCENE: "living_room",
 };
 
 // Layouts where a flat gradient / white background is legitimately correct —

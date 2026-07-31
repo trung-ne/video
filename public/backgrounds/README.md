@@ -72,3 +72,21 @@
 - Total: 29 images downloaded, ~8.96 MB
 - All images: 1920×1080px, JPEG quality 80
 - Source: Unsplash CDN (free to use, attribution appreciated)
+
+## Reviewed no-face additions
+
+These files were visually reviewed to contain no recognizable human face.
+Exact source and license metadata lives in `config/photo-backgrounds.json`.
+
+| File | Description |
+|---|---|
+| korea_apartments.jpg | Dense Seoul apartment towers |
+| market_monitor.jpg | Close-up financial market monitor |
+| trading_workstation.jpg | Tablet and charts at a trading workstation |
+| stock_board.jpg | Full-frame exchange price board |
+| mobile_trading_flatlay.jpg | Phone, chart and magnifying glass flat lay |
+| urban_apartments.jpg | Wide residential cityscape |
+
+Only files with `approved: true` in the catalog are exposed to authoring and
+accepted by the production quality gate. A photo may be used at most twice per
+video so it remains an evidence/emotional punch rather than wallpaper.

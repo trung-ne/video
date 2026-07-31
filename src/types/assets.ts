@@ -30,6 +30,9 @@ export interface AssetManifestEntry {
   contentBox?: { x: number; y: number; width: number; height: number };
   anchors?: Record<string, AssetPoint>;
   source?: "original" | "generated" | "licensed";
+  sourcePage?: string;
+  license?: string;
+  noRecognizableFaces?: boolean;
   aliases?: string[];
   visualDensity?: number;
   recommendedScale?: number;

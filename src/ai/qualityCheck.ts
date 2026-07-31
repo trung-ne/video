@@ -3,6 +3,7 @@ import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { resolveAssetSrcStrict } from "../engine/assetPaths";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
+import { isApprovedNoFacePhoto } from "../engine/photoPolicy";
 import {
   getGrammarDefinition, isKnownGrammar, knownGrammarIds, missingRequiredSlots,
 } from "../engine/grammarRegistry";
@@ -221,7 +222,37 @@ function checkBackgroundVariety(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
   const isPhoto = (b: any) => b && backgroundImageExists(b) && !STAGE_ANCHORS_KEYS.has(b);
   const distinctImages = new Set(scenes.map((s) => s.backgroundSrc).filter(isPhoto));
-  const photoScenes = scenes.filter((s) => isPhoto(s.backgroundSrc)).length;
+  const photoSceneList = scenes.filter((s) => isPhoto(s.backgroundSrc));
+  const photoScenes = photoSceneList.length;
+
+  for (const scene of photoSceneList) {
+    if (String(scene.backgroundSrc).startsWith("backgrounds/") &&
+        !isApprovedNoFacePhoto(scene.backgroundSrc)) {
+      issues.push({
+        severity: "BLOCKER",
+        rule: "PHOTO_FACE_POLICY",
+        scene: scene.id,
+        message: `${scene.backgroundSrc} chưa được duyệt theo policy không có khuôn mặt người nhận diện được.`,
+        suggestion: "Chỉ dùng ảnh có approved=true trong config/photo-backgrounds.json sau khi xem ảnh và ghi nguồn/license.",
+      });
+    }
+  }
+
+  const useCounts = new Map<string, number>();
+  for (const scene of photoSceneList) {
+    const photo = String(scene.backgroundSrc);
+    useCounts.set(photo, (useCounts.get(photo) ?? 0) + 1);
+  }
+  for (const [photo, count] of useCounts) {
+    if (count > 2) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "PHOTO_REPEAT",
+        message: `${photo} được dùng ${count} lần; tối đa 2 lần để ảnh thật vẫn là visual punch.`,
+        suggestion: "Chọn ảnh khác cùng chủ đề từ allowlist, không lặp một ảnh làm wallpaper.",
+      });
+    }
+  }
 
   if (scenes.length >= 5 && distinctImages.size === 0) {
     issues.push({
