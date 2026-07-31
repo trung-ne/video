@@ -431,7 +431,9 @@ test("quality gate catches a blank scene opening and card-icon text collision", 
 test("photo policy exposes reviewed no-face images and rejects unreviewed files", () => {
   assert.strictEqual(isApprovedNoFacePhoto("backgrounds/korea_apartments.jpg"), true);
   assert.strictEqual(isApprovedNoFacePhoto("backgrounds/kitchen.jpg"), false);
+  assert.strictEqual(isApprovedNoFacePhoto("backgrounds/airport.jpg"), false);
   assert.ok(approvedPhotoPaths().includes("backgrounds/mobile_trading_flatlay.jpg"));
+  assert.ok(approvedPhotoPaths().length >= 40);
 });
 
 test("quality gate blocks unreviewed photos and repeated photo wallpaper", () => {
