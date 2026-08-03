@@ -124,6 +124,10 @@ function buildEntry(file: string): AssetManifestEntry {
   const generatedLead = relative.startsWith("generated-assets/characters/");
   const photoPolicy = kind === "photo" ? photoPolicyEntry(sourcePath) : undefined;
   const visualMetrics = assetVisuals[relative];
+  const geometry = visualMetrics as (AssetVisualMetrics & {
+    aspectRatio?: number;
+    contentBox?: AssetManifestEntry["contentBox"];
+  }) | undefined;
   const stat = fs.statSync(file);
   const densityByKind: Record<AssetKind, number> = {
     character: 0.45, prop: 0.3, stage: 0.72, photo: 0.9, chart: 0.68, ui: 0.4,
@@ -145,6 +149,8 @@ function buildEntry(file: string): AssetManifestEntry {
     visualDensity: densityByKind[kind],
     recommendedScale: kind === "prop" || kind === "ui" ? 1.35 : 1,
     contentScale: contentScaleFor(contentFractions[relative]),
+    aspectRatio: geometry?.aspectRatio,
+    contentBox: geometry?.contentBox,
     semanticRoles: kind === "character" ? ["subject", "actor"] : [kind, "focal"],
     actionTags: kind === "character" ? tags : [],
     settingTags: kind === "stage" ? tags : [],

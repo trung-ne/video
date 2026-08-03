@@ -22,8 +22,19 @@ const ALIASES: Record<string, string> = (manifest as { aliases?: Record<string, 
 const CONTENT_SCALES: Record<string, number> =
   (manifest as { contentScales?: Record<string, number> }).contentScales ?? {};
 const ASSET_ENTRIES = (manifest as {
-  entries?: Array<{ path: string; visualMetrics?: { meanSaturation?: number } }>;
+  entries?: Array<{
+    path: string;
+    aspectRatio?: number;
+    contentBox?: { x: number; y: number; width: number; height: number };
+    visualMetrics?: { meanSaturation?: number };
+  }>;
 }).entries ?? [];
+const GEOMETRY_BY_PATH = new Map(
+  ASSET_ENTRIES.map((entry) => [entry.path, {
+    aspectRatio: entry.aspectRatio ?? 1,
+    contentBox: entry.contentBox ?? { x: 0, y: 0, width: 1, height: 1 },
+  }] as const),
+);
 const SATURATION_BY_PATH = new Map(
   ASSET_ENTRIES
     .filter((entry) => typeof entry.visualMetrics?.meanSaturation === "number")
@@ -84,6 +95,17 @@ export function resolveAssetSrcStrict(src: string): {
 export function getContentScale(src: string): number {
   if (!src) return 1;
   return CONTENT_SCALES[resolveAssetSrc(src)] ?? 1;
+}
+
+/** Visible alpha geometry, normalized to the source image. */
+export function getAssetGeometry(src: string): {
+  aspectRatio: number;
+  contentBox: { x: number; y: number; width: number; height: number };
+} {
+  return GEOMETRY_BY_PATH.get(resolveAssetSrc(src)) ?? {
+    aspectRatio: 1,
+    contentBox: { x: 0, y: 0, width: 1, height: 1 },
+  };
 }
 
 /**

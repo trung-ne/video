@@ -31,12 +31,21 @@ def metrics(path, public):
         p95 = ordered[min(len(ordered) - 1, round((len(ordered) - 1) * 0.95))]
         alpha_box = rgba.getchannel("A").getbbox()
         content_fraction = 0.0
+        content_box = None
         if alpha_box:
             content_fraction = ((alpha_box[2] - alpha_box[0]) * (alpha_box[3] - alpha_box[1])) / (rgba.width * rgba.height)
+            content_box = {
+                "x": round(alpha_box[0] / rgba.width, 5),
+                "y": round(alpha_box[1] / rgba.height, 5),
+                "width": round((alpha_box[2] - alpha_box[0]) / rgba.width, 5),
+                "height": round((alpha_box[3] - alpha_box[1]) / rgba.height, 5),
+            }
         dominant = ["#%02x%02x%02x" % color for color, _ in buckets.most_common(4)]
         return {
             "width": width,
             "height": height,
+            "aspectRatio": round(width / height, 5),
+            "contentBox": content_box,
             "meanSaturation": round(statistics.fmean(saturations), 4),
             "p95Saturation": round(p95, 4),
             "luminanceContrast": round(statistics.pstdev(luminance), 4),
