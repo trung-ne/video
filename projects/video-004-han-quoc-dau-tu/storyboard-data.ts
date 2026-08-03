@@ -248,7 +248,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "TABLEAU", emotion: "hopeful",
     purpose: "Show the system working fine when rates are low.",
     viewerFocus: "everyone happy under low rates",
-    slots: { stage: "assets/scenes/living_room.svg", who: "landlord", anchorA: "sofa_left", prop: "finance/interest_rate", caption: "Lãi suất thấp: ai cũng vui" } },
+    slots: { stage: "assets/scenes/living_room.svg", who: "landlord", anchorA: "sofa_left", prop: "finance/interest_rate", propPlacement: "right", propScale: "1.05", caption: "Lãi suất thấp: ai cũng vui" } },
 
   { marker: "nhưng mà khi lãi suất tăng ấy thì nhiều chủ nhà",
     narrationOverride: "Nhưng khi lãi suất tăng, nhiều chủ nhà bắt đầu gặp khó khăn trả lại tiền cọc khi hợp đồng kết thúc — và người chịu áp lực đầu tiên thường là người đi thuê.",
@@ -318,7 +318,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "TABLEAU", emotion: "concern",
     purpose: "That feeling reshapes an entire generation's financial choices.",
     viewerFocus: "generation-wide behavior shift",
-    slots: { stage: "assets/scenes/street.svg", who: "hostShrug", anchorA: "sidewalk_right", prop: "people/person", caption: "Cả thế hệ đổi cách quyết định" } },
+    slots: { stage: "assets/scenes/street.svg", who: "hostShrug", anchorA: "sidewalk_right", prop: "people/person", propPlacement: "left", propScale: "0.9", caption: "Cả thế hệ đổi cách quyết định" } },
 
   { marker: "Họ sẽ lao vào sau khi đã đọc được vài cuốn sách",
     grammar: "CHAR_PROP", emotion: "urgent",
@@ -548,7 +548,7 @@ const BASE_SCENES: DraftScene[] = [
     grammar: "DIALOGUE_QA", emotion: "concern",
     purpose: "Retail sees short selling as a rigged playing field.",
     viewerFocus: "retail vs. foreign institutional funds",
-    slots: { asker: "skeptic", answerer: "regulator", askerText: "Luật chơi có công bằng?", answererText: "Nhà đầu tư lẻ không tin vậy.", stage: "assets/scenes/courtroom.svg", anchorA: "stand", anchorB: "bench" } },
+    slots: { asker: "skeptic", answerer: "regulator", askerText: "Luật chơi có công bằng?", answererText: "Nhà đầu tư lẻ không tin vậy.", stage: "assets/scenes/courtroom.svg", anchorA: "stand_left", anchorB: "bench_right" } },
 
   { marker: "Những cái bê bối liên quan đến bán khống",
     grammar: "TABLEAU", emotion: "sad",

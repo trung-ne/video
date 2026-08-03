@@ -100,7 +100,12 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
   "assets/scenes/mountain.svg":       { bench: { x: 0.5, y: 0.5, scale: 1.5 }, stand: { x: 0.32, y: 0.56, scale: 1.6 } },
   "assets/scenes/temple.svg":         { stand: { x: 0.5, y: 0.52, scale: 1.55 }, stand_left: { x: 0.34, y: 0.52, scale: 1.5 } },
   "assets/scenes/wedding_hall.svg":   { center: { x: 0.5, y: 0.5, scale: 1.5 }, left: { x: 0.38, y: 0.5, scale: 1.45 }, right: { x: 0.62, y: 0.5, scale: 1.45 } },
-  "assets/scenes/courtroom.svg":      { stand: { x: 0.5, y: 0.52, scale: 1.55 }, bench: { x: 0.5, y: 0.5, scale: 1.5 } },
+  "assets/scenes/courtroom.svg":      {
+    stand: { x: 0.5, y: 0.52, scale: 1.55 }, bench: { x: 0.5, y: 0.5, scale: 1.5 },
+    // Dialogue needs two readable sides; the legacy center anchors remain for
+    // solo shots while this pair preserves courtroom depth and the 180° line.
+    stand_left: { x: 0.32, y: 0.52, scale: 1.42 }, bench_right: { x: 0.68, y: 0.50, scale: 1.42 },
+  },
   "assets/scenes/factory.svg":        { stand: { x: 0.5, y: 0.52, scale: 1.6 }, stand_left: { x: 0.34, y: 0.52, scale: 1.5 } },
   "assets/scenes/construction.svg":   { stand: { x: 0.5, y: 0.52, scale: 1.6 }, stand_left: { x: 0.34, y: 0.54, scale: 1.5 } },
   "assets/scenes/farm_field.svg":     { bench: { x: 0.5, y: 0.5, scale: 1.5 }, stand: { x: 0.4, y: 0.54, scale: 1.6 } },
