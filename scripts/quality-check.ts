@@ -17,6 +17,8 @@ import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 import { autoFixBackgrounds, printBackgroundFixReport } from "../src/ai/backgroundResolver";
 import { checkSceneBeatTimingSources, checkTimingProvenance, formatTimingIssues, hasBlocker } from "../src/engine/timingIntegrity";
 import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
+import { loadTimeline } from "../src/engine/loadTimeline";
+import { checkSpatialIntegrity, formatSpatialIntegrityReport } from "../src/engine/spatialIntegrity";
 
 const args = process.argv.slice(2);
 const timelinePath = args.find((arg) => !arg.startsWith("--"));
@@ -53,6 +55,15 @@ if (autoFix && Array.isArray(timeline.scenes)) {
 
 const report = runQualityCheck(timeline, timelinePath);
 printQualityReport(report);
+const transient = loadTimeline(timeline);
+const spatialReport = checkSpatialIntegrity(
+  transient.timeline,
+  Array.isArray(timeline.scenes) ? timeline.scenes.map((scene: any) => ({
+    id: scene.id, start: scene.startFrame, end: scene.startFrame + scene.durationFrames,
+    narrationBeatFrames: (scene.subtitleCues ?? []).map((cue: any) => scene.startFrame + cue.startFrame),
+  })) : undefined,
+);
+console.log(formatSpatialIntegrityReport(spatialReport));
 
 // Timing provenance is reported alongside the grade, because a high grade on an
 // estimate-timed timeline is exactly how the v5-codex incident read: 100/100
@@ -102,4 +113,4 @@ if (!autoFix && report.checks.find((c) => c.name.includes("Background: áº£nh ná»
   console.log(`   npx ts-node scripts/quality-check.ts ${timelinePath} --fix\n`);
 }
 
-process.exit(timingUntrusted || report.blockers > 0 ? 1 : report.majors > 0 ? 2 : 0);
+process.exit(timingUntrusted || report.blockers > 0 || !spatialReport.passed ? 1 : report.majors > 0 ? 2 : 0);

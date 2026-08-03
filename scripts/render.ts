@@ -18,6 +18,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
+import { checkSpatialIntegrity, formatSpatialIntegrityReport } from "../src/engine/spatialIntegrity";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
 import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
 import { prepareTimelineAudio, writeAudioAudit, resolvePublicAudio, sha256File } from "../src/audio/prepareAudio";
@@ -259,6 +260,20 @@ if (fs.existsSync(charDir)) {
 // Single compile point — scenes → events + liveliness (shared with preview).
 const { timeline, liveliness } = loadTimeline(raw, availablePoses);
 printLivelinessReport(liveliness);
+const spatialReport = checkSpatialIntegrity(
+  timeline,
+  Array.isArray(raw.scenes) ? raw.scenes.map((scene: any) => ({
+    id: scene.id,
+    start: scene.startFrame,
+    end: scene.startFrame + scene.durationFrames,
+    narrationBeatFrames: (scene.subtitleCues ?? []).map((cue: any) => scene.startFrame + cue.startFrame),
+  })) : undefined,
+);
+console.log(formatSpatialIntegrityReport(spatialReport));
+if (!spatialReport.passed) {
+  console.error("\n❌ Spatial integrity gate failed — fix storyboard placement; do not render a colliding timeline.");
+  process.exit(1);
+}
 
 console.log(`✅ Timeline loaded: ${timelinePath}`);
 console.log(`   Duration: ${timeline.durationInFrames} frames @ ${timeline.fps}fps`);
@@ -438,6 +453,7 @@ try {
       : path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
     referenceComparison,
     directionSummary: buildDirectionSummary(raw),
+    spatialIntegrity: spatialReport,
     ttsMetrics,
   };
   fs.writeFileSync(

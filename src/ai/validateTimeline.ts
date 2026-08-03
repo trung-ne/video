@@ -180,6 +180,12 @@ export function validateSceneTimeline(input: any): ValidationResult {
             warnings.push(`${ep} position.y out of [0,1]`);
           }
         }
+        if (e.motionPolicy && !["fixed", "collision-safe"].includes(e.motionPolicy)) {
+          errors.push(`${ep} motionPolicy must be "fixed" or "collision-safe"`);
+        }
+        if (e.allowOverlapWith && (!Array.isArray(e.allowOverlapWith) || e.allowOverlapWith.some((id: unknown) => typeof id !== "string"))) {
+          errors.push(`${ep} allowOverlapWith must be a string array`);
+        }
       }
     }
 
