@@ -5511,7 +5511,7 @@
       "purpose": "Recap the four combined root causes.",
       "emotion": "neutral",
       "viewerFocus": "the four factors combined",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "TABLEAU",
       "sourceRange": {
         "startWord": 3012,
         "endWord": 3031,
@@ -5519,29 +5519,32 @@
       },
       "heroVisual": true,
       "slots": {
-        "who": "hostPlain",
+        "who": "analyst",
         "prop": "props/concept_card",
-        "label": "Bốn yếu tố khóa vào nhau"
+        "label": "Bốn yếu tố khóa vào nhau",
+        "stage": "assets/scenes/classroom.svg",
+        "anchorA": "board",
+        "caption": "Bốn lực, một cơn sốt"
       },
-      "visualRegister": "character_action",
+      "visualRegister": "full_tableau",
       "semanticVisual": {
         "subject": "host and four-factor card",
         "action": "lock the four root causes into one explanation",
         "takeaway": "four structural forces make leverage feel rational",
         "object": "four-factor concept card"
       },
-      "focalType": "character_action",
+      "focalType": "full_scene",
       "silentFrameTakeaway": "four structural forces make leverage feel rational",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|host and four-factor card|lock the four root causes into one explanation|four-factor concept card|none|no-stage|default|prop=props/concept_card|who=characters/cat",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host and four-factor card|lock the four root causes into one explanation|four-factor concept card|none|assets/scenes/classroom.svg|default|prop=props/concept_card|stage=assets/scenes/classroom.svg|who=characters/cat_teacher",
       "assetRequests": [
         {
           "role": "character",
           "slot": "who",
-          "query": "characters/cat",
+          "query": "characters/cat_teacher",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat",
+          "preferredAssetId": "characters/cat_teacher",
           "allowGenerate": false
         },
         {
@@ -5551,18 +5554,28 @@
           "requiredTags": [],
           "preferredAssetId": "props/concept_card",
           "allowGenerate": false
+        },
+        {
+          "role": "stage",
+          "slot": "stage",
+          "query": "assets/scenes/classroom.svg",
+          "requiredTags": [],
+          "preferredAssetId": "assets/scenes/classroom.svg",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "who": "characters/cat",
-        "prop": "props/concept_card"
+        "who": "characters/cat_teacher",
+        "prop": "props/concept_card",
+        "stage": "assets/scenes/classroom.svg"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:character_action",
-        "asset:characters/cat",
-        "asset:props/concept_card"
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_teacher",
+        "asset:props/concept_card",
+        "asset:assets/scenes/classroom.svg"
       ]
     },
     {
@@ -5633,6 +5646,7 @@
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
         "grammar:DIALOGUE_QA",
+        "register:character_action",
         "asset:characters/cat_shrug",
         "asset:characters/cat_child_school",
         "asset:assets/scenes/living_room.svg"
@@ -5991,7 +6005,7 @@
       "purpose": "Closing one door just opens another — regulation treats symptoms.",
       "emotion": "sarcastic",
       "viewerFocus": "closing one door, opening another",
-      "visualGrammar": "VISUAL_METAPHOR",
+      "visualGrammar": "TABLEAU",
       "sourceRange": {
         "startWord": 3327,
         "endWord": 3371,
@@ -6002,21 +6016,42 @@
         "setup": "Đóng một cánh cửa",
         "payoff": "Người ta tìm cánh cửa khác",
         "leftAsset": "finance/loss",
-        "rightAsset": "finance/investment"
+        "rightAsset": "finance/investment",
+        "stage": "assets/scenes/airport.svg",
+        "who": "regulator",
+        "anchorA": "stand",
+        "prop": "finance/exchange",
+        "caption": "Đóng cửa, tiền đổi lối"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "full_tableau",
       "semanticVisual": {
         "subject": "speculation stream",
         "action": "escapes through another door as one closes",
         "takeaway": "rules that treat symptoms can redirect rather than remove demand",
         "relation": "closed door opens another route"
       },
-      "focalType": "visual_gag",
+      "focalType": "full_scene",
       "silentFrameTakeaway": "rules that treat symptoms can redirect rather than remove demand",
       "focalOccupancyTarget": 0.54,
       "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|speculation stream|escapes through another door as one closes|none|closed door opens another route|no-stage|default|leftAsset=finance/loss|rightAsset=finance/investment",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|speculation stream|escapes through another door as one closes|none|closed door opens another route|assets/scenes/airport.svg|default|leftAsset=finance/loss|prop=finance/exchange|rightAsset=finance/investment|stage=assets/scenes/airport.svg|who=characters/cat_police",
       "assetRequests": [
+        {
+          "role": "character",
+          "slot": "who",
+          "query": "characters/cat_police",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_police",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "prop",
+          "query": "finance/exchange",
+          "requiredTags": [],
+          "preferredAssetId": "finance/exchange",
+          "allowGenerate": false
+        },
         {
           "role": "prop",
           "slot": "leftAsset",
@@ -6032,16 +6067,30 @@
           "requiredTags": [],
           "preferredAssetId": "finance/investment",
           "allowGenerate": false
+        },
+        {
+          "role": "stage",
+          "slot": "stage",
+          "query": "assets/scenes/airport.svg",
+          "requiredTags": [],
+          "preferredAssetId": "assets/scenes/airport.svg",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
+        "who": "characters/cat_police",
+        "prop": "finance/exchange",
         "leftAsset": "finance/loss",
-        "rightAsset": "finance/investment"
+        "rightAsset": "finance/investment",
+        "stage": "assets/scenes/airport.svg"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:VISUAL_METAPHOR",
-        "register:visual_gag"
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_police",
+        "asset:finance/exchange",
+        "asset:assets/scenes/airport.svg"
       ]
     },
     {
@@ -6099,8 +6148,8 @@
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
         "grammar:CHAR_PROP",
-        "asset:characters/cat_sunglasses",
-        "asset:finance/exchange"
+        "register:visual_gag",
+        "asset:characters/cat_sunglasses"
       ]
     },
     {
@@ -7284,7 +7333,7 @@
       "purpose": "Recap the three structural forces feeding the cycle.",
       "emotion": "concern",
       "viewerFocus": "rising debt, cheap money, risk-seeking capital",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "TABLEAU",
       "sourceRange": {
         "startWord": 4116,
         "endWord": 4150,
@@ -7294,20 +7343,23 @@
       "slots": {
         "who": "youngperson",
         "prop": "finance/debt",
-        "label": "Nợ tăng, tiền rẻ, vốn tìm rủi ro"
+        "label": "Nợ tăng, tiền rẻ, vốn tìm rủi ro",
+        "stage": "assets/scenes/bedroom.svg",
+        "anchorA": "bed",
+        "caption": "Nợ tăng, thu nhập hụt hơi"
       },
-      "visualRegister": "character_action",
+      "visualRegister": "full_tableau",
       "semanticVisual": {
         "subject": "young worker and debt prop",
         "action": "carry rising debt while income trails assets",
         "takeaway": "rising debt and assets alongside slower income feed the cycle",
         "object": "debt burden"
       },
-      "focalType": "character_action",
+      "focalType": "full_scene",
       "silentFrameTakeaway": "rising debt and assets alongside slower income feed the cycle",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|young worker and debt prop|carry rising debt while income trails assets|debt burden|none|no-stage|default|prop=finance/debt|who=characters/cat_homebuyer",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|young worker and debt prop|carry rising debt while income trails assets|debt burden|none|assets/scenes/bedroom.svg|default|prop=finance/debt|stage=assets/scenes/bedroom.svg|who=characters/cat_homebuyer",
       "assetRequests": [
         {
           "role": "character",
@@ -7324,18 +7376,28 @@
           "requiredTags": [],
           "preferredAssetId": "finance/debt",
           "allowGenerate": false
+        },
+        {
+          "role": "stage",
+          "slot": "stage",
+          "query": "assets/scenes/bedroom.svg",
+          "requiredTags": [],
+          "preferredAssetId": "assets/scenes/bedroom.svg",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_homebuyer",
-        "prop": "finance/debt"
+        "prop": "finance/debt",
+        "stage": "assets/scenes/bedroom.svg"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:character_action",
+        "grammar:TABLEAU",
+        "register:full_tableau",
         "asset:characters/cat_homebuyer",
-        "asset:finance/debt"
+        "asset:finance/debt",
+        "asset:assets/scenes/bedroom.svg"
       ]
     },
     {
@@ -7999,7 +8061,7 @@
       "purpose": "Closing outlook question — the video's final open thought.",
       "emotion": "curious",
       "viewerFocus": "the closing question",
-      "visualGrammar": "QA_REVEAL",
+      "visualGrammar": "TABLEAU",
       "sourceRange": {
         "startWord": 4546,
         "endWord": 4583,
@@ -8007,40 +8069,64 @@
       },
       "heroVisual": true,
       "slots": {
-        "who": "hostHappy",
+        "who": "hostShrug",
         "q": "Liệu có cách nào xây dựng tài sản khác?",
-        "a": "Không cần đánh cược ngày càng lớn?"
+        "a": "Không cần đánh cược ngày càng lớn?",
+        "stage": "assets/scenes/construction.svg",
+        "anchorA": "stand",
+        "prop": "finance/house",
+        "caption": "Xây tài sản, không tăng cược?"
       },
-      "visualRegister": "character_action",
+      "visualRegister": "full_tableau",
       "semanticVisual": {
         "subject": "thinking host",
         "action": "holds open the final alternative to bigger bets",
         "takeaway": "the real test is whether young people can build assets without escalating wagers",
         "object": "closing social question"
       },
-      "focalType": "character_action",
+      "focalType": "full_scene",
       "silentFrameTakeaway": "the real test is whether young people can build assets without escalating wagers",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "QA_REVEAL|character_action|character_action|none|thinking host|holds open the final alternative to bigger bets|closing social question|none|no-stage|default|who=characters/cat_happy",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|thinking host|holds open the final alternative to bigger bets|closing social question|none|assets/scenes/construction.svg|default|prop=finance/house|stage=assets/scenes/construction.svg|who=characters/cat_shrug",
       "assetRequests": [
         {
           "role": "character",
           "slot": "who",
-          "query": "characters/cat_happy",
+          "query": "characters/cat_shrug",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat_happy",
+          "preferredAssetId": "characters/cat_shrug",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "prop",
+          "query": "finance/house",
+          "requiredTags": [],
+          "preferredAssetId": "finance/house",
+          "allowGenerate": false
+        },
+        {
+          "role": "stage",
+          "slot": "stage",
+          "query": "assets/scenes/construction.svg",
+          "requiredTags": [],
+          "preferredAssetId": "assets/scenes/construction.svg",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
-        "who": "characters/cat_happy"
+        "who": "characters/cat_shrug",
+        "prop": "finance/house",
+        "stage": "assets/scenes/construction.svg"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:QA_REVEAL",
-        "register:character_action",
-        "asset:characters/cat_happy"
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_shrug",
+        "asset:finance/house",
+        "asset:assets/scenes/construction.svg"
       ]
     },
     {
@@ -8108,8 +8194,6 @@
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:TABLEAU",
-        "register:full_tableau",
         "asset:characters/cat_explain",
         "asset:props/book",
         "asset:assets/scenes/library.svg"

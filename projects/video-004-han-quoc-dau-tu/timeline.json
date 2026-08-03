@@ -17,7 +17,7 @@
     "measuredSceneCount": 127,
     "audioSeconds": 1157.496,
     "audioSha256": "2227cc8ca5183876619bbc0c6a6f2a3dccbb9b6c7d6e43a60150a3517f0d7d74",
-    "storyboardChecksum": "6114133d9da8b6a850529bfe68d9de27a4a7e2ffdc996abfab4772f58b28ef89",
+    "storyboardChecksum": "35f5723296c981b7bbbd7fd22bc1f473df9db21db57efc829f419dd8db735c50",
     "durationsChecksum": "d651559d71e08080766b23c02a3e26e0df2cd62bf43506a35521ef583a67cdc0",
     "wordsChecksum": "ed97b2f93918f641404913e71b3fbd08b1320a610e5b802195eb58fd58145314"
   },
@@ -7916,35 +7916,37 @@
       "label": "Recap the four combined root causes.",
       "startFrame": 22569,
       "durationFrames": 152,
-      "layout": "CHAR_PROP",
+      "layout": "TABLEAU",
       "narration": "Và bốn yếu tố\r\nnày khi ghép lại với nhau sẽ tạo ra một\r\nmôi trường rất là đặc biệt",
       "sourceRange": {
         "startWord": 3012,
         "endWord": 3031,
         "quoteChecksum": "7c0cd5112c797cc789a231a86a3355c054e4ba57c728ac5b04b77a965b0ece48"
       },
-      "visualRegister": "character_action",
-      "visualGrammar": "CHAR_PROP",
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
       "beatTimingSource": "source-range-proportional",
       "semanticTakeaway": "four structural forces make leverage feel rational",
       "semanticAction": "lock the four root causes into one explanation",
       "semanticObject": "four-factor concept card",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
-        "characters/cat",
-        "props/concept_card"
+        "characters/cat_teacher",
+        "props/concept_card",
+        "assets/scenes/classroom.svg"
       ],
       "heroVisual": true,
-      "focalType": "character_action",
+      "focalType": "full_scene",
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|host and four-factor card|lock the four root causes into one explanation|four-factor concept card|none|no-stage|default|prop=props/concept_card|who=characters/cat",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host and four-factor card|lock the four root causes into one explanation|four-factor concept card|none|assets/scenes/classroom.svg|default|prop=props/concept_card|stage=assets/scenes/classroom.svg|who=characters/cat_teacher",
       "silentFrameTakeaway": "four structural forces make leverage feel rational",
       "focalOccupancyTarget": 0.52,
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:character_action",
-        "asset:characters/cat",
-        "asset:props/concept_card"
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_teacher",
+        "asset:props/concept_card",
+        "asset:assets/scenes/classroom.svg"
       ],
       "subtitleCues": [
         {
@@ -7963,33 +7965,44 @@
           "endFrame": 128
         }
       ],
-      "backgroundSrc": "#FFFFFF",
+      "backgroundSrc": "assets/scenes/classroom.svg",
       "clearPrevious": true,
       "entities": [
         {
-          "assetId": "scene-084-cat",
-          "src": "characters/cat",
-          "slot": "LEFT",
-          "scale": 2.8,
-          "enterAnimation": "slideLeft",
-          "enterDelay": 2
+          "assetId": "scene-084-a",
+          "src": "characters/cat_teacher",
+          "anchor": "board",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6
         },
         {
           "assetId": "scene-084-prop",
           "src": "props/concept_card",
-          "slot": "RIGHT",
-          "scale": 2.2,
-          "label": "Bốn yếu tố khóa vào nhau",
+          "position": {
+            "x": 0.55,
+            "y": 0.58
+          },
+          "scale": 1.35,
           "enterAnimation": "popIn",
           "enterDelay": 24,
           "emphasize": {
             "animation": "pulse",
-            "delay": 30,
+            "delay": 24,
             "duration": 20
           }
         }
       ],
-      "texts": []
+      "texts": [
+        {
+          "id": "scene-084-cap",
+          "content": "Bốn lực, một cơn sốt",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 12,
+          "hold": "scene-end"
+        }
+      ],
+      "speechBubbles": []
     },
     {
       "id": "scene-085",
@@ -8023,6 +8036,7 @@
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
         "grammar:DIALOGUE_QA",
+        "register:character_action",
         "asset:characters/cat_shrug",
         "asset:characters/cat_child_school",
         "asset:assets/scenes/living_room.svg"
@@ -8698,33 +8712,37 @@
       "label": "Closing one door just opens another — regulation treats symptoms.",
       "startFrame": 25049,
       "durationFrames": 300,
-      "layout": "DUAL_CONTRAST",
+      "layout": "TABLEAU",
       "narration": "Nhưng mà những cái đấy thì nó\r\ncũng chỉ là xử lý phần ngọn thôi, trong\r\nkhi là cái nhu cầu đầu cơ vẫn còn nguyên\r\nvà nếu mà cánh cửa này bị đóng lại thì\r\nngười ta lại tìm đến một cánh cửa khác",
       "sourceRange": {
         "startWord": 3327,
         "endWord": 3371,
         "quoteChecksum": "ac2345a3ca06ef7966d308f05f6b3eb80ee643c54aefa5385c66a8d92a13942a"
       },
-      "visualRegister": "visual_gag",
-      "visualGrammar": "VISUAL_METAPHOR",
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
       "beatTimingSource": "source-range-proportional",
       "semanticTakeaway": "rules that treat symptoms can redirect rather than remove demand",
       "semanticAction": "escapes through another door as one closes",
       "semanticRelation": "closed door opens another route",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
-        "finance/loss",
-        "finance/investment"
+        "characters/cat_police",
+        "finance/exchange",
+        "assets/scenes/airport.svg"
       ],
       "heroVisual": true,
-      "focalType": "visual_gag",
+      "focalType": "full_scene",
       "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|speculation stream|escapes through another door as one closes|none|closed door opens another route|no-stage|default|leftAsset=finance/loss|rightAsset=finance/investment",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|speculation stream|escapes through another door as one closes|none|closed door opens another route|assets/scenes/airport.svg|default|leftAsset=finance/loss|prop=finance/exchange|rightAsset=finance/investment|stage=assets/scenes/airport.svg|who=characters/cat_police",
       "silentFrameTakeaway": "rules that treat symptoms can redirect rather than remove demand",
       "focalOccupancyTarget": 0.54,
       "noveltyFromPrevious": [
-        "grammar:VISUAL_METAPHOR",
-        "register:visual_gag"
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_police",
+        "asset:finance/exchange",
+        "asset:assets/scenes/airport.svg"
       ],
       "subtitleCues": [
         {
@@ -8753,38 +8771,44 @@
           "endFrame": 272
         }
       ],
-      "backgroundSrc": "#FFFFFF",
+      "backgroundSrc": "assets/scenes/airport.svg",
       "clearPrevious": true,
-      "entities": [],
-      "texts": [],
-      "cards": [
+      "entities": [
         {
-          "id": "scene-092-l",
-          "position": {
-            "x": 0.25,
-            "y": 0.47
-          },
-          "background": "#286F7A",
-          "iconSrc": "finance/loss",
-          "label": "Đóng một cánh cửa",
-          "width": 660,
-          "height": 540,
-          "delay": 2
+          "assetId": "scene-092-a",
+          "src": "characters/cat_police",
+          "anchor": "stand",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6
         },
         {
-          "id": "scene-092-r",
+          "assetId": "scene-092-prop",
+          "src": "finance/exchange",
           "position": {
-            "x": 0.75,
-            "y": 0.47
+            "x": 0.55,
+            "y": 0.58
           },
-          "background": "#B54848",
-          "iconSrc": "finance/investment",
-          "label": "Người ta tìm cánh cửa khác",
-          "width": 660,
-          "height": 540,
-          "delay": 120
+          "scale": 1.35,
+          "enterAnimation": "popIn",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
         }
-      ]
+      ],
+      "texts": [
+        {
+          "id": "scene-092-cap",
+          "content": "Đóng cửa, tiền đổi lối",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 12,
+          "hold": "scene-end"
+        }
+      ],
+      "speechBubbles": []
     },
     {
       "id": "scene-093",
@@ -8817,8 +8841,8 @@
       "focalOccupancyTarget": 0.52,
       "noveltyFromPrevious": [
         "grammar:CHAR_PROP",
-        "asset:characters/cat_sunglasses",
-        "asset:finance/exchange"
+        "register:visual_gag",
+        "asset:characters/cat_sunglasses"
       ],
       "subtitleCues": [
         {
@@ -10635,15 +10659,15 @@
       "label": "Recap the three structural forces feeding the cycle.",
       "startFrame": 30817,
       "durationFrames": 270,
-      "layout": "CHAR_PROP",
+      "layout": "TABLEAU",
       "narration": "Nợ tăng dần qua từng năm này, giá\r\ntài sản tăng nhanh hơn thu nhập, tiền rẻ\r\ntồn tại quá lâu và dòng vốn liên tục chỉ\r\nvào những cái tài sản rủi ro hơn",
       "sourceRange": {
         "startWord": 4116,
         "endWord": 4150,
         "quoteChecksum": "a856cf09560d907ff40aeded387267df399900b6f42c3db1071a0039f18dc6df"
       },
-      "visualRegister": "character_action",
-      "visualGrammar": "CHAR_PROP",
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
       "beatTimingSource": "source-range-proportional",
       "semanticTakeaway": "rising debt and assets alongside slower income feed the cycle",
       "semanticAction": "carry rising debt while income trails assets",
@@ -10651,19 +10675,21 @@
       "assetResolutionNotes": [],
       "semanticAssetIds": [
         "characters/cat_homebuyer",
-        "finance/debt"
+        "finance/debt",
+        "assets/scenes/bedroom.svg"
       ],
       "heroVisual": true,
-      "focalType": "character_action",
+      "focalType": "full_scene",
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|young worker and debt prop|carry rising debt while income trails assets|debt burden|none|no-stage|default|prop=finance/debt|who=characters/cat_homebuyer",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|young worker and debt prop|carry rising debt while income trails assets|debt burden|none|assets/scenes/bedroom.svg|default|prop=finance/debt|stage=assets/scenes/bedroom.svg|who=characters/cat_homebuyer",
       "silentFrameTakeaway": "rising debt and assets alongside slower income feed the cycle",
       "focalOccupancyTarget": 0.52,
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:character_action",
+        "grammar:TABLEAU",
+        "register:full_tableau",
         "asset:characters/cat_homebuyer",
-        "asset:finance/debt"
+        "asset:finance/debt",
+        "asset:assets/scenes/bedroom.svg"
       ],
       "subtitleCues": [
         {
@@ -10687,33 +10713,44 @@
           "endFrame": 238
         }
       ],
-      "backgroundSrc": "#FFFFFF",
+      "backgroundSrc": "assets/scenes/bedroom.svg",
       "clearPrevious": true,
       "entities": [
         {
-          "assetId": "scene-114-cat",
+          "assetId": "scene-114-a",
           "src": "characters/cat_homebuyer",
-          "slot": "LEFT",
-          "scale": 2.8,
-          "enterAnimation": "slideLeft",
-          "enterDelay": 2
+          "anchor": "bed",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6
         },
         {
           "assetId": "scene-114-prop",
           "src": "finance/debt",
-          "slot": "RIGHT",
-          "scale": 2.2,
-          "label": "Nợ tăng, tiền rẻ, vốn tìm rủi ro",
+          "position": {
+            "x": 0.55,
+            "y": 0.58
+          },
+          "scale": 1.35,
           "enterAnimation": "popIn",
           "enterDelay": 24,
           "emphasize": {
             "animation": "pulse",
-            "delay": 30,
+            "delay": 24,
             "duration": 20
           }
         }
       ],
-      "texts": []
+      "texts": [
+        {
+          "id": "scene-114-cap",
+          "content": "Nợ tăng, thu nhập hụt hơi",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 12,
+          "hold": "scene-end"
+        }
+      ],
+      "speechBubbles": []
     },
     {
       "id": "scene-115",
@@ -11795,33 +11832,37 @@
       "label": "Closing outlook question — the video's final open thought.",
       "startFrame": 34257,
       "durationFrames": 258,
-      "layout": "QA_REVEAL",
+      "layout": "TABLEAU",
       "narration": "Điều đáng quan sát nhất trong những năm tới là: liệu Hàn Quốc có tìm được cách giúp người trẻ xây dựng tài sản, mà không phải đánh cược ngày càng lớn hay không?",
       "sourceRange": {
         "startWord": 4546,
         "endWord": 4583,
         "quoteChecksum": "73b739bffd4a44b5f7261fb937818dae406cfd7925208971c93e89acdd4a0d6e"
       },
-      "visualRegister": "character_action",
-      "visualGrammar": "QA_REVEAL",
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
       "beatTimingSource": "sentence-boundary",
       "semanticTakeaway": "the real test is whether young people can build assets without escalating wagers",
       "semanticAction": "holds open the final alternative to bigger bets",
       "semanticObject": "closing social question",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
-        "characters/cat_happy"
+        "characters/cat_shrug",
+        "finance/house",
+        "assets/scenes/construction.svg"
       ],
       "heroVisual": true,
-      "focalType": "character_action",
+      "focalType": "full_scene",
       "characterRequired": true,
-      "visualFingerprint": "QA_REVEAL|character_action|character_action|none|thinking host|holds open the final alternative to bigger bets|closing social question|none|no-stage|default|who=characters/cat_happy",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|thinking host|holds open the final alternative to bigger bets|closing social question|none|assets/scenes/construction.svg|default|prop=finance/house|stage=assets/scenes/construction.svg|who=characters/cat_shrug",
       "silentFrameTakeaway": "the real test is whether young people can build assets without escalating wagers",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
-        "grammar:QA_REVEAL",
-        "register:character_action",
-        "asset:characters/cat_happy"
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_shrug",
+        "asset:finance/house",
+        "asset:assets/scenes/construction.svg"
       ],
       "subtitleCues": [
         {
@@ -11845,51 +11886,44 @@
           "endFrame": 227
         }
       ],
-      "backgroundSrc": "#FFFFFF",
+      "backgroundSrc": "assets/scenes/construction.svg",
       "clearPrevious": true,
       "entities": [
         {
-          "assetId": "scene-126-cat",
-          "src": "characters/cat_happy",
-          "slot": "RIGHT_BOTTOM",
-          "scale": 1.45,
+          "assetId": "scene-126-a",
+          "src": "characters/cat_shrug",
+          "anchor": "stand",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6
+        },
+        {
+          "assetId": "scene-126-prop",
+          "src": "finance/house",
+          "position": {
+            "x": 0.55,
+            "y": 0.58
+          },
+          "scale": 1.35,
           "enterAnimation": "popIn",
-          "enterDelay": 2,
+          "enterDelay": 24,
           "emphasize": {
-            "animation": "bounce",
-            "delay": 60,
+            "animation": "pulse",
+            "delay": 24,
             "duration": 20
           }
         }
       ],
-      "texts": [],
-      "cards": [
+      "texts": [
         {
-          "id": "scene-126-q",
-          "position": {
-            "x": 0.43,
-            "y": 0.46
-          },
-          "background": "#286F7A",
-          "label": "Liệu có cách nào xây dựng tài sản khác?",
-          "width": 1050,
-          "height": 580,
-          "delay": 10,
-          "duration": 70
-        },
-        {
-          "id": "scene-126-a",
-          "position": {
-            "x": 0.43,
-            "y": 0.46
-          },
-          "background": "#B54848",
-          "label": "Không cần đánh cược ngày càng lớn?",
-          "width": 1050,
-          "height": 580,
-          "delay": 120
+          "id": "scene-126-cap",
+          "content": "Xây tài sản, không tăng cược?",
+          "style": "CALLOUT",
+          "slot": "CALLOUT_CENTER",
+          "delay": 12,
+          "hold": "scene-end"
         }
-      ]
+      ],
+      "speechBubbles": []
     },
     {
       "id": "scene-127",
@@ -11923,8 +11957,6 @@
       "silentFrameTakeaway": "the explanation ends with a clear, warm sign-off",
       "focalOccupancyTarget": 0.42,
       "noveltyFromPrevious": [
-        "grammar:TABLEAU",
-        "register:full_tableau",
         "asset:characters/cat_explain",
         "asset:props/book",
         "asset:assets/scenes/library.svg"

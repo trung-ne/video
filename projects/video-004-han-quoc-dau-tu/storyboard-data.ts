@@ -1218,6 +1218,58 @@ const ROLE_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
 };
 
 const EDITORIAL_OVERRIDES: Record<number, Partial<AuthoredScene>> = {
+  83: {
+    grammar: "TABLEAU",
+    visualRegister: "full_tableau",
+    focalType: "full_scene",
+    characterRequired: true,
+    slots: {
+      stage: "assets/scenes/classroom.svg",
+      who: "analyst",
+      anchorA: "board",
+      prop: "props/concept_card",
+      caption: "Bốn lực, một cơn sốt",
+    },
+  },
+  91: {
+    grammar: "TABLEAU",
+    visualRegister: "full_tableau",
+    focalType: "full_scene",
+    characterRequired: true,
+    slots: {
+      stage: "assets/scenes/airport.svg",
+      who: "regulator",
+      anchorA: "stand",
+      prop: "finance/exchange",
+      caption: "Đóng cửa, tiền đổi lối",
+    },
+  },
+  113: {
+    grammar: "TABLEAU",
+    visualRegister: "full_tableau",
+    focalType: "full_scene",
+    characterRequired: true,
+    slots: {
+      stage: "assets/scenes/bedroom.svg",
+      who: "youngperson",
+      anchorA: "bed",
+      prop: "finance/debt",
+      caption: "Nợ tăng, thu nhập hụt hơi",
+    },
+  },
+  125: {
+    grammar: "TABLEAU",
+    visualRegister: "full_tableau",
+    focalType: "full_scene",
+    characterRequired: true,
+    slots: {
+      stage: "assets/scenes/construction.svg",
+      who: "hostShrug",
+      anchorA: "stand",
+      prop: "finance/house",
+      caption: "Xây tài sản, không tăng cược?",
+    },
+  },
   52: {
     grammar: "PHOTO_EVIDENCE",
     visualRegister: "photo_broll",
