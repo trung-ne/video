@@ -26,6 +26,7 @@ import { acquireRenderLock } from "../src/engine/renderLock";
 import { promoteArtifacts, pruneRunHistory } from "../src/engine/promoteArtifacts";
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import { buildDirectionSummary } from "../src/engine/directionReport";
+import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
 import {
   checkRenderMatchesTimeline,
   checkSceneBeatTimingSources,
@@ -318,6 +319,9 @@ let timingAudit: {
 } | null = null;
 
 try {
+  if (isProxy) {
+    getScaledDimensions(timeline.width, timeline.height, DEFAULT_PROXY_SCALE);
+  }
   const browserExecutable = findCachedChromeHeadlessShell();
   const cmd = [
     "npx remotion render",
@@ -327,7 +331,7 @@ try {
     `--props="${propsTmpFile}"`,
     "--log=info",
     "--codec=h264",
-    isProxy ? "--scale=0.333" : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
+    isProxy ? `--scale=${DEFAULT_PROXY_SCALE}` : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
     isProxy ? "--crf=23" : `--encoding-max-rate=${referenceQuality.encoding.maximumVideoBitrate}`,
     isProxy ? "--muted" : `--encoding-buffer-size=${referenceQuality.encoding.encodingBufferSize}`,
     framesArg ? `--frames=${framesArg}` : "",

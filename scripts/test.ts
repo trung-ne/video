@@ -36,12 +36,21 @@ import { resolveAuthoredAssets } from "../src/engine/authoredAssets";
 import { approvedPhotoPaths, isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
 import { fitTextToBox } from "../src/engine/textLayout";
 import { getPaletteSaturationScale } from "../src/engine/assetPaths";
+import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
 function test(name: string, run: () => void): void {
   tests.push({ name, run });
 }
+
+test("proxy render scale always produces integer 1080p dimensions", () => {
+  assert.deepStrictEqual(getScaledDimensions(1920, 1080, DEFAULT_PROXY_SCALE), {
+    width: 960,
+    height: 540,
+  });
+  assert.throws(() => getScaledDimensions(1920, 1080, 0.333), /non-integer dimensions/);
+});
 
 test("canonical JSON checksums ignore formatting but detect semantic changes", () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-artifact-test-"));
