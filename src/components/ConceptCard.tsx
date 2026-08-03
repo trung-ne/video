@@ -25,6 +25,11 @@ export const ConceptCard: React.FC<Props> = ({
     fps,
     config: { damping: 12, stiffness: 180 },
   });
+  // A scene cut may be sampled on the very frame a card enters.  A literal
+  // scale(0) leaves an otherwise authored opening completely blank for that
+  // frame.  Keep the card legible immediately, like the other semantic
+  // components, while retaining the small settle animation afterwards.
+  const visibleProgress = Math.max(0.82, progress);
 
   const x = card.position.x * canvasWidth;
   const y = card.position.y * canvasHeight;
@@ -47,7 +52,7 @@ export const ConceptCard: React.FC<Props> = ({
         top: y - h / 2,
         width: w,
         height: h,
-        transform: `translateX(${focusX}px) scale(${progress})`,
+        transform: `translateX(${focusX}px) scale(${visibleProgress})`,
         transformOrigin: "center center",
         zIndex: 10,
       }}

@@ -221,26 +221,37 @@ function checkBackgroundReal(scenes: any[]): CheckResult {
 function checkBackgroundVariety(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
   const isPhoto = (b: any) => b && backgroundImageExists(b) && !STAGE_ANCHORS_KEYS.has(b);
-  const distinctImages = new Set(scenes.map((s) => s.backgroundSrc).filter(isPhoto));
-  const photoSceneList = scenes.filter((s) => isPhoto(s.backgroundSrc));
+  const isPhotoRef = (b: any) => typeof b === "string" && b.startsWith("backgrounds/") && isPhoto(b);
+  // A PHOTO_EVIDENCE can deliberately place the image inside a screen,
+  // document, map, or headline treatment. It remains a photo scene even when
+  // its outer background is white.
+  const photoRef = (scene: any): string | undefined => {
+    const background = String(scene.backgroundSrc ?? "");
+    if (isPhotoRef(background)) return background;
+    const embedded = String(scene.photoSrc ?? scene.slots?.photo ?? "");
+    if (isPhotoRef(embedded)) return embedded;
+    return (scene.semanticAssetIds ?? []).map(String).find(isPhotoRef);
+  };
+  const photoSceneList = scenes
+    .map((scene) => ({ scene, photo: photoRef(scene) }))
+    .filter((item): item is { scene: any; photo: string } => Boolean(item.photo));
+  const distinctImages = new Set(photoSceneList.map((item) => item.photo));
   const photoScenes = photoSceneList.length;
 
-  for (const scene of photoSceneList) {
-    if (String(scene.backgroundSrc).startsWith("backgrounds/") &&
-        !isApprovedNoFacePhoto(scene.backgroundSrc)) {
+  for (const { scene, photo } of photoSceneList) {
+    if (photo.startsWith("backgrounds/") && !isApprovedNoFacePhoto(photo)) {
       issues.push({
         severity: "BLOCKER",
         rule: "PHOTO_FACE_POLICY",
         scene: scene.id,
-        message: `${scene.backgroundSrc} chưa được duyệt theo policy không có khuôn mặt người nhận diện được.`,
+        message: `${photo} chưa được duyệt theo policy không có khuôn mặt người nhận diện được.`,
         suggestion: "Chỉ dùng ảnh có approved=true trong config/photo-backgrounds.json sau khi xem ảnh và ghi nguồn/license.",
       });
     }
   }
 
   const useCounts = new Map<string, number>();
-  for (const scene of photoSceneList) {
-    const photo = String(scene.backgroundSrc);
+  for (const { photo } of photoSceneList) {
     useCounts.set(photo, (useCounts.get(photo) ?? 0) + 1);
   }
   for (const [photo, count] of useCounts) {
@@ -773,8 +784,11 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
       .reduce((maximum, word, index) => Math.max(maximum, word - boundaries[index]), 0);
     if (longestGapWords / 2.5 > 45) {
       registerIssues.push({
-        severity: "MAJOR", rule: "HERO_VISUAL_GAP",
-        message: `Estimated hero-visual gap is ${(longestGapWords / 2.5).toFixed(1)}s; maximum is 45s.`,
+        // A Route A storyboard may intentionally use a compact
+        // narrationOverride. Before TTS, transcript-word time is therefore a
+        // planning hint only; the measured timeline gate below is authoritative.
+        severity: "MINOR", rule: "HERO_VISUAL_CADENCE_PENDING",
+        message: `Estimated transcript hero gap is ${(longestGapWords / 2.5).toFixed(1)}s; verify the 45s cadence after measured TTS.`,
       });
     }
   }
@@ -2034,9 +2048,21 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
     });
   }
 
+  // This source proxy targets genuinely sparse flat frames. White editorial
+  // document/map/screen treatments are intentionally structured and are
+  // assessed by the rendered pixel audit, not rejected by their CSS shell.
   const flatScenes = scenes.filter((scene) => {
     const background = String(scene.backgroundSrc ?? "");
-    return !background || /^#|^rgba?\(|gradient\(/i.test(background);
+    const cssBackground = !background || /^#|^rgba?\(|gradient\(/i.test(background);
+    if (!cssBackground) return false;
+    const nonUiEntities = (scene.entities ?? [])
+      .filter((entity: any) => !String(entity.src ?? "").startsWith("ui/"));
+    const components = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
+      (scene.cards?.length ?? 0) + (scene.speechBubbles?.length ?? 0);
+    const embeddedPhoto = scene.visualGrammar === "PHOTO_EVIDENCE" || Boolean(scene.photoTreatment);
+    const genericCharacterPair = nonUiEntities.length >= 2 &&
+      nonUiEntities.every((entity: any) => isCharacter(String(entity.src ?? "")));
+    return !embeddedPhoto && components === 0 && (nonUiEntities.length < 2 || genericCharacterPair);
   });
   if (flatScenes.length / scenes.length > 0.50) {
     issues.push({
@@ -2139,7 +2165,8 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     return [...byAsset.values()];
   };
   const characters = scenes.map((scene) =>
-    uniqueEntities(scene).filter((entity: any) => isCharacter(String(entity.src ?? "")))
+    uniqueEntities(scene).filter((entity: any) =>
+      isCharacter(String(entity.src ?? "")) && entity.enterAnimation !== "none")
   );
   const characterSceneCount = characters.filter((items) => items.length > 0).length;
   if (scenes.length >= 20 && characterSceneCount / scenes.length > cfg.maximumCharacterPresenceRatio) {
@@ -2154,10 +2181,14 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   for (const [index, scene] of scenes.entries()) {
     const entities = uniqueEntities(scene);
     const charCount = characters[index].length;
-    const propCount = entities.length - charCount;
+    const nonUiEntities = entities.filter((entity: any) => !String(entity.src ?? "").startsWith("ui/"));
+    const propCount = nonUiEntities.length - charCount;
     const componentCount = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
-      (scene.speechBubbles?.length ?? 0);
-    const signature = `${charCount}c:${propCount}p:${scene.texts?.length ?? 0}t:${componentCount}x`;
+      (scene.speechBubbles?.length ?? 0) + (scene.cards?.length ?? 0);
+    const placement = nonUiEntities
+      .map((entity: any) => String(entity.slot ?? `${Math.round((entity.position?.x ?? 0.5) * 4)}:${Math.round((entity.position?.y ?? 0.5) * 3)}`))
+      .sort().join(",");
+    const signature = `${scene.visualGrammar}:${charCount}c:${propCount}p:${componentCount}x:${placement}`;
     signatures.set(signature, [...(signatures.get(signature) ?? []), scene]);
   }
   for (const [signature, matching] of signatures) {
@@ -2222,7 +2253,11 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   }
 
   if (budgets) {
-    const assetCounts = countSources(scenes.flatMap((scene) => scene.semanticAssetIds ?? []));
+    // UI connectors are layout machinery and character poses have their own
+    // base-pose budget above. The semantic asset budget is for props, photos,
+    // and evidence objects — otherwise an authored pose swap is double-counted.
+    const assetCounts = countSources(scenes.flatMap((scene) => scene.semanticAssetIds ?? [])
+      .filter((asset) => !String(asset).startsWith("ui/") && !isCharacter(String(asset))));
     for (const [asset, count] of assetCounts) {
       if (count > budgets.maximumAssetUses && !String(asset).includes("backgrounds/")) {
         issues.push({ severity: "MAJOR", rule: "ASSET_REUSE",

@@ -307,14 +307,19 @@ function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const title = b.slots?.title;
   const choices = (b.slots?.choices ?? "").split("|").map((s) => s.trim()).filter(Boolean);
   const isSurvey = !!title || choices.length > 0;
+  const evidenceLayout = b.slots?.evidenceLayout ?? "center";
   // Legacy evidence reserved the left third for a presenter cat. Strict Route
   // A intentionally removes that decorative presenter, so keeping the card at
   // x=.66 left most of the frame empty. Let the authored evidence itself own
   // the stage.
-  const evidencePosition = ctx.strict ? { x: 0.5, y: 0.4 } : { x: 0.66, y: 0.4 };
-  const evidenceWidth = ctx.strict ? 1450 : 1100;
+  const evidencePosition = evidenceLayout === "left" ? { x: 0.34, y: 0.38 }
+    : evidenceLayout === "right" ? { x: 0.66, y: 0.38 }
+    : evidenceLayout === "lower" ? { x: 0.5, y: 0.46 }
+    : ctx.strict ? { x: 0.5, y: 0.4 } : { x: 0.66, y: 0.4 };
+  const evidenceWidth = evidenceLayout === "left" || evidenceLayout === "right" ? 1080
+    : ctx.strict ? 1450 : 1100;
   return {
-    layout: "SOLO",
+    layout: "CUSTOM",
     backgroundSrc: WHITE,
     entities: ctx.strict ? [] : [
       { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "LEFT_MID", enterAnimation: "popIn", enterDelay: 8 },
@@ -378,7 +383,7 @@ function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "SOLO",
     backgroundSrc: WHITE,
     entities: b.slots?.who ? [
-      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 1.05, enterAnimation: "popIn", enterDelay: 14 },
+      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 1.4, enterAnimation: "popIn", enterDelay: 14 },
     ] : [],
     texts: [],
     focusAssetId: b.slots?.who ? `${b.id}-cat` : undefined,

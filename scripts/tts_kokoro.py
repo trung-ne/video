@@ -27,6 +27,20 @@ FPS = 30
 SR = 24000          # Kokoro output sample rate
 GAP_SEC = 0.08      # short boundary between per-scene narration chunks
 
+VIETNAMESE_MARKS = set(
+    "ăâđêôơưĂÂĐÊÔƠƯ"
+    "áàảãạấầẩẫậắằẳẵặéèẻẽẹếềểễệ"
+    "íìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữự"
+    "ýỳỷỹỵÁÀẢÃẠẤẦẨẪẬẮẰẲẴẶÉÈẺẼẸẾỀỂỄỆ"
+    "ÍÌỈĨỊÓÒỎÕỌỐỒỔỖỘỚỜỞỠỢÚÙỦŨỤỨỪỬỮỰÝỲỶỸỴ"
+)
+
+
+def looks_vietnamese(text: str) -> bool:
+    letters = sum(ch.isalpha() for ch in text)
+    marked = sum(ch in VIETNAMESE_MARKS for ch in text)
+    return marked >= 12 and marked / max(1, letters) >= 0.01
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -38,12 +52,21 @@ def main():
     ap.add_argument("--gap", type=float, default=GAP_SEC, help="silence between per-scene TTS chunks")
     args = ap.parse_args()
 
+    with open(args.scenes, "r", encoding="utf-8-sig") as f:
+        scenes = json.load(f)
+
+    combined_text = " ".join(str(scene.get("text") or "") for scene in scenes)
+    if args.lang in {"a", "b"} and looks_vietnamese(combined_text):
+        print(
+            "ERROR: Kokoro language a/b cannot produce Vietnamese narration. "
+            "Use scripts/tts_edge.py --voice vi-VN-NamMinhNeural.",
+            file=sys.stderr,
+        )
+        sys.exit(3)
+
     import numpy as np
     import soundfile as sf
     from kokoro import KPipeline
-
-    with open(args.scenes, "r", encoding="utf-8-sig") as f:
-        scenes = json.load(f)
 
     os.makedirs(args.outdir, exist_ok=True)
 

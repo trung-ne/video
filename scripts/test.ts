@@ -330,9 +330,9 @@ test("long multi-card scenes stage persistent reveals about four seconds apart",
   const timeline = compileStoryboard(storyboard, {
     durations: [{ id: "scene-001", startFrame: 0, frames: 360 }],
   });
-  // The first focal appears immediately after clearPrevious; later cards keep
+  // The first focal lands on the cut frame; later cards keep
   // the persistent ~4-second staging that prevents a static long scene.
-  assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 2);
+  assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 0);
   assert.strictEqual(timeline.scenes[0].cards?.[1].delay, 120);
   assert.deepStrictEqual(timeline.timingProvenance?.beatTimingSummary, {
     "source-range-proportional": 1,
@@ -511,19 +511,26 @@ test("quality gate blocks unreviewed photos and repeated photo wallpaper", () =>
     visualFingerprint: `${id}|photo`, silentFrameTakeaway: "the photo is evidence",
     focalOccupancyTarget: 0.8, noveltyFromPrevious: ["new photo"],
   });
+  const embeddedUnreviewed = makeScene("p1", 0, "backgrounds/kitchen.jpg");
+  embeddedUnreviewed.backgroundSrc = "assets/scenes/cafe.svg";
+  embeddedUnreviewed.semanticAssetIds = ["backgrounds/kitchen.jpg"];
   const report = runQualityCheck({
     schemaVersion: 2, fps: 30, width: 1920, height: 1080, durationInFrames: 600,
     audio: "audio/test.wav",
     scenes: [
-      makeScene("p1", 0, "backgrounds/kitchen.jpg"),
+      embeddedUnreviewed,
       makeScene("p2", 150, "backgrounds/office_trading.jpg"),
       makeScene("p3", 300, "backgrounds/office_trading.jpg"),
       makeScene("p4", 450, "backgrounds/office_trading.jpg"),
     ],
   });
   const rules = report.checks.flatMap((check) => check.issues ?? []).map((issue) => issue.rule);
+  const faceIssue = report.checks.flatMap((check) => check.issues ?? [])
+    .find((issue) => issue.rule === "PHOTO_FACE_POLICY");
   assert.ok(rules.includes("PHOTO_FACE_POLICY"));
   assert.ok(rules.includes("PHOTO_REPEAT"));
+  assert.ok(faceIssue?.message.includes("backgrounds/kitchen.jpg"));
+  assert.ok(!faceIssue?.message.includes("assets/scenes/cafe.svg"));
 });
 
 test("liveliness never invents motion beyond storyboard-authored beats", () => {
@@ -787,8 +794,10 @@ test("word alignment controls schema v2 scene timing and subtitle cues", () => {
     words: [
       { wordIndex: 0, scene: "one", sceneWordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 },
       { wordIndex: 1, scene: "one", sceneWordIndex: 1, word: "two", startSec: 0.4, endSec: 0.6 },
-      { wordIndex: 2, scene: "two", sceneWordIndex: 0, word: "three", startSec: 1.0, endSec: 1.2 },
-      { wordIndex: 3, scene: "two", sceneWordIndex: 1, word: "four", startSec: 1.3, endSec: 1.6 },
+      // The subtitle contract has a one-second minimum cue lifetime. Keep the
+      // fixture above that floor so it exercises canonical cue generation.
+      { wordIndex: 2, scene: "two", sceneWordIndex: 0, word: "three", startSec: 1.0, endSec: 1.5 },
+      { wordIndex: 3, scene: "two", sceneWordIndex: 1, word: "four", startSec: 1.6, endSec: 2.1 },
     ],
   });
   assert.strictEqual(timeline.scenes[0].startFrame, 0);
@@ -1105,6 +1114,217 @@ test("compiler accepts durations and words together — they are different axes"
     words: [{ wordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 }],
   });
   assert.strictEqual(timeline.durationInFrames, 540);
+});
+
+test("authored reveal and dialogue handoff beats create held semantic states", () => {
+  const tableau = timingFixture(["scene-001"]);
+  tableau.scenes[0] = {
+    ...tableau.scenes[0],
+    narration: "First we establish the problem. The key takeaway arrives now.",
+    visualGrammar: "TABLEAU",
+    captionTreatment: "chapter-pill",
+    slots: {
+      stage: "assets/scenes/cafe.svg", who: "characters/cat_explain",
+      caption: "The key takeaway",
+    },
+    beats: [{ text: "key takeaway", importance: 0.8, kind: "turn", action: "reveal", targetSlot: "caption" }],
+  };
+  const tableauTimeline = compileStoryboard(tableau, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-001", word: "key", startSec: 4, endSec: 4.2 }],
+  });
+  const caption = tableauTimeline.scenes[0].texts.find((text) => text.id === "scene-001-cap");
+  assert.strictEqual(caption?.delay, 120);
+  assert.strictEqual(caption?.hold, "scene-end");
+
+  const dialogue = timingFixture(["scene-002"]);
+  dialogue.scenes[0] = {
+    ...dialogue.scenes[0],
+    narration: "Why is this difficult? Because the cost keeps rising.",
+    visualGrammar: "DIALOGUE_QA",
+    slots: {
+      asker: "characters/cat_talk", answerer: "characters/cat_think",
+      askerText: "Why is this difficult?", answererText: "Because the cost keeps rising.",
+    },
+    beats: [{
+      text: "Because", importance: 0.85, kind: "turn", action: "handoff",
+      targetSlot: "answerer", targetAssetId: "characters/cat_explain",
+    }],
+  };
+  const dialogueTimeline = compileStoryboard(dialogue, {
+    durations: [{ id: "scene-002", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-002", word: "Because", startSec: 4, endSec: 4.2 }],
+  });
+  const bubbles = dialogueTimeline.scenes[0].speechBubbles!;
+  const question = bubbles.find((bubble) => bubble.id === "scene-002-qa")!;
+  const answer = bubbles.find((bubble) => bubble.id === "scene-002-qb")!;
+  assert.ok((question.delay ?? 0) + (question.duration ?? 0) < (answer.delay ?? 0));
+  assert.strictEqual(answer.delay, 120);
+  assert.strictEqual(answer.duration, undefined);
+  const answererStates = dialogueTimeline.scenes[0].entities
+    .filter((entity) => entity.assetId === "scene-002-b");
+  assert.strictEqual(answererStates.length, 2);
+  assert.strictEqual(answererStates[1].src, "characters/cat_explain");
+  assert.strictEqual(answererStates[1].enterDelay, 120);
+  assert.strictEqual(answererStates[1].enterAnimation, "none");
+  assert.deepStrictEqual(answererStates[1].clearPrevious, ["scene-002-b"]);
+  assert.deepStrictEqual(answererStates[1].position, answererStates[0].position);
+  assert.strictEqual(answererStates[1].scale, answererStates[0].scale);
+  assert.strictEqual(dialogueTimeline.scenes[0].beatTimingSource, "aligned-words");
+});
+
+test("an authored beat cannot silently target a component its grammar did not create", () => {
+  const storyboard = timingFixture(["scene-001"]);
+  storyboard.scenes[0].beats = [
+    { text: "one", importance: 0.8, kind: "keyword", action: "reveal", targetSlot: "caption" },
+  ];
+  assert.throws(
+    () => compileStoryboard(storyboard, { durations: [{ id: "scene-001", startFrame: 0, frames: 300 }] }),
+    /does not author a chapter-pill caption/,
+  );
+});
+
+test("an authored cutaway is phrase-aligned, persistent and fully specified", () => {
+  const storyboard = timingFixture(["scene-001"]);
+  storyboard.scenes[0].visualGrammar = "TABLEAU";
+  storyboard.scenes[0].slots = {
+    stage: "assets/scenes/cafe.svg", who: "characters/cat_explain",
+  };
+  storyboard.scenes[0].beats = [{
+    text: "three", importance: 0.85, kind: "turn", action: "reveal",
+    targetSlot: "cutaway", targetAssetId: "backgrounds/stock_chart.jpg",
+    targetLabel: "Market evidence", holdState: "evidence-cutaway",
+  }];
+  const timeline = compileStoryboard(storyboard, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-001", word: "three", startSec: 4, endSec: 4.2 }],
+  });
+  const cutaway = timeline.scenes[0].frameBoxes?.find((frame) => frame.id === "scene-001-cutaway");
+  assert.strictEqual(cutaway?.contentSrc, "backgrounds/stock_chart.jpg");
+  assert.strictEqual(cutaway?.caption, "Market evidence");
+  assert.strictEqual(cutaway?.delay, 120);
+  assert.strictEqual(cutaway?.duration, undefined);
+
+  storyboard.scenes[0].beats![0].targetLabel = "";
+  assert.throws(
+    () => compileStoryboard(storyboard, {
+      durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    }),
+    /without an authored on-screen label/,
+  );
+});
+
+test("authored focus cuts change shot geometry without camera motion", () => {
+  const dialogue = timingFixture(["scene-001"]);
+  dialogue.scenes[0].narration = "First comes the question, then the cost becomes clear.";
+  dialogue.scenes[0].visualGrammar = "DIALOGUE_QA";
+  dialogue.scenes[0].slots = {
+    stage: "assets/scenes/cafe.svg", asker: "characters/cat_talk",
+    answerer: "characters/cat_think", askerText: "Question?", answererText: "The cost is clear.",
+  };
+  dialogue.scenes[0].beats = [{
+    text: "cost", importance: 0.85, kind: "turn", action: "focus_actor",
+    targetSlot: "answerer", targetAssetId: "characters/cat_surprised",
+  }];
+  const dialogueTimeline = compileStoryboard(dialogue, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-001", word: "cost", startSec: 6, endSec: 6.2 }],
+  });
+  const answererStates = dialogueTimeline.scenes[0].entities
+    .filter((entity) => entity.assetId === "scene-001-b");
+  assert.strictEqual(answererStates.length, 2);
+  assert.strictEqual(answererStates[1].src, "characters/cat_surprised");
+  assert.strictEqual(answererStates[1].enterDelay, 180);
+  assert.strictEqual(answererStates[1].anchor, undefined);
+  assert.strictEqual(answererStates[1].slot, undefined);
+  assert.deepStrictEqual(answererStates[1].position, { x: 0.64, y: 0.58 });
+  assert.strictEqual(answererStates[1].scale, 2.75);
+  assert.deepStrictEqual([...(answererStates[1].clearPrevious ?? [])].sort(), ["scene-001-a", "scene-001-b"]);
+  assert.strictEqual(dialogueTimeline.scenes[0].camera, undefined);
+
+  const charProp = timingFixture(["scene-002"]);
+  charProp.scenes[0].narration = "The risk finally becomes visible.";
+  charProp.scenes[0].visualGrammar = "CHAR_PROP";
+  charProp.scenes[0].slots = { who: "characters/cat_sad", prop: "finance/loss" };
+  charProp.scenes[0].beats = [{
+    text: "risk", importance: 0.85, kind: "turn", action: "focus_asset",
+    targetSlot: "prop", targetAssetId: "finance/trending_down",
+  }];
+  const propTimeline = compileStoryboard(charProp, {
+    durations: [{ id: "scene-002", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-002", word: "risk", startSec: 5, endSec: 5.2 }],
+  });
+  const propStates = propTimeline.scenes[0].entities
+    .filter((entity) => entity.assetId === "scene-002-prop");
+  assert.strictEqual(propStates.length, 2);
+  assert.strictEqual(propStates[1].src, "finance/trending_down");
+  assert.deepStrictEqual(propStates[1].position, { x: 0.5, y: 0.47 });
+  assert.strictEqual(propStates[1].scale, 3.2);
+  assert.deepStrictEqual([...(propStates[1].clearPrevious ?? [])].sort(), ["scene-002-cat", "scene-002-prop"]);
+  assert.strictEqual(propTimeline.scenes[0].camera, undefined);
+
+  charProp.scenes[0].beats![0].targetAssetId = "finance/loss";
+  const sameAssetFocus = compileStoryboard(charProp, {
+    durations: [{ id: "scene-002", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-002", word: "risk", startSec: 5, endSec: 5.2 }],
+  });
+  assert.strictEqual(
+    sameAssetFocus.scenes[0].semanticAssetIds?.filter((asset) => asset === "finance/loss").length,
+    1,
+    "a persistent re-entry of the same semantic asset is one scene-level use",
+  );
+});
+
+test("an authored pose beat swaps only its declared rendered actor and holds the new pose", () => {
+  const storyboard = timingFixture(["scene-001"]);
+  storyboard.scenes[0].visualGrammar = "CHAR_PROP";
+  storyboard.scenes[0].slots = { who: "characters/cat_homebuyer", prop: "finance/house" };
+  storyboard.scenes[0].beats = [
+    {
+      text: "three", importance: 0.8, kind: "turn", action: "swap_pose",
+      targetSlot: "who", targetAssetId: "characters/cat_sad", holdState: "realizes-the-gap",
+    },
+    {
+      text: "three", importance: 0.8, kind: "turn", action: "swap_asset",
+      targetSlot: "prop", targetAssetId: "finance/loss", holdState: "shows-the-gap",
+    },
+  ];
+  const timeline = compileStoryboard(storyboard, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-001", word: "three", startSec: 4, endSec: 4.2 }],
+  });
+  const cats = timeline.scenes[0].entities.filter((entity) => entity.assetId === "scene-001-cat");
+  assert.strictEqual(cats.length, 2);
+  assert.strictEqual(cats[1].src, "characters/cat_sad");
+  assert.strictEqual(cats[1].enterDelay, 120);
+  assert.deepStrictEqual(cats[1].clearPrevious, ["scene-001-cat"]);
+  const props = timeline.scenes[0].entities.filter((entity) => entity.assetId === "scene-001-prop");
+  assert.strictEqual(props.length, 2);
+  assert.strictEqual(props[1].src, "finance/loss");
+  assert.strictEqual(props[1].enterDelay, 120);
+  assert.strictEqual(props[1].enterAnimation, "none");
+  assert.deepStrictEqual(props[1].position, props[0].position);
+  assert.strictEqual(props[1].scale, props[0].scale);
+  assert.deepStrictEqual(props[1].clearPrevious, ["scene-001-prop"]);
+});
+
+test("compiler rejects a prop swap when the grammar has no authored prop state", () => {
+  const storyboard = timingFixture(["scene-001"]);
+  storyboard.scenes[0].visualGrammar = "DIALOGUE_QA";
+  storyboard.scenes[0].slots = {
+    asker: "characters/cat_talk", answerer: "characters/cat_think",
+    askerText: "Question", answererText: "Answer",
+  };
+  storyboard.scenes[0].beats = [{
+    text: "three", importance: 0.8, kind: "turn", action: "swap_asset",
+    targetSlot: "prop", targetAssetId: "finance/loss",
+  }];
+  assert.throws(
+    () => compileStoryboard(storyboard, {
+      durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    }),
+    /does not support a persistent prop state/,
+  );
 });
 
 test("compiler rejects interleaving two absolute-frame timing systems", () => {

@@ -46,7 +46,18 @@ const storyboardChecksum = checksumJson(sb);
 if (getArg("--audio")) sb.audio = getArg("--audio");
 
 // Storyboard-level gates (INTENT_REALIZED, BEAT_UNANCHORED) before compiling.
-printQualityReport(runStoryboardCheck(sb));
+// A report with a blocker/major is not merely advisory: writing a measured
+// timeline here would let downstream render/publish mistake rejected authored
+// intent for a production candidate.
+const storyboardQuality = runStoryboardCheck(sb);
+printQualityReport(storyboardQuality);
+if (!diagnosticEstimated && (storyboardQuality.blockers > 0 || storyboardQuality.majors > 0)) {
+  console.error(
+    `\n❌ Compile refused: storyboard quality has ${storyboardQuality.blockers} blocker(s) `
+      + `and ${storyboardQuality.majors} major issue(s). No timeline was written.\n`,
+  );
+  process.exit(1);
+}
 
 // A supplied-but-missing path must be an error, not silently `undefined` — a
 // typo'd --durations would otherwise degrade into "no timing supplied".

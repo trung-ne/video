@@ -138,8 +138,10 @@ export interface Beat {
   kind: "number" | "keyword" | "turn"; // turn = a rhetorical pivot
   /** Rendered target and state transition; beats without a target are not motion directions. */
   targetSlot?: string;
-  action?: "swap_pose" | "reveal" | "emphasize" | "advance" | "handoff";
+  action?: "swap_pose" | "swap_asset" | "focus_actor" | "focus_asset" | "reveal" | "emphasize" | "advance" | "handoff";
   targetAssetId?: string;
+  /** Short on-screen label for an authored cutaway; never inferred from narration. */
+  targetLabel?: string;
   holdState?: string;
 }
 

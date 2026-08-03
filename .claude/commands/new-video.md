@@ -20,8 +20,8 @@ npx ts-node scripts/new-project.ts --transcript <file> --name <slug>
 npx ts-node scripts/build-storyboard.ts --project <id>
 npm run build-assets
 npx ts-node scripts/storyboard-to-tts.ts --storyboard projects/<id>/storyboard.json
-py -3.11 scripts/tts_kokoro.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id> --manifest projects/<id>/durations.json
-py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir projects/<id> --model small --lang vi --transcript projects/<id>/transcript.txt
+py -3.11 scripts/tts_edge.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id> --manifest projects/<id>/durations.json --voice vi-VN-NamMinhNeural
+py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir projects/<id> --model small --lang vi --scenes projects/<id>/tts_scenes.json
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json --out projects/<id>/timeline.json --durations projects/<id>/durations.json --words projects/<id>/words.json --audio audio/<id>/voice.wav
 npm run validate -- projects/<id>/timeline.json
 npm run quality -- projects/<id>/timeline.json

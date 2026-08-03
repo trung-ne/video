@@ -62,7 +62,7 @@ function isCssBackground(value: string | undefined): boolean {
 /**
  * clearPrevious removes the old shot at the cut. On a CSS background, delaying
  * every focal layer creates a genuinely empty flash. Keep later staging, but
- * make the earliest layer land within two frames. Photos and illustrated stages
+ * make the earliest layer land on the cut frame. Photos and illustrated stages
  * already carry meaning at frame zero and do not need normalization.
  */
 function ensureImmediateFocal(result: GrammarResult): void {
@@ -79,10 +79,10 @@ function ensureImmediateFocal(result: GrammarResult): void {
   const delayOf = (layer: { delay?: number; enterDelay?: number }) =>
     layer.enterDelay ?? layer.delay ?? 0;
   const earliest = Math.min(...layers.map(delayOf));
-  if (earliest <= 2) return;
+  if (earliest <= 0) return;
   for (const layer of layers.filter((item) => delayOf(item) === earliest)) {
-    if (layer.enterDelay !== undefined) layer.enterDelay = 2;
-    else layer.delay = 2;
+    if (layer.enterDelay !== undefined) layer.enterDelay = 0;
+    else layer.delay = 0;
   }
 }
 
@@ -170,10 +170,10 @@ function canonicalNarrationTokens(value: string): string[] {
 // Per-emotion pose cycle for sentence-level re-posing. Only registers with ≥2
 // poses swap; sad/surprise/urgent keep a single pose to preserve the emotion.
 const POSE_CYCLE: Record<string, string[]> = {
-  neutral:   ["characters/cat_explain", "characters/cat_talk"],
-  curious:   ["characters/cat_think", "characters/cat_talk"],
-  sarcastic: ["characters/cat_explain", "characters/cat_talk"],
-  happy:     ["characters/cat_happy", "characters/cat_talk"],
+  neutral:   ["characters/cat_explain", "characters/cat_point_left"],
+  curious:   ["characters/cat_think", "characters/cat_shrug"],
+  sarcastic: ["characters/cat_sunglasses", "characters/cat_explain"],
+  happy:     ["characters/cat_happy", "characters/cat_explain"],
   hopeful:   ["characters/cat_happy", "characters/cat_explain"],
   concern:   ["characters/cat_think", "characters/cat_sad"],
   sad:       [],
@@ -285,15 +285,228 @@ function compositionFingerprint(result: GrammarResult, brief: SceneBrief): strin
   const props = entities.length - actors;
   const components = [
     ...(result.cards ?? []).map(() => "card"),
-    ...(result.paperCards ?? []).map(() => "paper"),
-    ...(result.frameBoxes ?? []).map(() => "frame"),
+    ...(result.paperCards ?? []).map((card) => `paper:${Math.round(card.position.x * 3)}:${Math.round(card.position.y * 3)}`),
+    ...(result.frameBoxes ?? []).map((frame) => `frame:${Math.round(frame.position.x * 3)}:${Math.round(frame.position.y * 3)}`),
     ...(result.speechBubbles ?? []).map(() => "bubble"),
   ].sort().join(",") || "none";
-  const stage = String(result.backgroundSrc ?? "").startsWith("assets/scenes/") ? "stage" :
+  const background = String(result.backgroundSrc ?? "");
+  const stage = background.startsWith("assets/scenes/") ? `stage:${background.split("/").pop()?.replace(/\.[^.]+$/, "")}` :
     /\.(jpg|jpeg|png|webp)$/i.test(String(result.backgroundSrc ?? "")) ? "photo" : "graphic";
-  const quadrants = entities.map((entity) => entity.slot ?? "free").sort().join(",") || "none";
+  const quadrants = entities.map((entity) => entity.anchor ?? entity.slot ?? "free").sort().join(",") || "none";
   return [brief.visualGrammar, brief.visualRegister ?? "unknown", stage, `${actors}a:${props}p`,
     quadrants, components, brief.captionTreatment ?? "none", brief.photoTreatment ?? "none"].join("|");
+}
+
+/**
+ * Apply only transitions that the storyboard explicitly directs.  `Beat` has
+ * always carried an action/target contract, but the compiler previously used
+ * it only for a short focal pulse.  That left long dialogue/tableau scenes
+ * visually frozen after their first second and encouraged the old unsafe
+ * post-compile liveliness injector.
+ *
+ * These transitions change a semantic state and hold it: a dialogue genuinely
+ * hands the floor to its answerer; a tableau's authored takeaway arrives when
+ * its narration reaches the marked phrase.  No fallback timing, camera move,
+ * positional nudge, or synthetic content is introduced here.
+ */
+function applyAuthoredBeatTransitions(
+  brief: SceneBrief,
+  result: GrammarResult,
+  timing: SceneTiming,
+  fps: number,
+  words: AlignedWord[] | undefined,
+): SceneBeatTimingSource | undefined {
+  if (!brief.beats?.length) return undefined;
+
+  const appendPoseSwap = (targetSlot: string, targetAssetId: string | undefined, delay: number) => {
+    if (!targetAssetId?.startsWith("characters/")) {
+      throw new Error(
+        `${brief.id} marks a pose swap but does not name a production character pose.`,
+      );
+    }
+    // Keep the grammar-authored geometry and replace only the acting state.
+    // This is a persistent semantic change, not automatic liveliness motion.
+    const assetSuffix = brief.visualGrammar === "CHAR_PROP"
+      ? "cat"
+      : ["TABLEAU", "DIALOGUE_QA"].includes(brief.visualGrammar)
+        ? (targetSlot === "answerer" || targetSlot === "seatB" ? "b" : "a")
+        : "";
+    const actor = assetSuffix
+      ? result.entities.find((entity) => entity.assetId === `${brief.id}-${assetSuffix}`)
+      : undefined;
+    if (!actor) {
+      throw new Error(
+        `${brief.id} marks a pose swap for ${targetSlot}, but ${brief.visualGrammar} does not render that actor.`,
+      );
+    }
+    result.entities.push({
+      ...actor,
+      src: targetAssetId,
+      enterAnimation: "none",
+      enterDelay: delay,
+      clearPrevious: [actor.assetId],
+    });
+  };
+
+  const appendAssetSwap = (targetSlot: string, targetAssetId: string | undefined, delay: number) => {
+    if (targetSlot !== "prop" || !targetAssetId || targetAssetId.startsWith("characters/")) {
+      throw new Error(
+        `${brief.id} marks an asset swap but does not name a non-character prop target.`,
+      );
+    }
+    if (!["TABLEAU", "CHAR_PROP"].includes(brief.visualGrammar)) {
+      throw new Error(
+        `${brief.id} marks a prop swap, but ${brief.visualGrammar} does not support a persistent prop state.`,
+      );
+    }
+    const prop = result.entities.find((entity) => entity.assetId === `${brief.id}-prop`);
+    if (!prop) {
+      throw new Error(
+        `${brief.id} marks a prop swap, but its grammar did not render an authored prop.`,
+      );
+    }
+    result.entities.push({
+      ...prop,
+      src: targetAssetId,
+      enterAnimation: "none",
+      enterDelay: delay,
+      emphasize: undefined,
+      clearPrevious: [prop.assetId],
+    });
+  };
+
+  const appendFocusCut = (
+    action: "focus_actor" | "focus_asset",
+    targetSlot: string,
+    targetAssetId: string | undefined,
+    delay: number,
+  ) => {
+    const actorTarget = action === "focus_actor";
+    if (actorTarget && !["TABLEAU", "DIALOGUE_QA"].includes(brief.visualGrammar)) {
+      throw new Error(`${brief.id} cannot focus an actor from ${brief.visualGrammar}.`);
+    }
+    if (!actorTarget && !["TABLEAU", "CHAR_PROP"].includes(brief.visualGrammar)) {
+      throw new Error(`${brief.id} cannot focus an asset from ${brief.visualGrammar}.`);
+    }
+    const suffix = actorTarget
+      ? (targetSlot === "answerer" || targetSlot === "seatB" ? "b" : "a")
+      : "prop";
+    const target = result.entities.find((entity) => entity.assetId === `${brief.id}-${suffix}`);
+    if (!target) {
+      throw new Error(
+        `${brief.id} marks ${action}:${targetSlot}, but its grammar did not render that target.`,
+      );
+    }
+    if (targetAssetId && actorTarget !== targetAssetId.startsWith("characters/")) {
+      throw new Error(`${brief.id} ${action} target asset has the wrong semantic kind.`);
+    }
+    const visibleIds = [...new Set(result.entities.map((entity) => entity.assetId))];
+    result.entities.push({
+      ...target,
+      src: targetAssetId ?? target.src,
+      anchor: undefined,
+      slot: undefined,
+      position: actorTarget
+        ? { x: targetSlot === "answerer" || targetSlot === "seatB" ? 0.64 : 0.36, y: 0.58 }
+        : { x: 0.5, y: 0.47 },
+      scale: actorTarget ? 2.75 : 3.2,
+      enterAnimation: "none",
+      enterDelay: delay,
+      emphasize: undefined,
+      motionPolicy: "fixed",
+      allowOverlapWith: undefined,
+      clearPrevious: visibleIds,
+    });
+  };
+
+  const sources: SceneBeatTimingSource[] = [];
+  for (const beat of brief.beats) {
+    if (!beat.action || !beat.targetSlot) continue;
+    const resolved = resolveBeatOffset(
+      beat.text, brief.narration, brief.id, timing.startFrame, timing.frames, fps, words,
+    );
+    sources.push(resolved.source);
+    const delay = Math.max(2, Math.min(timing.frames - 20, resolved.offset));
+
+    if (beat.action === "reveal" && beat.targetSlot === "cutaway") {
+      if (!beat.targetAssetId || !/\.(jpg|jpeg|png|webp)$/i.test(beat.targetAssetId)) {
+        throw new Error(
+          `${brief.id} marks a cutaway reveal but does not name a production image.`,
+        );
+      }
+      if (!beat.targetLabel?.trim()) {
+        throw new Error(
+          `${brief.id} marks a cutaway reveal without an authored on-screen label.`,
+        );
+      }
+      result.frameBoxes = result.frameBoxes ?? [];
+      result.frameBoxes.push({
+        id: `${brief.id}-cutaway`,
+        contentSrc: beat.targetAssetId,
+        caption: beat.targetLabel.trim(),
+        position: { x: 0.5, y: 0.40 },
+        width: 1550,
+        objectFit: "cover",
+        delay,
+      });
+      continue;
+    }
+
+    if (beat.action === "reveal" && beat.targetSlot === "caption") {
+      const caption = result.texts.find((text) => text.id === `${brief.id}-cap`);
+      if (!caption) {
+        throw new Error(
+          `${brief.id} marks a caption reveal beat but does not author a chapter-pill caption.`,
+        );
+      }
+      caption.delay = delay;
+      caption.hold = "scene-end";
+      continue;
+    }
+
+    if (beat.action === "handoff" && beat.targetSlot === "answerer") {
+      const question = result.speechBubbles?.find((bubble) => bubble.id === `${brief.id}-qa`);
+      const answer = result.speechBubbles?.find((bubble) => bubble.id === `${brief.id}-qb`);
+      if (!question || !answer) {
+        throw new Error(
+          `${brief.id} marks an answerer handoff beat but does not author both dialogue bubbles.`,
+        );
+      }
+      // The question exits before the answer enters.  The answer then remains
+      // visible as the scene's conclusion instead of disappearing after 2s.
+      question.duration = Math.max(18, delay - (question.delay ?? 0) - 6);
+      answer.delay = delay;
+      answer.duration = undefined;
+      if (beat.targetAssetId) {
+        appendPoseSwap(beat.targetSlot, beat.targetAssetId, delay);
+      }
+      continue;
+    }
+
+    if (beat.action === "swap_pose") {
+      appendPoseSwap(beat.targetSlot, beat.targetAssetId, delay);
+      continue;
+    }
+
+    if (beat.action === "swap_asset") {
+      appendAssetSwap(beat.targetSlot, beat.targetAssetId, delay);
+      continue;
+    }
+
+    if (beat.action === "focus_actor" || beat.action === "focus_asset") {
+      appendFocusCut(beat.action, beat.targetSlot, beat.targetAssetId, delay);
+      continue;
+    }
+
+    throw new Error(
+      `${brief.id} uses unsupported authored beat transition ${beat.action}:${beat.targetSlot}.`,
+    );
+  }
+
+  if (!sources.length) return undefined;
+  return sources.every((source) => source === "aligned-words")
+    ? "aligned-words"
+    : sources[0];
 }
 
 function compileBrief(
@@ -321,6 +534,7 @@ function compileBrief(
   const result = grammarFn(brief, ctx);
   applyShot(result, brief.shot);
   ensureImmediateFocal(result);
+  const authoredTransitionTiming = applyAuthoredBeatTransitions(brief, result, timing, fps, words);
   // Stagger multi-card reveals so a long scene keeps changing. A LONE card gets
   // no such treatment: delaying the only element four seconds just leaves the
   // opening of every long scene as background plus one character — which is why
@@ -338,9 +552,9 @@ function compileBrief(
   // Layer beat-emphasis onto the focal entity at the aligned frame.
   const entities: SceneEntity[] = result.entities.map((e) => ({ ...e }));
   const focal = entities.find((e) => e.assetId === result.focusAssetId);
-  let beatTimingSource: SceneBeatTimingSource = /[.!?]/.test(brief.narration)
+  let beatTimingSource: SceneBeatTimingSource = authoredTransitionTiming ?? (/[.!?]/.test(brief.narration)
     ? "sentence-boundary"
-    : "source-range-proportional";
+    : "source-range-proportional");
   if (focal && brief.beats && brief.beats.length) {
     // Use the single highest-importance beat for the focal pulse.
     const beat = [...brief.beats].sort((a, b) => b.importance - a.importance)[0];
@@ -401,13 +615,13 @@ function compileBrief(
     // Record what the compiler actually put on screen. Authored role tokens and
     // stage anchors are not assets; conversely, component grammars may render a
     // deliberate built-in character without an authored asset request.
-    semanticAssetIds: [
+    semanticAssetIds: [...new Set([
       ...entities.map((entity) => entity.src),
       ...(result.cards ?? []).map((card) => card.iconSrc).filter((src): src is string => !!src),
       ...(result.frameBoxes ?? []).map((box) => box.contentSrc).filter(Boolean),
       ...(!/^#|^rgba?\(|gradient\(/i.test(result.backgroundSrc ?? "") && result.backgroundSrc
         ? [result.backgroundSrc] : []),
-    ],
+    ])],
     sectionId: brief.sectionId,
     claimIds: brief.claimIds,
     captionTreatment: brief.captionTreatment,
@@ -461,6 +675,13 @@ function enforceDistinctStages(scenes: Scene[]): void {
     if (selected === bg) continue;
     const newAnchors = Object.keys(STAGE_ANCHORS[selected]);
     s.backgroundSrc = selected;
+    // The stage reassignment changes the rendered composition. Keep the
+    // fingerprint truthful instead of retaining the pre-enforcement stage.
+    const fingerprint = String(s.visualFingerprint ?? "").split("|");
+    if (fingerprint.length >= 3) {
+      fingerprint[2] = `stage:${selected.split("/").pop()?.replace(/\.[^.]+$/, "")}`;
+      s.visualFingerprint = fingerprint.join("|");
+    }
     let ai = 0;
     for (const e of s.entities) {
       if (e.anchor) {

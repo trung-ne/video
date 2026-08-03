@@ -251,7 +251,11 @@ export function validateSceneTimeline(input: any): ValidationResult {
           (scene.entities?.length ?? 0) === 0 &&
           (scene.cards?.length ?? 0) === 0 &&
           (scene.paperCards?.length ?? 0) === 0 &&
-          (scene.frameBoxes?.length ?? 0) === 0) {
+          (scene.frameBoxes?.length ?? 0) === 0 &&
+          (scene.speechBubbles?.length ?? 0) === 0 &&
+          // A full-bleed approved photo is itself the focal visual.  It is
+          // intentionally allowed to have no overlay text or cat.
+          !realBgImages.has(scene.backgroundSrc ?? "")) {
         warnings.push(`${sp} has no texts — screen will be empty`);
       }
       for (let ti = 0; ti < scene.texts.length; ti++) {

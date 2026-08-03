@@ -69,6 +69,13 @@ const outPath = getArg("--out", defaultOutPath());
 const compositionId = getArg("--composition", "CatExplainer");
 const isProxy = args.includes("--proxy");
 const framesArg = getArg("--frames", "");
+if (framesArg && path.resolve(outPath) === path.resolve(defaultOutPath())) {
+  console.error(
+    "A --frames diagnostic must use a non-canonical --out path (for example output/<id>/slices/check.mp4). " +
+    "A partial render can never replace the production video."
+  );
+  process.exit(1);
+}
 const frameRangeStart = framesArg ? Number(framesArg.split("-")[0]) : 0;
 if (!Number.isFinite(frameRangeStart) || frameRangeStart < 0) {
   console.error(`Invalid --frames start: ${framesArg}`);
@@ -360,7 +367,12 @@ try {
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
   console.log(`\nEncoded media: ${stagedOut}. Running publish audits...`);
-  const encodingAudit = isProxy ? null : runEncodingAudit(stagedOut, outPath);
+  // A bounded --frames render is a diagnostic slice, never a publishable
+  // deliverable. Its average bitrate is dominated by its particular few
+  // seconds (especially a quiet white opening) and cannot prove or disprove
+  // the production encoding contract. Keep the full-render audit fail-closed;
+  // slices still undergo requested-range timing and pixel audits below.
+  const encodingAudit = (isProxy || framesArg) ? null : runEncodingAudit(stagedOut, outPath);
 
   // A render that does not match what was asked for must never reach an audit or
   // a cross-render comparison — a truncated MP4 scores *better* on sampled pixel
@@ -478,7 +490,7 @@ try {
   const previousBuild = promoteArtifacts(stagingDir, finalDir, runId);
   pruneRunHistory(finalDir);
   if (previousBuild) console.log(`   Previous successful build archived at: ${previousBuild}`);
-  console.log(`\n✅ ${isProxy ? "Proxy audit" : "Production render"} complete: ${outPath}`);
+  console.log(`\n✅ ${isProxy ? "Proxy audit" : framesArg ? "Diagnostic slice" : "Production render"} complete: ${outPath}`);
 } catch (err) {
   // The previously published build is left exactly as it was. The failed run
   // stays in its staging dir so its artifacts can be inspected without being
