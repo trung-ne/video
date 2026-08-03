@@ -1138,6 +1138,29 @@ const HERO_SCENE_MARKERS = new Set([
   "Có đấy là cái điều đáng quan sát nhất",
 ]);
 
+// One authored hero roughly every 20–45 seconds. This supersedes the older
+// broad marker list above; a hero is a scarce visual event, not a label placed
+// on every important sentence.
+const SELECTED_HERO_SCENE_MARKERS = new Set([
+  "Nhắc tới Hàn Quốc ngoài kim chi, phim", "Nhưng mà tại sao cái chuyện này",
+  "Marin hay là giao dịch ký quỹ", "Nhưng mà vấn đề không phải là bạn cứ vay tiền",
+  "Và cái thứ nguy hiểm nhất gọi là margin core", "Và đó chính xác là những gì đã xảy ra",
+  "Nghe hợp lý mà có mà có một cái vấn đề", "Và điều này tạo ra một cảm giác khá là phổ biến",
+  "Còn Marin thì giống như kiểu là đưa cho bạn một cái xe máy", "Nhưng mà đó mới chỉ là một nửa câu chuyện",
+  "Còn ở Hàn Quốc ấy thì trong nhiều năm", "Đây là một tỉ lệ rất là cao và nó kéo thêm",
+  "Nhiều người lại thích săn những mã cổ phiếu nhỏ", "Tức là đây là cái nhóm mà đạp ga mạnh nhất",
+  "Đầu tiên là áp lực tài sản", "Nguyên nhân thì là một phần đến từ cấu trúc",
+  "Và khi mà niềm tin và tính công bằng của thị trường", "Thêm vào đấy thì những cái nội dung tài chính",
+  "Và khi mà tất cả những cái thứ đấy nó kết hợp lại", "CFD là viết tắt của Contracts for difference",
+  "Và điều này khiến thị trường lại trở nên méo mó", "Nhưng mà những cái đấy thì nó cũng chỉ là xử lý phần ngọn",
+  "Tức là khi mà không được chơi xong sân nhà", "và đôi khi nó sẽ chảy tới những cái nơi mà khó kiểm soát hơn",
+  "Bây giờ bạn là một người Hàn Quốc khoảng 28 tuổi", "Cái đáng sợ nhất không phải là Marin",
+  "Và điều chớ trêu nhá lại thị trường", "Thắng một phát không nghĩa là bạn là thiên tài chứng khoán",
+  "Nợ tăng dần qua từng năm này, giá tài sản tăng nhanh hơn thu nhập",
+  "Thế thì bao giờ người Hàn Quốc mới nhận ra", "Thậm chí là có những người vẫn tiếp tục vay tiền để đầu tư",
+  "Đoàn bảy hiện nặng ở mức rất là cao",
+]);
+
 if (BASE_SCENES.length !== DIRECTIONS.length) {
   throw new Error(`Direction count ${DIRECTIONS.length} does not match scene count ${BASE_SCENES.length}`);
 }
@@ -1184,6 +1207,46 @@ const SCENE_OVERRIDES: Record<string, Partial<AuthoredScene>> = {
   "Đến cuối năm 2024 thì lượng cổ phiếu nước ngoài": {
     grammar: "EVIDENCE",
     slots: { title: "Dòng tiền ra nước ngoài", body: "Quy mô nắm giữ cổ phiếu nước ngoài tăng rất lớn cuối 2024", source: "BOK · 2025" },
+  },
+  "Marin về bản chất thì nó giống như cái việc là gắn động cơ xe đua": {
+    grammar: "CAUSE_EFFECT", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { cause: "Vốn thật", effect: "Sức mua lớn hơn", causeIcon: "finance/money", effectIcon: "finance/trending_up" },
+  },
+  "Rồi nó lại xuất hiện thêm những cái đợt bán tháo mới": {
+    grammar: "CAUSE_EFFECT", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { cause: "Margin call", effect: "Bán tháo dây chuyền", causeIcon: "finance/debt", effectIcon: "finance/trending_down" },
+  },
+  "Còn Marin thì giống như kiểu là đưa cho bạn một cái xe máy": {
+    grammar: "DIAGRAM", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { items: "Vốn thật|Tiền vay|Vị thế lớn", icons: "finance/money|finance/debt|finance/trending_up" },
+  },
+  "Họ sẽ lao vào sau khi đã đọc được vài cuốn sách": {
+    grammar: "DIAGRAM", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { items: "Đọc ít|Tự tin quá|Đặt lệnh", icons: "props/book|props/brain|finance/investment" },
+  },
+  "Nghe kiểu cái kiến nhỏ nhỏ các thứ": {
+    grammar: "DIAGRAM", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { items: "Một gaemi|Đám đông|Lực thị trường", icons: "characters/cat_investor_phone|characters/cat_investor_panic|finance/trending_up" },
+  },
+  "Nhiều người lại thích săn những mã cổ phiếu nhỏ": {
+    grammar: "CAUSE_EFFECT", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { cause: "Mã nhỏ", effect: "Kỳ vọng jackpot", causeIcon: "finance/stock", effectIcon: "props/trophy" },
+  },
+  "Tức là đây là cái nhóm mà đạp ga mạnh nhất": {
+    grammar: "EVIDENCE", visualRegister: "evidence", focalType: "evidence", characterRequired: false,
+    slots: { title: "NHÓM DÙNG MARGIN", body: "Giao dịch thường xuyên hơn, rủi ro hơn và vị thế lớn hơn", source: "KCMI · 2021" },
+  },
+  "Chỉ cần cái điện thoại, một tài khoản giao dịch": {
+    grammar: "DIAGRAM", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { items: "Điện thoại|Tài khoản|Lệnh mua", icons: "characters/cat_investor_phone|finance/investment|finance/trending_up" },
+  },
+  "Và khi mà niềm tin và tính công bằng của thị trường": {
+    grammar: "CAUSE_EFFECT", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { cause: "Mất niềm tin", effect: "Đầu cơ ngắn hạn", causeIcon: "props/thought_bubble", effectIcon: "finance/trending_down" },
+  },
+  "Thêm vào đấy thì những cái nội dung tài chính": {
+    grammar: "DIAGRAM", visualRegister: "infographic", focalType: "diagram", characterRequired: false,
+    slots: { items: "Nội dung nóng|FOMO|Đặt lệnh", icons: "characters/cat_investor_phone|characters/cat_surprised|finance/investment" },
   },
 };
 
@@ -1413,7 +1476,7 @@ export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => {
       photoTreatment: photo.treatment,
       slots: { ...authoredSlots, photo: photo.photo },
     } : {}),
-    heroVisual: scene.heroVisual || HERO_SCENE_MARKERS.has(scene.marker),
+    heroVisual: SELECTED_HERO_SCENE_MARKERS.has(scene.marker),
   };
 });
 

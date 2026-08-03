@@ -178,6 +178,8 @@ const provenance = {
     canonicalWordCount: Number(alignment.canonicalWordCount ?? 0),
     matchedWordCount: Number(alignment.matchedWordCount ?? 0),
     coverage: Number(alignment.coverage ?? 0),
+    matchedCoverage: Number(alignment.matchedCoverage ?? alignment.coverage ?? 0),
+    interpolatedWordCount: Number(alignment.interpolatedWordCount ?? 0),
     language: alignment.language,
   } : undefined,
 };

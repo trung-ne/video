@@ -65,6 +65,116 @@
       "src": "characters/cat_child_school"
     }
   },
+  "sections": [
+    {
+      "id": "act-1-margin",
+      "sourceMarker": "Nhắc tới Hàn Quốc ngoài kim chi",
+      "sourceRange": {
+        "startWord": 0,
+        "endWord": 6,
+        "quoteChecksum": "fc5b57909c3f1f20d91adead2c04c297b46c5006903ad3d7394c97037dbc73df"
+      },
+      "thesis": "Margin makes a small market move a personal debt crisis.",
+      "emotionalTurn": "curiosity to shock",
+      "energyCurve": "climax",
+      "heroConcept": "KOSPI shock and margin call",
+      "treatmentSequence": [
+        "full_tableau",
+        "evidence",
+        "framebox"
+      ]
+    },
+    {
+      "id": "act-2-pressure",
+      "sourceMarker": "Và đó chính xác là những gì đã xảy ra",
+      "sourceRange": {
+        "startWord": 711,
+        "endWord": 720,
+        "quoteChecksum": "8c34e5504cd8f269d0d00430e7497a8ed9bf0f1d803f40f359aec42e8ea6fd72"
+      },
+      "thesis": "Housing, jobs and the wealth gap make leveraged investing emotionally plausible.",
+      "emotionalTurn": "shock to empathy",
+      "energyCurve": "sustain",
+      "heroConcept": "young worker chasing an unaffordable home",
+      "treatmentSequence": [
+        "photo_broll",
+        "full_tableau",
+        "infographic"
+      ]
+    },
+    {
+      "id": "act-3-system",
+      "sourceMarker": "Nhưng mà đó mới chỉ là một nửa câu chuyện",
+      "sourceRange": {
+        "startWord": 1475,
+        "endWord": 1484,
+        "quoteChecksum": "33c32dc6efcbf845a68c42dd1fe2fd172d2d94756fe967bd68db1d342f97d54f"
+      },
+      "thesis": "Market structure, regulation and behaviour amplify the risk.",
+      "emotionalTurn": "empathy to diagnosis and release",
+      "energyCurve": "build",
+      "heroConcept": "debt-loaded gaemi crowd",
+      "treatmentSequence": [
+        "evidence",
+        "visual_gag",
+        "full_tableau",
+        "framebox"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "household-credit-2025",
+      "text": "Household credit exceeded KRW 1,900 trillion in 2025.",
+      "sourceMarker": "Cuối năm 2025 thì tổng nợ tín dụng hộ gia đình",
+      "sourceRange": {
+        "startWord": 796,
+        "endWord": 806,
+        "quoteChecksum": "80d5168a7ae86bb46f1aa4c65a18cb8aadc3d0bc1518fe51e74b452dcf7c201a"
+      },
+      "evidencePolicy": "data",
+      "publisher": "Bank of Korea",
+      "title": "Financial Stability Report",
+      "date": "2025-06",
+      "checkedDate": "2026-08-03",
+      "url": "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400069&menuNo=400069&nttId=10096591",
+      "shortSourceLabel": "BOK · 2025"
+    },
+    {
+      "id": "retail-participation",
+      "text": "Retail participation is a defining feature of Korea's equity market.",
+      "sourceMarker": "Một cái đặc điểm khá là khác thường",
+      "sourceRange": {
+        "startWord": 1502,
+        "endWord": 1509,
+        "quoteChecksum": "e923809cc631be8837941e08eaa23476c84c575969ac24fa891f3df459744682"
+      },
+      "evidencePolicy": "source_card",
+      "publisher": "Korea Exchange",
+      "title": "Solid Investor Base",
+      "date": "2025",
+      "checkedDate": "2026-08-03",
+      "url": "https://global.krx.co.kr/contents/GLB/03/0301/0301030000/GLB0301030000.jsp",
+      "shortSourceLabel": "KRX · 2025"
+    },
+    {
+      "id": "margin-behaviour",
+      "text": "Retail margin users show distinctive high-risk trading behaviour.",
+      "sourceMarker": "Tức là đây là cái nhóm mà đạp ga mạnh nhất",
+      "sourceRange": {
+        "startWord": 2081,
+        "endWord": 2091,
+        "quoteChecksum": "e9ed1094e7ba5c6de1bf4a27ae4533ef7d52356eedc5d0e9a446dce7c9cdc652"
+      },
+      "evidencePolicy": "source_card",
+      "publisher": "Korea Capital Market Institute",
+      "title": "Margin Trading in Korea's Stock Market",
+      "date": "2021",
+      "checkedDate": "2026-08-03",
+      "url": "https://www.kcmi.re.kr/en/report/report_view?report_no=1479",
+      "shortSourceLabel": "KCMI · 2021"
+    }
+  ],
   "visualTreatmentPlan": {
     "registerTargets": {
       "character_action": 0.25,
@@ -119,162 +229,35 @@
   "scenes": [
     {
       "id": "scene-001",
-      "narration": "Nhắc tới Hàn Quốc, ngoài kim chi, phim tình cảm hay các anh oppa đẹp trai, còn có một vấn đề khá đau đầu: ngày càng nhiều người tin rằng đầu tư không còn là chuyện tích lũy lâu dài, mà là con đường ngắn nhất để đổi đời.",
-      "purpose": "Cold open hook — Korea beyond the cliché, into a real problem.",
-      "emotion": "neutral",
-      "viewerFocus": "the pivot from cliché to problem",
-      "visualGrammar": "TABLEAU",
+      "narration": "Đầu năm 2026, chỉ trong vài ngày, KOSPI Hàn Quốc rơi hơn 18%.",
+      "purpose": "Open on the market shock before any context or branding.",
+      "emotion": "urgent",
+      "viewerFocus": "the -18% KOSPI shock",
+      "visualGrammar": "STAT_REVEAL",
       "sourceRange": {
         "startWord": 0,
         "endWord": 53,
         "quoteChecksum": "45e2f05221d2c5c67f1b3734d799aeec4544247e9fd91c3f4b47ef285dc4e5ee"
-      },
-      "heroVisual": false,
-      "slots": {
-        "stage": "assets/scenes/street.svg",
-        "who": "hostPoint",
-        "anchorA": "sidewalk",
-        "prop": "finance/stock",
-        "caption": "Đổi đời — con đường ngắn nhất?"
-      },
-      "visualRegister": "full_tableau",
-      "semanticVisual": {
-        "subject": "host on a Korean city street",
-        "action": "turns from pop-culture signs toward a red margin warning",
-        "takeaway": "Korea's familiar image hides a leveraged-investing problem",
-        "object": "margin warning",
-        "setting": "city street"
-      },
-      "focalType": "full_scene",
-      "silentFrameTakeaway": "Korea's familiar image hides a leveraged-investing problem",
-      "focalOccupancyTarget": 0.42,
-      "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host on a Korean city street|turns from pop-culture signs toward a red margin warning|margin warning|none|assets/scenes/street.svg|default|prop=finance/stock|stage=assets/scenes/street.svg|who=characters/cat_point_left",
-      "assetRequests": [
-        {
-          "role": "character",
-          "slot": "who",
-          "query": "characters/cat_point_left",
-          "requiredTags": [],
-          "preferredAssetId": "characters/cat_point_left",
-          "allowGenerate": false
-        },
-        {
-          "role": "prop",
-          "slot": "prop",
-          "query": "finance/stock",
-          "requiredTags": [],
-          "preferredAssetId": "finance/stock",
-          "allowGenerate": false
-        },
-        {
-          "role": "stage",
-          "slot": "stage",
-          "query": "assets/scenes/street.svg",
-          "requiredTags": [],
-          "preferredAssetId": "assets/scenes/street.svg",
-          "allowGenerate": false
-        }
-      ],
-      "resolvedAssets": {
-        "who": "characters/cat_point_left",
-        "prop": "finance/stock",
-        "stage": "assets/scenes/street.svg"
-      },
-      "assetResolutionNotes": [],
-      "noveltyFromPrevious": [
-        "opening scene"
-      ]
-    },
-    {
-      "id": "scene-002",
-      "narration": "Những\r\ncái thứ như là cổ phiếu, coin, bất động\r\nsản, bất cứ cái thứ gì mà có khả năng\r\ntăng giá thì đều có người lao vào. Và\r\ncái thứ mà khiến cho cuộc chơi này trở\r\nnên nguy hiểm hơn rất nhiều là Marin hay\r\nnói đơn giản là tiền vay để đầu tư",
-      "purpose": "Show the range of assets people are chasing, then name the accelerant.",
-      "emotion": "neutral",
-      "viewerFocus": "the three asset classes",
-      "visualGrammar": "CHAR_PROP",
-      "sourceRange": {
-        "startWord": 54,
-        "endWord": 109,
-        "quoteChecksum": "b587d4bb07d4b3c8ee8fe924a06a35643bd6ab25f74983fbd9d106ebd748b400"
-      },
-      "heroVisual": true,
-      "slots": {
-        "who": "hostPoint",
-        "prop": "finance/stock",
-        "label": "Cổ phiếu, coin, nhà đất cùng nóng"
-      },
-      "visualRegister": "visual_gag",
-      "semanticVisual": {
-        "subject": "host and stock prop",
-        "action": "connect stocks, crypto and housing to borrowed-money acceleration",
-        "takeaway": "several asset booms share the same leverage accelerant",
-        "object": "stock prop"
-      },
-      "focalType": "visual_gag",
-      "silentFrameTakeaway": "several asset booms share the same leverage accelerant",
-      "focalOccupancyTarget": 0.48,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|host and stock prop|connect stocks, crypto and housing to borrowed-money acceleration|stock prop|none|no-stage|default|prop=finance/stock|who=characters/cat_point_left",
-      "assetRequests": [
-        {
-          "role": "character",
-          "slot": "who",
-          "query": "characters/cat_point_left",
-          "requiredTags": [],
-          "preferredAssetId": "characters/cat_point_left",
-          "allowGenerate": false
-        },
-        {
-          "role": "prop",
-          "slot": "prop",
-          "query": "finance/stock",
-          "requiredTags": [],
-          "preferredAssetId": "finance/stock",
-          "allowGenerate": false
-        }
-      ],
-      "resolvedAssets": {
-        "who": "characters/cat_point_left",
-        "prop": "finance/stock"
-      },
-      "assetResolutionNotes": [],
-      "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:visual_gag"
-      ]
-    },
-    {
-      "id": "scene-003",
-      "narration": "Hậu quả bắt đầu lộ rõ vào đầu năm 2026, khi chỉ trong vài ngày, chỉ số KOSPI của Hàn Quốc lao dốc hơn 18%, hàng trăm tỷ đô la giá trị thị trường bị thổi bay — một trong những đợt sụt giảm mạnh nhất trong nhiều năm.",
-      "purpose": "Land the cold-open's biggest shock number early.",
-      "emotion": "urgent",
-      "viewerFocus": "the -18% figure",
-      "visualGrammar": "STAT_REVEAL",
-      "sourceRange": {
-        "startWord": 110,
-        "endWord": 160,
-        "quoteChecksum": "edf5a162144081d898ab53968410a345c0d7759d313b5c21cd2f4805fa471b5d"
       },
       "heroVisual": true,
       "slots": {
         "stat": "-18%",
         "anchor": "finance/trending_down",
         "who": "characters/cat_surprised",
-        "caption": "KOSPI lao dốc chỉ trong vài ngày, đầu 2026"
+        "caption": "KOSPI · chỉ vài ngày"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
         "subject": "KOSPI loss figure",
-        "action": "drops beside a falling-market icon",
-        "takeaway": "KOSPI lost 18 percent in only a few days",
-        "object": "KOSPI decline"
+        "action": "lands as the opening shock",
+        "takeaway": "KOSPI fell more than 18 percent in days",
+        "object": "KOSPI -18%"
       },
       "focalType": "chart",
-      "silentFrameTakeaway": "KOSPI lost 18 percent in only a few days",
+      "silentFrameTakeaway": "KOSPI -18% shock",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|KOSPI loss figure|drops beside a falling-market icon|KOSPI decline|none|no-stage|default|anchor=finance/trending_down|who=characters/cat_surprised",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -299,41 +282,39 @@
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:STAT_REVEAL",
-        "register:evidence",
-        "asset:characters/cat_surprised",
-        "asset:finance/trending_down"
+        "opening scene"
       ]
     },
     {
-      "id": "scene-004",
-      "narration": "Nhưng điều đáng chú ý là rất nhiều nhà đầu tư đã dùng margin ở mức rất cao, đến mức một số công ty chứng khoán phải tạm dừng cho vay vì đã chạm trần hạn mức.",
-      "purpose": "Reveal margin was maxed out — foreshadow the mechanism.",
+      "id": "scene-002",
+      "narration": "Điều đáng sợ hơn: nhiều nhà đầu tư dùng margin rất cao, đến mức một số công ty chứng khoán phải chạm trần cho vay.",
+      "purpose": "Name the margin ceiling and the question it raises.",
       "emotion": "concern",
-      "viewerFocus": "brokers halting new loans",
+      "viewerFocus": "the margin lending ceiling",
       "visualGrammar": "EVIDENCE",
       "sourceRange": {
-        "startWord": 161,
-        "endWord": 204,
-        "quoteChecksum": "7b29f142ee731984e49f13d7bb12936a620c48314979d0fd419dcc22b57ca433"
+        "startWord": 54,
+        "endWord": 109,
+        "quoteChecksum": "b587d4bb07d4b3c8ee8fe924a06a35643bd6ab25f74983fbd9d106ebd748b400"
       },
       "heroVisual": false,
       "slots": {
-        "title": "Đáng chú ý",
-        "body": "Một số công ty chứng khoán phải tạm dừng cho vay vì đã chạm trần margin"
+        "title": "TRẦN MARGIN",
+        "body": "Có công ty chứng khoán phải tạm dừng cho vay",
+        "source": "FSC · 2025"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
-        "subject": "broker lending notice",
-        "action": "shows the margin ceiling being reached",
-        "takeaway": "brokers had to halt loans because margin capacity was full",
-        "object": "margin lending limit"
+        "subject": "margin lending ceiling",
+        "action": "shows brokers pausing loans",
+        "takeaway": "margin credit reached a lending limit",
+        "object": "margin ceiling"
       },
       "focalType": "evidence",
-      "silentFrameTakeaway": "brokers had to halt loans because margin capacity was full",
-      "focalOccupancyTarget": 0.55,
+      "silentFrameTakeaway": "broker margin ceiling",
+      "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|evidence|none|broker lending notice|shows the margin ceiling being reached|margin lending limit|none|no-stage|default",
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic||medium|none|none|none",
       "assetRequests": [],
       "resolvedAssets": {},
       "assetResolutionNotes": [],
@@ -342,11 +323,132 @@
       ]
     },
     {
-      "id": "scene-005",
-      "narration": "Nhưng mà tại sao cái chuyện này lại xảy\r\nra ở thị trường mà không phải là một thị\r\ntrường mới nổi ở trong một cái nền kinh\r\ntế lớn hàng đầu châu Á, từng trải qua\r\nkhông ít những cuộc khủng hoảng tài\r\nchính và sở hữu một thế hệ nhà đầu tư\r\nnổi tiếng vì tính cạnh tranh cùng với kỷ\r\nluật làm việc",
-      "purpose": "Sharpen the puzzle: why here, in a mature, disciplined market.",
+      "id": "scene-003",
+      "narration": "Vì sao nhiều người sẵn sàng vay tiền để cược vào thị trường, và vì sao margin lại phổ biến đến thế?",
+      "purpose": "Put the central editorial question before the explanation.",
       "emotion": "curious",
-      "viewerFocus": "the host questioning",
+      "viewerFocus": "the two-part question",
+      "visualGrammar": "QA_REVEAL",
+      "sourceRange": {
+        "startWord": 110,
+        "endWord": 160,
+        "quoteChecksum": "edf5a162144081d898ab53968410a345c0d7759d313b5c21cd2f4805fa471b5d"
+      },
+      "heroVisual": false,
+      "slots": {
+        "q": "Vì sao phải vay để cược?",
+        "a": "Vì sao margin lại phổ biến?",
+        "who": "hostPoint"
+      },
+      "visualRegister": "infographic",
+      "semanticVisual": {
+        "subject": "central questions",
+        "action": "asks why borrowing and margin spread",
+        "takeaway": "the episode investigates leverage",
+        "object": "two questions"
+      },
+      "focalType": "diagram",
+      "silentFrameTakeaway": "two questions about margin",
+      "focalOccupancyTarget": 0.48,
+      "characterRequired": true,
+      "visualFingerprint": "QA_REVEAL|infographic|diagram|graphic|actor|medium|none|none|none",
+      "assetRequests": [
+        {
+          "role": "character",
+          "slot": "who",
+          "query": "characters/cat_point_left",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_point_left",
+          "allowGenerate": false
+        }
+      ],
+      "resolvedAssets": {
+        "who": "characters/cat_point_left"
+      },
+      "assetResolutionNotes": [],
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic",
+        "asset:characters/cat_point_left"
+      ]
+    },
+    {
+      "id": "scene-004",
+      "narration": "Tôi là Mèo. Đây là câu chuyện về cơn sốt đòn bẩy của Hàn Quốc.",
+      "purpose": "Keep branding short and place it after the hook.",
+      "emotion": "neutral",
+      "viewerFocus": "the host and episode identity",
+      "visualGrammar": "TABLEAU",
+      "sourceRange": {
+        "startWord": 161,
+        "endWord": 204,
+        "quoteChecksum": "7b29f142ee731984e49f13d7bb12936a620c48314979d0fd419dcc22b57ca433"
+      },
+      "heroVisual": false,
+      "slots": {
+        "stage": "assets/scenes/library.svg",
+        "who": "hostPlain",
+        "anchorA": "table",
+        "prop": "props/book"
+      },
+      "visualRegister": "full_tableau",
+      "semanticVisual": {
+        "subject": "host",
+        "action": "introduces the leverage story",
+        "takeaway": "this episode explains Korea's leverage boom",
+        "setting": "library"
+      },
+      "focalType": "full_scene",
+      "silentFrameTakeaway": "host introduces the episode",
+      "focalOccupancyTarget": 0.42,
+      "characterRequired": true,
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "assetRequests": [
+        {
+          "role": "character",
+          "slot": "who",
+          "query": "characters/cat",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "prop",
+          "query": "props/book",
+          "requiredTags": [],
+          "preferredAssetId": "props/book",
+          "allowGenerate": false
+        },
+        {
+          "role": "stage",
+          "slot": "stage",
+          "query": "assets/scenes/library.svg",
+          "requiredTags": [],
+          "preferredAssetId": "assets/scenes/library.svg",
+          "allowGenerate": false
+        }
+      ],
+      "resolvedAssets": {
+        "who": "characters/cat",
+        "prop": "props/book",
+        "stage": "assets/scenes/library.svg"
+      },
+      "assetResolutionNotes": [],
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat",
+        "asset:props/book",
+        "asset:assets/scenes/library.svg"
+      ]
+    },
+    {
+      "id": "scene-005",
+      "narration": "Trước hết, cần hiểu margin: bạn mượn tiền của công ty chứng khoán để mua nhiều cổ phiếu hơn số vốn thật có.",
+      "purpose": "Begin explaining margin before 40 seconds.",
+      "emotion": "curious",
+      "viewerFocus": "borrowed buying power",
       "visualGrammar": "TABLEAU",
       "sourceRange": {
         "startWord": 205,
@@ -359,6 +461,7 @@
         "who": "hostShrug",
         "anchorA": "board",
         "prop": "props/brain",
+        "propPlacement": "right",
         "caption": "Tại sao lại là Hàn Quốc?"
       },
       "visualRegister": "full_tableau",
@@ -372,7 +475,7 @@
       "silentFrameTakeaway": "the puzzle is not only the crash but why Korea embraced margin",
       "focalOccupancyTarget": 0.4,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host at an office desk|questions why leverage became normal in a mature market|none|none|assets/scenes/classroom.svg|default|prop=props/brain|stage=assets/scenes/classroom.svg|who=characters/cat_shrug",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -406,8 +509,6 @@
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:TABLEAU",
-        "register:full_tableau",
         "asset:characters/cat_shrug",
         "asset:props/brain",
         "asset:assets/scenes/classroom.svg"
@@ -425,7 +526,7 @@
         "endWord": 310,
         "quoteChecksum": "394ef88c139a8dd8367f521fdd4ccecfdc3db88456f79d0fcc55ddecf8673f28"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "q": "Tại sao sẵn sàng vay tiền để cược?",
         "a": "Và tại sao margin lại phổ biến đến thế?",
@@ -442,7 +543,7 @@
       "silentFrameTakeaway": "the story asks why people borrow to speculate and why margin spread",
       "focalOccupancyTarget": 0.4,
       "characterRequired": true,
-      "visualFingerprint": "QA_REVEAL|character_action|character_action|none|thinking host|poses the two central questions before revealing the answer|two central questions|none|no-stage|default|who=characters/cat_point_left",
+      "visualFingerprint": "QA_REVEAL|character_action|character_action|graphic|actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -494,7 +595,7 @@
       "silentFrameTakeaway": "this is a guided explanation of Korea's leverage boom",
       "focalOccupancyTarget": 0.4,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host in a library|introduces the leverage story|none|none|assets/scenes/library.svg|default|prop=props/book|stage=assets/scenes/library.svg|who=characters/cat",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -567,7 +668,7 @@
       "silentFrameTakeaway": "understanding margin comes before judging its users",
       "focalOccupancyTarget": 0.4,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host at a library table|opens the margin lesson|margin lesson|none|assets/scenes/library.svg|default|prop=finance/debt|stage=assets/scenes/library.svg|who=characters/cat_point_left",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -634,7 +735,7 @@
       "silentFrameTakeaway": "margin means borrowing from a broker to buy more stock",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|host|points at a loan feeding a stock purchase|broker loan|none|no-stage|default|prop=finance/loan|who=characters/cat",
+      "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -698,7 +799,7 @@
       "silentFrameTakeaway": "a loan doubles buying power before any return occurs",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|host and investor|act out buying power expanding from 100 million to 200 million|none|host questions leveraged investor|assets/scenes/bank_interior.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_point_left|stage=assets/scenes/bank_interior.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -768,7 +869,7 @@
       "silentFrameTakeaway": "a 10 percent stock gain becomes 20 million on doubled exposure",
       "focalOccupancyTarget": 0.48,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|profit figure|lands above an upward chart and measure label|leveraged profit|none|no-stage|default|anchor=finance/chart_up|who=characters/cat_happy",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -834,7 +935,7 @@
       "silentFrameTakeaway": "margin doubles losses but never erases principal or interest",
       "focalOccupancyTarget": 0.48,
       "characterRequired": false,
-      "visualFingerprint": "CAUSE_EFFECT|infographic|chart|none|loss multiplier|falls while the debt remains fixed|none|falling asset value versus fixed debt|no-stage|default|anchor=finance/loss|causeIcon=finance/trending_down|effectIcon=finance/debt|who=characters/cat_sad",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|chart|graphic|actor,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -891,7 +992,7 @@
       "purpose": "Metaphor for margin's amplifying, destabilizing nature.",
       "emotion": "concern",
       "viewerFocus": "engine metaphor for margin",
-      "visualGrammar": "VISUAL_METAPHOR",
+      "visualGrammar": "CAUSE_EFFECT",
       "sourceRange": {
         "startWord": 486,
         "endWord": 538,
@@ -902,20 +1003,24 @@
         "setup": "Gắn động cơ đua vào đầu tư",
         "payoff": "Cua gấp là văng khỏi đường đua",
         "leftAsset": "finance/chart_up",
-        "rightAsset": "finance/loss"
+        "rightAsset": "finance/loss",
+        "cause": "Vốn thật",
+        "effect": "Sức mua lớn hơn",
+        "causeIcon": "finance/money",
+        "effectIcon": "finance/trending_up"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "race engine and investment portfolio",
         "action": "accelerate together before flying off a sharp bend",
         "takeaway": "leverage is exhilarating until a small turn becomes a crash",
         "relation": "race engine represents leverage"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "leverage is exhilarating until a small turn becomes a crash",
       "focalOccupancyTarget": 0.52,
-      "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|race engine and investment portfolio|accelerate together before flying off a sharp bend|none|race engine represents leverage|no-stage|default|leftAsset=finance/chart_up|rightAsset=finance/loss",
+      "characterRequired": false,
+      "visualFingerprint": "CAUSE_EFFECT|infographic|diagram|graphic|prop,prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -932,17 +1037,35 @@
           "requiredTags": [],
           "preferredAssetId": "finance/loss",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "causeIcon",
+          "query": "finance/money",
+          "requiredTags": [],
+          "preferredAssetId": "finance/money",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "effectIcon",
+          "query": "finance/trending_up",
+          "requiredTags": [],
+          "preferredAssetId": "finance/trending_up",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "leftAsset": "finance/chart_up",
-        "rightAsset": "finance/loss"
+        "rightAsset": "finance/loss",
+        "causeIcon": "finance/money",
+        "effectIcon": "finance/trending_up"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:VISUAL_METAPHOR",
-        "register:visual_gag",
-        "asset:finance/chart_up"
+        "asset:finance/chart_up",
+        "asset:finance/money",
+        "asset:finance/trending_up"
       ]
     },
     {
@@ -974,7 +1097,7 @@
       "silentFrameTakeaway": "margin call is the mechanism that makes leverage lethal",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "FRAMEBOX|framebox|screenshot|none|margin-call warning|fills a monitor like an unavoidable alert|margin call alert|none|no-stage|default|content=#E74C3C|who=characters/cat_explain",
+      "visualFingerprint": "FRAMEBOX|framebox|screenshot|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1017,7 +1140,7 @@
         "endWord": 616,
         "quoteChecksum": "eda8c73204de5d6a0742d6184ff7243e85e10ac6ab7f9a72f8b2c0d5962a64d5"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "broker",
         "answerer": "skeptic",
@@ -1038,7 +1161,7 @@
       "silentFrameTakeaway": "below the safety line the broker can liquidate the shares",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|broker and investor|act out the cash demand and forced sale|none|broker liquidates investor shares|assets/scenes/bank_interior.svg|default|answerer=characters/cat_sunglasses|asker=characters/cat_business|stage=assets/scenes/bank_interior.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1091,7 +1214,7 @@
         "endWord": 667,
         "quoteChecksum": "5d2ca1a7d190adcb7664cedbc9692840e78cf59ba672b5b7e2ed409bbd3e9db6"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "broker",
         "askerText": "Anh phải nộp thêm tiền ngay!",
@@ -1112,7 +1235,7 @@
       "silentFrameTakeaway": "many simultaneous margin calls create forced selling",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|broker and investor|exchange a demand for cash and an admission of shortage|none|broker demands cash from indebted investor|assets/scenes/boardroom.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_business|stage=assets/scenes/boardroom.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1156,7 +1279,7 @@
       "purpose": "The staircase-fall metaphor for cascading margin calls.",
       "emotion": "urgent",
       "viewerFocus": "one person falling, then a chain of falls",
-      "visualGrammar": "VISUAL_METAPHOR",
+      "visualGrammar": "CAUSE_EFFECT",
       "sourceRange": {
         "startWord": 668,
         "endWord": 710,
@@ -1167,20 +1290,24 @@
         "setup": "Một người ngã trên cầu thang",
         "payoff": "Cả hàng người ngã theo sau",
         "leftAsset": "characters/cat_sad",
-        "rightAsset": "finance/trending_down"
+        "rightAsset": "finance/trending_down",
+        "cause": "Margin call",
+        "effect": "Bán tháo dây chuyền",
+        "causeIcon": "finance/debt",
+        "effectIcon": "finance/trending_down"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "falling investor",
         "action": "knocks a line of investors down a staircase",
         "takeaway": "one margin call can cascade into market-wide selling",
         "relation": "first fall triggers the crowd"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "one margin call can cascade into market-wide selling",
       "focalOccupancyTarget": 0.5,
-      "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|falling investor|knocks a line of investors down a staircase|none|first fall triggers the crowd|no-stage|default|leftAsset=characters/cat_sad|rightAsset=finance/trending_down",
+      "characterRequired": false,
+      "visualFingerprint": "CAUSE_EFFECT|infographic|diagram|graphic|prop,prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -1197,18 +1324,37 @@
           "requiredTags": [],
           "preferredAssetId": "finance/trending_down",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "causeIcon",
+          "query": "finance/debt",
+          "requiredTags": [],
+          "preferredAssetId": "finance/debt",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "effectIcon",
+          "query": "finance/trending_down",
+          "requiredTags": [],
+          "preferredAssetId": "finance/trending_down",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "leftAsset": "characters/cat_sad",
-        "rightAsset": "finance/trending_down"
+        "rightAsset": "finance/trending_down",
+        "causeIcon": "finance/debt",
+        "effectIcon": "finance/trending_down"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:VISUAL_METAPHOR",
-        "register:visual_gag",
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
         "asset:characters/cat_sad",
-        "asset:finance/trending_down"
+        "asset:finance/trending_down",
+        "asset:finance/debt"
       ]
     },
     {
@@ -1240,7 +1386,7 @@
       "focalOccupancyTarget": 0.78,
       "characterRequired": false,
       "photoTreatment": "screen",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|screen|empty trading workspace and market screens|show the aftermath without a presenter|none|none|no-stage|default|photo=backgrounds/evidence-market-pexels-10653886.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|screen",
       "assetRequests": [
         {
           "role": "photo",
@@ -1291,7 +1437,7 @@
       "silentFrameTakeaway": "Korean household debt is nearly as large as annual output",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|household-debt ratio|presses against a GDP marker|household debt versus GDP|none|no-stage|default|anchor=finance/debt|who=characters/cat_surprised",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1334,7 +1480,7 @@
         "endWord": 821,
         "quoteChecksum": "c5fe5f0da0358b2a94d0154fa3b6af25c751c0b894c72786e40170db7ac35b08"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stat": "2.000 TỶ $",
         "anchor": "finance/debt",
@@ -1352,7 +1498,10 @@
       "silentFrameTakeaway": "household credit exceeded 1,900 trillion won by late 2025",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|infographic|chart|none|1,900 trillion won debt figure|fills the frame beside a debt weight|household credit total|none|no-stage|default|anchor=finance/debt|who=characters/cat_surprised",
+      "claimIds": [
+        "household-credit-2025"
+      ],
+      "visualFingerprint": "STAT_REVEAL|infographic|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1392,7 +1541,7 @@
         "endWord": 838,
         "quoteChecksum": "a7c8daeafcf56fcceb98fc9e28d916bf0e8e4f2b85bc5fca97ae97fee5e16476"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "photo": "backgrounds/korea_apartments.jpg",
         "caption": "Phần lớn nợ hộ gia đình gắn với nhà ở"
@@ -1409,7 +1558,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "full_bleed",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|full_bleed|apartment towers without visible people|tie household debt to housing|none|none|no-stage|default|photo=backgrounds/korea_apartments.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|full_bleed",
       "assetRequests": [
         {
           "role": "photo",
@@ -1464,7 +1613,7 @@
       "silentFrameTakeaway": "jeonse asks the tenant for a huge deposit instead of monthly rent",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|tenant and landlord|face each other across a housing deposit|jeonse deposit|tenant pays landlord|assets/scenes/living_room.svg|default|seatB=characters/cat_debt_burden|stage=assets/scenes/living_room.svg|who=characters/cat_dad",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1535,7 +1684,7 @@
       "silentFrameTakeaway": "a jeonse deposit can reach half the home's value",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|jeonse deposit ratio|covers half of a house silhouette|house value|none|no-stage|default|anchor=finance/house|who=characters/cat_surprised",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1598,7 +1747,7 @@
       "silentFrameTakeaway": "jeonse's first barrier is finding a very large lump sum",
       "focalOccupancyTarget": 0.45,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|young tenant at a bank counter|stares at an unaffordable deposit|large deposit|none|assets/scenes/bank_interior.svg|default|prop=finance/money|stage=assets/scenes/bank_interior.svg|who=characters/cat",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1673,7 +1822,7 @@
       "silentFrameTakeaway": "the jeonse system appears stable when interest rates stay low",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|character_action|character_action|none|landlord and tenant|share the benefit of cheap financing|none|low rates support both sides|assets/scenes/living_room.svg|default|prop=finance/interest_rate|stage=assets/scenes/living_room.svg|who=characters/cat_dad",
+      "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1725,7 +1874,7 @@
         "endWord": 1035,
         "quoteChecksum": "cef0d00f6d9f12854754b189623d508481b6bec728e6a3a640368932b30db57c"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "tenant",
         "answerer": "landlord",
@@ -1746,7 +1895,7 @@
       "silentFrameTakeaway": "higher rates can break the jeonse repayment chain",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|tenant and landlord|confront the repayment shortfall after rates rise|none|tenant asks landlord for deposit|assets/scenes/living_room.svg|default|answerer=characters/cat_dad|asker=characters/cat_debt_burden|stage=assets/scenes/living_room.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1796,7 +1945,7 @@
         "endWord": 1075,
         "quoteChecksum": "1590da6f30f2e3ac2379a16b87433dde3e5ed87e19150b24599f310e8fedee89"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stat": "VIỆC LÀM THẤP HƠN",
         "anchor": "finance/expense",
@@ -1804,7 +1953,7 @@
         "caption": "Thanh niên khó tìm việc ổn định",
         "title": "Việc làm thanh niên",
         "body": "Khó tìm việc ổn định; thu nhập dài hạn yếu hơn",
-        "source": "Narration evidence"
+        "source": "KOSTAT · 2025"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -1817,7 +1966,7 @@
       "silentFrameTakeaway": "weak youth employment adds another barrier to asset building",
       "focalOccupancyTarget": 0.48,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|chart|none|youth employment weakness|shrinks beside a precarious worker|young worker prospects|none|no-stage|default|anchor=finance/expense|who=characters/cat_sad",
+      "visualFingerprint": "EVIDENCE|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1881,7 +2030,7 @@
       "silentFrameTakeaway": "precarious work makes long-term saving difficult",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|young worker|juggles short contracts, part-time shifts and unstable income|three insecure job conditions|none|assets/scenes/cafe.svg|default|answerer=characters/cat_child_school|asker=characters/cat_explain|stage=assets/scenes/cafe.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1951,7 +2100,7 @@
       "focalOccupancyTarget": 0.74,
       "characterRequired": false,
       "photoTreatment": "cutaway",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|cutaway|empty apartment corridor|separates the younger generation from ownership|none|none|no-stage|default|photo=backgrounds/urban_apartments.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|cutaway",
       "assetRequests": [
         {
           "role": "photo",
@@ -1984,7 +2133,7 @@
         "endWord": 1199,
         "quoteChecksum": "221bf5cd5e27d7b5232e83924674bae866ed4718499d6901f2e480aa211f6cd1"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "studentGirl",
         "answerer": "parent",
@@ -2005,7 +2154,7 @@
       "silentFrameTakeaway": "parents bought assets more easily while today's youth cannot catch up",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|parent and young worker|stand on opposite sides of a widening asset gap|none|generational wealth contrast|assets/scenes/living_room.svg|default|answerer=characters/cat_mom|asker=characters/cat_child_girl|stage=assets/scenes/living_room.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2078,7 +2227,7 @@
       "silentFrameTakeaway": "markets begin to look like the only remaining ladder",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|young worker on a city street|turns from a pay slip toward the stock market|stock market as ladder|none|assets/scenes/street.svg|default|prop=finance/stock|stage=assets/scenes/street.svg|who=characters/cat",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2131,7 +2280,7 @@
         "endWord": 1286,
         "quoteChecksum": "73b79d52ab35ca13e5f684173fe0dcc54f82e5bf59ceca9fc4c9bb362e3821d7"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "youngperson",
         "prop": "finance/stock",
@@ -2148,7 +2297,7 @@
       "silentFrameTakeaway": "when wages lag assets, investment feels compulsory",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|young worker and stock prop|show wages falling behind asset prices|stock shortcut|none|no-stage|default|prop=finance/stock|who=characters/cat_homebuyer",
+      "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2184,7 +2333,7 @@
       "purpose": "Margin as the faster, riskier vehicle metaphor.",
       "emotion": "concern",
       "viewerFocus": "speed vs. risk",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "DIAGRAM",
       "sourceRange": {
         "startWord": 1287,
         "endWord": 1320,
@@ -2194,20 +2343,22 @@
       "slots": {
         "who": "plainInvestor",
         "prop": "finance/loan",
-        "label": "Tốc độ cao = rủi ro cao"
+        "label": "Tốc độ cao = rủi ro cao",
+        "items": "Vốn thật|Tiền vay|Vị thế lớn",
+        "icons": "finance/money|finance/debt|finance/trending_up"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "young investor",
         "action": "grips a faster vehicle marked margin",
         "takeaway": "margin promises speed but magnifies every accident",
         "object": "leveraged vehicle"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "margin promises speed but magnifies every accident",
       "focalOccupancyTarget": 0.48,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|young investor|grips a faster vehicle marked margin|leveraged vehicle|none|no-stage|default|prop=finance/loan|who=characters/cat_investor_contract",
+      "characterRequired": false,
+      "visualFingerprint": "DIAGRAM|infographic|diagram|graphic|prop,prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2224,17 +2375,48 @@
           "requiredTags": [],
           "preferredAssetId": "finance/loan",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon0",
+          "query": "finance/money",
+          "requiredTags": [],
+          "preferredAssetId": "finance/money",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon1",
+          "query": "finance/debt",
+          "requiredTags": [],
+          "preferredAssetId": "finance/debt",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon2",
+          "query": "finance/trending_up",
+          "requiredTags": [],
+          "preferredAssetId": "finance/trending_up",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_investor_contract",
-        "prop": "finance/loan"
+        "prop": "finance/loan",
+        "icon0": "finance/money",
+        "icon1": "finance/debt",
+        "icon2": "finance/trending_up"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "register:visual_gag",
+        "grammar:DIAGRAM",
+        "register:infographic",
         "asset:characters/cat_investor_contract",
-        "asset:finance/loan"
+        "asset:finance/loan",
+        "asset:finance/money",
+        "asset:finance/debt",
+        "asset:finance/trending_up"
       ]
     },
     {
@@ -2266,7 +2448,7 @@
       "focalOccupancyTarget": 0.75,
       "characterRequired": false,
       "photoTreatment": "full_bleed",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|full_bleed|distant city skyline|visualizes people watching wealth move away|none|none|no-stage|default|photo=backgrounds/evidence-street-pexels-37319814.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|full_bleed",
       "assetRequests": [
         {
           "role": "photo",
@@ -2320,7 +2502,7 @@
       "silentFrameTakeaway": "assets enrich owners while non-owners remain still",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|asset owner and wage earner|move at visibly different speeds|none|owner advances while worker stalls|assets/scenes/subway_platform.svg|default|answerer=characters/cat_dad|asker=characters/cat_child_girl|stage=assets/scenes/subway_platform.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2373,7 +2555,7 @@
         "endWord": 1415,
         "quoteChecksum": "9a3851db222aeb62cf0fb09c2e4d8a347455f73e6503e906b473265b29e35fa8"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/street.svg",
         "who": "hostShrug",
@@ -2395,7 +2577,7 @@
       "silentFrameTakeaway": "a shared feeling can reshape a generation's choices",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|a group of young workers|gather around the same market idea|none|peers influence one another|assets/scenes/street.svg|default|prop=people/person|stage=assets/scenes/street.svg|who=characters/cat_shrug",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2442,7 +2624,7 @@
       "purpose": "The three things chasing people into the market.",
       "emotion": "urgent",
       "viewerFocus": "time, housing, cost of living all chasing you",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "DIAGRAM",
       "sourceRange": {
         "startWord": 1416,
         "endWord": 1457,
@@ -2452,20 +2634,22 @@
       "slots": {
         "who": "youngperson",
         "prop": "props/hourglass",
-        "label": "Thời gian, giá nhà, chi phí cùng đuổi"
+        "label": "Thời gian, giá nhà, chi phí cùng đuổi",
+        "items": "Đọc ít|Tự tin quá|Đặt lệnh",
+        "icons": "props/book|props/brain|finance/investment"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "young worker and hourglass",
         "action": "show time and living costs chasing the worker",
         "takeaway": "education, hype and pressure funnel people into markets",
         "object": "hourglass pressure"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "education, hype and pressure funnel people into markets",
       "focalOccupancyTarget": 0.5,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|young worker and hourglass|show time and living costs chasing the worker|hourglass pressure|none|no-stage|default|prop=props/hourglass|who=characters/cat_homebuyer",
+      "characterRequired": false,
+      "visualFingerprint": "DIAGRAM|infographic|diagram|graphic|prop,prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2482,18 +2666,48 @@
           "requiredTags": [],
           "preferredAssetId": "props/hourglass",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon0",
+          "query": "props/book",
+          "requiredTags": [],
+          "preferredAssetId": "props/book",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon1",
+          "query": "props/brain",
+          "requiredTags": [],
+          "preferredAssetId": "props/brain",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon2",
+          "query": "finance/investment",
+          "requiredTags": [],
+          "preferredAssetId": "finance/investment",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_homebuyer",
-        "prop": "props/hourglass"
+        "prop": "props/hourglass",
+        "icon0": "props/book",
+        "icon1": "props/brain",
+        "icon2": "finance/investment"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:visual_gag",
+        "grammar:DIAGRAM",
+        "register:infographic",
         "asset:characters/cat_homebuyer",
-        "asset:props/hourglass"
+        "asset:props/hourglass",
+        "asset:props/book",
+        "asset:props/brain",
+        "asset:finance/investment"
       ]
     },
     {
@@ -2528,7 +2742,7 @@
       "silentFrameTakeaway": "not running appears to make the wealth gap wider",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|worker on a city street|runs after a receding home and portfolio|receding assets|none|assets/scenes/subway_platform.svg|default|prop=props/hourglass|stage=assets/scenes/subway_platform.svg|who=characters/cat_explain",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2599,7 +2813,7 @@
       "silentFrameTakeaway": "personal pressure is only half the explanation",
       "focalOccupancyTarget": 0.42,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|character_action|character_action|none|host|turns a page from household pressure to market structure|market-structure chapter|none|assets/scenes/boardroom.svg|default|prop=finance/chart_up|stage=assets/scenes/boardroom.svg|who=characters/cat_point_left",
+      "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2659,7 +2873,7 @@
         "caption": "Chiếm tỉ trọng rất lớn",
         "title": "Thị trường do cá nhân dẫn dắt",
         "body": "Nhà đầu tư cá nhân chiếm tỷ trọng giao dịch rất lớn",
-        "source": "Narration evidence"
+        "source": "KRX · 2025"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -2672,7 +2886,10 @@
       "silentFrameTakeaway": "Korea's stock market is unusually retail-driven",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|chart|none|retail participation figure|dominates a market-volume chart|retail trading share|none|no-stage|default|anchor=characters/cat|who=characters/cat_surprised",
+      "claimIds": [
+        "retail-participation"
+      ],
+      "visualFingerprint": "EVIDENCE|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2736,7 +2953,7 @@
       "silentFrameTakeaway": "developed markets are institution-led while Korea is retail-heavy",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|institutional desk and retail trader|occupy opposite sides of the market|none|institutional versus retail participation|assets/scenes/boardroom.svg|default|answerer=characters/cat_investor_panic|asker=characters/cat_business|stage=assets/scenes/boardroom.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2807,7 +3024,7 @@
       "silentFrameTakeaway": "retail investors generated about two-thirds of trading volume in 2020",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|two-thirds figure|fills a 2020 trading-volume card|2020 retail volume|none|no-stage|default|anchor=finance/chart_up|who=characters/cat_teacher",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2868,7 +3085,7 @@
       "silentFrameTakeaway": "retail orders still approached 60 percent in 2026",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|infographic|chart|none|60 percent figure|holds above an order-flow icon|2026 retail order share|none|no-stage|default|anchor=finance/portfolio|who=characters/cat_business",
+      "visualFingerprint": "STAT_REVEAL|infographic|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2931,7 +3148,7 @@
       "silentFrameTakeaway": "retail enthusiasm accelerates inflows",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|excited retail crowd|rushes money into a rising market|none|euphoria causes rapid buying|assets/scenes/shop_counter.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_explain|stage=assets/scenes/shop_counter.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2984,7 +3201,7 @@
         "endWord": 1721,
         "quoteChecksum": "f03f265fc301ce67d8f2ad5689fc300e028234765cc25512ce0caa188b9b3523"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "host",
         "answerer": "gaemi",
@@ -3005,7 +3222,7 @@
       "silentFrameTakeaway": "the same crowd can accelerate a selloff",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|host and panicked investor|act out a rapid crowd-driven sell decision|none|host warns investor during panic|assets/scenes/street.svg|default|answerer=characters/cat_investor_panic|asker=characters/cat_explain|stage=assets/scenes/street.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3055,7 +3272,7 @@
         "endWord": 1745,
         "quoteChecksum": "570e813b6e969f51d01da5ada792e57c485b03d52ec9736b7d5f0979b9b2b07f"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/street.svg",
         "who": "hostPoint",
@@ -3075,7 +3292,7 @@
       "silentFrameTakeaway": "Korean retail investors call themselves ants",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|gaemi investor|stands among many ant-like traders on the street|none|one gaemi belongs to a crowd|assets/scenes/street.svg|default|prop=people/person|stage=assets/scenes/street.svg|who=characters/cat_point_left",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3121,7 +3338,7 @@
       "purpose": "One ant vs. a million ants moving together.",
       "emotion": "surprise",
       "viewerFocus": "small ants, huge combined force",
-      "visualGrammar": "VISUAL_METAPHOR",
+      "visualGrammar": "DIAGRAM",
       "sourceRange": {
         "startWord": 1746,
         "endWord": 1780,
@@ -3132,20 +3349,22 @@
         "setup": "Một con kiến rất nhỏ",
         "payoff": "Triệu con kiến cùng hướng = lực đẩy khổng lồ",
         "leftAsset": "characters/cat",
-        "rightAsset": "finance/chart_up"
+        "rightAsset": "finance/chart_up",
+        "items": "Một gaemi|Đám đông|Lực thị trường",
+        "icons": "characters/cat_investor_phone|characters/cat_investor_panic|finance/trending_up"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "one ant investor",
         "action": "becomes a million ants moving together",
         "takeaway": "small investors become a market force when they move as a crowd",
         "relation": "individual scales into crowd"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "small investors become a market force when they move as a crowd",
       "focalOccupancyTarget": 0.52,
-      "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|one ant investor|becomes a million ants moving together|none|individual scales into crowd|no-stage|default|leftAsset=characters/cat|rightAsset=finance/chart_up",
+      "characterRequired": false,
+      "visualFingerprint": "DIAGRAM|infographic|diagram|graphic|prop,prop,prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -3162,18 +3381,48 @@
           "requiredTags": [],
           "preferredAssetId": "finance/chart_up",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon0",
+          "query": "characters/cat_investor_phone",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_investor_phone",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon1",
+          "query": "characters/cat_investor_panic",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_investor_panic",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon2",
+          "query": "finance/trending_up",
+          "requiredTags": [],
+          "preferredAssetId": "finance/trending_up",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "leftAsset": "characters/cat",
-        "rightAsset": "finance/chart_up"
+        "rightAsset": "finance/chart_up",
+        "icon0": "characters/cat_investor_phone",
+        "icon1": "characters/cat_investor_panic",
+        "icon2": "finance/trending_up"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:VISUAL_METAPHOR",
-        "register:visual_gag",
+        "grammar:DIAGRAM",
+        "register:infographic",
         "asset:characters/cat",
-        "asset:finance/chart_up"
+        "asset:finance/chart_up",
+        "asset:characters/cat_investor_phone",
+        "asset:characters/cat_investor_panic",
+        "asset:finance/trending_up"
       ]
     },
     {
@@ -3188,7 +3437,7 @@
         "endWord": 1798,
         "quoteChecksum": "c7d3f7528a5e6ae349ef83d5355526d6107c581054089c93fb52eaa3992123d7"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/park.svg",
         "who": "hostHappy",
@@ -3208,7 +3457,7 @@
       "silentFrameTakeaway": "borrowed money makes the retail crowd more dangerous",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|gaemi crowd in a park|carries visible debt weights together|margin debt|none|assets/scenes/park.svg|default|prop=finance/debt|stage=assets/scenes/park.svg|who=characters/cat_happy",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3277,7 +3526,7 @@
       "silentFrameTakeaway": "research finds recurring mistakes in Korean retail trading",
       "focalOccupancyTarget": 0.56,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|evidence|none|behavioural research card|lists documented retail-investor mistakes|behavioural findings|none|no-stage|default",
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic||medium|none|none|none",
       "assetRequests": [],
       "resolvedAssets": {},
       "assetResolutionNotes": [],
@@ -3315,7 +3564,7 @@
       "silentFrameTakeaway": "seeing others buy creates pressure to follow",
       "focalOccupancyTarget": 0.55,
       "characterRequired": false,
-      "visualFingerprint": "FRAMEBOX|framebox|screenshot|none|FOMO message|appears in a phone-like frame|none|social proof drives buying|no-stage|default|content=#9B59B6|who=characters/cat_investor_panic",
+      "visualFingerprint": "FRAMEBOX|framebox|screenshot|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3352,7 +3601,7 @@
       "purpose": "Chasing small risky stocks like a lottery ticket.",
       "emotion": "concern",
       "viewerFocus": "lottery-ticket investing",
-      "visualGrammar": "VISUAL_METAPHOR",
+      "visualGrammar": "CAUSE_EFFECT",
       "sourceRange": {
         "startWord": 1854,
         "endWord": 1889,
@@ -3363,20 +3612,24 @@
         "setup": "Săn cổ phiếu nhỏ, rủi ro cao",
         "payoff": "Như mua vé số, hy vọng trúng độc đắc",
         "leftAsset": "finance/stock",
-        "rightAsset": "finance/investment"
+        "rightAsset": "finance/investment",
+        "cause": "Mã nhỏ",
+        "effect": "Kỳ vọng jackpot",
+        "causeIcon": "finance/stock",
+        "effectIcon": "props/trophy"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "retail trader and lottery-like stock",
         "action": "chases a tiny risky ticker as if it were a jackpot",
         "takeaway": "small speculative stocks can feel like lottery tickets",
         "relation": "stock chase mirrors gambling"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "small speculative stocks can feel like lottery tickets",
       "focalOccupancyTarget": 0.5,
-      "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|retail trader and lottery-like stock|chases a tiny risky ticker as if it were a jackpot|none|stock chase mirrors gambling|no-stage|default|leftAsset=finance/stock|rightAsset=finance/investment",
+      "characterRequired": false,
+      "visualFingerprint": "CAUSE_EFFECT|infographic|diagram|graphic|prop,prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -3393,18 +3646,37 @@
           "requiredTags": [],
           "preferredAssetId": "finance/investment",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "causeIcon",
+          "query": "finance/stock",
+          "requiredTags": [],
+          "preferredAssetId": "finance/stock",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "effectIcon",
+          "query": "props/trophy",
+          "requiredTags": [],
+          "preferredAssetId": "props/trophy",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "leftAsset": "finance/stock",
-        "rightAsset": "finance/investment"
+        "rightAsset": "finance/investment",
+        "causeIcon": "finance/stock",
+        "effectIcon": "props/trophy"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:VISUAL_METAPHOR",
-        "register:visual_gag",
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
         "asset:finance/stock",
-        "asset:finance/investment"
+        "asset:finance/investment",
+        "asset:props/trophy"
       ]
     },
     {
@@ -3440,7 +3712,7 @@
       "silentFrameTakeaway": "investors often sell winners early and hold losers too long",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|retail trader|sells a small winner but hugs a large loser|none|opposite treatment of gains and losses|assets/scenes/cafe.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_sunglasses|stage=assets/scenes/cafe.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3493,7 +3765,7 @@
         "endWord": 1964,
         "quoteChecksum": "adcd46e07bfcfd34c636dc7344b18eb031ce30c57dcaae48b8bb909a25cd4e43"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/library.svg",
         "who": "analyst",
@@ -3516,7 +3788,7 @@
       "focalOccupancyTarget": 0.46,
       "characterRequired": false,
       "photoTreatment": "document",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|screenshot|document|host in a classroom|labels the disposition effect on a board|disposition effect|none|assets/scenes/library.svg|default|photo=backgrounds/evidence-document-pexels-4386292.jpg|prop=props/book|stage=assets/scenes/library.svg|who=characters/cat_teacher",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|screenshot|stage|prop,prop,prop,actor|medium|none|none|document",
       "assetRequests": [
         {
           "role": "character",
@@ -3579,7 +3851,7 @@
         "endWord": 2002,
         "quoteChecksum": "b07d72bc3e9e44d969c3b9dcb5d01d958977c84f4a0943245b415c012bb71b53"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "photo": "backgrounds/market_monitor.jpg",
         "caption": "Margin: nhóm giao dịch tích cực nhất"
@@ -3597,7 +3869,7 @@
       "focalOccupancyTarget": 0.78,
       "characterRequired": false,
       "photoTreatment": "screen",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|screen|market monitor showing leveraged volatility|fills the frame without a presenter|borrowed exposure|none|no-stage|default|photo=backgrounds/market_monitor.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|screen",
       "assetRequests": [
         {
           "role": "photo",
@@ -3644,7 +3916,7 @@
       "silentFrameTakeaway": "KCMI research identifies outsized activity among margin users",
       "focalOccupancyTarget": 0.56,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|evidence|none|KCMI study card|shows margin users trading more aggressively|KCMI margin research|none|no-stage|default",
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic||medium|none|none|none",
       "assetRequests": [],
       "resolvedAssets": {},
       "assetResolutionNotes": [],
@@ -3665,7 +3937,7 @@
         "endWord": 2080,
         "quoteChecksum": "37d26ae21c262f595d7ef503c999c1621e2feb0626aaba4680ac4423301395f1"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "broker",
         "answerer": "investor",
@@ -3686,7 +3958,7 @@
       "silentFrameTakeaway": "margin users trade more often, riskier and bigger",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|margin trader|rapidly switches among frequent trades, risky stocks and large positions|three aggressive behaviours|none|assets/scenes/cafe.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_business|stage=assets/scenes/cafe.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3733,7 +4005,7 @@
       "purpose": "The most aggressive traders run on borrowed money.",
       "emotion": "concern",
       "viewerFocus": "borrowed money fueling the fastest traders",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "EVIDENCE",
       "sourceRange": {
         "startWord": 2081,
         "endWord": 2111,
@@ -3743,20 +4015,26 @@
       "slots": {
         "who": "skeptic",
         "prop": "finance/loan",
-        "label": "Đạp ga mạnh nhất — bằng tiền đi vay"
+        "label": "Đạp ga mạnh nhất — bằng tiền đi vay",
+        "title": "NHÓM DÙNG MARGIN",
+        "body": "Giao dịch thường xuyên hơn, rủi ro hơn và vị thế lớn hơn",
+        "source": "KCMI · 2021"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "evidence",
       "semanticVisual": {
         "subject": "driver-like investor",
         "action": "presses the accelerator while carrying a debt tank",
         "takeaway": "the most aggressive traders are powered by borrowed money",
         "object": "debt accelerator"
       },
-      "focalType": "visual_gag",
+      "focalType": "evidence",
       "silentFrameTakeaway": "the most aggressive traders are powered by borrowed money",
       "focalOccupancyTarget": 0.48,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|driver-like investor|presses the accelerator while carrying a debt tank|debt accelerator|none|no-stage|default|prop=finance/loan|who=characters/cat_sunglasses",
+      "characterRequired": false,
+      "claimIds": [
+        "margin-behaviour"
+      ],
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3781,8 +4059,8 @@
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:visual_gag",
+        "grammar:EVIDENCE",
+        "register:evidence",
         "asset:characters/cat_sunglasses",
         "asset:finance/loan"
       ]
@@ -3825,7 +4103,7 @@
       "silentFrameTakeaway": "leverage leads both gains and losses",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "CAUSE_EFFECT|infographic|chart|none|leveraged trader|celebrates first in a boom and falls first in a crash|none|boom reward versus crash damage|assets/scenes/street.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_shrug|causeIcon=finance/trending_up|effectIcon=finance/trending_down|stage=assets/scenes/street.svg",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|chart|stage|actor,actor,prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3898,7 +4176,7 @@
         "endWord": 2209,
         "quoteChecksum": "444a55415f50395910ecb4638d6e9cdba4ada94932465b948871dbb6ba534e78"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stat": "HIỆU QUẢ THẤP HƠN",
         "anchor": "finance/loss",
@@ -3906,7 +4184,7 @@
         "caption": "Sau phí giao dịch và lãi vay",
         "title": "Hiệu quả ròng",
         "body": "Sau phí giao dịch và lãi vay, kết quả thường thấp hơn",
-        "source": "Narration evidence",
+        "source": "KCMI · 2025",
         "cause": "Lợi nhuận trước chi phí",
         "effect": "Phí + lãi vay → hiệu quả ròng thấp",
         "causeIcon": "finance/investment",
@@ -3924,7 +4202,7 @@
       "silentFrameTakeaway": "extra risk does not guarantee better net returns",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "CAUSE_EFFECT|infographic|chart|none|net-return figure|settles near zero after fees and interest|return after costs|none|no-stage|default|anchor=finance/loss|causeIcon=finance/investment|effectIcon=finance/debt|who=characters/cat_shrug",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|chart|graphic|actor,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -3984,7 +4262,7 @@
         "endWord": 2256,
         "quoteChecksum": "61d1a1e938ade186d83cdeef075d96947b125d90de2e0d0ea0554f647527e8fa"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "photo": "backgrounds/evidence-document-pexels-33175657.jpg",
         "caption": "Rủi ro cao hơn, kết quả không tốt hơn"
@@ -4001,7 +4279,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "document",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|document|empty finance desk after trading|leaves risk and stress visible without a presenter|none|none|no-stage|default|photo=backgrounds/evidence-document-pexels-33175657.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|document",
       "assetRequests": [
         {
           "role": "photo",
@@ -4051,7 +4329,7 @@
       "silentFrameTakeaway": "the next section seeks the structural reasons",
       "focalOccupancyTarget": 0.42,
       "characterRequired": true,
-      "visualFingerprint": "QA_REVEAL|character_action|character_action|none|host|asks why investors still accept this bargain|root-cause question|none|no-stage|default|who=characters/cat_teacher",
+      "visualFingerprint": "QA_REVEAL|character_action|character_action|graphic|actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4103,7 +4381,7 @@
       "silentFrameTakeaway": "asset pressure, market structure, distrust and easy access combine",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "POLICY_LIST|infographic|diagram|none|host and concept card|introduce four root causes of the leverage problem|four-root concept card|none|no-stage|default|icon0=finance/house|icon1=characters/cat_worker|icon2=characters/cat_investor_phone|icon3=finance/investment|prop=props/concept_card|who=characters/cat_point_left",
+      "visualFingerprint": "POLICY_LIST|infographic|diagram|graphic|prop,prop,prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4186,7 +4464,7 @@
         "endWord": 2360,
         "quoteChecksum": "924cb086ad423b32388abd5970da6de089bb2fbdf1d2b2ab4f2c82d5f88258ce"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/bank_interior.svg",
         "who": "regulator",
@@ -4206,7 +4484,7 @@
       "silentFrameTakeaway": "markets feel like one of few remaining routes upward",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|young worker at a trading desk|treats stocks as the last ladder across the wealth gap|wealth ladder|none|assets/scenes/bank_interior.svg|default|prop=finance/stock|stage=assets/scenes/bank_interior.svg|who=characters/cat_police",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4253,7 +4531,7 @@
       "purpose": "Show how frictionless entry has become.",
       "emotion": "neutral",
       "viewerFocus": "entering the market in seconds",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "DIAGRAM",
       "sourceRange": {
         "startWord": 2361,
         "endWord": 2384,
@@ -4263,20 +4541,22 @@
       "slots": {
         "who": "plainInvestor",
         "prop": "finance/investment",
-        "label": "Chỉ cần vài cú chạm để tham gia"
+        "label": "Chỉ cần vài cú chạm để tham gia",
+        "items": "Điện thoại|Tài khoản|Lệnh mua",
+        "icons": "characters/cat_investor_phone|finance/investment|finance/trending_up"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "young investor",
         "action": "opens a trading account from a phone beside a small cash pile",
         "takeaway": "entry now requires little more than a phone and an account",
         "object": "mobile trading access"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "entry now requires little more than a phone and an account",
       "focalOccupancyTarget": 0.48,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|young investor|opens a trading account from a phone beside a small cash pile|mobile trading access|none|no-stage|default|prop=finance/investment|who=characters/cat_investor_contract",
+      "characterRequired": false,
+      "visualFingerprint": "DIAGRAM|infographic|diagram|graphic|prop,prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4293,18 +4573,47 @@
           "requiredTags": [],
           "preferredAssetId": "finance/investment",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon0",
+          "query": "characters/cat_investor_phone",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_investor_phone",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon1",
+          "query": "finance/investment",
+          "requiredTags": [],
+          "preferredAssetId": "finance/investment",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon2",
+          "query": "finance/trending_up",
+          "requiredTags": [],
+          "preferredAssetId": "finance/trending_up",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_investor_contract",
-        "prop": "finance/investment"
+        "prop": "finance/investment",
+        "icon0": "characters/cat_investor_phone",
+        "icon1": "finance/investment",
+        "icon2": "finance/trending_up"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:visual_gag",
+        "grammar:DIAGRAM",
+        "register:infographic",
         "asset:characters/cat_investor_contract",
-        "asset:finance/investment"
+        "asset:finance/investment",
+        "asset:characters/cat_investor_phone",
+        "asset:finance/trending_up"
       ]
     },
     {
@@ -4336,7 +4645,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "document",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|document|night city and finance screen|frame the market as a distant last chance|none|none|no-stage|default|photo=backgrounds/evidence-document-pexels-8296970.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|document",
       "assetRequests": [
         {
           "role": "photo",
@@ -4369,7 +4678,7 @@
         "endWord": 2457,
         "quoteChecksum": "8b1ef42854d03106bc1f3a2327f2362b79b604b4b04b18f3a98aec52d6c70e8e"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "hostHappy",
         "answerer": "studentBoy",
@@ -4387,7 +4696,7 @@
       "silentFrameTakeaway": "margin enlarges opportunity and danger together",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|young investor|holds a large opportunity in one paw and larger risk in the other|none|opportunity versus risk|no-stage|default|answerer=characters/cat_child_boy|asker=characters/cat_happy",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4447,7 +4756,7 @@
       "silentFrameTakeaway": "the second root is the belief that Korean shares are undervalued",
       "focalOccupancyTarget": 0.55,
       "characterRequired": false,
-      "visualFingerprint": "FRAMEBOX|framebox|screenshot|none|Korea Discount title|appears as a market explainer card|Korea Discount concept|none|no-stage|default|content=#2C3E50|who=characters/cat_teacher",
+      "visualFingerprint": "FRAMEBOX|framebox|screenshot|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4511,7 +4820,7 @@
       "silentFrameTakeaway": "similar Korean companies often trade at lower valuations",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|Korean company and foreign peer|stand under unequal valuation tags|none|domestic company discounted versus foreign peer|assets/scenes/boardroom.svg|default|answerer=characters/cat_teacher|asker=characters/cat_investor_contract|stage=assets/scenes/boardroom.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4579,7 +4888,7 @@
       "silentFrameTakeaway": "ownership structure and weak payouts help create the discount",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "DIAGRAM|infographic|diagram|none|governance and shareholder-return problems|feed the Korea Discount|none|two causes produce lower valuation|no-stage|default|icon0=people/company|icon1=finance/stock",
+      "visualFingerprint": "DIAGRAM|infographic|diagram|graphic|prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -4642,7 +4951,7 @@
       "silentFrameTakeaway": "belief in undervaluation can encourage short-term speculation",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|short-term trader at a finance desk|trades the discount instead of waiting for reform|discount trade|none|assets/scenes/library.svg|default|prop=props/calendar|stage=assets/scenes/library.svg|who=characters/cat_teacher",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4715,7 +5024,7 @@
       "silentFrameTakeaway": "short selling is the third source of distrust",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host and retail investor|turn toward a short-selling board|short selling|none|assets/scenes/boardroom.svg|default|prop=finance/stock|stage=assets/scenes/boardroom.svg|who=characters/cat_police",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4766,7 +5075,7 @@
         "endWord": 2651,
         "quoteChecksum": "095b3d791c7f9718029899213f5274e9860902cff50de54dacb281d0fa43ea0b"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "title": "Về lý thuyết",
         "body": "Bán khống giúp phát hiện giá phi lý, hạn chế cổ phiếu bị thổi phồng"
@@ -4782,7 +5091,7 @@
       "silentFrameTakeaway": "in theory short selling can improve price discovery",
       "focalOccupancyTarget": 0.56,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|evidence|none|short-selling explainer|shows its legitimate market role|short-selling function|none|no-stage|default",
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic||medium|none|none|none",
       "assetRequests": [],
       "resolvedAssets": {},
       "assetResolutionNotes": [],
@@ -4824,7 +5133,7 @@
       "silentFrameTakeaway": "many retail investors believe institutions receive unfair advantages",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|retail investor and institution|face a visibly tilted playing field|none|retail versus institution fairness|assets/scenes/courtroom.svg|default|answerer=characters/cat_police|asker=characters/cat_sunglasses|stage=assets/scenes/courtroom.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4897,7 +5206,7 @@
       "silentFrameTakeaway": "scandals deepen suspicion that the market is unfair",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|retail crowd outside a courtroom|reacts to short-selling scandals|short-selling scandal|none|assets/scenes/courtroom.svg|default|prop=finance/loss|stage=assets/scenes/courtroom.svg|who=characters/cat_explain",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4943,7 +5252,7 @@
       "purpose": "Eroded fairness pushes people to grab quick gains.",
       "emotion": "concern",
       "viewerFocus": "distrust driving short-termism",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "CAUSE_EFFECT",
       "sourceRange": {
         "startWord": 2704,
         "endWord": 2741,
@@ -4953,20 +5262,24 @@
       "slots": {
         "who": "skeptic",
         "prop": "finance/loss",
-        "label": "Mất niềm tin, chuyển sang kiếm nhanh"
+        "label": "Mất niềm tin, chuyển sang kiếm nhanh",
+        "cause": "Mất niềm tin",
+        "effect": "Đầu cơ ngắn hạn",
+        "causeIcon": "props/thought_bubble",
+        "effectIcon": "finance/trending_down"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "investor and loss prop",
         "action": "turn from broken trust toward quick profit",
         "takeaway": "low trust encourages short-term profit grabbing",
         "object": "loss of trust"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "low trust encourages short-term profit grabbing",
       "focalOccupancyTarget": 0.5,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|investor and loss prop|turn from broken trust toward quick profit|loss of trust|none|no-stage|default|prop=finance/loss|who=characters/cat_sunglasses",
+      "characterRequired": false,
+      "visualFingerprint": "CAUSE_EFFECT|infographic|diagram|graphic|prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -4983,17 +5296,37 @@
           "requiredTags": [],
           "preferredAssetId": "finance/loss",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "causeIcon",
+          "query": "props/thought_bubble",
+          "requiredTags": [],
+          "preferredAssetId": "props/thought_bubble",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "effectIcon",
+          "query": "finance/trending_down",
+          "requiredTags": [],
+          "preferredAssetId": "finance/trending_down",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_sunglasses",
-        "prop": "finance/loss"
+        "prop": "finance/loss",
+        "causeIcon": "props/thought_bubble",
+        "effectIcon": "finance/trending_down"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:visual_gag",
-        "asset:characters/cat_sunglasses"
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:characters/cat_sunglasses",
+        "asset:props/thought_bubble",
+        "asset:finance/trending_down"
       ]
     },
     {
@@ -5025,7 +5358,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "cutaway",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|cutaway|phone and finance desk without a visible person|show how little friction remains|none|none|no-stage|default|photo=backgrounds/mobile_trading_flatlay.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|cutaway",
       "assetRequests": [
         {
           "role": "photo",
@@ -5078,7 +5411,7 @@
       "silentFrameTakeaway": "trading once required a broker, time and high fees",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|old-style broker and client|complete a stock order through a slow phone call|none|client orders through broker|assets/scenes/office_desk.svg|default|prop=props/computer_desk|stage=assets/scenes/office_desk.svg|who=characters/cat_business",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5131,7 +5464,7 @@
         "endWord": 2827,
         "quoteChecksum": "d457f4e20f848201fb245a538245582055d087deddee0a7a25f4183d62cecfee"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "broker",
         "answerer": "investor",
@@ -5152,7 +5485,7 @@
       "silentFrameTakeaway": "a phone removes the old friction from every trade",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|modern mobile trader|moves from waiting to instant execution|none|old process versus instant mobile trade|assets/scenes/office_desk.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_business|stage=assets/scenes/office_desk.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5197,30 +5530,32 @@
       "purpose": "Financial content is everywhere, reinforcing the pull.",
       "emotion": "neutral",
       "viewerFocus": "constant financial content",
-      "visualGrammar": "CHAR_PROP",
+      "visualGrammar": "DIAGRAM",
       "sourceRange": {
         "startWord": 2828,
         "endWord": 2859,
         "quoteChecksum": "05d0ac9a69f73bb695a72af13c9a982aa99293783ca9686df47aaf3abbc0585a"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "who": "skeptic",
         "prop": "props/computer_desk",
-        "label": "Video, livestream, diễn đàn ở khắp nơi"
+        "label": "Video, livestream, diễn đàn ở khắp nơi",
+        "items": "Nội dung nóng|FOMO|Đặt lệnh",
+        "icons": "characters/cat_investor_phone|characters/cat_surprised|finance/investment"
       },
-      "visualRegister": "visual_gag",
+      "visualRegister": "infographic",
       "semanticVisual": {
         "subject": "investor and computer desk",
         "action": "react to videos, livestreams and forum hype",
         "takeaway": "financial hype now reaches investors everywhere",
         "object": "online finance content"
       },
-      "focalType": "visual_gag",
+      "focalType": "diagram",
       "silentFrameTakeaway": "financial hype now reaches investors everywhere",
       "focalOccupancyTarget": 0.52,
-      "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|investor and computer desk|react to videos, livestreams and forum hype|online finance content|none|no-stage|default|prop=props/computer_desk|who=characters/cat_sunglasses",
+      "characterRequired": false,
+      "visualFingerprint": "DIAGRAM|infographic|diagram|graphic|prop,prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5237,18 +5572,47 @@
           "requiredTags": [],
           "preferredAssetId": "props/computer_desk",
           "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon0",
+          "query": "characters/cat_investor_phone",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_investor_phone",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon1",
+          "query": "characters/cat_surprised",
+          "requiredTags": [],
+          "preferredAssetId": "characters/cat_surprised",
+          "allowGenerate": false
+        },
+        {
+          "role": "prop",
+          "slot": "icon2",
+          "query": "finance/investment",
+          "requiredTags": [],
+          "preferredAssetId": "finance/investment",
+          "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_sunglasses",
-        "prop": "props/computer_desk"
+        "prop": "props/computer_desk",
+        "icon0": "characters/cat_investor_phone",
+        "icon1": "characters/cat_surprised",
+        "icon2": "finance/investment"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "grammar:CHAR_PROP",
-        "register:visual_gag",
+        "grammar:DIAGRAM",
+        "register:infographic",
         "asset:characters/cat_sunglasses",
-        "asset:props/computer_desk"
+        "asset:props/computer_desk",
+        "asset:characters/cat_surprised",
+        "asset:finance/investment"
       ]
     },
     {
@@ -5284,7 +5648,7 @@
       "silentFrameTakeaway": "constant social chatter keeps pulling people into trades",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|two retail investors|trade daily hype lines back and forth|none|peers amplify hype|assets/scenes/cafe.svg|default|answerer=characters/cat_sunglasses|asker=characters/cat_business|stage=assets/scenes/cafe.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5353,7 +5717,7 @@
       "focalOccupancyTarget": 0.78,
       "characterRequired": false,
       "photoTreatment": "screen",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|screen|glowing market screen in an empty room|resembles an always-on social feed|none|none|no-stage|default|photo=backgrounds/trading_workstation.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|screen",
       "assetRequests": [
         {
           "role": "photo",
@@ -5407,7 +5771,7 @@
       "silentFrameTakeaway": "collective attention creates a self-reinforcing trading loop",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|host and investor|act out checking prices because everyone else trades|none|peer attention reinforces trading|assets/scenes/office_desk.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_point_left|stage=assets/scenes/office_desk.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5460,7 +5824,7 @@
         "endWord": 3011,
         "quoteChecksum": "3d2692299fc5f437e94c1afbc1beaa069c970dc3648efd8a6e23e4279b7923f8"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "setup": "Đặt lệnh mua = bấm nút like",
         "payoff": "Quyết định dở hơi cũng tăng theo",
@@ -5478,7 +5842,7 @@
       "silentFrameTakeaway": "easy execution also makes mistakes easy",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|mobile investor|slides frictionlessly from one tap into a bad decision|none|low friction accelerates error|no-stage|default|leftAsset=finance/investment|rightAsset=finance/loss",
+      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|graphic|prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -5521,7 +5885,7 @@
         "endWord": 3031,
         "quoteChecksum": "7c0cd5112c797cc789a231a86a3355c054e4ba57c728ac5b04b77a965b0ece48"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "analyst",
         "prop": "props/concept_card",
@@ -5541,7 +5905,7 @@
       "silentFrameTakeaway": "four structural forces make leverage feel rational",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host and four-factor card|lock the four root causes into one explanation|four-factor concept card|none|assets/scenes/classroom.svg|default|prop=props/concept_card|stage=assets/scenes/classroom.svg|who=characters/cat_teacher",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5615,7 +5979,7 @@
       "silentFrameTakeaway": "pressure to get rich meets a belief that the system is unfair",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|young investor and tilted market|stand between urgency and distrust|none|urgency versus unfairness|assets/scenes/living_room.svg|default|answerer=characters/cat_child_school|asker=characters/cat_shrug|stage=assets/scenes/living_room.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5668,7 +6032,7 @@
         "endWord": 3119,
         "quoteChecksum": "ca598839bdce19216ccf13779a795ef903ee4b8b1957bd2ebbf6954a513afbcd"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "title": "Vụ bê bối CFD, năm 2023",
         "body": "Một ví dụ điển hình của sản phẩm đòn bẩy rủi ro cao đáp ứng nhu cầu này"
@@ -5684,7 +6048,7 @@
       "silentFrameTakeaway": "the CFD scandal shows what the combined forces can produce",
       "focalOccupancyTarget": 0.58,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|evidence|none|2023 CFD case file|opens as the concrete example|2023 CFD scandal|none|no-stage|default",
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic||medium|none|none|none",
       "assetRequests": [],
       "resolvedAssets": {},
       "assetResolutionNotes": [],
@@ -5722,7 +6086,7 @@
       "silentFrameTakeaway": "a CFD is a leveraged bet on price movement without owning the asset",
       "focalOccupancyTarget": 0.56,
       "characterRequired": false,
-      "visualFingerprint": "FRAMEBOX|framebox|screenshot|none|CFD definition|shows a contract tracking price difference|contract for difference|none|no-stage|default|content=#3B5998|who=characters/cat_investor_contract",
+      "visualFingerprint": "FRAMEBOX|framebox|screenshot|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5783,7 +6147,7 @@
       "silentFrameTakeaway": "CFDs can carry exceptionally high leverage",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|infographic|chart|none|very-high leverage label|towers over a CFD contract icon|CFD leverage|none|no-stage|default|anchor=finance/loss|who=characters/cat_surprised",
+      "visualFingerprint": "STAT_REVEAL|infographic|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5826,7 +6190,7 @@
         "endWord": 3248,
         "quoteChecksum": "d94ce381de85756c4c2f6f4cd95bcfa8b95d1c87a0cb8de454ca622520b6c303"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "title": "Cơ quan quản lý tài chính Hàn Quốc",
         "body": "Nhiều lệnh CFD của cá nhân bị ghi nhận nhầm dưới danh nghĩa tổ chức nước ngoài"
@@ -5842,7 +6206,7 @@
       "silentFrameTakeaway": "classification rules hid who was really taking the risk",
       "focalOccupancyTarget": 0.58,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|evidence|none|regulator finding|reveals retail trades labeled institutional|regulatory classification finding|none|no-stage|default",
+      "visualFingerprint": "EVIDENCE|evidence|evidence|graphic||medium|none|none|none",
       "assetRequests": [],
       "resolvedAssets": {},
       "assetResolutionNotes": [],
@@ -5883,7 +6247,7 @@
       "silentFrameTakeaway": "opaque classification makes market risk hard to locate",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|regulator and market participants|search for the real risk holder around a boardroom table|none|regulator cannot identify true holder|assets/scenes/boardroom.svg|default|prop=props/thought_bubble|stage=assets/scenes/boardroom.svg|who=characters/cat_explain",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5952,7 +6316,7 @@
       "silentFrameTakeaway": "regulators respond with restrictions, disclosure and supervision",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "POLICY_LIST|infographic|diagram|none|three regulatory measures|close around the CFD channel|none|measures constrain CFD activity|no-stage|default|icon0=props/book|icon1=finance/interest_rate|icon2=finance/investment|icon3=finance/loss",
+      "visualFingerprint": "POLICY_LIST|infographic|diagram|graphic|prop,prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -6038,7 +6402,7 @@
       "silentFrameTakeaway": "rules that treat symptoms can redirect rather than remove demand",
       "focalOccupancyTarget": 0.54,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|speculation stream|escapes through another door as one closes|none|closed door opens another route|assets/scenes/airport.svg|default|leftAsset=finance/loss|prop=finance/exchange|rightAsset=finance/investment|stage=assets/scenes/airport.svg|who=characters/cat_police",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6109,7 +6473,7 @@
         "endWord": 3411,
         "quoteChecksum": "16255310a9b45ce3278fe195deff28060e1a6bd37d1751a1720f702726ff0f91"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "skeptic",
         "prop": "finance/exchange",
@@ -6126,7 +6490,7 @@
       "silentFrameTakeaway": "tightening one product can push money into less regulated channels",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|investor and exchange prop|redirect money from restricted CFDs toward another channel|cross-border exchange|none|no-stage|default|prop=finance/exchange|who=characters/cat_sunglasses",
+      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6176,7 +6540,7 @@
         "caption": "Cổ phiếu nước ngoài, cuối 2024",
         "title": "Dòng tiền ra nước ngoài",
         "body": "Quy mô nắm giữ cổ phiếu nước ngoài tăng rất lớn cuối 2024",
-        "source": "Narration evidence"
+        "source": "BOK · 2025"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -6189,7 +6553,7 @@
       "silentFrameTakeaway": "retail money moved into foreign stocks at large scale by late 2024",
       "focalOccupancyTarget": 0.52,
       "characterRequired": false,
-      "visualFingerprint": "EVIDENCE|evidence|chart|none|foreign-stock holdings figure|rises on a cross-border flow card|foreign stock holdings|none|no-stage|default|anchor=finance/exchange|who=characters/cat_surprised",
+      "visualFingerprint": "EVIDENCE|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6249,7 +6613,7 @@
       "focalOccupancyTarget": 0.78,
       "characterRequired": false,
       "photoTreatment": "map",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|map|empty airport departure view|signals capital leaving for overseas products|overseas leveraged product|none|no-stage|default|photo=backgrounds/evidence-map-01.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|map",
       "assetRequests": [
         {
           "role": "photo",
@@ -6300,7 +6664,7 @@
       "silentFrameTakeaway": "speculation changes route when the home route closes",
       "focalOccupancyTarget": 0.54,
       "characterRequired": false,
-      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|none|water-like speculative demand|flows around a barrier into a foreign channel|none|water represents displaced demand|no-stage|default|leftAsset=finance/loss|rightAsset=finance/exchange",
+      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|visual_gag|graphic|prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -6363,7 +6727,7 @@
       "silentFrameTakeaway": "harder barriers create harder-to-see escape routes",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host at a bank barrier|points at hidden gaps around the restriction|none|barrier redirects flow|assets/scenes/bank_interior.svg|default|prop=finance/exchange|stage=assets/scenes/bank_interior.svg|who=characters/cat_police",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6432,7 +6796,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "map",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|map|distant airport concourse without faces|suggests capital moving beyond domestic oversight|none|none|no-stage|default|photo=backgrounds/evidence-map-03.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|map",
       "assetRequests": [
         {
           "role": "photo",
@@ -6465,7 +6829,7 @@
         "endWord": 3614,
         "quoteChecksum": "8cc146227cbced3639029cdb727a90ae825e612dd43cbe51f813a6d474962b21"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "hostHappy",
         "prop": "finance/exchange",
@@ -6482,7 +6846,7 @@
       "silentFrameTakeaway": "new channels tend to be farther away, more complex and less visible",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|host and exchange prop|point toward a farther and less visible channel|remote speculative channel|none|no-stage|default|prop=finance/exchange|who=characters/cat_happy",
+      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6542,7 +6906,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "document",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|document|quiet residential skyline|pauses the accusation and restores context|none|none|no-stage|default|photo=backgrounds/evidence-document-pexels-4386292.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|document",
       "assetRequests": [
         {
           "role": "photo",
@@ -6592,7 +6956,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "document",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|document|empty work-and-housing environment|places risky choices inside systemic pressure|none|none|no-stage|default|photo=backgrounds/evidence-document-pexels-8296974.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|document",
       "assetRequests": [
         {
           "role": "photo",
@@ -6643,7 +7007,7 @@
       "silentFrameTakeaway": "a precarious young worker has little room to build assets slowly",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|28-year-old contract worker|sits with a short contract, work burden and small savings|contract and savings|none|assets/scenes/office_desk.svg|default|prop=props/calendar|stage=assets/scenes/office_desk.svg|who=characters/cat_homebuyer",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6713,7 +7077,7 @@
       "silentFrameTakeaway": "rising home prices and visible winners make waiting painful",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|young worker|looks from an unreachable house toward online profit stories|none|house price versus profit feed|no-stage|default|prop=finance/house|who=characters/cat_homebuyer",
+      "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6772,7 +7136,7 @@
       "focalOccupancyTarget": 0.78,
       "characterRequired": false,
       "photoTreatment": "full_bleed",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|full_bleed|city lights and stock chart without people|surround the viewer with apparent overnight success|none|none|no-stage|default|photo=backgrounds/evidence-housing-pexels-5505895.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|full_bleed",
       "assetRequests": [
         {
           "role": "photo",
@@ -6822,7 +7186,7 @@
       "silentFrameTakeaway": "the deepest danger is the belief that leverage is the only exit",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "QA_REVEAL|character_action|character_action|none|concerned host|reveals the thesis beneath the word margin|core thesis|none|no-stage|default|who=characters/cat_teacher",
+      "visualFingerprint": "QA_REVEAL|character_action|character_action|graphic|actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6872,7 +7236,7 @@
       "silentFrameTakeaway": "a generation loses faith in work, saving and fair markets",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|young worker and house prop|show work and saving failing to reach housing|unreachable home|none|no-stage|default|prop=finance/house|who=characters/cat_homebuyer",
+      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6915,7 +7279,7 @@
         "endWord": 3906,
         "quoteChecksum": "63f25685da8a9fd1b0ca4e9bb6ad238da6694f0ca2bb2f21ace46c7d8357d5a4"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "photo": "backgrounds/evidence-street-pexels-37319834.jpg",
         "caption": "Không phải tham lam, là bất lực và sợ tụt lại"
@@ -6932,7 +7296,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "full_bleed",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|full_bleed|empty staircase toward distant housing|reframes risk-taking as a search for agency|none|none|no-stage|default|photo=backgrounds/evidence-street-pexels-37319834.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|full_bleed",
       "assetRequests": [
         {
           "role": "photo",
@@ -6985,7 +7349,7 @@
       "silentFrameTakeaway": "markets sometimes reward dangerous behaviour long enough to teach it",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|leveraged investor at a bar counter|receives a temporary reward from a market rebound|temporary rebound|none|assets/scenes/bar.svg|default|prop=finance/profit|stage=assets/scenes/bar.svg|who=characters/cat_explain",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7056,7 +7420,7 @@
       "silentFrameTakeaway": "a lucky recovery can create false confidence",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|two investors|mistake a rebound for proof of skill|none|peer validates rebound bet|no-stage|default|answerer=characters/cat_sunglasses|asker=characters/cat_investor_contract",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7119,7 +7483,7 @@
       "silentFrameTakeaway": "surviving one drop does not prove skill",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|trader at a market desk|mistakes luck for repeatable expertise|lucky rebound|none|assets/scenes/bar.svg|default|prop=props/trophy|stage=assets/scenes/bar.svg|who=characters/cat_explain",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7190,7 +7554,7 @@
       "silentFrameTakeaway": "one successful trade can be timing rather than genius",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|winning trader and timing clock|separate one lucky win from durable skill|none|win versus skill|no-stage|default|answerer=characters/cat_investor_contract|asker=characters/cat_explain",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7250,7 +7614,7 @@
       "silentFrameTakeaway": "a few wins do not stop interest and debt",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|debt meter|keeps ticking after two profitable bets|running debt cost|none|no-stage|default|anchor=finance/debt|who=characters/cat_sad",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7310,7 +7674,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "headline",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|headline|housing and income lines on an empty desk|return the story to structural pressure|none|none|no-stage|default|photo=backgrounds/evidence-market-pexels-16594724.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|headline",
       "assetRequests": [
         {
           "role": "photo",
@@ -7363,7 +7727,7 @@
       "silentFrameTakeaway": "rising debt and assets alongside slower income feed the cycle",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|young worker and debt prop|carry rising debt while income trails assets|debt burden|none|assets/scenes/bedroom.svg|default|prop=finance/debt|stage=assets/scenes/bedroom.svg|who=characters/cat_homebuyer",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7433,7 +7797,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "screen",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|screen|exit sign beside a market screen|embodies the belief in escaping before everyone else|none|none|no-stage|default|photo=backgrounds/evidence-market-pexels-28682356.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|screen",
       "assetRequests": [
         {
           "role": "photo",
@@ -7482,7 +7846,7 @@
       "silentFrameTakeaway": "the promise of getting out in time recurs in every bubble",
       "focalOccupancyTarget": 0.56,
       "characterRequired": false,
-      "visualFingerprint": "HISTORY_TIMELINE|evidence|diagram|none|historic speculative manias|repeat the same exit belief across time|none|same belief repeats across history|no-stage|default|icon0=characters/cat_think|icon1=finance/chart_up|icon2=finance/loss",
+      "visualFingerprint": "HISTORY_TIMELINE|evidence|diagram|graphic|prop,prop,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "prop",
@@ -7552,7 +7916,7 @@
       "silentFrameTakeaway": "the outlook depends on when confidence breaks",
       "focalOccupancyTarget": 0.44,
       "characterRequired": true,
-      "visualFingerprint": "QA_REVEAL|character_action|character_action|none|host|asks when the leverage cycle will become obvious|present outlook question|none|no-stage|default|who=characters/cat_police",
+      "visualFingerprint": "QA_REVEAL|character_action|character_action|graphic|actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7606,7 +7970,7 @@
       "silentFrameTakeaway": "foreign outflows coexist with retail buying the dip",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|foreign seller and retail buyer|move in opposite directions across the 2026 market|none|foreign selling versus retail buying|assets/scenes/boardroom.svg|default|answerer=characters/cat_investor_phone|asker=characters/cat_business|stage=assets/scenes/boardroom.svg",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7658,7 +8022,7 @@
         "endWord": 4322,
         "quoteChecksum": "711951bb12bc90363b130de0faa91769e581d05b318c79aef7cefb0cebb1be6d"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "photo": "backgrounds/stock_board.jpg",
         "caption": "Mỗi người một niềm tin khác nhau"
@@ -7675,7 +8039,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "headline",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|headline|diverging stock-chart paths|leave the future unresolved|none|none|no-stage|default|photo=backgrounds/stock_board.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|headline",
       "assetRequests": [
         {
           "role": "photo",
@@ -7728,7 +8092,7 @@
       "silentFrameTakeaway": "some investors are still financing the next recovery bet",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|retail investor at home|borrows again while betting on another rebound|new margin loan|none|assets/scenes/living_room.svg|default|prop=finance/loan|stage=assets/scenes/living_room.svg|who=characters/cat_sunglasses",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7781,7 +8145,7 @@
         "endWord": 4409,
         "quoteChecksum": "ffd30f99ae587dd6871372126d3c71c4b030cc22b5e6fd8ab0e2f474b8db8384"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "host",
         "prop": "props/brain",
@@ -7798,7 +8162,7 @@
       "silentFrameTakeaway": "Korea still has credible long-term strengths",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|character_action|character_action|none|host and technology prop|present companies, chips and AI as the optimistic case|technology opportunity|none|no-stage|default|prop=props/brain|who=characters/cat_explain",
+      "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7859,7 +8223,7 @@
       "silentFrameTakeaway": "upside is possible without making current leverage safe",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|none|hopeful investor and debt warning|balance long-term opportunity against leverage risk|none|opportunity versus risk|no-stage|default|answerer=characters/cat_investor_phone|asker=characters/cat_explain",
+      "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7918,7 +8282,7 @@
       "silentFrameTakeaway": "leverage and household debt are still high",
       "focalOccupancyTarget": 0.5,
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|chart|none|high leverage baseline|remains elevated beside a debt icon|leverage baseline|none|no-stage|default|anchor=finance/debt|who=characters/cat_sad",
+      "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7978,7 +8342,7 @@
       "focalOccupancyTarget": 0.76,
       "characterRequired": false,
       "photoTreatment": "screen",
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|screen|fragile trading system without people|shows how a loaded structure reacts to a shock|none|none|no-stage|default|photo=backgrounds/evidence-market-pexels-10653886.jpg",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|photo|photo|prop|medium|none|none|screen",
       "assetRequests": [
         {
           "role": "photo",
@@ -8028,7 +8392,7 @@
       "silentFrameTakeaway": "several different shocks could trigger the same fragile system",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
-      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|none|host and warning prop|name rates, geopolitics and chips as possible shocks|shock warning|none|no-stage|default|prop=finance/loss|who=characters/cat_police",
+      "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -8071,7 +8435,7 @@
         "endWord": 4583,
         "quoteChecksum": "73b739bffd4a44b5f7261fb937818dae406cfd7925208971c93e89acdd4a0d6e"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "hostShrug",
         "q": "Liệu có cách nào xây dựng tài sản khác?",
@@ -8092,7 +8456,7 @@
       "silentFrameTakeaway": "the real test is whether young people can build assets without escalating wagers",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|thinking host|holds open the final alternative to bigger bets|closing social question|none|assets/scenes/construction.svg|default|prop=finance/house|stage=assets/scenes/construction.svg|who=characters/cat_shrug",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -8164,7 +8528,7 @@
       "silentFrameTakeaway": "the explanation ends with a clear, warm sign-off",
       "focalOccupancyTarget": 0.42,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|none|host in the library|closes the book and invites viewers back|none|none|assets/scenes/library.svg|default|prop=props/book|stage=assets/scenes/library.svg|who=characters/cat_explain",
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",

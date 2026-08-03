@@ -312,6 +312,8 @@ export interface TimingProvenance {
     canonicalWordCount: number;
     matchedWordCount: number;
     coverage: number;
+    matchedCoverage?: number;
+    interpolatedWordCount?: number;
     language?: string;
   };
 }

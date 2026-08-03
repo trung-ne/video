@@ -253,20 +253,26 @@ function buildSubtitleCues(
     });
   }
 
-  // A caption remains visible until the following caption begins. This creates
-  // a monotonic, gap-free reading track instead of disappearing at the final
-  // spoken syllable. Short tails merge with the preceding cue.
+  // Reflow the canonical chunks over the whole scene. Raw word timestamps set
+  // the phrase boundaries, but a spoken burst may exceed the 22-CPS reading
+  // limit. A contiguous reading track is preferable to overlapping subtitles:
+  // allocate every cue its required reading time, then distribute remaining
+  // scene time by text weight. This never clamps later chunks onto one word.
+  const required = raw.map((cue) => Math.max(fps, Math.ceil(cue.text.replace(/\s+/g, " ").trim().length / 22 * fps)));
+  const requiredTotal = required.reduce((sum, frames) => sum + frames, 0);
+  if (requiredTotal > timing.frames) return undefined;
+  const slack = timing.frames - requiredTotal;
+  const totalChars = raw.reduce((sum, cue) => sum + cue.text.length, 0) || 1;
+  let cursor = 0;
+  let assignedSlack = 0;
   for (let index = 0; index < raw.length; index++) {
-    raw[index].endFrame = index + 1 < raw.length
-      ? Math.max(raw[index].startFrame + 1, raw[index + 1].startFrame)
-      : timing.frames;
-  }
-  const minimumFrames = fps;
-  for (let index = raw.length - 1; index > 0; index--) {
-    if (raw[index].endFrame - raw[index].startFrame >= minimumFrames) continue;
-    raw[index - 1].text = `${raw[index - 1].text} ${raw[index].text}`;
-    raw[index - 1].endFrame = raw[index].endFrame;
-    raw.splice(index, 1);
+    const extra = index + 1 === raw.length
+      ? slack - assignedSlack
+      : Math.floor(slack * raw[index].text.length / totalChars);
+    assignedSlack += extra;
+    raw[index].startFrame = cursor;
+    raw[index].endFrame = cursor + required[index] + extra;
+    cursor = raw[index].endFrame;
   }
   return raw;
 }

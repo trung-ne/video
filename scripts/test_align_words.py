@@ -23,7 +23,8 @@ class AlignmentIndexTests(unittest.TestCase):
         self.assertEqual([item["wordIndex"] for item in result], [0, 1, 2, 3])
 
     def test_canonical_scene_indices_follow_tts_not_source_transcript(self):
-        aligned = [{"word": word, "confidence": 0.9} for word in ["shock", "number", "explained"]]
+        aligned = [{"word": word, "confidence": 0.9, "startSec": i * 0.2, "endSec": i * 0.2 + 0.1}
+                   for i, word in enumerate(["shock", "number", "explained"])]
         result, provenance = attach_canonical_scene_indices(aligned, [
             {"id": "scene-001", "text": "shock number"},
             {"id": "scene-002", "text": "explained"},
