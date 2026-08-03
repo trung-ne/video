@@ -45,7 +45,7 @@ function intersection(a: Box, b: Box): number {
   return Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) *
     Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
 }
-function overlapRatio(a: Box, b: Box): number {
+export function boxesOverlapRatio(a: Box, b: Box): number {
   const smaller = Math.min(area(a), area(b));
   return smaller > 0 ? intersection(a, b) / smaller : 0;
 }
@@ -102,7 +102,7 @@ export function checkSpatialIntegrity(
     }
     for (let i = 0; i < assets.length; i++) for (let j = i + 1; j < assets.length; j++) {
       const a = assets[i], b = assets[j];
-      const ratio = overlapRatio(boxes.get(a.assetId)!, boxes.get(b.assetId)!);
+      const ratio = boxesOverlapRatio(boxes.get(a.assetId)!, boxes.get(b.assetId)!);
       if (ratio <= MAX_OVERLAP_OF_SMALLER) continue;
       const permitted = a.allowOverlapWith?.includes(b.assetId) || b.allowOverlapWith?.includes(a.assetId);
       if (permitted) continue;

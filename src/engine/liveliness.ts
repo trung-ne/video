@@ -10,7 +10,9 @@ import {
   CameraEvent,
   BackgroundEvent,
   EmphasizeType,
+  AssetState,
 } from "../types/timeline";
+import { boxesOverlapRatio, visibleAssetBox } from "./spatialIntegrity";
 
 // ============================================================
 // liveliness.ts — continuous micro-variation injector
@@ -179,12 +181,31 @@ export function injectLiveliness(
   const spans = computeAssetSpans(timeline.events, total).filter(
     (s) => !s.src.startsWith("ui/arrow")
   );
-  // A spatial move is safe only when this asset is alone in the active shot.
-  // Multi-asset scenes still receive pose swaps/emphasis, but their authored
-  // relationships are never independently pushed through a peer.
-  const hasPeerAt = (span: Span, frame: number) => spans.some((other) =>
-    other.assetId !== span.assetId && other.start <= frame && frame < other.end
-  );
+  // A non-fixed asset may move only to a candidate that clears every peer's
+  // visible alpha box. Fixed stage anchors deliberately have no candidate.
+  const safeMove = (span: Span, frame: number, direction: number, beatIndex: number) => {
+    if (span.motionPolicy === "fixed") return null;
+    const candidates = [
+      { dx: direction * 0.06, dy: ((beatIndex % 3) - 1) * 0.012, scale: direction > 0 ? 1.06 : 0.94 },
+      { dx: -direction * 0.04, dy: 0, scale: 1 },
+      { dx: 0, dy: -0.03, scale: 1 },
+    ];
+    for (const candidate of candidates) {
+      const asset: AssetState = {
+        assetId: span.assetId, src: span.src,
+        position: { x: Math.max(0.12, Math.min(0.88, span.position.x + candidate.dx)), y: Math.max(0.16, Math.min(0.82, span.position.y + candidate.dy)) },
+        scale: span.scale * candidate.scale, opacity: 1, zIndex: 1, visible: true,
+      };
+      const box = visibleAssetBox(asset, timeline.width, timeline.height);
+      const blocked = spans.some((other) => {
+        if (other.assetId === span.assetId || other.start > frame || other.end <= frame) return false;
+        const peer: AssetState = { assetId: other.assetId, src: other.src, position: other.position, scale: other.scale, opacity: 1, zIndex: 1, visible: true };
+        return boxesOverlapRatio(box, visibleAssetBox(peer, timeline.width, timeline.height)) > 0.20;
+      });
+      if (!blocked) return { position: asset.position, scale: asset.scale };
+    }
+    return null;
+  };
 
   const added: TimelineEvent[] = [];
   let emphasizesAdded = 0;
@@ -255,20 +276,16 @@ export function injectLiveliness(
         ? (isCenterFocal ? 0.22 : 0.10)
         : (isCenterFocal ? 0.16 : 0.075);
 
-      if (span.motionPolicy !== "fixed" && !hasPeerAt(span, f)) {
-        // Single-subject scenes can change their relationship to the canvas;
-        // keep it deliberately small and inside the safe area. Multi-subject
-        // scenes use the non-geometric beats below.
-        const safeDisplacement = Math.min(displacement, 0.06);
+      const safe = safeMove(span, f, direction, beatIndex);
+      if (safe) {
+        // A persistent but bounded layout change carries the beat across audit
+        // samples without borrowing space from a peer.
         added.push({
           frame: f,
           type: "move",
           assetId: span.assetId,
-          position: {
-            x: Math.max(0.12, Math.min(0.88, span.position.x + direction * safeDisplacement)),
-            y: Math.max(0.16, Math.min(0.82, span.position.y + ((beatIndex % 3) - 1) * 0.012)),
-          },
-          scale: span.scale * (direction > 0 ? 1.06 : 0.94),
+          position: safe.position,
+          scale: safe.scale,
           duration: 18,
         } as MoveEvent);
         movesAdded++;
@@ -316,11 +333,12 @@ export function injectLiveliness(
       .filter((event): event is BackgroundEvent => event.type === "background" && event.frame === scene.start)
       .at(-1);
     if (!baseBackground || !/(?:^|\/)assets\/scenes\//.test(baseBackground.src)) continue;
-    const cueFrames = (scene.narrationBeatFrames ?? [])
-      .filter((frame) => frame >= scene.start + 55 && frame < scene.end - 30)
-      .sort((a, b) => a - b)
-      .filter((frame, index, values) => index === 0 || frame - values[index - 1] >= 95)
-      .slice(0, 2);
+    const cueFrames: number[] = [];
+    // A state change must cross the five-second audit cadence. Word cues can
+    // land too early, leaving both sampled frames in the same visual state.
+    for (let frame = scene.start + Math.max(90, Math.round((scene.end - scene.start) * 0.45)); frame < scene.end - 35; frame += 120) {
+      cueFrames.push(frame);
+    }
     cueFrames.forEach((frame, index) => {
       added.push({
         frame,
@@ -329,8 +347,8 @@ export function injectLiveliness(
         blur: baseBackground.blur,
         opacity: baseBackground.opacity,
         overlay: index % 2 === 0
-          ? "rgba(255,255,255,0.16)"
-          : "rgba(255,255,255,0.03)",
+          ? "rgba(255,255,255,0.28)"
+          : "rgba(255,255,255,0.05)",
         duration: 18,
       } as BackgroundEvent);
       backgroundBeatsAdded++;

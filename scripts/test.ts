@@ -610,7 +610,7 @@ test("liveliness resets camera between scenes without inventing zoom beats", () 
   assert.strictEqual(result.cameraMovesAdded, 1);
 });
 
-test("tableau stage focus changes persist at measured narration boundaries", () => {
+test("tableau stage focus changes persist across the audit cadence", () => {
   const timeline: any = {
     fps: 30,
     width: 1920,
@@ -628,7 +628,7 @@ test("tableau stage focus changes persist at measured narration boundaries", () 
   });
   const backgrounds = timeline.events.filter((event: any) => event.type === "background");
   assert.strictEqual(result.backgroundBeatsAdded, 2);
-  assert.deepStrictEqual(backgrounds.map((event: any) => event.frame), [0, 90, 210]);
+  assert.deepStrictEqual(backgrounds.map((event: any) => event.frame), [0, 162, 282]);
   assert.ok(backgrounds.slice(1).every((event: any) => event.duration === 18));
 });
 
