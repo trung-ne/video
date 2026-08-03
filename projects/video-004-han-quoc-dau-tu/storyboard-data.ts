@@ -137,6 +137,7 @@ const BASE_SCENES: DraftScene[] = [
     slots: { stage: "assets/scenes/library.svg", who: "hostPlain", anchorA: "table", prop: "props/book", caption: "Cơn sốt đòn bẩy Hàn Quốc" } },
 
   { marker: "Trước tiên thì chúng ta đã cần tìm hiểu",
+    narrationOverride: "Ôn nhanh khái niệm cốt lõi: margin, hay đòn bẩy, là gì?",
     grammar: "TABLEAU", emotion: "neutral",
     purpose: "Transition into the explainer section: what is margin.",
     viewerFocus: "the host, ready to explain",
@@ -436,6 +437,7 @@ const BASE_SCENES: DraftScene[] = [
     slots: { photo: "backgrounds/market_monitor.jpg", caption: "Margin: nhóm giao dịch tích cực nhất" } },
 
   { marker: "Theo những nghiên cứu tại KCMI",
+    narrationOverride: "Theo những nghiên cứu tại KCMI thì những người dùng margin chỉ chiếm một phần rất nhỏ trong tổng số nhà đầu tư cá nhân, nhưng số lượng giao dịch họ tạo ra lại lớn hơn rất nhiều.",
     grammar: "EVIDENCE", emotion: "neutral",
     purpose: "Cite KCMI research on margin users' outsized activity.",
     viewerFocus: "the KCMI data point",
@@ -461,12 +463,14 @@ const BASE_SCENES: DraftScene[] = [
     slots: { asker: "hostShrug", answerer: "investor", askerText: "Margin khi thị trường tốt?", answererText: "Lãi trước; sập cũng ngã trước.", stage: "assets/scenes/street.svg", anchorA: "sidewalk_left", anchorB: "sidewalk_right" } },
 
   { marker: "Và cái điều buồn cười là sau khi cộng tất cả",
+    narrationOverride: "Và điều đáng chú ý là sau khi cộng tất cả chi phí, từ phí giao dịch, lãi vay margin cho đến những khoản lỗ phát sinh, hiệu quả của nhóm này thường không tốt hơn người đầu tư bình thường, nhiều trường hợp còn thấp hơn.",
     grammar: "STAT_REVEAL", emotion: "sarcastic",
     purpose: "Net of fees and interest, margin users don't even outperform.",
     viewerFocus: "underperformance after costs",
     slots: { stat: "HIỆU QUẢ THẤP HƠN", anchor: "finance/loss", who: "characters/cat_shrug", caption: "Sau phí giao dịch và lãi vay" } },
 
   { marker: "Tức là họ chấp nhận nhiều rủi ro hơn, căng thẳng hơn",
+    narrationOverride: "Tức là họ chấp nhận nhiều rủi ro hơn, căng thẳng hơn, giao dịch nhiều hơn, nhưng kết quả cuối cùng lại không hẳn tốt hơn. Đó là một trong những nghịch lý lớn nhất của cơn sốt margin tại Hàn Quốc.",
     grammar: "PHOTO_EVIDENCE", emotion: "sarcastic",
     purpose: "State the paradox plainly.",
     viewerFocus: "more risk, more stress, no better results",
@@ -504,6 +508,7 @@ const BASE_SCENES: DraftScene[] = [
     slots: { photo: "backgrounds/home_study.jpg", caption: "Cơ hội thực tế cuối cùng để đổi đời" } },
 
   { marker: "Và cũng như đã nói rất là nhiều rồi thì cơ hội lớn",
+    narrationOverride: "Cơ hội lớn thường đi kèm rủi ro lớn. Khi margin xuất hiện, cả hai phía đều bị khuếch đại: lãi có thể lớn hơn, nhưng tiền cũng mất nhanh hơn.",
     grammar: "DIALOGUE_QA", emotion: "concern",
     purpose: "Big opportunity, bigger risk — margin makes both extreme.",
     viewerFocus: "opportunity vs. amplified risk",
@@ -743,6 +748,7 @@ const BASE_SCENES: DraftScene[] = [
     slots: { photo: "backgrounds/living_room.jpg", caption: "Rất khó để đứng ngoài cuộc chơi" } },
 
   { marker: "Cái đáng sợ nhất không phải là Marin",
+    narrationOverride: "Cái đáng sợ nhất không phải là margin, mà là lý do khiến người ta tìm đến margin.",
     grammar: "QA_REVEAL", emotion: "concern",
     purpose: "The video's thesis sentence.",
     viewerFocus: "the real thing to fear",
@@ -1161,6 +1167,43 @@ const SELECTED_HERO_SCENE_MARKERS = new Set([
   "Đoàn bảy hiện nặng ở mức rất là cao",
 ]);
 
+// This cadence was authored against measured TTS starts. It prevents both
+// label inflation and long sections without a genuinely different hero mode.
+const HERO_CADENCE_V2_MARKERS = new Set([
+  "Nhắc tới Hàn Quốc ngoài kim chi, phim",
+  "Nhưng mà tại sao cái chuyện này",
+  "Marin hay là giao dịch ký quỹ",
+  "Nhưng mà vấn đề không phải là bạn cứ vay tiền",
+  "Và cái thứ nguy hiểm nhất gọi là margin core",
+  "Và đó chính xác là những gì đã xảy ra",
+  "Và cái điều đangng nói là phần lớn",
+  "Trong cái thời mà lãi suất thấp thì chỗ này",
+  "Và điều này tạo ra một cảm giác khá là phổ biến",
+  "Còn Marin thì giống như kiểu là đưa cho bạn một cái xe máy",
+  "và nếu mà không chạy nhanh hơn ấ thì khoảng cách",
+  "Còn ở Hàn Quốc ấy thì trong nhiều năm",
+  "Người Hàn Quốc thậm chí còn có một cái biệt danh",
+  "Nhiều người lại thích săn những mã cổ phiếu nhỏ",
+  "Theo những nghiên cứu tại KCMI",
+  "Và cái điều buồn cười là sau khi cộng tất cả",
+  "Đầu tiên là áp lực tài sản",
+  "Gốc rễ thứ hai là một khái niệm rất là nổi tiếng",
+  "Yếu tố thứ ba là câu chuyện bán khống",
+  "Và cuối cùng cũng là yếu tố quan trọng nhất",
+  "Và khi mà tất cả những cái thứ đấy nó kết hợp lại",
+  "Và khi mà ba thứ đấy xuất hiện cùng một lúc",
+  "Theo cơ quan quản lý tài chính ở Hàn Quốc ấ thì phần lớn",
+  "Và khi mà CFD bị xết chặt thì tiền chảy sang",
+  "và đôi khi nó sẽ chảy tới những cái nơi mà khó kiểm soát hơn",
+  "Bây giờ bạn là một người Hàn Quốc khoảng 28 tuổi",
+  "Nếu một thế hệ lớn lên với cảm giác rằng là làm việc chăm chỉ",
+  "xong mà lại nghĩ là mẹ phát sau",
+  "Nợ tăng dần qua từng năm này, giá tài sản tăng nhanh hơn thu nhập",
+  "Bớt sang năm 2026 thì thị trường Hàn Quốc",
+  "Tất nhiên là kịch bản lạc quan thì vẫn hoàn toàn có thể xảy ra",
+  "Có thể là xốc về lãi suất toàn cầu này",
+]);
+
 if (BASE_SCENES.length !== DIRECTIONS.length) {
   throw new Error(`Direction count ${DIRECTIONS.length} does not match scene count ${BASE_SCENES.length}`);
 }
@@ -1275,11 +1318,239 @@ const SEMANTIC_SETTING_OVERRIDES: Record<number, string> = {
 };
 
 const ROLE_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
+  3: { who: "hostShrug" },         // opening identity beat needs a distinct pose, not generic talk
   40: { answerer: "gaemi" },       // retail participation becomes a crowd behavior
+  43: { answerer: "gaemi" },       // FOMO is a crowd impulse, not another phone pose
   44: { answerer: "gaemi" },       // panic selling acts against the falling arrow
   49: { who: "gaemi" },            // FOMO is shown as a physical market reaction
+  51: { answerer: "plainInvestor" }, // disposition effect is a considered individual choice
+  55: { answerer: "gaemi" },       // frequent margin trader is a gaemi action beat
   86: { who: "plainInvestor" },    // the contract reader explains CFD ownership
   110: { answerer: "plainInvestor" }, // skeptical receipt-checking undercuts luck
+};
+
+// Semantic substitutions are authored exceptions: loan and debt are related
+// but distinct ideas, so their visual separation prevents the debt icon from
+// becoming a meaningless repeated wallpaper.
+const ASSET_SLOT_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
+  122: { anchor: "finance/loan" },
+};
+
+// Evidence cards are not one repeated slide: the position is an authored
+// editorial choice that changes the reading path without inventing content.
+const EVIDENCE_LAYOUT_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
+  26: { evidenceLayout: "left" },
+  39: { evidenceLayout: "right" },
+  48: { evidenceLayout: "lower" },
+  54: { evidenceLayout: "left" },
+  56: { evidenceLayout: "right" },
+  71: { evidenceLayout: "lower" },
+  85: { evidenceLayout: "left" },
+  88: { evidenceLayout: "right" },
+  93: { evidenceLayout: "lower" },
+};
+
+// Long scenes receive a second, explicitly authored narration state.  These
+// are not an index/modulo animation scheme: every phrase is a director's
+// decision tied to what that specific scene says.  TABLEAU scenes surface
+// their already-authored takeaway only when the narration reaches it;
+// DIALOGUE scenes hand the floor to the answerer at the marked phrase and keep
+// that reply as the conclusion.
+const MOTION_BEAT_OVERRIDES: Record<number, Pick<AuthoredScene, "beats" | "captionTreatment">> = {
+  7: { captionTreatment: "chapter-pill", beats: [
+    { text: "margin", importance: 0.7, kind: "keyword", action: "reveal", targetSlot: "caption", holdState: "definition" },
+    { text: "Ôn lại", importance: 0.75, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_explain", holdState: "recap" },
+    { text: "margin", importance: 0.84, kind: "keyword", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/stock_board.jpg", targetLabel: "Margin: mua nhiều hơn số vốn có", holdState: "margin-screen" },
+  ] },
+  9: { beats: [
+    { text: "Tức là", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_happy", holdState: "double-buying-power" },
+    { text: "Tức là", importance: 0.78, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_explain", holdState: "explains-leverage" },
+  ] },
+  14: { beats: [
+    { text: "Nếu bạn không", importance: 0.9, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "forced-sale" },
+    { text: "Nếu bạn không", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_police", holdState: "broker-enforces" },
+  ] },
+  15: { beats: [
+    { text: "thị trường lao dốc", importance: 0.75, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_police", holdState: "margin-call-urgency" },
+    { text: "Mọi người", importance: 0.9, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "cascade" },
+    { text: "Mọi người", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_investor_panic", holdState: "market-panic" },
+  ] },
+  21: { captionTreatment: "chapter-pill", beats: [
+    { text: "Jeonse", importance: 0.8, kind: "keyword", action: "reveal", targetSlot: "caption", holdState: "deposit-model" },
+    { text: "Thay vì trả tiền", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_homebuyer", holdState: "tenant-model" },
+    { text: "Thay vì trả tiền", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "seatB", targetAssetId: "characters/cat_investor_panic", holdState: "large-deposit" },
+    { text: "Thay vì trả tiền", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/korea_apartments.jpg", targetLabel: "Jeonse: tiền cọc thay tiền thuê", holdState: "housing-cutaway" },
+  ] },
+  23: { captionTreatment: "chapter-pill", beats: [
+    { text: "vấn đề", importance: 0.8, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "upfront-cash" },
+    { text: "khoản tiền lớn", importance: 0.82, kind: "keyword", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_investor_panic", holdState: "cash-shock" },
+    { text: "khoản tiền lớn", importance: 0.82, kind: "keyword", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/house", holdState: "house-deposit" },
+    { text: "khoản tiền lớn", importance: 0.86, kind: "keyword", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-document-pexels-8296974.jpg", targetLabel: "Tiền cọc phải có ngay từ đầu", holdState: "cash-cutaway" },
+  ] },
+  24: { captionTreatment: "chapter-pill", beats: [
+    { text: "chủ nhà", importance: 0.7, kind: "keyword", action: "reveal", targetSlot: "caption", holdState: "low-rate-loop" },
+    { text: "đem tiền đặt cọc", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_happy", holdState: "low-rate-winners" },
+    { text: "đem tiền đặt cọc", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/profit", holdState: "investment-gains" },
+    { text: "đem tiền đặt cọc", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-device-pexels-8296993.jpg", targetLabel: "Lãi thấp: tiền cọc được đem đầu tư", holdState: "investment-cutaway" },
+  ] },
+  25: { beats: [
+    { text: "hợp đồng kết thúc", importance: 0.9, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_debt_burden", holdState: "tenant-pressure" },
+    { text: "hợp đồng kết thúc", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_investor_panic", holdState: "deposit-demand" },
+  ] },
+  27: { beats: [
+    { text: "Vì thế", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "unstable-work" },
+    { text: "Vì thế", importance: 0.78, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_shrug", holdState: "income-gap" },
+  ] },
+  30: { captionTreatment: "chapter-pill", beats: [
+    { text: "Ngoài việc", importance: 0.7, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "few-options" },
+    { text: "Ngoài việc", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_think", holdState: "few-options-reaction" },
+    { text: "Ngoài việc", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/trending_up", holdState: "market-shortcut" },
+    { text: "Ngoài việc", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/mobile_trading_flatlay.jpg", targetLabel: "Thị trường trông như một đường tắt", holdState: "market-cutaway" },
+  ] },
+  34: { beats: [
+    { text: "ngày càng giàu", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "asset-gap" },
+    { text: "ngày càng giàu", importance: 0.78, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_investor_panic", holdState: "left-behind" },
+  ] },
+  40: { beats: [
+    { text: "nhà đầu tư cá nhân", importance: 0.8, kind: "keyword", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_surprised", holdState: "retail-led" },
+    { text: "nhà đầu tư cá nhân", importance: 0.78, kind: "keyword", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_explain", holdState: "retail-contrast" },
+  ] },
+  65: { beats: [
+    { text: "Khi margin xuất hiện", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_surprised", holdState: "risk-amplifier" },
+    { text: "Khi margin xuất hiện", importance: 0.78, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_investor_panic", holdState: "risk-reaction" },
+  ] },
+  67: { beats: [
+    { text: "định giá thấp", importance: 0.7, kind: "keyword", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_think", holdState: "discount" },
+    { text: "định giá thấp", importance: 0.76, kind: "keyword", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_shrug", holdState: "discount-question" },
+  ] },
+  69: { captionTreatment: "chapter-pill", beats: [
+    { text: "không tin", importance: 0.8, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "short-termism" },
+    { text: "sóng ngắn hơn", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_point_left", holdState: "short-term-chasing" },
+    { text: "không tin", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/market_monitor.jpg", targetLabel: "Không tin dài hạn, tiền chạy theo sóng ngắn", holdState: "short-term-screen" },
+  ] },
+  76: { captionTreatment: "chapter-pill", beats: [
+    { text: "gọi điện", importance: 0.7, kind: "keyword", action: "reveal", targetSlot: "caption", holdState: "old-brokerage" },
+    { text: "khoản phí", importance: 0.78, kind: "keyword", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_talk", holdState: "broker-fees" },
+    { text: "gọi điện", importance: 0.84, kind: "keyword", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-device-pexels-34862486.jpg", targetLabel: "Giao dịch từng phải qua môi giới", holdState: "broker-device" },
+  ] },
+  79: { beats: [
+    { text: "Một mã", importance: 0.8, kind: "keyword", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_surprised", holdState: "market-hype" },
+    { text: "Một mã", importance: 0.78, kind: "keyword", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_talk", holdState: "hype-broadcast" },
+  ] },
+  84: { beats: [
+    { text: "Và ở giữa", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_shrug", holdState: "unfair-game" },
+    { text: "Và ở giữa", importance: 0.78, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_sad", holdState: "pressure-reaction" },
+  ] },
+  89: { captionTreatment: "chapter-pill", beats: [
+    { text: "chả ai biết", importance: 0.8, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "opaque-risk" },
+    { text: "rủi ro thực sự", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_think", holdState: "unknown-risk" },
+    { text: "chả ai biết", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/trading_workstation.jpg", targetLabel: "Dữ liệu không nói ai đang gánh rủi ro", holdState: "opaque-screen" },
+  ] },
+  91: { captionTreatment: "chapter-pill", beats: [
+    { text: "cánh cửa", importance: 0.9, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "money-reroutes" },
+    { text: "cánh cửa khác", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_surprised", holdState: "reroute-reaction" },
+    { text: "cánh cửa khác", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-map-02.jpg", targetLabel: "Chặn một cửa, dòng tiền tìm cửa khác", holdState: "reroute-map" },
+  ] },
+  96: { captionTreatment: "chapter-pill", beats: [
+    { text: "Càng chặn", importance: 0.9, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "leakage" },
+    { text: "hẹp hơn", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_point_left", holdState: "flow-reroutes" },
+    { text: "Càng chặn", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-map-04.jpg", targetLabel: "Dòng tiền luồn qua những khe hẹp hơn", holdState: "leakage-map" },
+  ] },
+  108: { beats: [
+    { text: "lợi nhuận", importance: 0.8, kind: "keyword", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_happy", holdState: "overconfidence" },
+    { text: "lợi nhuận", importance: 0.78, kind: "keyword", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_surprised", holdState: "profit-reaction" },
+  ] },
+  109: { captionTreatment: "chapter-pill", beats: [
+    { text: "Lần sau", importance: 0.8, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "luck-versus-skill" },
+    { text: "điểm chí mạng", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_think", holdState: "doubts-luck" },
+    { text: "điểm chí mạng", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-document-pexels-8297220.jpg", targetLabel: "Lợi nhuận chưa chắc là năng lực", holdState: "luck-document" },
+  ] },
+  117: { beats: [
+    { text: "bên còn lại", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "capital-outflow" },
+    { text: "bên còn lại", importance: 0.78, kind: "turn", action: "swap_pose", targetSlot: "asker", targetAssetId: "characters/cat_surprised", holdState: "two-sided-flow" },
+  ] },
+  119: { captionTreatment: "chapter-pill", beats: [
+    { text: "cú hồi phục", importance: 0.8, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "wishful-recovery" },
+    { text: "người đúng thì sao", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_surprised", holdState: "hopeful-bet" },
+    { text: "cú hồi phục", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-device-pexels-35028998.jpg", targetLabel: "Vẫn vay thêm để chờ cú hồi phục", holdState: "recovery-device" },
+  ] },
+  126: { captionTreatment: "chapter-pill", beats: [
+    { text: "Đừng quên", importance: 0.7, kind: "turn", action: "reveal", targetSlot: "caption", holdState: "cta" },
+    { text: "đăng ký", importance: 0.82, kind: "keyword", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_happy", holdState: "friendly-signoff" },
+  ] },
+  31: { beats: [
+    { text: "con đường tắt", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_investor_panic", holdState: "shortcut-temptation" },
+    { text: "con đường tắt", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/investment", holdState: "market-shortcut" },
+  ] },
+  105: { beats: [
+    { text: "bị bỏ lại", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_sad", holdState: "left-behind" },
+    { text: "bị bỏ lại", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/loss", holdState: "housing-gap" },
+  ] },
+  92: { beats: [
+    { text: "tiền chảy sang", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_point_left", holdState: "capital-reroutes" },
+    { text: "tiền chảy sang", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/portfolio", holdState: "new-products" },
+  ] },
+  120: { beats: [
+    { text: "động lực tăng trưởng", importance: 0.82, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_sunglasses", holdState: "long-term-upside" },
+    { text: "động lực tăng trưởng", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/investment", holdState: "ai-semiconductor-upside" },
+  ] },
+  124: { beats: [
+    { text: "tâm lý thị trường đổi chiều", importance: 0.8, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_surprised", holdState: "risk-turns" },
+    { text: "tâm lý thị trường đổi chiều", importance: 0.82, kind: "turn", action: "swap_asset", targetSlot: "prop", targetAssetId: "finance/trending_down", holdState: "market-reversal" },
+  ] },
+};
+
+// A second authored shot for long character scenes. Each phrase marks a real
+// editorial turn: dialogue cuts from the two-shot to the reaction, while
+// character+prop scenes cut to the object being discussed. These are explicit
+// per-scene decisions, never duration/modulo-driven motion.
+const SHOT_BEAT_OVERRIDES: Record<number, NonNullable<AuthoredScene["beats"]>> = {
+  3: [{ text: "cơn sốt đòn bẩy", importance: 0.82, kind: "keyword", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_happy", holdState: "episode-promise" }],
+  6: [{ text: "cơn sốt đòn bẩy", importance: 0.82, kind: "keyword", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_point_left", holdState: "channel-promise" }],
+  9: [{ text: "cho bạn vay thêm 100 triệu", importance: 0.86, kind: "number", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_happy", holdState: "double-buying-power-closeup" }],
+  14: [{ text: "bán cổ phiếu", importance: 0.88, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "forced-sale-closeup" }],
+  15: [{ text: "giá càng giảm", importance: 0.9, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "cascade-closeup" }],
+  24: [{ text: "ai cũng vui", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_happy", holdState: "low-rate-reaction" }],
+  27: [{ text: "chi phí sinh hoạt", importance: 0.86, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "cost-pressure-closeup" }],
+  35: [{ text: "quyết định tài chính", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_think", holdState: "decision-closeup" }],
+  38: [
+    { text: "Nửa còn lại", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_point_left", holdState: "market-structure-pivot" },
+    { text: "cấu trúc của thị trường", importance: 0.84, kind: "keyword", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_think", holdState: "market-structure-closeup" },
+  ],
+  40: [{ text: "lớn giao dịch hàng ngày", importance: 0.86, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_surprised", holdState: "institutional-market-closeup" }],
+  43: [{ text: "sẽ đổ vào thị trường", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_happy", holdState: "inflow-closeup" }],
+  44: [{ text: "Thị trường vì thế", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "panic-closeup" }],
+  51: [{ text: "cố giữ lại", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "loss-aversion-closeup" }],
+  55: [{ text: "phiếu biến động mạnh hơn", importance: 0.84, kind: "keyword", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "riskier-portfolio-closeup" }],
+  65: [{ text: "margin xuất hiện", importance: 0.88, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "margin-arrives-closeup" }],
+  72: [{ text: "quỹ nước ngoài", importance: 0.84, kind: "keyword", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_sad", holdState: "short-selling-closeup" }],
+  79: [
+    { text: "sắp có trend", importance: 0.84, kind: "keyword", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_surprised", holdState: "hype-closeup" },
+    { text: "sóng mới rồi", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "asker", targetAssetId: "characters/cat_talk", holdState: "hype-host-reaction" },
+  ],
+  81: [{ text: "phản ứng thế nào cũng hóng theo", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_talk", holdState: "crowd-loop-closeup" }],
+  62: [{ text: "một người bình thường", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-street-pexels-37319814.jpg", targetLabel: "Cơ hội đổi đời ngày càng xa", holdState: "ordinary-investor-seoul-housing-cutaway" }],
+  67: [{ text: "định giá thấp hơn", importance: 0.86, kind: "keyword", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-market-pexels-16594724.jpg", targetLabel: "Cổ phiếu Hàn Quốc thường bị định giá thấp", holdState: "korea-discount-market-cutaway" }],
+  77: [{ text: "thứ nắm sẵn trước mặt", importance: 0.86, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-device-pexels-25025802.jpg", targetLabel: "Giao dịch nằm ngay trong điện thoại", holdState: "mobile-trading-cutaway" }],
+  84: [
+    { text: "luật chơi", importance: 0.86, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_shrug", holdState: "unfair-game-closeup" },
+    { text: "cụ tài chính có thể", importance: 0.88, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-document-pexels-33175649.jpg", targetLabel: "Công cụ phức tạp hứa hẹn cân bằng cuộc chơi", holdState: "financial-tools-document-cutaway" },
+  ],
+  92: [{ text: "công cụ phức tạp", importance: 0.84, kind: "turn", action: "focus_asset", targetSlot: "prop", targetAssetId: "finance/portfolio", holdState: "complex-product-closeup" }],
+  101: [{ text: "hợp đồng ký lại", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "who", targetAssetId: "characters/cat_sad", holdState: "unstable-work-closeup" }],
+  102: [{ text: "mở điện thoại", importance: 0.84, kind: "turn", action: "focus_asset", targetSlot: "prop", targetAssetId: "finance/trending_up", holdState: "phone-market-closeup" }],
+  105: [{ text: "mua nổi một cái nhà", importance: 0.86, kind: "turn", action: "focus_asset", targetSlot: "prop", targetAssetId: "finance/expense", holdState: "housing-gap-closeup" }],
+  108: [{ text: "mình đúng rồi", importance: 0.86, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_happy", holdState: "overconfidence-closeup" }],
+  110: [{ text: "đứng đúng chỗ", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_think", holdState: "luck-context-closeup" }],
+  113: [{ text: "tài sản tăng nhanh hơn thu nhập", importance: 0.88, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/evidence-housing-pexels-5505895.jpg", targetLabel: "Giá tài sản chạy nhanh hơn thu nhập", holdState: "asset-income-gap-cutaway" }],
+  117: [
+    { text: "biến động rất mạnh", importance: 0.86, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_investor_panic", holdState: "volatile-market-closeup" },
+    { text: "kiên trì mua vào", importance: 0.88, kind: "turn", action: "focus_actor", targetSlot: "asker", targetAssetId: "characters/cat_surprised", holdState: "two-sided-market-closeup" },
+  ],
+  120: [{ text: "ngành bán dẫn", importance: 0.84, kind: "keyword", action: "focus_asset", targetSlot: "prop", targetAssetId: "finance/investment", holdState: "semiconductor-upside-closeup" }],
+  121: [{ text: "Nhưng mà có cơ hội", importance: 0.84, kind: "turn", action: "focus_actor", targetSlot: "answerer", targetAssetId: "characters/cat_surprised", holdState: "risk-reminder-closeup" }],
+  124: [{ text: "ngành chip", importance: 0.84, kind: "keyword", action: "focus_asset", targetSlot: "prop", targetAssetId: "finance/trending_down", holdState: "chip-shock-closeup" }],
+  125: [{ text: "xây dựng tài sản", importance: 0.86, kind: "turn", action: "focus_asset", targetSlot: "prop", targetAssetId: "finance/house", holdState: "asset-building-closeup" }],
 };
 
 const EDITORIAL_OVERRIDES: Record<number, Partial<AuthoredScene>> = {
@@ -1453,13 +1724,23 @@ export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => {
   const photo = PHOTO_DIRECTIONS[scene.marker];
   const markerOverride = SCENE_OVERRIDES[scene.marker] ?? {};
   const editorialOverride = EDITORIAL_OVERRIDES[index] ?? {};
-  const override = { ...markerOverride, ...editorialOverride };
+  const motionOverride = MOTION_BEAT_OVERRIDES[index] ?? {};
+  const shotBeats = SHOT_BEAT_OVERRIDES[index] ?? [];
+  const authoredBeats = [...(motionOverride.beats ?? []), ...shotBeats];
+  const override = {
+    ...markerOverride,
+    ...editorialOverride,
+    ...motionOverride,
+    ...(authoredBeats.length ? { beats: authoredBeats } : {}),
+  };
   const direction = DIRECTIONS[index];
   const semanticSetting = SEMANTIC_SETTING_OVERRIDES[index];
   const authoredSlots = {
     ...(scene.slots ?? {}),
     ...(STAGE_OVERRIDES[index] ?? {}),
     ...(ROLE_OVERRIDES[index] ?? {}),
+    ...(ASSET_SLOT_OVERRIDES[index] ?? {}),
+    ...(EVIDENCE_LAYOUT_OVERRIDES[index] ?? {}),
     ...(markerOverride.slots ?? {}),
     ...(editorialOverride.slots ?? {}),
   };
@@ -1476,7 +1757,7 @@ export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => {
       photoTreatment: photo.treatment,
       slots: { ...authoredSlots, photo: photo.photo },
     } : {}),
-    heroVisual: SELECTED_HERO_SCENE_MARKERS.has(scene.marker),
+    heroVisual: HERO_CADENCE_V2_MARKERS.has(scene.marker),
   };
 });
 

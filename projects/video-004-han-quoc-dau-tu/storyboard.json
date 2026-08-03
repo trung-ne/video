@@ -387,7 +387,7 @@
       "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/library.svg",
-        "who": "hostPlain",
+        "who": "hostShrug",
         "anchorA": "table",
         "prop": "props/book"
       },
@@ -402,14 +402,25 @@
       "silentFrameTakeaway": "host introduces the episode",
       "focalOccupancyTarget": 0.42,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "cơn sốt đòn bẩy",
+          "importance": 0.82,
+          "kind": "keyword",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "episode-promise"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
           "role": "character",
           "slot": "who",
-          "query": "characters/cat",
+          "query": "characters/cat_shrug",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat",
+          "preferredAssetId": "characters/cat_shrug",
           "allowGenerate": false
         },
         {
@@ -430,7 +441,7 @@
         }
       ],
       "resolvedAssets": {
-        "who": "characters/cat",
+        "who": "characters/cat_shrug",
         "prop": "props/book",
         "stage": "assets/scenes/library.svg"
       },
@@ -438,7 +449,7 @@
       "noveltyFromPrevious": [
         "grammar:TABLEAU",
         "register:full_tableau",
-        "asset:characters/cat",
+        "asset:characters/cat_shrug",
         "asset:props/book",
         "asset:assets/scenes/library.svg"
       ]
@@ -509,7 +520,6 @@
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "asset:characters/cat_shrug",
         "asset:props/brain",
         "asset:assets/scenes/classroom.svg"
       ]
@@ -595,6 +605,17 @@
       "silentFrameTakeaway": "this is a guided explanation of Korea's leverage boom",
       "focalOccupancyTarget": 0.4,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "cơn sốt đòn bẩy",
+          "importance": 0.82,
+          "kind": "keyword",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_point_left",
+          "holdState": "channel-promise"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -638,7 +659,7 @@
     },
     {
       "id": "scene-008",
-      "narration": "Trước tiên\r\nthì chúng ta đã cần tìm hiểu xem là đoàn\r\nbảy hay là Marin là cái gì. Ôn lại một\r\ntí đi",
+      "narration": "Ôn nhanh khái niệm cốt lõi: margin, hay đòn bẩy, là gì?",
       "purpose": "Transition into the explainer section: what is margin.",
       "emotion": "neutral",
       "viewerFocus": "the host, ready to explain",
@@ -668,7 +689,37 @@
       "silentFrameTakeaway": "understanding margin comes before judging its users",
       "focalOccupancyTarget": 0.4,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "margin",
+          "importance": 0.7,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "definition"
+        },
+        {
+          "text": "Ôn lại",
+          "importance": 0.75,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_explain",
+          "holdState": "recap"
+        },
+        {
+          "text": "margin",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/stock_board.jpg",
+          "targetLabel": "Margin: mua nhiều hơn số vốn có",
+          "holdState": "margin-screen"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -799,6 +850,35 @@
       "silentFrameTakeaway": "a loan doubles buying power before any return occurs",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Tức là",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "double-buying-power"
+        },
+        {
+          "text": "Tức là",
+          "importance": 0.78,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_explain",
+          "holdState": "explains-leverage"
+        },
+        {
+          "text": "cho bạn vay thêm 100 triệu",
+          "importance": 0.86,
+          "kind": "number",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "double-buying-power-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -1161,6 +1241,35 @@
       "silentFrameTakeaway": "below the safety line the broker can liquidate the shares",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Nếu bạn không",
+          "importance": 0.9,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "forced-sale"
+        },
+        {
+          "text": "Nếu bạn không",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_police",
+          "holdState": "broker-enforces"
+        },
+        {
+          "text": "bán cổ phiếu",
+          "importance": 0.88,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "forced-sale-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -1235,6 +1344,44 @@
       "silentFrameTakeaway": "many simultaneous margin calls create forced selling",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "thị trường lao dốc",
+          "importance": 0.75,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_police",
+          "holdState": "margin-call-urgency"
+        },
+        {
+          "text": "Mọi người",
+          "importance": 0.9,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "cascade"
+        },
+        {
+          "text": "Mọi người",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "market-panic"
+        },
+        {
+          "text": "giá càng giảm",
+          "importance": 0.9,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "cascade-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -1541,7 +1688,7 @@
         "endWord": 838,
         "quoteChecksum": "a7c8daeafcf56fcceb98fc9e28d916bf0e8e4f2b85bc5fca97ae97fee5e16476"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "photo": "backgrounds/korea_apartments.jpg",
         "caption": "Phần lớn nợ hộ gia đình gắn với nhà ở"
@@ -1613,7 +1760,46 @@
       "silentFrameTakeaway": "jeonse asks the tenant for a huge deposit instead of monthly rent",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "Jeonse",
+          "importance": 0.8,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "deposit-model"
+        },
+        {
+          "text": "Thay vì trả tiền",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_homebuyer",
+          "holdState": "tenant-model"
+        },
+        {
+          "text": "Thay vì trả tiền",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "seatB",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "large-deposit"
+        },
+        {
+          "text": "Thay vì trả tiền",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/korea_apartments.jpg",
+          "targetLabel": "Jeonse: tiền cọc thay tiền thuê",
+          "holdState": "housing-cutaway"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1727,7 +1913,7 @@
         "endWord": 946,
         "quoteChecksum": "690f52b7882cb28ee48e3b32d95a7ff63d9ef8b8b583424ae5f976aef9a651f0"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/bank_interior.svg",
         "who": "hostPlain",
@@ -1747,7 +1933,46 @@
       "silentFrameTakeaway": "jeonse's first barrier is finding a very large lump sum",
       "focalOccupancyTarget": 0.45,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "vấn đề",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "upfront-cash"
+        },
+        {
+          "text": "khoản tiền lớn",
+          "importance": 0.82,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "cash-shock"
+        },
+        {
+          "text": "khoản tiền lớn",
+          "importance": 0.82,
+          "kind": "keyword",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/house",
+          "holdState": "house-deposit"
+        },
+        {
+          "text": "khoản tiền lớn",
+          "importance": 0.86,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-document-pexels-8296974.jpg",
+          "targetLabel": "Tiền cọc phải có ngay từ đầu",
+          "holdState": "cash-cutaway"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1800,7 +2025,7 @@
         "endWord": 991,
         "quoteChecksum": "35ff83ced3a9660e67556f3fbcd86719316a7505906b7400f17b40dfc385f8ce"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "stage": "assets/scenes/living_room.svg",
         "who": "landlord",
@@ -1822,7 +2047,55 @@
       "silentFrameTakeaway": "the jeonse system appears stable when interest rates stay low",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "chủ nhà",
+          "importance": 0.7,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "low-rate-loop"
+        },
+        {
+          "text": "đem tiền đặt cọc",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "low-rate-winners"
+        },
+        {
+          "text": "đem tiền đặt cọc",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/profit",
+          "holdState": "investment-gains"
+        },
+        {
+          "text": "đem tiền đặt cọc",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-device-pexels-8296993.jpg",
+          "targetLabel": "Lãi thấp: tiền cọc được đem đầu tư",
+          "holdState": "investment-cutaway"
+        },
+        {
+          "text": "ai cũng vui",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "low-rate-reaction"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -1895,6 +2168,26 @@
       "silentFrameTakeaway": "higher rates can break the jeonse repayment chain",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "hợp đồng kết thúc",
+          "importance": 0.9,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_debt_burden",
+          "holdState": "tenant-pressure"
+        },
+        {
+          "text": "hợp đồng kết thúc",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "deposit-demand"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -1951,6 +2244,7 @@
         "anchor": "finance/expense",
         "who": "characters/cat_sad",
         "caption": "Thanh niên khó tìm việc ổn định",
+        "evidenceLayout": "left",
         "title": "Việc làm thanh niên",
         "body": "Khó tìm việc ổn định; thu nhập dài hạn yếu hơn",
         "source": "KOSTAT · 2025"
@@ -2030,6 +2324,35 @@
       "silentFrameTakeaway": "precarious work makes long-term saving difficult",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Vì thế",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "unstable-work"
+        },
+        {
+          "text": "Vì thế",
+          "importance": 0.78,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_shrug",
+          "holdState": "income-gap"
+        },
+        {
+          "text": "chi phí sinh hoạt",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "cost-pressure-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -2227,7 +2550,46 @@
       "silentFrameTakeaway": "markets begin to look like the only remaining ladder",
       "focalOccupancyTarget": 0.46,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "Ngoài việc",
+          "importance": 0.7,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "few-options"
+        },
+        {
+          "text": "Ngoài việc",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "few-options-reaction"
+        },
+        {
+          "text": "Ngoài việc",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/trending_up",
+          "holdState": "market-shortcut"
+        },
+        {
+          "text": "Ngoài việc",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/mobile_trading_flatlay.jpg",
+          "targetLabel": "Thị trường trông như một đường tắt",
+          "holdState": "market-cutaway"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -2297,6 +2659,26 @@
       "silentFrameTakeaway": "when wages lag assets, investment feels compulsory",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "con đường tắt",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "shortcut-temptation"
+        },
+        {
+          "text": "con đường tắt",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/investment",
+          "holdState": "market-shortcut"
+        }
+      ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -2502,6 +2884,26 @@
       "silentFrameTakeaway": "assets enrich owners while non-owners remain still",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "ngày càng giàu",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "asset-gap"
+        },
+        {
+          "text": "ngày càng giàu",
+          "importance": 0.78,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "left-behind"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -2577,6 +2979,17 @@
       "silentFrameTakeaway": "a shared feeling can reshape a generation's choices",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "quyết định tài chính",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "decision-closeup"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -2722,7 +3135,7 @@
         "endWord": 1474,
         "quoteChecksum": "5bf16ec2e291f1087858503f239908b7291ada14c7ba456bbacbb27bf807ba25"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "stage": "assets/scenes/subway_platform.svg",
         "who": "host",
@@ -2794,7 +3207,7 @@
         "endWord": 1501,
         "quoteChecksum": "04c500c2ccfc93b8a5297d9385cfcef1784da3bbbe927cb2996da50fb285c99c"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/boardroom.svg",
         "who": "hostPoint",
@@ -2813,6 +3226,26 @@
       "silentFrameTakeaway": "personal pressure is only half the explanation",
       "focalOccupancyTarget": 0.42,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Nửa còn lại",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_point_left",
+          "holdState": "market-structure-pivot"
+        },
+        {
+          "text": "cấu trúc của thị trường",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "market-structure-closeup"
+        }
+      ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -2871,6 +3304,7 @@
         "anchor": "characters/cat",
         "who": "characters/cat_surprised",
         "caption": "Chiếm tỉ trọng rất lớn",
+        "evidenceLayout": "right",
         "title": "Thị trường do cá nhân dẫn dắt",
         "body": "Nhà đầu tư cá nhân chiếm tỷ trọng giao dịch rất lớn",
         "source": "KRX · 2025"
@@ -2953,6 +3387,35 @@
       "silentFrameTakeaway": "developed markets are institution-led while Korea is retail-heavy",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "nhà đầu tư cá nhân",
+          "importance": 0.8,
+          "kind": "keyword",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "retail-led"
+        },
+        {
+          "text": "nhà đầu tư cá nhân",
+          "importance": 0.78,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_explain",
+          "holdState": "retail-contrast"
+        },
+        {
+          "text": "lớn giao dịch hàng ngày",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "institutional-market-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -3127,10 +3590,10 @@
         "endWord": 1689,
         "quoteChecksum": "0baf4bfb9c737cdbdcd3596136ca729e6f93c4691f1584ecb2d69ef133516eb8"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "host",
-        "answerer": "investor",
+        "answerer": "gaemi",
         "askerText": "Giá đang tăng, anh làm gì?",
         "answererText": "Tôi đổ tiền vào ngay!",
         "stage": "assets/scenes/shop_counter.svg",
@@ -3148,6 +3611,17 @@
       "silentFrameTakeaway": "retail enthusiasm accelerates inflows",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "sẽ đổ vào thị trường",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "inflow-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -3161,9 +3635,9 @@
         {
           "role": "character",
           "slot": "answerer",
-          "query": "characters/cat_investor_phone",
+          "query": "characters/cat_investor_panic",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat_investor_phone",
+          "preferredAssetId": "characters/cat_investor_panic",
           "allowGenerate": false
         },
         {
@@ -3177,7 +3651,7 @@
       ],
       "resolvedAssets": {
         "asker": "characters/cat_explain",
-        "answerer": "characters/cat_investor_phone",
+        "answerer": "characters/cat_investor_panic",
         "stage": "assets/scenes/shop_counter.svg"
       },
       "assetResolutionNotes": [],
@@ -3185,7 +3659,7 @@
         "grammar:DIALOGUE_QA",
         "register:character_action",
         "asset:characters/cat_explain",
-        "asset:characters/cat_investor_phone",
+        "asset:characters/cat_investor_panic",
         "asset:assets/scenes/shop_counter.svg"
       ]
     },
@@ -3222,6 +3696,17 @@
       "silentFrameTakeaway": "the same crowd can accelerate a selloff",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Thị trường vì thế",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "panic-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -3256,7 +3741,6 @@
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
-        "asset:characters/cat_investor_panic",
         "asset:assets/scenes/street.svg"
       ]
     },
@@ -3272,7 +3756,7 @@
         "endWord": 1745,
         "quoteChecksum": "570e813b6e969f51d01da5ada792e57c485b03d52ec9736b7d5f0979b9b2b07f"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "stage": "assets/scenes/street.svg",
         "who": "hostPoint",
@@ -3513,7 +3997,8 @@
       "heroVisual": false,
       "slots": {
         "title": "Nghiên cứu hành vi đầu tư",
-        "body": "Nhà đầu tư cá nhân dễ mắc sai lầm quen thuộc, dễ bị cuốn theo đám đông"
+        "body": "Nhà đầu tư cá nhân dễ mắc sai lầm quen thuộc, dễ bị cuốn theo đám đông",
+        "evidenceLayout": "lower"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -3694,7 +4179,7 @@
       "heroVisual": false,
       "slots": {
         "asker": "skeptic",
-        "answerer": "investor",
+        "answerer": "plainInvestor",
         "askerText": "Mã lời thì sao?",
         "answererText": "Bán sớm; mã lỗ thì giữ.",
         "stage": "assets/scenes/cafe.svg",
@@ -3712,6 +4197,17 @@
       "silentFrameTakeaway": "investors often sell winners early and hold losers too long",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "cố giữ lại",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "loss-aversion-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -3725,9 +4221,9 @@
         {
           "role": "character",
           "slot": "answerer",
-          "query": "characters/cat_investor_phone",
+          "query": "characters/cat_investor_contract",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat_investor_phone",
+          "preferredAssetId": "characters/cat_investor_contract",
           "allowGenerate": false
         },
         {
@@ -3741,7 +4237,7 @@
       ],
       "resolvedAssets": {
         "asker": "characters/cat_sunglasses",
-        "answerer": "characters/cat_investor_phone",
+        "answerer": "characters/cat_investor_contract",
         "stage": "assets/scenes/cafe.svg"
       },
       "assetResolutionNotes": [],
@@ -3749,7 +4245,7 @@
         "grammar:DIALOGUE_QA",
         "register:character_action",
         "asset:characters/cat_sunglasses",
-        "asset:characters/cat_investor_phone",
+        "asset:characters/cat_investor_contract",
         "asset:assets/scenes/cafe.svg"
       ]
     },
@@ -3890,7 +4386,7 @@
     },
     {
       "id": "scene-055",
-      "narration": "Theo những nghiên cứu tại\r\nKCMI thì những người dùng Marin chỉ\r\nchiếm một phần rất là nhỏ trong tổng số\r\nnhà đầu tư cá nhân nhưng mà số lượng\r\ngiao dịch họ tạo ra thì lại lớn hơn rất\r\nlà nhiều",
+      "narration": "Theo những nghiên cứu tại KCMI thì những người dùng margin chỉ chiếm một phần rất nhỏ trong tổng số nhà đầu tư cá nhân, nhưng số lượng giao dịch họ tạo ra lại lớn hơn rất nhiều.",
       "purpose": "Cite KCMI research on margin users' outsized activity.",
       "emotion": "neutral",
       "viewerFocus": "the KCMI data point",
@@ -3900,10 +4396,11 @@
         "endWord": 2044,
         "quoteChecksum": "ddfedd550b67bc4823b7dcb65c9dd4be2a65940c25dcf90b86f2b465b380007f"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "title": "Nghiên cứu tại KCMI",
-        "body": "Người dùng margin: số lượng ít, nhưng khối lượng giao dịch vượt trội"
+        "body": "Người dùng margin: số lượng ít, nhưng khối lượng giao dịch vượt trội",
+        "evidenceLayout": "left"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -3940,7 +4437,7 @@
       "heroVisual": false,
       "slots": {
         "asker": "broker",
-        "answerer": "investor",
+        "answerer": "gaemi",
         "askerText": "Dùng margin thì giao dịch sao?",
         "answererText": "Nhiều hơn, lớn hơn, rủi ro hơn.",
         "stage": "assets/scenes/cafe.svg",
@@ -3958,6 +4455,17 @@
       "silentFrameTakeaway": "margin users trade more often, riskier and bigger",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "phiếu biến động mạnh hơn",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "riskier-portfolio-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -3971,9 +4479,9 @@
         {
           "role": "character",
           "slot": "answerer",
-          "query": "characters/cat_investor_phone",
+          "query": "characters/cat_investor_panic",
           "requiredTags": [],
-          "preferredAssetId": "characters/cat_investor_phone",
+          "preferredAssetId": "characters/cat_investor_panic",
           "allowGenerate": false
         },
         {
@@ -3987,7 +4495,7 @@
       ],
       "resolvedAssets": {
         "asker": "characters/cat_business",
-        "answerer": "characters/cat_investor_phone",
+        "answerer": "characters/cat_investor_panic",
         "stage": "assets/scenes/cafe.svg"
       },
       "assetResolutionNotes": [],
@@ -3995,7 +4503,7 @@
         "grammar:DIALOGUE_QA",
         "register:character_action",
         "asset:characters/cat_business",
-        "asset:characters/cat_investor_phone",
+        "asset:characters/cat_investor_panic",
         "asset:assets/scenes/cafe.svg"
       ]
     },
@@ -4011,11 +4519,12 @@
         "endWord": 2111,
         "quoteChecksum": "bc29811d869f6300f0c4aa9f1e5b25516762b297072e1e4d4d759be86227100a"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "skeptic",
         "prop": "finance/loan",
         "label": "Đạp ga mạnh nhất — bằng tiền đi vay",
+        "evidenceLayout": "right",
         "title": "NHÓM DÙNG MARGIN",
         "body": "Giao dịch thường xuyên hơn, rủi ro hơn và vị thế lớn hơn",
         "source": "KCMI · 2021"
@@ -4166,7 +4675,7 @@
     },
     {
       "id": "scene-059",
-      "narration": "Và cái\r\nđiều buồn cười là sau khi cộng tất cả\r\nnhững chi phí lại từ phí giao dịch, lãi\r\nvay marin cho đến những khoản lỗ phát\r\nsinh ấy thì hiệu quả của nhóm này thường\r\nkhông tốt hơn những người đầu tư bình\r\nthường và nhiều trường hợp còn thấp hơn",
+      "narration": "Và điều đáng chú ý là sau khi cộng tất cả chi phí, từ phí giao dịch, lãi vay margin cho đến những khoản lỗ phát sinh, hiệu quả của nhóm này thường không tốt hơn người đầu tư bình thường, nhiều trường hợp còn thấp hơn.",
       "purpose": "Net of fees and interest, margin users don't even outperform.",
       "emotion": "sarcastic",
       "viewerFocus": "underperformance after costs",
@@ -4176,7 +4685,7 @@
         "endWord": 2209,
         "quoteChecksum": "444a55415f50395910ecb4638d6e9cdba4ada94932465b948871dbb6ba534e78"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "stat": "HIỆU QUẢ THẤP HƠN",
         "anchor": "finance/loss",
@@ -4252,7 +4761,7 @@
     },
     {
       "id": "scene-060",
-      "narration": "Tức là họ chấp nhận nhiều rủi ro hơn,\r\ncăng thẳng hơn, giao dịch nhiều hơn\r\nnhưng mà kết quả cuối cùng thì lại không\r\nhẳn là tốt hơn. Và đó cũng là một trong\r\nnhững nghịch lý lớn nhất của con sốt\r\nMarin tại Hàn Quốc",
+      "narration": "Tức là họ chấp nhận nhiều rủi ro hơn, căng thẳng hơn, giao dịch nhiều hơn, nhưng kết quả cuối cùng lại không hẳn tốt hơn. Đó là một trong những nghịch lý lớn nhất của cơn sốt margin tại Hàn Quốc.",
       "purpose": "State the paradox plainly.",
       "emotion": "sarcastic",
       "viewerFocus": "more risk, more stress, no better results",
@@ -4484,6 +4993,18 @@
       "silentFrameTakeaway": "markets feel like one of few remaining routes upward",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "một người bình thường",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-street-pexels-37319814.jpg",
+          "targetLabel": "Cơ hội đổi đời ngày càng xa",
+          "holdState": "ordinary-investor-seoul-housing-cutaway"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -4668,7 +5189,7 @@
     },
     {
       "id": "scene-066",
-      "narration": "Và cũng\r\nnhư đã nói rất là nhiều rồi thì cơ hội\r\nlớn thường đi kèm rủi ro lớn và rủi ro\r\nthì thường rất là lớn ấy. Rồi là khi\r\nMarin xuất hiện ấy thì nó còn lớn hơn\r\nnữa, lãi to hơn, mất cũng nhanh hơn",
+      "narration": "Cơ hội lớn thường đi kèm rủi ro lớn. Khi margin xuất hiện, cả hai phía đều bị khuếch đại: lãi có thể lớn hơn, nhưng tiền cũng mất nhanh hơn.",
       "purpose": "Big opportunity, bigger risk — margin makes both extreme.",
       "emotion": "concern",
       "viewerFocus": "opportunity vs. amplified risk",
@@ -4696,6 +5217,35 @@
       "silentFrameTakeaway": "margin enlarges opportunity and danger together",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Khi margin xuất hiện",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "risk-amplifier"
+        },
+        {
+          "text": "Khi margin xuất hiện",
+          "importance": 0.78,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "risk-reaction"
+        },
+        {
+          "text": "margin xuất hiện",
+          "importance": 0.88,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "margin-arrives-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -4739,7 +5289,7 @@
         "endWord": 2475,
         "quoteChecksum": "a34f793a10a3dc4126f2d103a45ebf8087a365b9ff64951eadc1e5e13e68e59a"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "content": "#2C3E50",
         "caption": "\"Korea Discount\"",
@@ -4820,6 +5370,36 @@
       "silentFrameTakeaway": "similar Korean companies often trade at lower valuations",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "định giá thấp",
+          "importance": 0.7,
+          "kind": "keyword",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "discount"
+        },
+        {
+          "text": "định giá thấp",
+          "importance": 0.76,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_shrug",
+          "holdState": "discount-question"
+        },
+        {
+          "text": "định giá thấp hơn",
+          "importance": 0.86,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-market-pexels-16594724.jpg",
+          "targetLabel": "Cổ phiếu Hàn Quốc thường bị định giá thấp",
+          "holdState": "korea-discount-market-cutaway"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -4872,7 +5452,7 @@
         "endWord": 2538,
         "quoteChecksum": "f040d824b0e32e5aa9aef23d4b333ab08bc3b188d6c6dda5c373525f53b4a7e8"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "items": "Cấu trúc tập đoàn chaebol|Tranh cãi quyền cổ đông nhỏ",
         "icons": "people/company|finance/stock"
@@ -4951,7 +5531,37 @@
       "silentFrameTakeaway": "belief in undervaluation can encourage short-term speculation",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "không tin",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "short-termism"
+        },
+        {
+          "text": "sóng ngắn hơn",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_point_left",
+          "holdState": "short-term-chasing"
+        },
+        {
+          "text": "không tin",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/market_monitor.jpg",
+          "targetLabel": "Không tin dài hạn, tiền chạy theo sóng ngắn",
+          "holdState": "short-term-screen"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5004,7 +5614,7 @@
         "endWord": 2606,
         "quoteChecksum": "0a68b545336bfd613f8d96b61df4914ccec2586f79774b43cbf360dd335e99dd"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "stage": "assets/scenes/boardroom.svg",
         "who": "regulator",
@@ -5078,7 +5688,8 @@
       "heroVisual": false,
       "slots": {
         "title": "Về lý thuyết",
-        "body": "Bán khống giúp phát hiện giá phi lý, hạn chế cổ phiếu bị thổi phồng"
+        "body": "Bán khống giúp phát hiện giá phi lý, hạn chế cổ phiếu bị thổi phồng",
+        "evidenceLayout": "lower"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -5133,6 +5744,17 @@
       "silentFrameTakeaway": "many retail investors believe institutions receive unfair advantages",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "quỹ nước ngoài",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "short-selling-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -5258,7 +5880,7 @@
         "endWord": 2741,
         "quoteChecksum": "d649e3e3b359b06c303a514d3464ffbab1ed2b73cc4f2568e8d58a6a63d431dd"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "skeptic",
         "prop": "finance/loss",
@@ -5341,7 +5963,7 @@
         "endWord": 2778,
         "quoteChecksum": "0d336a696e9bca38b45595afe421a1ef0ca87087b3d162ba4e93b1168df1db35"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "photo": "backgrounds/mobile_trading_flatlay.jpg",
         "caption": "Yếu tố quan trọng nhất: quá dễ"
@@ -5411,7 +6033,37 @@
       "silentFrameTakeaway": "trading once required a broker, time and high fees",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "gọi điện",
+          "importance": 0.7,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "old-brokerage"
+        },
+        {
+          "text": "khoản phí",
+          "importance": 0.78,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_talk",
+          "holdState": "broker-fees"
+        },
+        {
+          "text": "gọi điện",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-device-pexels-34862486.jpg",
+          "targetLabel": "Giao dịch từng phải qua môi giới",
+          "holdState": "broker-device"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -5485,6 +6137,18 @@
       "silentFrameTakeaway": "a phone removes the old friction from every trade",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "thứ nắm sẵn trước mặt",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-device-pexels-25025802.jpg",
+          "targetLabel": "Giao dịch nằm ngay trong điện thoại",
+          "holdState": "mobile-trading-cutaway"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -5536,7 +6200,7 @@
         "endWord": 2859,
         "quoteChecksum": "05d0ac9a69f73bb695a72af13c9a982aa99293783ca9686df47aaf3abbc0585a"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "who": "skeptic",
         "prop": "props/computer_desk",
@@ -5648,6 +6312,44 @@
       "silentFrameTakeaway": "constant social chatter keeps pulling people into trades",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Một mã",
+          "importance": 0.8,
+          "kind": "keyword",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "market-hype"
+        },
+        {
+          "text": "Một mã",
+          "importance": 0.78,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_talk",
+          "holdState": "hype-broadcast"
+        },
+        {
+          "text": "sắp có trend",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "hype-closeup"
+        },
+        {
+          "text": "sóng mới rồi",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_talk",
+          "holdState": "hype-host-reaction"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -5771,6 +6473,17 @@
       "silentFrameTakeaway": "collective attention creates a self-reinforcing trading loop",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "phản ứng thế nào cũng hóng theo",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_talk",
+          "holdState": "crowd-loop-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -5979,6 +6692,45 @@
       "silentFrameTakeaway": "pressure to get rich meets a belief that the system is unfair",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Và ở giữa",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_shrug",
+          "holdState": "unfair-game"
+        },
+        {
+          "text": "Và ở giữa",
+          "importance": 0.78,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "pressure-reaction"
+        },
+        {
+          "text": "luật chơi",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_shrug",
+          "holdState": "unfair-game-closeup"
+        },
+        {
+          "text": "cụ tài chính có thể",
+          "importance": 0.88,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-document-pexels-33175649.jpg",
+          "targetLabel": "Công cụ phức tạp hứa hẹn cân bằng cuộc chơi",
+          "holdState": "financial-tools-document-cutaway"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -6032,10 +6784,11 @@
         "endWord": 3119,
         "quoteChecksum": "ca598839bdce19216ccf13779a795ef903ee4b8b1957bd2ebbf6954a513afbcd"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "title": "Vụ bê bối CFD, năm 2023",
-        "body": "Một ví dụ điển hình của sản phẩm đòn bẩy rủi ro cao đáp ứng nhu cầu này"
+        "body": "Một ví dụ điển hình của sản phẩm đòn bẩy rủi ro cao đáp ứng nhu cầu này",
+        "evidenceLayout": "left"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -6069,7 +6822,7 @@
         "endWord": 3168,
         "quoteChecksum": "e50309dea7fcc06b9db99939e7825d8ef9b2f1ea972781ab73db8e3aa74e30d9"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "content": "#3B5998",
         "caption": "CFD: cược giá, không sở hữu",
@@ -6190,10 +6943,11 @@
         "endWord": 3248,
         "quoteChecksum": "d94ce381de85756c4c2f6f4cd95bcfa8b95d1c87a0cb8de454ca622520b6c303"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "title": "Cơ quan quản lý tài chính Hàn Quốc",
-        "body": "Nhiều lệnh CFD của cá nhân bị ghi nhận nhầm dưới danh nghĩa tổ chức nước ngoài"
+        "body": "Nhiều lệnh CFD của cá nhân bị ghi nhận nhầm dưới danh nghĩa tổ chức nước ngoài",
+        "evidenceLayout": "right"
       },
       "visualRegister": "evidence",
       "semanticVisual": {
@@ -6227,7 +6981,7 @@
         "endWord": 3288,
         "quoteChecksum": "df6ba1db05d9da25c6feb873d5183705cdfe7d0978ea4f730d33c0b0573ec51c"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/boardroom.svg",
         "who": "host",
@@ -6247,7 +7001,37 @@
       "silentFrameTakeaway": "opaque classification makes market risk hard to locate",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "chả ai biết",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "opaque-risk"
+        },
+        {
+          "text": "rủi ro thực sự",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "unknown-risk"
+        },
+        {
+          "text": "chả ai biết",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/trading_workstation.jpg",
+          "targetLabel": "Dữ liệu không nói ai đang gánh rủi ro",
+          "holdState": "opaque-screen"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6379,7 +7163,7 @@
         "endWord": 3371,
         "quoteChecksum": "ac2345a3ca06ef7966d308f05f6b3eb80ee643c54aefa5385c66a8d92a13942a"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "setup": "Đóng một cánh cửa",
         "payoff": "Người ta tìm cánh cửa khác",
@@ -6402,7 +7186,37 @@
       "silentFrameTakeaway": "rules that treat symptoms can redirect rather than remove demand",
       "focalOccupancyTarget": 0.54,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "cánh cửa",
+          "importance": 0.9,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "money-reroutes"
+        },
+        {
+          "text": "cánh cửa khác",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "reroute-reaction"
+        },
+        {
+          "text": "cánh cửa khác",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-map-02.jpg",
+          "targetLabel": "Chặn một cửa, dòng tiền tìm cửa khác",
+          "holdState": "reroute-map"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -6473,7 +7287,7 @@
         "endWord": 3411,
         "quoteChecksum": "16255310a9b45ce3278fe195deff28060e1a6bd37d1751a1720f702726ff0f91"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "who": "skeptic",
         "prop": "finance/exchange",
@@ -6490,6 +7304,35 @@
       "silentFrameTakeaway": "tightening one product can push money into less regulated channels",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "tiền chảy sang",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_point_left",
+          "holdState": "capital-reroutes"
+        },
+        {
+          "text": "tiền chảy sang",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/portfolio",
+          "holdState": "new-products"
+        },
+        {
+          "text": "công cụ phức tạp",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/portfolio",
+          "holdState": "complex-product-closeup"
+        }
+      ],
       "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -6538,6 +7381,7 @@
         "anchor": "finance/exchange",
         "who": "characters/cat_surprised",
         "caption": "Cổ phiếu nước ngoài, cuối 2024",
+        "evidenceLayout": "lower",
         "title": "Dòng tiền ra nước ngoài",
         "body": "Quy mô nắm giữ cổ phiếu nước ngoài tăng rất lớn cuối 2024",
         "source": "BOK · 2025"
@@ -6646,7 +7490,7 @@
         "endWord": 3513,
         "quoteChecksum": "dd07e913c957829b41ecc00a6e5e88be9f638f65db3820451b5b6894130da0a9"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "setup": "Ngăn một dòng nước",
         "payoff": "Nước tự tìm đường khác để chảy",
@@ -6727,7 +7571,37 @@
       "silentFrameTakeaway": "harder barriers create harder-to-see escape routes",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "Càng chặn",
+          "importance": 0.9,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "leakage"
+        },
+        {
+          "text": "hẹp hơn",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_point_left",
+          "holdState": "flow-reroutes"
+        },
+        {
+          "text": "Càng chặn",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-map-04.jpg",
+          "targetLabel": "Dòng tiền luồn qua những khe hẹp hơn",
+          "holdState": "leakage-map"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7007,6 +7881,17 @@
       "silentFrameTakeaway": "a precarious young worker has little room to build assets slowly",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "hợp đồng ký lại",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "unstable-work-closeup"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -7077,6 +7962,17 @@
       "silentFrameTakeaway": "rising home prices and visible winners make waiting painful",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "mở điện thoại",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/trending_up",
+          "holdState": "phone-market-closeup"
+        }
+      ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -7159,7 +8055,7 @@
     },
     {
       "id": "scene-105",
-      "narration": "Cái đáng sợ nhất không phải\r\nlà Marin mà là lý do khiến người ta tìm\r\nđến Marin",
+      "narration": "Cái đáng sợ nhất không phải là margin, mà là lý do khiến người ta tìm đến margin.",
       "purpose": "The video's thesis sentence.",
       "emotion": "concern",
       "viewerFocus": "the real thing to fear",
@@ -7169,7 +8065,7 @@
         "endWord": 3802,
         "quoteChecksum": "c333cea0b04f6ebbc602d4d4db6d9d055ea13e539162cfe8c24e5b10d20f2b64"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "q": "Cái đáng sợ nhất là gì?",
         "a": "Không phải margin — mà là LÝ DO khiến người ta tìm đến nó",
@@ -7219,7 +8115,7 @@
         "endWord": 3852,
         "quoteChecksum": "739984ed04b16dcf1658caeb8dc5ebbd634f5ab5e3f21ae90fe44f71af1b0fa3"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "who": "youngperson",
         "prop": "finance/house",
@@ -7236,6 +8132,35 @@
       "silentFrameTakeaway": "a generation loses faith in work, saving and fair markets",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "bị bỏ lại",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_sad",
+          "holdState": "left-behind"
+        },
+        {
+          "text": "bị bỏ lại",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/loss",
+          "holdState": "housing-gap"
+        },
+        {
+          "text": "mua nổi một cái nhà",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/expense",
+          "holdState": "housing-gap-closeup"
+        }
+      ],
       "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -7329,7 +8254,7 @@
         "endWord": 3926,
         "quoteChecksum": "f06fa3b2bff8377e167be86edcc3bb4b1535c2e0fca3cf816f999dc5376b057f"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/bar.svg",
         "who": "host",
@@ -7420,6 +8345,35 @@
       "silentFrameTakeaway": "a lucky recovery can create false confidence",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "lợi nhuận",
+          "importance": 0.8,
+          "kind": "keyword",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "overconfidence"
+        },
+        {
+          "text": "lợi nhuận",
+          "importance": 0.78,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "profit-reaction"
+        },
+        {
+          "text": "mình đúng rồi",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "overconfidence-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -7463,7 +8417,7 @@
         "endWord": 4010,
         "quoteChecksum": "1d4e36f8a34b4ccae8a18130593d89394e0badd516e8bed7e3d8c336bacc7714"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "stage": "assets/scenes/bar.svg",
         "who": "host",
@@ -7483,7 +8437,37 @@
       "silentFrameTakeaway": "surviving one drop does not prove skill",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "Lần sau",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "luck-versus-skill"
+        },
+        {
+          "text": "điểm chí mạng",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "doubts-luck"
+        },
+        {
+          "text": "điểm chí mạng",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-document-pexels-8297220.jpg",
+          "targetLabel": "Lợi nhuận chưa chắc là năng lực",
+          "holdState": "luck-document"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -7536,7 +8520,7 @@
         "endWord": 4041,
         "quoteChecksum": "94910926a2aaaefb570d116e5f34e7a32d36e140d798025c27c700a22800da6b"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "asker": "host",
         "answerer": "plainInvestor",
@@ -7554,6 +8538,17 @@
       "silentFrameTakeaway": "one successful trade can be timing rather than genius",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "đứng đúng chỗ",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_think",
+          "holdState": "luck-context-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -7727,6 +8722,18 @@
       "silentFrameTakeaway": "rising debt and assets alongside slower income feed the cycle",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "tài sản tăng nhanh hơn thu nhập",
+          "importance": 0.88,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-housing-pexels-5505895.jpg",
+          "targetLabel": "Giá tài sản chạy nhanh hơn thu nhập",
+          "holdState": "asset-income-gap-cutaway"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -7899,7 +8906,7 @@
         "endWord": 4249,
         "quoteChecksum": "4194d68dc13cba3a2ab2781d22137d7d93e079eb1e792800404d904cf641110a"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "q": "Bao giờ họ mới dừng lại?",
         "a": "Có lẽ họ biết rồi — nhưng vẫn chưa dừng",
@@ -7949,7 +8956,7 @@
         "endWord": 4293,
         "quoteChecksum": "7a8b8289344e3c93325a807607908447efff508b5405e83f9ea5c7d92a2d1018"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "asker": "broker",
         "answerer": "investor",
@@ -7970,6 +8977,44 @@
       "silentFrameTakeaway": "foreign outflows coexist with retail buying the dip",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "bên còn lại",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "capital-outflow"
+        },
+        {
+          "text": "bên còn lại",
+          "importance": 0.78,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "two-sided-flow"
+        },
+        {
+          "text": "biến động rất mạnh",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "volatile-market-closeup"
+        },
+        {
+          "text": "kiên trì mua vào",
+          "importance": 0.88,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "asker",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "two-sided-market-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -8072,7 +9117,7 @@
         "endWord": 4358,
         "quoteChecksum": "38cdab22317330320453e09cf9dadf619c17d6372103bd8ff3b4ab585540330d"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stage": "assets/scenes/living_room.svg",
         "who": "skeptic",
@@ -8092,7 +9137,37 @@
       "silentFrameTakeaway": "some investors are still financing the next recovery bet",
       "focalOccupancyTarget": 0.5,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "cú hồi phục",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "wishful-recovery"
+        },
+        {
+          "text": "người đúng thì sao",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "hopeful-bet"
+        },
+        {
+          "text": "cú hồi phục",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-device-pexels-35028998.jpg",
+          "targetLabel": "Vẫn vay thêm để chờ cú hồi phục",
+          "holdState": "recovery-device"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
@@ -8145,7 +9220,7 @@
         "endWord": 4409,
         "quoteChecksum": "ffd30f99ae587dd6871372126d3c71c4b030cc22b5e6fd8ab0e2f474b8db8384"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "who": "host",
         "prop": "props/brain",
@@ -8162,6 +9237,35 @@
       "silentFrameTakeaway": "Korea still has credible long-term strengths",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "động lực tăng trưởng",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_sunglasses",
+          "holdState": "long-term-upside"
+        },
+        {
+          "text": "động lực tăng trưởng",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/investment",
+          "holdState": "ai-semiconductor-upside"
+        },
+        {
+          "text": "ngành bán dẫn",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/investment",
+          "holdState": "semiconductor-upside-closeup"
+        }
+      ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -8223,6 +9327,17 @@
       "silentFrameTakeaway": "upside is possible without making current leverage safe",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "Nhưng mà có cơ hội",
+          "importance": 0.84,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "risk-reminder-closeup"
+        }
+      ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -8264,10 +9379,10 @@
         "endWord": 4479,
         "quoteChecksum": "06761489864b12664464e64b4971f5289dbee2d5e0013deb45c09424662f3bdb"
       },
-      "heroVisual": true,
+      "heroVisual": false,
       "slots": {
         "stat": "MARGIN VẪN Ở MỨC CAO",
-        "anchor": "finance/debt",
+        "anchor": "finance/loan",
         "who": "characters/cat_sad",
         "caption": "Nợ cao, kinh tế phục hồi chậm"
       },
@@ -8295,22 +9410,22 @@
         {
           "role": "prop",
           "slot": "anchor",
-          "query": "finance/debt",
+          "query": "finance/loan",
           "requiredTags": [],
-          "preferredAssetId": "finance/debt",
+          "preferredAssetId": "finance/loan",
           "allowGenerate": false
         }
       ],
       "resolvedAssets": {
         "who": "characters/cat_sad",
-        "anchor": "finance/debt"
+        "anchor": "finance/loan"
       },
       "assetResolutionNotes": [],
       "noveltyFromPrevious": [
         "grammar:STAT_REVEAL",
         "register:evidence",
         "asset:characters/cat_sad",
-        "asset:finance/debt"
+        "asset:finance/loan"
       ]
     },
     {
@@ -8375,7 +9490,7 @@
         "endWord": 4545,
         "quoteChecksum": "8ea58898532e47546e6c7da08b9d47a978e11252d1d3d648a14195b3958da2f2"
       },
-      "heroVisual": false,
+      "heroVisual": true,
       "slots": {
         "who": "regulator",
         "prop": "finance/loss",
@@ -8392,6 +9507,35 @@
       "silentFrameTakeaway": "several different shocks could trigger the same fragile system",
       "focalOccupancyTarget": 0.52,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "tâm lý thị trường đổi chiều",
+          "importance": 0.8,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_surprised",
+          "holdState": "risk-turns"
+        },
+        {
+          "text": "tâm lý thị trường đổi chiều",
+          "importance": 0.82,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/trending_down",
+          "holdState": "market-reversal"
+        },
+        {
+          "text": "ngành chip",
+          "importance": 0.84,
+          "kind": "keyword",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/trending_down",
+          "holdState": "chip-shock-closeup"
+        }
+      ],
       "visualFingerprint": "CHAR_PROP|visual_gag|visual_gag|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -8456,6 +9600,17 @@
       "silentFrameTakeaway": "the real test is whether young people can build assets without escalating wagers",
       "focalOccupancyTarget": 0.48,
       "characterRequired": true,
+      "beats": [
+        {
+          "text": "xây dựng tài sản",
+          "importance": 0.86,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/house",
+          "holdState": "asset-building-closeup"
+        }
+      ],
       "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -8528,7 +9683,27 @@
       "silentFrameTakeaway": "the explanation ends with a clear, warm sign-off",
       "focalOccupancyTarget": 0.42,
       "characterRequired": true,
-      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|none|none|none",
+      "captionTreatment": "chapter-pill",
+      "beats": [
+        {
+          "text": "Đừng quên",
+          "importance": 0.7,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "caption",
+          "holdState": "cta"
+        },
+        {
+          "text": "đăng ký",
+          "importance": 0.82,
+          "kind": "keyword",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "friendly-signoff"
+        }
+      ],
+      "visualFingerprint": "TABLEAU|full_tableau|full_scene|stage|prop,prop,actor|medium|chapter-pill|none|none",
       "assetRequests": [
         {
           "role": "character",
