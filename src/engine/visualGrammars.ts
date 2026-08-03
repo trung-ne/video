@@ -255,11 +255,31 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     entities.push({ assetId: `${b.id}-b`, src: c.src, badge: c.badge, anchor: anchorB, enterAnimation: "fadeIn", enterDelay: 12 });
   }
   if (b.slots?.prop) {
+    const actor = entities[0];
+    const actorAnchor = actor?.anchor ? anchors[actor.anchor] : undefined;
+    const placement = b.slots.propPlacement ?? "right";
+    const requestedScale = Number(b.slots.propScale ?? "1.1");
+    const propScale = Number.isFinite(requestedScale)
+      ? Math.max(0.75, Math.min(1.35, requestedScale))
+      : 1.1;
+    // TABLEAU used to place every prop at the same middle coordinate. Choose a
+    // meaningful side of the staged actor instead; `held` is the sole explicit
+    // exception that permits a prop to overlap its actor.
+    const actorX = actorAnchor?.x ?? 0.4;
+    const position = placement === "held"
+      ? { x: Math.max(0.12, Math.min(0.88, actorX + 0.10)), y: (actorAnchor?.y ?? 0.54) + 0.08 }
+      : placement === "foreground"
+        ? { x: actorX < 0.5 ? 0.72 : 0.28, y: 0.68 }
+        : placement === "left"
+          ? { x: 0.24, y: 0.59 }
+          : { x: 0.76, y: 0.59 };
     entities.push({
       assetId: `${b.id}-prop`,
       src: b.slots.prop,
-      position: { x: 0.55, y: 0.58 },
-      scale: 1.35,
+      position,
+      scale: propScale,
+      motionPolicy: "fixed",
+      ...(placement === "held" && actor ? { allowOverlapWith: [actor.assetId] } : {}),
       enterAnimation: "popIn",
       enterDelay: 24,
       emphasize: { animation: "pulse", delay: 24, duration: 20 },

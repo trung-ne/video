@@ -187,6 +187,8 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
           badge: e.badge,
           circle: e.circle,
           facing: e.facing,
+          motionPolicy: e.motionPolicy,
+          allowOverlapWith: e.allowOverlapWith,
           visible: true,
         });
         state.assetEnterFrames.set(e.assetId, e.frame);

@@ -325,6 +325,11 @@ function compileEntity(
     badge: entity.badge,
     circle: entity.circle,
     facing: entity.facing,
+    // Furniture anchors and tableau props have an authored spatial relationship
+    // to the stage. Liveliness may change their pose/emphasis but never move
+    // them through another actor.
+    motionPolicy: entity.motionPolicy ?? (stageAnchor || scene.layout === "TABLEAU" ? "fixed" : "collision-safe"),
+    allowOverlapWith: entity.allowOverlapWith,
     zIndex: entity.zIndex ?? (entity.role === "host" ? 1 : 2),
   } as EnterEvent);
 

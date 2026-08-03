@@ -36,7 +36,8 @@ export function loadTimeline(raw: any, availablePoses?: Set<string>): LoadedTime
       : (raw as Timeline);
 
   const sceneSpans = hasScenes
-    ? raw.scenes.map((scene: any) => ({
+      ? raw.scenes.map((scene: any) => ({
+        id: scene.id,
         start: scene.startFrame,
         end: scene.startFrame + scene.durationFrames,
         narrationBeatFrames: (scene.subtitleCues ?? []).map(

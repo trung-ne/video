@@ -47,7 +47,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "TABLEAU", purpose: "Stage an action in a narration-relevant physical setting",
-    requiredSlots: ["stage", "who", "anchorA"], optionalSlots: ["seatB", "anchorB", "lineA", "lineB", "prop"], focalSource: "asset",
+    requiredSlots: ["stage", "who", "anchorA"], optionalSlots: ["seatB", "anchorB", "lineA", "lineB", "prop", "propPlacement", "propScale"], focalSource: "asset",
     supportedRegisters: ["full_tableau", "character_action", "visual_gag"],
     semanticRequirements: ["Stage tags must match semanticVisual.setting."],
   },
@@ -142,7 +142,7 @@ export const GRAMMAR_REGISTRY: GrammarDefinition[] = [
   },
   {
     id: "FULL_SCENE_ACTION", purpose: "Show a subject acting on an object in a full setting",
-    requiredSlots: ["stage", "who", "anchorA", "prop"], optionalSlots: ["caption"], focalSource: "asset",
+    requiredSlots: ["stage", "who", "anchorA", "prop"], optionalSlots: ["caption", "propPlacement", "propScale"], focalSource: "asset",
     supportedRegisters: ["full_tableau", "character_action", "visual_gag"],
     semanticRequirements: ["Subject, verb, object, and setting must all be visible."],
   },

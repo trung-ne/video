@@ -94,6 +94,10 @@ export interface SceneEntity {
   zIndex?: number;                     // default 1
   facing?: "left" | "right" | "front";
   label?: string;                      // label shown below asset
+  /** Fixed preserves an authored stage composition; collision-safe may receive micro-motion. */
+  motionPolicy?: "fixed" | "collision-safe";
+  /** Only use for a deliberate physical interaction such as a held or worn prop. */
+  allowOverlapWith?: string[];
 
   badge?: string;                      // number/text badge on character (e.g. "4")
   circle?: string;                     // colored disc behind icon (icon-in-circle grouping, e.g. "#8E44AD")

@@ -84,6 +84,7 @@ interface Span {
   src: string;
   position: { x: number; y: number };
   scale: number;
+  motionPolicy: "fixed" | "collision-safe";
   start: number;
   end: number;
 }
@@ -118,6 +119,7 @@ function computeAssetSpans(events: TimelineEvent[], total: number): Span[] {
         src: e.src,
         position: { ...e.position },
         scale: e.scale,
+        motionPolicy: e.motionPolicy ?? "collision-safe",
         start: e.frame,
         end: total,
       });
@@ -176,6 +178,12 @@ export function injectLiveliness(
   // tiny connecting arrow every few seconds reads as jitter, not liveliness.
   const spans = computeAssetSpans(timeline.events, total).filter(
     (s) => !s.src.startsWith("ui/arrow")
+  );
+  // A spatial move is safe only when this asset is alone in the active shot.
+  // Multi-asset scenes still receive pose swaps/emphasis, but their authored
+  // relationships are never independently pushed through a peer.
+  const hasPeerAt = (span: Span, frame: number) => spans.some((other) =>
+    other.assetId !== span.assetId && other.start <= frame && frame < other.end
   );
 
   const added: TimelineEvent[] = [];
@@ -247,20 +255,24 @@ export function injectLiveliness(
         ? (isCenterFocal ? 0.22 : 0.10)
         : (isCenterFocal ? 0.16 : 0.075);
 
-      // Every focal asset changes its spatial relation to the rest of the
-      // composition. This is component motion, not a global camera shortcut.
-      added.push({
-        frame: f,
-        type: "move",
-        assetId: span.assetId,
-        position: {
-          x: Math.max(0.08, Math.min(0.92, span.position.x + direction * displacement)),
-          y: Math.max(0.12, Math.min(0.86, span.position.y + ((beatIndex % 3) - 1) * 0.018)),
-        },
-        scale: span.scale * (direction > 0 ? 1.22 : 0.80),
-        duration: 18,
-      } as MoveEvent);
-      movesAdded++;
+      if (span.motionPolicy !== "fixed" && !hasPeerAt(span, f)) {
+        // Single-subject scenes can change their relationship to the canvas;
+        // keep it deliberately small and inside the safe area. Multi-subject
+        // scenes use the non-geometric beats below.
+        const safeDisplacement = Math.min(displacement, 0.06);
+        added.push({
+          frame: f,
+          type: "move",
+          assetId: span.assetId,
+          position: {
+            x: Math.max(0.12, Math.min(0.88, span.position.x + direction * safeDisplacement)),
+            y: Math.max(0.16, Math.min(0.82, span.position.y + ((beatIndex % 3) - 1) * 0.012)),
+          },
+          scale: span.scale * (direction > 0 ? 1.06 : 0.94),
+          duration: 18,
+        } as MoveEvent);
+        movesAdded++;
+      }
 
       if (doSwap) {
         // choose next talking pose different from current, that exists
