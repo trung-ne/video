@@ -1,6 +1,6 @@
 import unittest
 
-from scripts.align_words import attach_transcript_indices
+from scripts.align_words import attach_transcript_indices, attach_canonical_scene_indices
 
 
 class AlignmentIndexTests(unittest.TestCase):
@@ -21,6 +21,18 @@ class AlignmentIndexTests(unittest.TestCase):
             "one two one three",
         )
         self.assertEqual([item["wordIndex"] for item in result], [0, 1, 2, 3])
+
+    def test_canonical_scene_indices_follow_tts_not_source_transcript(self):
+        aligned = [{"word": word, "confidence": 0.9} for word in ["shock", "number", "explained"]]
+        result, provenance = attach_canonical_scene_indices(aligned, [
+            {"id": "scene-001", "text": "shock number"},
+            {"id": "scene-002", "text": "explained"},
+        ])
+        self.assertEqual([(item.get("scene"), item.get("sceneWordIndex")) for item in result], [
+            ("scene-001", 0), ("scene-001", 1), ("scene-002", 0),
+        ])
+        self.assertEqual(provenance["source"], "canonical-tts-scenes")
+        self.assertEqual(provenance["coverage"], 1.0)
 
 
 if __name__ == "__main__":

@@ -128,17 +128,20 @@ function buildAlignedSceneTimings(
 function resolveBeatOffset(
   beatText: string,
   narration: string,
+  sceneId: string,
   sceneStartFrame: number,
   sceneFrames: number,
   fps: number,
   words: AlignedWord[] | undefined
 ): { offset: number; source: SceneBeatTimingSource } {
-  const firstWord = beatText.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+  const firstWord = canonicalNarrationTokens(beatText)[0]?.toLowerCase();
   if (words && firstWord) {
-    // Search words that fall within this scene's frame window.
+    // Search only canonical words spoken by this scene when that identity is
+    // available. Source transcript ranges may differ from narrationOverride.
     const startSec = sceneStartFrame / fps;
     const endSec = (sceneStartFrame + sceneFrames) / fps;
     for (const w of words) {
+      if (w.scene && w.scene !== sceneId) continue;
       if (w.startSec < startSec - 0.05 || w.startSec > endSec) continue;
       if (w.word.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "") === firstWord) {
         return {
@@ -155,6 +158,13 @@ function resolveBeatOffset(
     offset: Math.round(frac * sceneFrames),
     source: idx >= 0 ? "authored-beat" : "source-range-proportional",
   };
+}
+
+// Keep this intentionally in sync with align_words.py::transcript_words().
+// Whitespace splitting counts punctuation-only fragments (for example an em
+// dash) that Whisper never emits, which would corrupt sceneWordIndex coverage.
+function canonicalNarrationTokens(value: string): string[] {
+  return value.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) ?? [];
 }
 
 // Per-emotion pose cycle for sentence-level re-posing. Only registers with ≥2
@@ -213,26 +223,71 @@ function buildSubtitleCues(
   words: AlignedWord[] | undefined,
   fps: number,
 ): Array<{ text: string; startFrame: number; endFrame: number }> | undefined {
-  if (!brief.sourceRange || !words?.some((word) => Number.isInteger(word.wordIndex))) return undefined;
-  const aligned = words.filter((word) =>
-    Number.isInteger(word.wordIndex) &&
-    word.wordIndex! >= brief.sourceRange!.startWord &&
-    word.wordIndex! <= brief.sourceRange!.endWord
-  );
-  if (aligned.length === 0) return undefined;
-  const narrationWords = brief.narration.replace(/\s+/g, " ").trim().split(/\s+/);
-  const cues: Array<{ text: string; startFrame: number; endFrame: number }> = [];
-  for (let offset = 0; offset < narrationWords.length; offset += 9) {
-    const chunk = narrationWords.slice(offset, offset + 9);
-    const first = aligned[Math.min(offset, aligned.length - 1)];
-    const last = aligned[Math.min(offset + chunk.length - 1, aligned.length - 1)];
-    cues.push({
+  const narrationWords = canonicalNarrationTokens(brief.narration);
+  if (!narrationWords.length || !words) return undefined;
+  const aligned = words
+    .filter((word) => word.scene === brief.id && Number.isInteger(word.sceneWordIndex))
+    .sort((a, b) => (a.sceneWordIndex! - b.sceneWordIndex!));
+  const byIndex = new Map(aligned.map((word) => [word.sceneWordIndex!, word]));
+
+  // Do not quietly map extra narrationOverride tokens onto the final source
+  // word. Returning undefined makes the fallback subtitle compiler safe, while
+  // the production alignment gate explains the canonical-data defect.
+  if (narrationWords.some((_, index) => !byIndex.has(index))) return undefined;
+
+  const raw: Array<{ text: string; startFrame: number; endFrame: number }> = [];
+  for (let offset = 0; offset < narrationWords.length;) {
+    const chunk: string[] = [];
+    const start = offset;
+    while (offset < narrationWords.length && chunk.length < 9) {
+      const candidate = [...chunk, narrationWords[offset]].join(" ");
+      if (chunk.length && candidate.length > 84) break;
+      chunk.push(narrationWords[offset++]);
+    }
+    const first = byIndex.get(start)!;
+    const last = byIndex.get(offset - 1)!;
+    raw.push({
       text: chunk.join(" "),
       startFrame: Math.max(0, Math.round(first.startSec * fps) - timing.startFrame),
       endFrame: Math.min(timing.frames, Math.max(1, Math.round(last.endSec * fps) - timing.startFrame)),
     });
   }
-  return cues;
+
+  // A caption remains visible until the following caption begins. This creates
+  // a monotonic, gap-free reading track instead of disappearing at the final
+  // spoken syllable. Short tails merge with the preceding cue.
+  for (let index = 0; index < raw.length; index++) {
+    raw[index].endFrame = index + 1 < raw.length
+      ? Math.max(raw[index].startFrame + 1, raw[index + 1].startFrame)
+      : timing.frames;
+  }
+  const minimumFrames = fps;
+  for (let index = raw.length - 1; index > 0; index--) {
+    if (raw[index].endFrame - raw[index].startFrame >= minimumFrames) continue;
+    raw[index - 1].text = `${raw[index - 1].text} ${raw[index].text}`;
+    raw[index - 1].endFrame = raw[index].endFrame;
+    raw.splice(index, 1);
+  }
+  return raw;
+}
+
+// A structural fingerprint measures what the viewer sees, not what the author
+// wrote. Semantic prose/captions must never manufacture fake uniqueness.
+function compositionFingerprint(result: GrammarResult, brief: SceneBrief): string {
+  const entities = result.entities ?? [];
+  const actors = entities.filter((entity) => entity.src.startsWith("characters/")).length;
+  const props = entities.length - actors;
+  const components = [
+    ...(result.cards ?? []).map(() => "card"),
+    ...(result.paperCards ?? []).map(() => "paper"),
+    ...(result.frameBoxes ?? []).map(() => "frame"),
+    ...(result.speechBubbles ?? []).map(() => "bubble"),
+  ].sort().join(",") || "none";
+  const stage = String(result.backgroundSrc ?? "").startsWith("assets/scenes/") ? "stage" :
+    /\.(jpg|jpeg|png|webp)$/i.test(String(result.backgroundSrc ?? "")) ? "photo" : "graphic";
+  const quadrants = entities.map((entity) => entity.slot ?? "free").sort().join(",") || "none";
+  return [brief.visualGrammar, brief.visualRegister ?? "unknown", stage, `${actors}a:${props}p`,
+    quadrants, components, brief.captionTreatment ?? "none", brief.photoTreatment ?? "none"].join("|");
 }
 
 function compileBrief(
@@ -283,7 +338,7 @@ function compileBrief(
   if (focal && brief.beats && brief.beats.length) {
     // Use the single highest-importance beat for the focal pulse.
     const beat = [...brief.beats].sort((a, b) => b.importance - a.importance)[0];
-    const resolvedBeat = resolveBeatOffset(beat.text, brief.narration, timing.startFrame, timing.frames, fps, words);
+    const resolvedBeat = resolveBeatOffset(beat.text, brief.narration, brief.id, timing.startFrame, timing.frames, fps, words);
     const offset = resolvedBeat.offset;
     beatTimingSource = resolvedBeat.source;
     const enterDelay = focal.enterDelay ?? 0;
@@ -304,7 +359,7 @@ function compileBrief(
       const swaps: SceneEntity[] = [];
       for (let si = 1; si < sentences.length; si++) {
         const offset = resolveBeatOffset(
-          sentences[si], brief.narration, timing.startFrame, timing.frames, fps, words
+          sentences[si], brief.narration, brief.id, timing.startFrame, timing.frames, fps, words
         ).offset;
         if (offset < 20 || offset > timing.frames - 20) continue;
         swaps.push({
@@ -347,11 +402,14 @@ function compileBrief(
       ...(!/^#|^rgba?\(|gradient\(/i.test(result.backgroundSrc ?? "") && result.backgroundSrc
         ? [result.backgroundSrc] : []),
     ],
+    sectionId: brief.sectionId,
     claimIds: brief.claimIds,
+    captionTreatment: brief.captionTreatment,
+    evidenceTreatment: brief.evidenceTreatment,
     heroVisual: brief.heroVisual,
     focalType: brief.focalType,
     characterRequired: brief.characterRequired,
-    visualFingerprint: brief.visualFingerprint,
+    visualFingerprint: compositionFingerprint(result, brief),
     silentFrameTakeaway: brief.silentFrameTakeaway,
     focalOccupancyTarget: brief.focalOccupancyTarget
       ?? DEFAULT_FOCAL_OCCUPANCY[brief.visualGrammar]
@@ -505,7 +563,11 @@ export function compileStoryboard(sb: Storyboard, opts: CompileStoryboardOpts = 
   const timingProvenance: TimingProvenance = {
     mode: estimatedIds.length ? "estimated" : "measured",
     sceneTimingSource,
-    beatTimingSource: opts.words?.some((w) => Number.isInteger(w.wordIndex))
+    // This field describes the branch actually used by scene beats, not merely
+    // whether words.json exists. A transcript-aligned file with no authored
+    // beats must not advertise word-anchored timing.
+    beatTimingSource: Object.keys(beatTimingSummary).length > 0 &&
+      Object.keys(beatTimingSummary).every((source) => source === "aligned-words")
       ? "aligned-words"
       : "proportional",
     beatTimingSummary,

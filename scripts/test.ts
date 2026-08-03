@@ -526,7 +526,7 @@ test("quality gate blocks unreviewed photos and repeated photo wallpaper", () =>
   assert.ok(rules.includes("PHOTO_REPEAT"));
 });
 
-test("narrator pose and composition changes persist at narration beats", () => {
+test("liveliness never invents motion beyond storyboard-authored beats", () => {
   const timeline: any = {
     fps: 30,
     width: 1920,
@@ -557,12 +557,11 @@ test("narrator pose and composition changes persist at narration beats", () => {
   });
   const swaps = timeline.events.filter((event: any) => event.type === "swap");
   const moves = timeline.events.filter((event: any) => event.type === "move");
-  assert.strictEqual(result.swapsAdded, 4);
-  assert.strictEqual(result.movesAdded, 4);
+  assert.strictEqual(result.swapsAdded, 0);
+  assert.strictEqual(result.movesAdded, 0);
   assert.strictEqual(result.cameraMovesAdded, 0);
-  assert.strictEqual(swaps.length, 4);
-  assert.strictEqual(moves.length, 4);
-  assert.deepStrictEqual(moves.slice(0, 3).map((event: any) => event.frame), [90, 180, 300]);
+  assert.strictEqual(swaps.length, 0);
+  assert.strictEqual(moves.length, 0);
 
   const costumed: any = {
     ...timeline,
@@ -577,12 +576,12 @@ test("narrator pose and composition changes persist at narration beats", () => {
     }],
   };
   const costumedResult = injectLiveliness(costumed);
-  assert.strictEqual(costumedResult.movesAdded, 3);
+  assert.strictEqual(costumedResult.movesAdded, 0);
   assert.strictEqual(costumedResult.cameraMovesAdded, 0);
-  assert.strictEqual(costumed.events.filter((event: any) => event.type === "move").length, 3);
+  assert.strictEqual(costumed.events.filter((event: any) => event.type === "move").length, 0);
 });
 
-test("liveliness resets camera between scenes without inventing zoom beats", () => {
+test("liveliness preserves authored camera events without adding resets", () => {
   const timeline: any = {
     fps: 30,
     width: 1920,
@@ -606,11 +605,11 @@ test("liveliness resets camera between scenes without inventing zoom beats", () 
   const cameraFrames = timeline.events
     .filter((event: any) => event.type === "camera")
     .map((event: any) => event.frame);
-  assert.deepStrictEqual(cameraFrames, [120, 300]);
-  assert.strictEqual(result.cameraMovesAdded, 1);
+  assert.deepStrictEqual(cameraFrames, [120]);
+  assert.strictEqual(result.cameraMovesAdded, 0);
 });
 
-test("tableau stage focus changes persist across the audit cadence", () => {
+test("liveliness never washes a stage background to influence an audit", () => {
   const timeline: any = {
     fps: 30,
     width: 1920,
@@ -627,9 +626,8 @@ test("tableau stage focus changes persist across the audit cadence", () => {
     sceneSpans: [{ start: 0, end: 360, narrationBeatFrames: [90, 210] }],
   });
   const backgrounds = timeline.events.filter((event: any) => event.type === "background");
-  assert.strictEqual(result.backgroundBeatsAdded, 2);
-  assert.deepStrictEqual(backgrounds.map((event: any) => event.frame), [0, 162, 282]);
-  assert.ok(backgrounds.slice(1).every((event: any) => event.duration === 18));
+  assert.strictEqual(result.backgroundBeatsAdded, 0);
+  assert.deepStrictEqual(backgrounds.map((event: any) => event.frame), [0]);
 });
 
 test("indexes Unicode words with stable indices", () => {
@@ -733,7 +731,7 @@ test("schema v2 compiler preserves semantic background and resolved assets", () 
   const timeline = compileStoryboard(storyboard, { allowEstimatedTiming: true });
   assert.strictEqual(timeline.scenes[0].backgroundSrc, "#FFFFFF");
   assert.deepStrictEqual(timeline.scenes[0].semanticAssetIds, ["finance/money", "finance/house"]);
-  assert.strictEqual(timeline.scenes[0].visualFingerprint, "compare|diagram|0|none|contrast");
+  assert.strictEqual(timeline.scenes[0].visualFingerprint, "COMPARE|infographic|graphic|0a:0p|none|card,card|none|none");
   assert.strictEqual(timeline.scenes[0].semanticAction, "contrast");
   assert.strictEqual(timeline.scenes[0].visualGrammar, "COMPARE");
 });
@@ -787,10 +785,10 @@ test("word alignment controls schema v2 scene timing and subtitle cues", () => {
   };
   const timeline = compileStoryboard(storyboard, {
     words: [
-      { wordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 },
-      { wordIndex: 1, word: "two", startSec: 0.4, endSec: 0.6 },
-      { wordIndex: 2, word: "three", startSec: 1.0, endSec: 1.2 },
-      { wordIndex: 3, word: "four", startSec: 1.3, endSec: 1.6 },
+      { wordIndex: 0, scene: "one", sceneWordIndex: 0, word: "one", startSec: 0.1, endSec: 0.3 },
+      { wordIndex: 1, scene: "one", sceneWordIndex: 1, word: "two", startSec: 0.4, endSec: 0.6 },
+      { wordIndex: 2, scene: "two", sceneWordIndex: 0, word: "three", startSec: 1.0, endSec: 1.2 },
+      { wordIndex: 3, scene: "two", sceneWordIndex: 1, word: "four", startSec: 1.3, endSec: 1.6 },
     ],
   });
   assert.strictEqual(timeline.scenes[0].startFrame, 0);

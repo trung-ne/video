@@ -22,6 +22,7 @@ import os
 import sys
 import re
 import unicodedata
+import hashlib
 from difflib import SequenceMatcher
 
 
@@ -56,6 +57,66 @@ def attach_transcript_indices(aligned, transcript):
     return aligned
 
 
+def canonical_tts_tokens(scenes):
+    """Return the exact tokens spoken by TTS, retaining scene-local identity."""
+    tokens = []
+    for scene in scenes:
+        scene_id = str(scene.get("id") or "").strip()
+        text = str(scene.get("text") or "")
+        if not scene_id:
+            raise ValueError("tts_scenes.json contains a scene without id")
+        for scene_word_index, word in enumerate(transcript_words(text)):
+            tokens.append({
+                "scene": scene_id,
+                "sceneWordIndex": scene_word_index,
+                "word": word,
+            })
+    return tokens
+
+
+def attach_canonical_scene_indices(aligned, scenes):
+    """Map Whisper words to the exact scene narration read by TTS.
+
+    `sourceRange` refers to the input transcript and may deliberately differ
+    from `narrationOverride`. Subtitle timing must never use that source range:
+    it has to follow the words the voice actually spoke.
+    """
+    expected = canonical_tts_tokens(scenes)
+    expected_norm = [normalize_word(item["word"]) for item in expected]
+    aligned_norm = [normalize_word(item["word"]) for item in aligned]
+    matcher = SequenceMatcher(None, expected_norm, aligned_norm, autojunk=False)
+    index_map = {}
+    for block in matcher.get_matching_blocks():
+        for offset in range(block.size):
+            index_map[block.b + offset] = block.a + offset
+
+    matched = 0
+    for aligned_index, item in enumerate(aligned):
+        canonical_index = index_map.get(aligned_index)
+        item["whisperConfidence"] = item.get("confidence")
+        if canonical_index is None:
+            item["confidence"] = 0.0
+            continue
+        token = expected[canonical_index]
+        item["scene"] = token["scene"]
+        item["sceneWordIndex"] = token["sceneWordIndex"]
+        item["canonicalWordIndex"] = canonical_index
+        item["confidence"] = 1.0
+        matched += 1
+
+    return aligned, {
+        "schemaVersion": 1,
+        "source": "canonical-tts-scenes",
+        "canonicalWordCount": len(expected),
+        "matchedWordCount": matched,
+        "coverage": round(matched / len(expected), 6) if expected else 0.0,
+        "sceneCount": len(scenes),
+        "ttsScenesSha256": hashlib.sha256(
+            json.dumps(scenes, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        ).hexdigest(),
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--wav", required=True, help="path to voice.wav")
@@ -63,6 +124,7 @@ def main() -> int:
     ap.add_argument("--model", default="base", help="whisper model size (tiny/base/small/medium)")
     ap.add_argument("--lang", default=None, help="language code hint, e.g. en / vi (auto if omitted)")
     ap.add_argument("--transcript", default=None, help="verbatim transcript for stable wordIndex mapping")
+    ap.add_argument("--scenes", default=None, help="canonical tts_scenes.json; required for production subtitle timing")
     args = ap.parse_args()
 
     if not os.path.isfile(args.wav):
@@ -99,15 +161,31 @@ def main() -> int:
                 "confidence": round(float(getattr(w, "probability", 0.0) or 0.0), 3),
             })
 
-    if args.transcript:
+    provenance = None
+    if args.scenes:
+        with open(args.scenes, "r", encoding="utf-8-sig") as f:
+            scenes = json.load(f)
+        if not isinstance(scenes, list) or not scenes:
+            print("[align_words] --scenes must be a non-empty tts_scenes.json array", file=sys.stderr)
+            return 1
+        words, provenance = attach_canonical_scene_indices(words, scenes)
+        provenance["language"] = info.language or args.lang
+    elif args.transcript:
         with open(args.transcript, "r", encoding="utf-8-sig") as f:
             words = attach_transcript_indices(words, f.read())
+        provenance = {"schemaVersion": 1, "source": "legacy-transcript"}
 
     out_path = os.path.join(args.outdir, "words.json")
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(words, f, ensure_ascii=False, indent=2)
 
-    print(f"[align_words] wrote {len(words)} words -> {out_path} (detected lang: {info.language})")
+    if provenance:
+        provenance_path = os.path.join(args.outdir, "alignment.json")
+        with open(provenance_path, "w", encoding="utf-8") as f:
+            json.dump(provenance, f, ensure_ascii=False, indent=2)
+
+    suffix = f", coverage={provenance.get('coverage', 0):.1%}" if provenance and "coverage" in provenance else ""
+    print(f"[align_words] wrote {len(words)} words -> {out_path} (detected lang: {info.language}{suffix})")
     return 0
 
 

@@ -437,9 +437,13 @@ try {
         measurement: "legacy manifest; gap and wall-clock metrics unavailable",
       }
     : null);
+  const contactSheetPath = stagedOut.replace(/\.mp4$/i, ".contact.jpg");
+  const encodingAuditPath = stagedOut.replace(/\.mp4$/i, ".encoding-audit.json");
   const productionReport = {
     schemaVersion: 1,
-    status: isProxy ? "proxy-ready" : framesArg ? "diagnostic" : "production-ready",
+    // Rendering proves a technical candidate only. Publication is a separate,
+    // hash-bound editorial decision made by publish.ts after manual review.
+    status: isProxy ? "proxy-ready" : framesArg ? "diagnostic" : "candidate-ready",
     video: path.resolve(outPath),
     timeline: path.resolve(timelinePath),
     timingProvenance: raw.timingProvenance ?? null,
@@ -455,6 +459,13 @@ try {
     directionSummary: buildDirectionSummary(raw),
     spatialIntegrity: spatialReport,
     ttsMetrics,
+    artifacts: {
+      videoSha256: sha256File(stagedOut),
+      contactSheetSha256: fs.existsSync(contactSheetPath) ? sha256File(contactSheetPath) : null,
+      visualAuditSha256: fs.existsSync(visualAuditPath) ? sha256File(visualAuditPath) : null,
+      audioAuditSha256: fs.existsSync(audioAuditPath) ? sha256File(audioAuditPath) : null,
+      encodingAuditSha256: fs.existsSync(encodingAuditPath) ? sha256File(encodingAuditPath) : null,
+    },
   };
   fs.writeFileSync(
     stagedOut.replace(/\.mp4$/i, ".production-report.json"),

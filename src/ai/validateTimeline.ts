@@ -96,6 +96,9 @@ export function validateSceneTimeline(input: any): ValidationResult {
   let gradientBgCount = 0;
 
   let totalFrames = 0;
+  let previousSubtitleEnd = -1;
+  const subtitleMinimumFrames = Number(input.fps ?? 30);
+  const subtitleMaximumCps = 22;
 
   for (let si = 0; si < input.scenes.length; si++) {
     const scene = input.scenes[si];
@@ -275,6 +278,44 @@ export function validateSceneTimeline(input: any): ValidationResult {
       }
       if ((scene.camera.zoom ?? 1) > 1.08) {
         errors.push(`${sp} camera zoom ${(scene.camera.zoom ?? 1)} exceeds production maximum 1.08`);
+      }
+    }
+
+    // The subtitle track is editorial timing, not decorative metadata.  It is
+    // compiled from canonical TTS words and must remain independently readable.
+    if (scene.subtitleCues !== undefined && !Array.isArray(scene.subtitleCues)) {
+      errors.push(`${sp} subtitleCues must be an array when present`);
+    }
+    for (let ci = 0; ci < (scene.subtitleCues?.length ?? 0); ci++) {
+      const cue = scene.subtitleCues[ci];
+      const cp = `${sp} subtitleCue[${ci}]:`;
+      if (!cue.text || typeof cue.text !== "string") {
+        errors.push(`${cp} missing text`);
+        continue;
+      }
+      if (!Number.isInteger(cue.startFrame) || !Number.isInteger(cue.endFrame) || cue.endFrame <= cue.startFrame) {
+        errors.push(`${cp} requires an increasing integer frame range`);
+        continue;
+      }
+      if (cue.startFrame < 0 || cue.endFrame > scene.durationFrames) {
+        errors.push(`${cp} extends outside its scene`);
+      }
+      const absoluteStart = scene.startFrame + cue.startFrame;
+      const absoluteEnd = scene.startFrame + cue.endFrame;
+      if (absoluteStart < previousSubtitleEnd) {
+        errors.push(`${cp} SUBTITLE_OVERLAP with the preceding cue`);
+      }
+      previousSubtitleEnd = Math.max(previousSubtitleEnd, absoluteEnd);
+      const frames = cue.endFrame - cue.startFrame;
+      if (frames < subtitleMinimumFrames) {
+        errors.push(`${cp} SUBTITLE_TOO_SHORT: ${(frames / input.fps).toFixed(2)}s < 1.00s`);
+      }
+      const cps = cue.text.replace(/\s+/g, " ").trim().length / (frames / input.fps);
+      if (cps > subtitleMaximumCps) {
+        errors.push(`${cp} SUBTITLE_TOO_FAST: ${cps.toFixed(1)} CPS > ${subtitleMaximumCps}`);
+      }
+      if (cue.text.split(/\r?\n/).length > 2) {
+        errors.push(`${cp} exceeds the two-line subtitle limit`);
       }
     }
 

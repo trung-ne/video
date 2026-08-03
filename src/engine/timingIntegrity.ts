@@ -342,7 +342,13 @@ export function checkRenderMatchesTimeline(
   }];
 }
 
-export interface WordLike { startSec?: number; endSec?: number; wordIndex?: number | null }
+export interface WordLike {
+  startSec?: number;
+  endSec?: number;
+  wordIndex?: number | null;
+  scene?: string;
+  sceneWordIndex?: number | null;
+}
 
 export interface WordAlignmentOpts {
   /**
@@ -411,7 +417,9 @@ export function checkWordAlignment(
 
   // The metric that actually gates beat anchoring: how many words carry a
   // transcript index. `buildAlignedSceneTimings` is all-or-nothing on this.
-  const indexed = words.filter((w) => Number.isInteger(w.wordIndex)).length;
+  const indexed = words.filter((w) =>
+    Number.isInteger(w.sceneWordIndex) || Number.isInteger(w.wordIndex)
+  ).length;
   const indexedFraction = indexed / words.length;
   if (indexedFraction < (timingSource ? 0.98 : 0.5)) {
     issues.push({
@@ -425,6 +433,52 @@ export function checkWordAlignment(
   }
 
   return issues;
+}
+
+/**
+ * Subtitle timing is a production invariant separate from coarse audio
+ * coverage. A words file can reach the end of voice.wav yet still be unusable
+ * when it maps the source transcript rather than the narration TTS spoke.
+ */
+export function checkCanonicalSubtitleAlignment(
+  words: WordLike[] | undefined,
+  scenes: Array<{ id?: string; narration?: string }> | undefined,
+  alignment: any,
+): TimingIssue[] {
+  if (!alignment || alignment.source !== "canonical-tts-scenes") {
+    return [{
+      code: "SUBTITLE_ALIGNMENT_COVERAGE",
+      severity: "BLOCKER",
+      message: "Subtitle alignment is not bound to canonical tts_scenes narration.",
+      hint: "Run align_words.py with --scenes projects/<id>/tts_scenes.json.",
+    }];
+  }
+  const coverage = Number(alignment.coverage);
+  if (!Number.isFinite(coverage) || coverage < 0.98) {
+    return [{
+      code: "SUBTITLE_ALIGNMENT_COVERAGE",
+      severity: "BLOCKER",
+      message: `Canonical subtitle alignment covers ${(Number.isFinite(coverage) ? coverage * 100 : 0).toFixed(1)}% of spoken tokens; minimum is 98.0%.`,
+      hint: "Re-run alignment against the current voice.wav and exact tts_scenes.json.",
+    }];
+  }
+  for (const scene of scenes ?? []) {
+    // Must stay token-compatible with align_words.py::transcript_words().
+    const tokens = String(scene.narration ?? "").match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) ?? [];
+    if (!tokens.length || !scene.id) continue;
+    const indexed = new Set((words ?? [])
+      .filter((word) => word.scene === scene.id && Number.isInteger(word.sceneWordIndex))
+      .map((word) => word.sceneWordIndex as number));
+    if (indexed.size !== tokens.length || tokens.some((_, index) => !indexed.has(index))) {
+      return [{
+        code: "SUBTITLE_ALIGNMENT_COVERAGE",
+        severity: "BLOCKER",
+        message: `${scene.id} has ${indexed.size}/${tokens.length} canonical subtitle tokens aligned.`,
+        hint: "The spoken narration and tts_scenes text differ, or alignment skipped words.",
+      }];
+    }
+  }
+  return [];
 }
 
 const SCENE_TIMING_SOURCES: SceneTimingSource[] = ["durations", "aligned-words", "authored-silent", "estimated"];

@@ -12,6 +12,7 @@
  */
 import * as fs from "fs";
 import * as path from "path";
+import * as crypto from "crypto";
 
 const args = process.argv.slice(2);
 const getArg = (f: string) => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : undefined; };
@@ -24,6 +25,9 @@ const sb = JSON.parse(fs.readFileSync(sbPath, "utf-8"));
 const scenes = (sb.scenes ?? []).map((s: any) => ({
   id: s.id,
   text: (s.narration ?? "").replace(/\s+/g, " ").trim(),
+})).map((scene: any) => ({
+  ...scene,
+  textSha256: crypto.createHash("sha256").update(scene.text, "utf8").digest("hex"),
 }));
 
 // Dropping a silent scene here would leave it absent from durations.json, which

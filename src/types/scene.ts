@@ -241,7 +241,10 @@ export interface Scene {
   assetResolutionNotes?: string[];
   semanticSetting?: string;
   semanticAssetIds?: string[];
+  sectionId?: string;
   claimIds?: string[];
+  captionTreatment?: import("./storyboard").SceneBrief["captionTreatment"];
+  evidenceTreatment?: import("./storyboard").SceneBrief["evidenceTreatment"];
   heroVisual?: boolean;
   focalType?: import("./storyboard").FocalType;
   characterRequired?: boolean;
@@ -303,6 +306,14 @@ export interface TimingProvenance {
   storyboardChecksum?: string;
   durationsChecksum?: string;
   wordsChecksum?: string;
+  /** Subtitle alignment is independently provenance-bound to the spoken TTS text. */
+  subtitleTiming?: {
+    source: "canonical-tts-scenes" | "legacy-transcript";
+    canonicalWordCount: number;
+    matchedWordCount: number;
+    coverage: number;
+    language?: string;
+  };
 }
 
 export interface SceneTimeline {

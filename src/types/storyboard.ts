@@ -136,6 +136,11 @@ export interface Beat {
   // 0..1 — how hard to hit it (drives pulse/shake strength + keyword size).
   importance: number;
   kind: "number" | "keyword" | "turn"; // turn = a rhetorical pivot
+  /** Rendered target and state transition; beats without a target are not motion directions. */
+  targetSlot?: string;
+  action?: "swap_pose" | "reveal" | "emphasize" | "advance" | "handoff";
+  targetAssetId?: string;
+  holdState?: string;
 }
 
 export interface SceneBrief {
@@ -165,6 +170,8 @@ export interface SceneBrief {
   unresolvedAssetRequests?: string[];
   continuity?: SceneContinuity;
   photoTreatment?: PhotoTreatment;
+  captionTreatment?: "none" | "environmental" | "source-label" | "chapter-pill" | "speech-bubble";
+  evidenceTreatment?: "none" | "document" | "headline" | "screen" | "map" | "source-card";
   assetResolutionNotes?: string[];
   shot?: Shot;            // default: medium
 
@@ -225,14 +232,21 @@ export interface AuthoredScene {
   focalOccupancyTarget: number;
   characterRequired?: boolean;
   photoTreatment?: PhotoTreatment;
+  captionTreatment?: SceneBrief["captionTreatment"];
+  evidenceTreatment?: SceneBrief["evidenceTreatment"];
+  sectionId?: string;
+  claimIds?: string[];
+  beats?: Beat[];
   assetSelections?: Record<string, AssetSelection>;
 }
 
 export interface StorySection {
   id: string;
   sourceRange: SourceRange;
+  sourceMarker?: string;
   thesis: string;
   emotionalTurn: string;
+  energyCurve?: "build" | "sustain" | "release" | "climax";
   targetDurationSeconds?: number;
   claimVisuals?: string[];
   treatmentSequence?: VisualRegister[];
@@ -248,13 +262,27 @@ export interface StoryClaim {
   id: string;
   text: string;
   sourceRange: SourceRange;
+  /** Route-A authoring may resolve this verbatim transcript marker at build time. */
+  sourceMarker?: string;
   evidencePolicy: "none" | "quote" | "data" | "source_card";
   sceneIds?: string[];
+  publisher?: string;
+  title?: string;
+  date?: string;
+  url?: string;
+  checkedDate?: string;
+  shortSourceLabel?: string;
 }
 
 // One aligned word (from scripts/align_words.py → words.json).
 export interface AlignedWord {
+  /** Canonical TTS scene that spoke this token. */
   scene?: string;
+  /** Zero-based token position inside the canonical narration for `scene`. */
+  sceneWordIndex?: number;
+  /** Zero-based token position in the full canonical TTS script. */
+  canonicalWordIndex?: number;
+  /** Optional trace back to the source transcript; never used to cue subtitles. */
   wordIndex?: number;
   word: string;
   startSec: number;

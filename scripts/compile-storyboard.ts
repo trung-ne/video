@@ -24,6 +24,7 @@ import { sha256File } from "../src/audio/prepareAudio";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 import {
   checkSceneIdAlignment,
+  checkCanonicalSubtitleAlignment,
   checkTimelineSpansAudio,
   checkWordAlignment,
   formatTimingIssues,
@@ -67,11 +68,14 @@ if (dPath) {
 }
 
 let words: AlignedWord[] | undefined;
+let alignment: any;
 const wPath = getArg("--words");
 if (wPath) {
   requireFile("--words", wPath);
   const w = JSON.parse(fs.readFileSync(wPath, "utf-8"));
   words = Array.isArray(w) ? w : w.words;
+  const alignmentPath = getArg("--alignment") ?? path.join(path.dirname(wPath), "alignment.json");
+  if (fs.existsSync(alignmentPath)) alignment = JSON.parse(fs.readFileSync(alignmentPath, "utf-8"));
 }
 
 /** Measured length of the actual voice track, or undefined if not probeable. */
@@ -125,6 +129,21 @@ if (timingGate) {
   if (audioSeconds !== undefined) {
     preIssues.push(...checkWordAlignment(words, audioSeconds, { wordsProvideTiming }));
   }
+  preIssues.push(...checkCanonicalSubtitleAlignment(words, sb.scenes, alignment));
+
+  const projectManifestPath = path.join(path.dirname(path.resolve(sbPath)), "project.json");
+  if (fs.existsSync(projectManifestPath) && alignment?.language) {
+    const declared = String(JSON.parse(fs.readFileSync(projectManifestPath, "utf-8")).language ?? "").toLowerCase();
+    const alignedLanguage = String(alignment.language).toLowerCase();
+    if (declared && alignedLanguage && !alignedLanguage.startsWith(declared) && !declared.startsWith(alignedLanguage)) {
+      preIssues.push({
+        code: "LANGUAGE_MISMATCH",
+        severity: "BLOCKER",
+        message: `project.json declares "${declared}" but canonical word alignment reports "${alignedLanguage}".`,
+        hint: "Correct the project language or regenerate TTS/alignment with the intended language.",
+      });
+    }
+  }
 
   if (preIssues.length) {
     console.error(`\n⏱️  TIMING INTEGRITY\n${formatTimingIssues(preIssues)}\n`);
@@ -154,6 +173,13 @@ const provenance = {
   storyboardChecksum,
   durationsChecksum: dPath ? checksumJson(JSON.parse(fs.readFileSync(dPath, "utf-8"))) : undefined,
   wordsChecksum: wPath ? checksumJson(JSON.parse(fs.readFileSync(wPath, "utf-8"))) : undefined,
+  subtitleTiming: alignment ? {
+    source: alignment.source,
+    canonicalWordCount: Number(alignment.canonicalWordCount ?? 0),
+    matchedWordCount: Number(alignment.matchedWordCount ?? 0),
+    coverage: Number(alignment.coverage ?? 0),
+    language: alignment.language,
+  } : undefined,
 };
 
 let timeline: SceneTimeline;

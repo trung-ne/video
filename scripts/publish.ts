@@ -1,6 +1,14 @@
-import { spawnSync } from "child_process";
+/**
+ * publish.ts — promote one already-rendered candidate after hash-bound review.
+ *
+ * This deliberately does not render. Rendering answers "can this candidate be
+ * encoded?"; publishing answers "was this exact candidate reviewed and
+ * accepted?" Keeping those states separate prevents a stale acceptance file
+ * from silently blessing a later MP4.
+ */
 import * as fs from "fs";
 import * as path from "path";
+import { sha256File } from "../src/audio/prepareAudio";
 
 const args = process.argv.slice(2);
 function getArg(flag: string, fallback = ""): string {
@@ -8,111 +16,81 @@ function getArg(flag: string, fallback = ""): string {
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 }
 
-const timeline = getArg("--timeline");
-const project = getArg("--project");
-const projectPath = project
-  ? (fs.existsSync(project) || project.includes("/") || project.includes("\\")
-      ? project
-      : path.join("projects", project))
+const projectArg = getArg("--project");
+const projectPath = projectArg
+  ? (fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
+      ? projectArg : path.join("projects", projectArg))
   : "";
-const resolvedTimeline = timeline || (projectPath ? path.join(projectPath, "timeline.json") : "");
-const projectId = projectPath ? path.basename(projectPath) : "";
+const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "");
+const projectId = projectPath ? path.basename(path.resolve(projectPath)) : "";
 const output = getArg("--out", projectId ? path.join("output", projectId, "video.mp4") : "");
-if (!resolvedTimeline || !output || !fs.existsSync(resolvedTimeline)) {
-  console.error(
-    "Usage: npm run publish -- --project <id> " +
-    "[--out output/<id>/video.mp4]\n" +
-    "   or: npm run publish -- --timeline projects/<id>/timeline.json --out output/<id>/video.mp4"
-  );
+if (!projectPath || !timelinePath || !output) {
+  console.error("Usage: npm run publish -- --project <id> [--out output/<id>/video.mp4]");
   process.exit(2);
 }
 
-const proxy = output.replace(/\.mp4$/i, ".proxy.mp4");
-const reportPath = output.replace(/\.mp4$/i, ".publish-report.json");
-const publishRunId = `publish-${new Date().toISOString().replace(/[:.]/g, "-")}`;
-const publishRunDir = path.join(path.dirname(output), ".runs", publishRunId);
-const stagedReportPath = path.join(publishRunDir, path.basename(reportPath));
-fs.mkdirSync(publishRunDir, { recursive: true });
+const resolvedOutput = path.resolve(output);
+const reportPath = resolvedOutput.replace(/\.mp4$/i, ".production-report.json");
+const visualAuditPath = resolvedOutput.replace(/\.mp4$/i, ".visual-audit.json");
+const contactSheetPath = resolvedOutput.replace(/\.mp4$/i, ".contact.jpg");
+const acceptancePath = path.resolve(projectPath, "acceptance.json");
+const publishReportPath = resolvedOutput.replace(/\.mp4$/i, ".publish-report.json");
 
-/**
- * Run a render and then verify its evidence, not just its exit code.
- *
- * A zero exit only means render.ts did not throw — it can still have skipped the
- * timing check (via --frames, or a flag combination that bypasses it). Reading
- * the report back is the one check publish can make that render cannot make
- * about itself.
- */
-function runRender(extra: string[]): any {
-  const target = extra.includes("--proxy") ? proxy : output;
-  const label = extra.includes("--proxy") ? "Proxy" : "Full";
-  const result = spawnSync(process.execPath, [
-    "-r", "ts-node/register", "scripts/render.ts",
-    "--timeline", resolvedTimeline, "--out", target,
-    ...extra,
-  ], { cwd: process.cwd(), stdio: "inherit" });
-  if (result.status !== 0) throw new Error(`${label} render failed`);
-
-  const renderReportPath = target.replace(/\.mp4$/i, ".production-report.json");
-  if (!fs.existsSync(renderReportPath)) {
-    throw new Error(`${label} render produced no production report at ${renderReportPath}`);
+function mustReadJson(file: string, label: string): any {
+  if (!fs.existsSync(file)) throw new Error(`${label} is missing: ${file}`);
+  try { return JSON.parse(fs.readFileSync(file, "utf8")); }
+  catch { throw new Error(`${label} is invalid JSON: ${file}`); }
+}
+function requireHash(actualPath: string, expected: unknown, label: string) {
+  if (!fs.existsSync(actualPath)) throw new Error(`${label} artifact is missing: ${actualPath}`);
+  const actual = sha256File(actualPath);
+  if (typeof expected !== "string" || actual !== expected) {
+    throw new Error(`${label} hash mismatch: acceptance/report does not describe the current artifact.`);
   }
-  const renderReport = JSON.parse(fs.readFileSync(renderReportPath, "utf8"));
-
-  const expectedStatus = extra.includes("--proxy") ? "proxy-ready" : "production-ready";
-  if (renderReport.status !== expectedStatus) {
-    throw new Error(`${label} render reported status "${renderReport.status}", expected "${expectedStatus}"`);
-  }
-  if (!renderReport.timingAudit) {
-    throw new Error(
-      `${label} render carries no timingAudit — its duration was never verified against the timeline.`
-    );
-  }
-  if (!extra.includes("--proxy") && renderReport.timingAudit.scope !== "full timeline") {
-    throw new Error(
-      `${label} render only verified "${renderReport.timingAudit.scope}" — a partial render cannot be published.`
-    );
-  }
-  return renderReport;
+  return actual;
 }
 
-const report: any = {
-  schemaVersion: 1,
-  timeline: path.resolve(resolvedTimeline),
-  output: path.resolve(output),
-  proxy: path.resolve(proxy),
-  status: "running",
-  startedAt: new Date().toISOString(),
-};
-
 try {
-  if (!args.includes("--skip-proxy")) runRender(["--proxy"]);
-  const fullReport = runRender([]);
-  // Carry the evidence into the publish report so it says why it passed.
-  report.timingProvenance = fullReport.timingProvenance ?? null;
-  report.timingAudit = fullReport.timingAudit;
-  report.encodingAudit = fullReport.encodingAudit ?? null;
-  report.status = "production-ready";
-  report.completedAt = new Date().toISOString();
+  const candidate = mustReadJson(reportPath, "candidate production report");
+  if (candidate.status !== "candidate-ready") {
+    throw new Error(`Candidate status is ${JSON.stringify(candidate.status)}; render a full candidate before publishing.`);
+  }
+  if (!candidate.timingAudit || candidate.timingAudit.scope !== "full timeline") {
+    throw new Error("Candidate lacks a full-timeline timing audit.");
+  }
+  if (!candidate.visualAudit || !candidate.audioAudit || !candidate.encodingAudit) {
+    throw new Error("Candidate is missing visual, audio, or encoding audit evidence.");
+  }
+  const acceptance = mustReadJson(acceptancePath, "acceptance");
+  if (acceptance.result !== "pass") throw new Error("Acceptance result is not pass.");
+  if (path.resolve(acceptance.artifact ?? "") !== resolvedOutput) {
+    throw new Error("Acceptance artifact points at a different MP4.");
+  }
+  const videoSha256 = requireHash(resolvedOutput, acceptance.artifactSha256, "MP4");
+  const contactSheetSha256 = requireHash(contactSheetPath, acceptance.contactSheetSha256, "Contact sheet");
+  const visualAuditSha256 = requireHash(visualAuditPath, acceptance.visualAuditSha256, "Visual audit");
+  const candidateReportSha256 = requireHash(reportPath, acceptance.productionReportSha256, "Production report");
+
+  const declared = candidate.artifacts ?? {};
+  if (declared.videoSha256 !== videoSha256 || declared.contactSheetSha256 !== contactSheetSha256
+      || declared.visualAuditSha256 !== visualAuditSha256) {
+    throw new Error("Candidate report artifact hashes do not match the reviewed files.");
+  }
+  if (!Object.values(acceptance.manualContactSheetReview ?? {}).every(Boolean)) {
+    throw new Error("Manual contact-sheet review is incomplete.");
+  }
+  const publishReport = {
+    schemaVersion: 1,
+    status: "production-ready",
+    publishedAt: new Date().toISOString(),
+    timeline: path.resolve(timelinePath),
+    output: resolvedOutput,
+    acceptance: acceptancePath,
+    artifacts: { videoSha256, contactSheetSha256, visualAuditSha256, candidateReportSha256 },
+  };
+  fs.writeFileSync(publishReportPath, `${JSON.stringify(publishReport, null, 2)}\n`, "utf8");
+  console.log(`Production-ready: ${resolvedOutput}`);
 } catch (error) {
-  report.status = "diagnostic";
-  report.error = error instanceof Error ? error.message : String(error);
-  report.completedAt = new Date().toISOString();
-  fs.writeFileSync(stagedReportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  console.error(`Publish blocked: ${report.error}`);
-  console.error(`Diagnostic report: ${stagedReportPath}`);
+  console.error(`Publish blocked: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 }
-
-fs.writeFileSync(stagedReportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-const previousReport = path.join(publishRunDir, `previous-${path.basename(reportPath)}`);
-try {
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  if (fs.existsSync(reportPath)) fs.renameSync(reportPath, previousReport);
-  fs.renameSync(stagedReportPath, reportPath);
-} catch (error) {
-  if (!fs.existsSync(reportPath) && fs.existsSync(previousReport)) {
-    fs.renameSync(previousReport, reportPath);
-  }
-  throw error;
-}
-console.log(`Production-ready: ${output}`);
