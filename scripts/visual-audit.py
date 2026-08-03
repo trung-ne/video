@@ -132,15 +132,11 @@ def main() -> int:
             scene_id = scene_at(timeline, seconds, args.timeline_offset_seconds)
             scene = scene_lookup.get(scene_id, {})
             target = scene.get("focalOccupancyTarget")
-            background = str(scene.get("backgroundSrc", ""))
-            full_frame_visual = (
-                background.startswith("backgrounds/")
-                or background.startswith("assets/scenes/")
-                or background.startswith("generated-backgrounds/")
-                or background.startswith("generated-assets/scenes/")
-            )
-            visible_full_frame = full_frame_visual and (edge_density > 0.06 or saturation > 0.05)
-            occupancy = 1.0 if visible_full_frame else float(focal_footprint(np, pixels))
+            # A stage may fill the canvas while its semantic foreground is a
+            # tiny inert cat. Count the largest painted focal component for all
+            # treatments; only a real full-bleed photo earns high occupancy by
+            # virtue of its own visual footprint, never from a path prefix.
+            occupancy = float(focal_footprint(np, pixels))
             rows.append({
                 "seconds": round(seconds, 3),
                 "sceneId": scene_id,

@@ -12,7 +12,7 @@
 // preserving exact meaning and figures.
 
 import type {
-  AuthoredScene, FocalType, PhotoTreatment, SemanticVisual, VisualRegister, VisualTreatmentPlan,
+  AuthoredScene, FocalType, PhotoTreatment, SemanticVisual, StoryClaim, StorySection, VisualRegister, VisualTreatmentPlan,
 } from "../../src/types/storyboard";
 
 export const CAST = {
@@ -89,37 +89,39 @@ type DraftScene = Omit<AuthoredScene,
 
 const BASE_SCENES: DraftScene[] = [
   { marker: "Nhắc tới Hàn Quốc ngoài kim chi, phim",
-    narrationOverride: "Nhắc tới Hàn Quốc, ngoài kim chi, phim tình cảm hay các anh oppa đẹp trai, còn có một vấn đề khá đau đầu: ngày càng nhiều người tin rằng đầu tư không còn là chuyện tích lũy lâu dài, mà là con đường ngắn nhất để đổi đời.",
-    grammar: "TABLEAU", emotion: "neutral",
-    purpose: "Cold open hook — Korea beyond the cliché, into a real problem.",
-    viewerFocus: "the pivot from cliché to problem",
-    slots: { stage: "assets/scenes/street.svg", who: "hostPoint", anchorA: "sidewalk", prop: "finance/stock", caption: "Đổi đời — con đường ngắn nhất?" } },
+    narrationOverride: "Đầu năm 2026, chỉ trong vài ngày, KOSPI Hàn Quốc rơi hơn 18%.",
+    grammar: "STAT_REVEAL", emotion: "urgent", heroVisual: true,
+    purpose: "Open on the market shock before any context or branding.",
+    viewerFocus: "the -18% KOSPI shock",
+    slots: { stat: "-18%", anchor: "finance/trending_down", who: "characters/cat_surprised", caption: "KOSPI · chỉ vài ngày" } },
 
   { marker: "Những cái thứ như là cổ phiếu",
-    grammar: "CHAR_PROP", emotion: "neutral",
-    purpose: "Show the range of assets people are chasing, then name the accelerant.",
-    viewerFocus: "the three asset classes",
-    slots: { who: "hostPoint", prop: "finance/stock", label: "Cổ phiếu, coin, nhà đất cùng nóng" } },
+    narrationOverride: "Điều đáng sợ hơn: nhiều nhà đầu tư dùng margin rất cao, đến mức một số công ty chứng khoán phải chạm trần cho vay.",
+    grammar: "EVIDENCE", emotion: "concern",
+    purpose: "Name the margin ceiling and the question it raises.",
+    viewerFocus: "the margin lending ceiling",
+    slots: { title: "TRẦN MARGIN", body: "Có công ty chứng khoán phải tạm dừng cho vay", source: "FSC · 2025" } },
 
   { marker: "Hậu quả bắt đầu lộ rõ",
-    narrationOverride: "Hậu quả bắt đầu lộ rõ vào đầu năm 2026, khi chỉ trong vài ngày, chỉ số KOSPI của Hàn Quốc lao dốc hơn 18%, hàng trăm tỷ đô la giá trị thị trường bị thổi bay — một trong những đợt sụt giảm mạnh nhất trong nhiều năm.",
-    grammar: "STAT_REVEAL", emotion: "urgent", heroVisual: true,
-    purpose: "Land the cold-open's biggest shock number early.",
-    viewerFocus: "the -18% figure",
-    slots: { stat: "-18%", anchor: "finance/trending_down", who: "characters/cat_surprised", caption: "KOSPI lao dốc chỉ trong vài ngày, đầu 2026" } },
+    narrationOverride: "Vì sao nhiều người sẵn sàng vay tiền để cược vào thị trường, và vì sao margin lại phổ biến đến thế?",
+    grammar: "QA_REVEAL", emotion: "curious",
+    purpose: "Put the central editorial question before the explanation.",
+    viewerFocus: "the two-part question",
+    slots: { q: "Vì sao phải vay để cược?", a: "Vì sao margin lại phổ biến?", who: "hostPoint" } },
 
   { marker: "Nhưng mà điều đáng chú ý",
-    narrationOverride: "Nhưng điều đáng chú ý là rất nhiều nhà đầu tư đã dùng margin ở mức rất cao, đến mức một số công ty chứng khoán phải tạm dừng cho vay vì đã chạm trần hạn mức.",
-    grammar: "EVIDENCE", emotion: "concern",
-    purpose: "Reveal margin was maxed out — foreshadow the mechanism.",
-    viewerFocus: "brokers halting new loans",
-    slots: { title: "Đáng chú ý", body: "Một số công ty chứng khoán phải tạm dừng cho vay vì đã chạm trần margin" } },
+    narrationOverride: "Tôi là Mèo. Đây là câu chuyện về cơn sốt đòn bẩy của Hàn Quốc.",
+    grammar: "TABLEAU", emotion: "neutral",
+    purpose: "Keep branding short and place it after the hook.",
+    viewerFocus: "the host and episode identity",
+    slots: { stage: "assets/scenes/library.svg", who: "hostPlain", anchorA: "table", prop: "props/book" } },
 
   { marker: "Nhưng mà tại sao cái chuyện này",
+    narrationOverride: "Trước hết, cần hiểu margin: bạn mượn tiền của công ty chứng khoán để mua nhiều cổ phiếu hơn số vốn thật có.",
     grammar: "TABLEAU", emotion: "curious",
-    purpose: "Sharpen the puzzle: why here, in a mature, disciplined market.",
-    viewerFocus: "the host questioning",
-    slots: { stage: "assets/scenes/office_desk.svg", who: "hostShrug", anchorA: "desk", prop: "props/brain", caption: "Tại sao lại là Hàn Quốc?" } },
+    purpose: "Begin explaining margin before 40 seconds.",
+    viewerFocus: "borrowed buying power",
+    slots: { stage: "assets/scenes/office_desk.svg", who: "hostShrug", anchorA: "desk", prop: "finance/money", propPlacement: "right" } },
 
   { marker: "Tại sao mà nhiều người",
     grammar: "QA_REVEAL", emotion: "curious",
@@ -1169,19 +1171,19 @@ const SCENE_OVERRIDES: Record<string, Partial<AuthoredScene>> = {
   },
   "và nếu bạn là người trẻ thì câu chuyện": {
     grammar: "EVIDENCE",
-    slots: { title: "Việc làm thanh niên", body: "Khó tìm việc ổn định; thu nhập dài hạn yếu hơn", source: "Narration evidence" },
+    slots: { title: "Việc làm thanh niên", body: "Khó tìm việc ổn định; thu nhập dài hạn yếu hơn", source: "KOSTAT · 2025" },
   },
   "Một cái đặc điểm khá là khác thường của chứng khoán": {
     grammar: "EVIDENCE",
-    slots: { title: "Thị trường do cá nhân dẫn dắt", body: "Nhà đầu tư cá nhân chiếm tỷ trọng giao dịch rất lớn", source: "Narration evidence" },
+    slots: { title: "Thị trường do cá nhân dẫn dắt", body: "Nhà đầu tư cá nhân chiếm tỷ trọng giao dịch rất lớn", source: "KRX · 2025" },
   },
   "Và cái điều buồn cười là sau khi cộng tất cả": {
     grammar: "EVIDENCE",
-    slots: { title: "Hiệu quả ròng", body: "Sau phí giao dịch và lãi vay, kết quả thường thấp hơn", source: "Narration evidence" },
+    slots: { title: "Hiệu quả ròng", body: "Sau phí giao dịch và lãi vay, kết quả thường thấp hơn", source: "KCMI · 2025" },
   },
   "Đến cuối năm 2024 thì lượng cổ phiếu nước ngoài": {
     grammar: "EVIDENCE",
-    slots: { title: "Dòng tiền ra nước ngoài", body: "Quy mô nắm giữ cổ phiếu nước ngoài tăng rất lớn cuối 2024", source: "Narration evidence" },
+    slots: { title: "Dòng tiền ra nước ngoài", body: "Quy mô nắm giữ cổ phiếu nước ngoài tăng rất lớn cuối 2024", source: "BOK · 2025" },
   },
 };
 
@@ -1218,6 +1220,26 @@ const ROLE_OVERRIDES: Record<number, AuthoredScene["slots"]> = {
 };
 
 const EDITORIAL_OVERRIDES: Record<number, Partial<AuthoredScene>> = {
+  0: {
+    visualRegister: "evidence", focalType: "chart", characterRequired: false,
+    semanticVisual: { subject: "KOSPI loss figure", action: "lands as the opening shock", takeaway: "KOSPI fell more than 18 percent in days", object: "KOSPI -18%" },
+    silentFrameTakeaway: "KOSPI -18% shock", focalOccupancyTarget: 0.50,
+  },
+  1: {
+    visualRegister: "evidence", focalType: "evidence", characterRequired: false,
+    semanticVisual: { subject: "margin lending ceiling", action: "shows brokers pausing loans", takeaway: "margin credit reached a lending limit", object: "margin ceiling" },
+    silentFrameTakeaway: "broker margin ceiling", focalOccupancyTarget: 0.52,
+  },
+  2: {
+    visualRegister: "infographic", focalType: "diagram", characterRequired: true,
+    semanticVisual: { subject: "central questions", action: "asks why borrowing and margin spread", takeaway: "the episode investigates leverage", object: "two questions" },
+    silentFrameTakeaway: "two questions about margin", focalOccupancyTarget: 0.48,
+  },
+  3: {
+    visualRegister: "full_tableau", focalType: "full_scene", characterRequired: true,
+    semanticVisual: { subject: "host", action: "introduces the leverage story", takeaway: "this episode explains Korea's leverage boom", setting: "library" },
+    silentFrameTakeaway: "host introduces the episode", focalOccupancyTarget: 0.42,
+  },
   83: {
     grammar: "TABLEAU",
     visualRegister: "full_tableau",
@@ -1320,6 +1342,50 @@ const EDITORIAL_OVERRIDES: Record<number, Partial<AuthoredScene>> = {
   },
 };
 
+// Evidence sources are authored with the claim, not invented by a renderer.
+// `sourceMarker` is resolved to an exact transcript range by build-storyboard.
+export const CLAIMS: StoryClaim[] = [
+  {
+    id: "household-credit-2025", text: "Household credit exceeded KRW 1,900 trillion in 2025.",
+    sourceMarker: "Cuối năm 2025 thì tổng nợ tín dụng hộ gia đình", sourceRange: undefined as any, evidencePolicy: "data",
+    publisher: "Bank of Korea", title: "Financial Stability Report", date: "2025-06", checkedDate: "2026-08-03",
+    url: "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400069&menuNo=400069&nttId=10096591",
+    shortSourceLabel: "BOK · 2025",
+  },
+  {
+    id: "retail-participation", text: "Retail participation is a defining feature of Korea's equity market.",
+    sourceMarker: "Một cái đặc điểm khá là khác thường", sourceRange: undefined as any, evidencePolicy: "source_card",
+    publisher: "Korea Exchange", title: "Solid Investor Base", date: "2025", checkedDate: "2026-08-03",
+    url: "https://global.krx.co.kr/contents/GLB/03/0301/0301030000/GLB0301030000.jsp",
+    shortSourceLabel: "KRX · 2025",
+  },
+  {
+    id: "margin-behaviour", text: "Retail margin users show distinctive high-risk trading behaviour.",
+    sourceMarker: "Tức là đây là cái nhóm mà đạp ga mạnh nhất", sourceRange: undefined as any, evidencePolicy: "source_card",
+    publisher: "Korea Capital Market Institute", title: "Margin Trading in Korea's Stock Market", date: "2021", checkedDate: "2026-08-03",
+    url: "https://www.kcmi.re.kr/en/report/report_view?report_no=1479",
+    shortSourceLabel: "KCMI · 2021",
+  },
+];
+
+export const SECTIONS: StorySection[] = [
+  { id: "act-1-margin", sourceMarker: "Nhắc tới Hàn Quốc ngoài kim chi", sourceRange: undefined as any,
+    thesis: "Margin makes a small market move a personal debt crisis.", emotionalTurn: "curiosity to shock",
+    energyCurve: "climax", heroConcept: "KOSPI shock and margin call", treatmentSequence: ["full_tableau", "evidence", "framebox"] },
+  { id: "act-2-pressure", sourceMarker: "Và đó chính xác là những gì đã xảy ra", sourceRange: undefined as any,
+    thesis: "Housing, jobs and the wealth gap make leveraged investing emotionally plausible.", emotionalTurn: "shock to empathy",
+    energyCurve: "sustain", heroConcept: "young worker chasing an unaffordable home", treatmentSequence: ["photo_broll", "full_tableau", "infographic"] },
+  { id: "act-3-system", sourceMarker: "Nhưng mà đó mới chỉ là một nửa câu chuyện", sourceRange: undefined as any,
+    thesis: "Market structure, regulation and behaviour amplify the risk.", emotionalTurn: "empathy to diagnosis and release",
+    energyCurve: "build", heroConcept: "debt-loaded gaemi crowd", treatmentSequence: ["evidence", "visual_gag", "full_tableau", "framebox"] },
+];
+
+const CLAIM_IDS_BY_MARKER: Record<string, string[]> = {
+  "Cuối năm 2025 thì tổng nợ tín dụng hộ gia đình": ["household-credit-2025"],
+  "Một cái đặc điểm khá là khác thường của chứng khoán": ["retail-participation"],
+  "Tức là đây là cái nhóm mà đạp ga mạnh nhất": ["margin-behaviour"],
+};
+
 export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => {
   const photo = PHOTO_DIRECTIONS[scene.marker];
   const markerOverride = SCENE_OVERRIDES[scene.marker] ?? {};
@@ -1341,6 +1407,7 @@ export const SCENES: AuthoredScene[] = BASE_SCENES.map((scene, index) => {
       semanticVisual: { ...direction.semanticVisual, setting: semanticSetting },
     } : {}),
     ...override,
+    claimIds: CLAIM_IDS_BY_MARKER[scene.marker],
     slots: authoredSlots,
     ...(photo ? {
       photoTreatment: photo.treatment,

@@ -293,7 +293,7 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   // Optional keyword/caption pill (lets a staged narrator scene still punch a
   // keyword, like SOLO does) — sits in the top band, clear of the subtitle.
   const caption = b.slots?.caption ?? b.slots?.keyword;
-  const texts: SceneText[] = caption
+  const texts: SceneText[] = caption && b.captionTreatment === "chapter-pill"
     ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, hold: "scene-end" }]
     : [];
 
@@ -377,14 +377,14 @@ function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
-    entities: ctx.strict && !b.slots?.who ? [] : [
-      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "RIGHT_BOTTOM", scale: 1.4, enterAnimation: "popIn", enterDelay: 14 },
-    ],
+    entities: b.slots?.who ? [
+      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 1.05, enterAnimation: "popIn", enterDelay: 14 },
+    ] : [],
     texts: [],
-    focusAssetId: ctx.strict && !b.slots?.who ? undefined : `${b.id}-cat`,
+    focusAssetId: b.slots?.who ? `${b.id}-cat` : undefined,
     frameBoxes: [{ id: `${b.id}-tv`, contentSrc: content, caption, source: b.slots?.source,
       objectFit: b.slots?.objectFit === "cover" ? "cover" : "contain",
-      position: { x: 0.42, y: 0.42 }, delay: 8 }],
+      position: { x: b.slots?.who ? 0.43 : 0.5, y: 0.40 }, width: b.slots?.who ? 1320 : 1550, delay: 8 }],
   };
 }
 
@@ -527,21 +527,25 @@ function grammarSurveyCard(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 
 function grammarPhotoEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const photo = semanticAsset(ctx, b.slots?.photo, "photo", "");
+  const treatment = b.photoTreatment ?? "full_bleed";
+  if (treatment === "full_bleed" || treatment === "cutaway") {
+    return { layout: "CLOSE_UP", backgroundSrc: photo, entities: [], texts: [] };
+  }
   return {
-    layout: "CLOSE_UP",
-    backgroundSrc: photo,
+    layout: "SOLO",
+    backgroundSrc: WHITE,
     entities: [],
     texts: [],
-    frameBoxes: b.slots?.caption ? [{
+    frameBoxes: [{
       id: `${b.id}-photo`,
       contentSrc: photo,
       caption: b.slots.caption,
       source: b.slots?.source,
-      position: { x: 0.5, y: 0.42 },
-      width: 1450,
-      objectFit: "cover",
+      position: { x: 0.5, y: 0.40 },
+      width: treatment === "map" ? 1650 : 1500,
+      objectFit: treatment === "document" || treatment === "headline" ? "contain" : "cover",
       delay: 6,
-    }] : undefined,
+    }],
   };
 }
 

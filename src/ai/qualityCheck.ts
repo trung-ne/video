@@ -734,6 +734,33 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         message: `Claim ${claim.id} requires a source card but no source is supplied.`,
       });
     }
+    if (claim.evidencePolicy !== "none") {
+      const missing = ["publisher", "title", "date", "url", "checkedDate", "shortSourceLabel"]
+        .filter((key) => !String((claim as any)[key] ?? "").trim());
+      if (missing.length) {
+        semanticIssues.push({
+          severity: "MAJOR", rule: "CLAIM_SOURCE_METADATA_MISSING",
+          message: `Claim ${claim.id} is missing source metadata: ${missing.join(", ")}.`,
+        });
+      }
+      if (/^narration evidence$/i.test(String((claim as any).shortSourceLabel ?? "").trim())) {
+        semanticIssues.push({
+          severity: "MAJOR", rule: "GENERIC_EVIDENCE_SOURCE",
+          message: `Claim ${claim.id} uses the forbidden generic source label “Narration evidence”.`,
+        });
+      }
+    }
+  }
+  const targets = storyboard.visualTreatmentPlan?.registerTargets;
+  if (targets) {
+    for (const [register, target] of Object.entries(targets)) {
+      if (typeof target !== "number") continue;
+      const actual = (counts.get(register) ?? 0) / Math.max(1, briefs.length);
+      if (Math.abs(actual - target) > 0.04) {
+        registerIssues.push({ severity: "MAJOR", rule: "REGISTER_TARGET_DRIFT",
+          message: `${register} is ${(actual * 100).toFixed(1)}% against ${(target * 100).toFixed(1)}% plan (±4pp).` });
+      }
+    }
   }
   const finalWord = Math.max(-1, ...briefs.map((brief) => brief.sourceRange?.endWord ?? -1));
   if (finalWord >= 112) {
@@ -2060,6 +2087,18 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
 
   const durationSeconds = Number(timeline.durationInFrames ?? 0) / Number(timeline.fps ?? 30);
   const heroFrames = scenes.filter((scene) => scene.heroVisual).map((scene) => scene.startFrame);
+  const heroRatio = heroFrames.length / Math.max(1, scenes.length);
+  if (heroRatio > 0.28) {
+    issues.push({ severity: "MAJOR", rule: "HERO_VISUAL_DENSITY",
+      message: `${heroFrames.length}/${scenes.length} scenes are heroes; maximum is 28%.` });
+  }
+  for (let index = 1; index < heroFrames.length; index++) {
+    if ((heroFrames[index] - heroFrames[index - 1]) / (timeline.fps ?? 30) < 20) {
+      issues.push({ severity: "MAJOR", rule: "HERO_VISUAL_TOO_DENSE", scene: scenes[index]?.id,
+        message: "Hero visuals must be at least 20 seconds apart outside an authored montage climax." });
+      break;
+    }
+  }
   const boundaries = [0, ...heroFrames, timeline.durationInFrames ?? 0].sort((a, b) => a - b);
   const longestHeroGap = boundaries.slice(1).reduce((max, frame, index) => Math.max(max, frame - boundaries[index]), 0);
   if (durationSeconds >= 45 && longestHeroGap / 30 > 45) {
@@ -2254,7 +2293,8 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
       (scene.cards?.length ?? 0);
     const nodes = uniqueEntities(scene).length;
     const fullScene = background.startsWith("assets/scenes/") && nodes >= 2 && !!scene.semanticAction;
-    const gag = (scene.speechBubbles?.length ?? 0) >= 1 && nodes >= 2;
+    const gag = (scene.speechBubbles?.length ?? 0) >= 1 && nodes >= 2 &&
+      !!scene.semanticAction && !!(scene.semanticObject || scene.semanticRelation);
     const meaningfulPair = nodes >= 2 && !!scene.semanticAction &&
       !!(scene.semanticObject || scene.semanticRelation);
     return hasPhoto || cards > 0 || nodes >= 3 || fullScene || gag || meaningfulPair;
@@ -2298,12 +2338,22 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
 
   const fingerprints = scenes.map((scene) => String(scene.visualFingerprint ?? "")).filter(Boolean);
   const fingerprintCounts = countSources(fingerprints);
-  const repeated = [...fingerprintCounts].filter(([, count]) => count > Math.max(2, scenes.length * 0.08));
+  const repeated = [...fingerprintCounts].filter(([, count]) => count > Math.max(2, Math.ceil(scenes.length * 0.05)));
   if (repeated.length) {
     issues.push({
       severity: "MAJOR", rule: "VISUAL_FINGERPRINT_REUSE",
       message: `${repeated.length} visual fingerprints exceed the reuse budget.`,
     });
+  }
+  for (let index = 2; index < scenes.length; index++) {
+    const current = String(scenes[index].visualFingerprint ?? "");
+    if (!current || current !== String(scenes[index - 1].visualFingerprint ?? "") ||
+        current !== String(scenes[index - 2].visualFingerprint ?? "")) continue;
+    if ((scenes[index].startFrame - scenes[index - 2].startFrame) <= (timeline.fps ?? 30) * 60) {
+      issues.push({ severity: "MAJOR", rule: "COMPOSITION_FINGERPRINT_STREAK", scene: scenes[index].id,
+        message: `Composition ${current} occurs three times within 60 seconds; maximum is two.` });
+      break;
+    }
   }
   const missingFingerprint = scenes.filter((scene) => !String(scene.visualFingerprint ?? "").trim());
   if (missingFingerprint.length) {

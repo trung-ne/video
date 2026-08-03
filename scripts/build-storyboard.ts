@@ -62,6 +62,8 @@ if (!fs.existsSync(dataPath)) {
 const dataModule = require(path.resolve(dataPath));
 const SCENES: any[] = dataModule.SCENES;
 const CAST: Record<string, any> = dataModule.CAST ?? {};
+const SECTIONS: any[] = dataModule.SECTIONS ?? [];
+const CLAIMS: any[] = dataModule.CLAIMS ?? [];
 const VISUAL_TREATMENT_PLAN: VisualTreatmentPlan | undefined = dataModule.VISUAL_TREATMENT_PLAN;
 if (!Array.isArray(SCENES) || SCENES.length === 0) {
   console.error(`❌ ${dataPath} must export a non-empty \`SCENES\` array`);
@@ -120,14 +122,15 @@ for (let i = 0; i < ranges.length; i++) {
 // Derived from decisions the author already made — deriving it does not invent
 // intent, unlike the old hardcoded `semanticVisual: { subject: "cat", ... }`.
 function fingerprintOf(scene: any, assets: Record<string, string>): string {
-  const refs = Object.entries(assets)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, value]) => `${key}=${value}`);
-  const semantic = scene.semanticVisual ?? {};
+  const slots = scene.slots ?? {};
+  const roleShape = Object.keys(assets).sort().map((key) =>
+    /^(who|asker|answerer|anchor|actor)/.test(key) ? "actor" : "prop").join(",");
+  const stageClass = String(slots.stage ?? "").includes("scenes/") ? "stage" :
+    scene.photoTreatment ? "photo" : "graphic";
   return [
-    scene.grammar, scene.visualRegister, scene.focalType, scene.photoTreatment ?? "none",
-    semantic.subject, semantic.action, semantic.object ?? "none", semantic.relation ?? "none",
-    scene.slots?.stage ?? "no-stage", scene.slots?.tone ?? "default", ...refs,
+    scene.grammar, scene.visualRegister, scene.focalType, stageClass,
+    roleShape, scene.shot ?? "medium", scene.captionTreatment ?? "none",
+    scene.evidenceTreatment ?? "none", scene.photoTreatment ?? "none",
   ].join("|");
 }
 
@@ -251,6 +254,11 @@ const scenes = SCENES.map((s, i) => {
     focalOccupancyTarget: s.focalOccupancyTarget,
     characterRequired: s.characterRequired,
     photoTreatment: s.photoTreatment,
+    captionTreatment: s.captionTreatment,
+    evidenceTreatment: s.evidenceTreatment,
+    sectionId: s.sectionId,
+    claimIds: s.claimIds,
+    beats: s.beats,
     visualFingerprint: fingerprint,
     assetRequests,
     resolvedAssets,
@@ -306,6 +314,18 @@ const storyboard = {
   width: 1920,
   height: 1080,
   cast: CAST,
+  sections: SECTIONS.map((section) => {
+    if (!section.sourceMarker) return section;
+    const start = findMarker(String(section.sourceMarker), 0);
+    const length = tokenize(String(section.sourceMarker)).length;
+    return { ...section, sourceRange: makeSourceRange(words, start, start + length - 1) };
+  }),
+  claims: CLAIMS.map((claim) => {
+    if (!claim.sourceMarker) return claim;
+    const start = findMarker(String(claim.sourceMarker), 0);
+    const length = tokenize(String(claim.sourceMarker)).length;
+    return { ...claim, sourceRange: makeSourceRange(words, start, start + length - 1) };
+  }),
   visualTreatmentPlan: VISUAL_TREATMENT_PLAN,
   scenes: withNovelty,
 };
