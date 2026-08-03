@@ -37,6 +37,7 @@ import { approvedPhotoPaths, isApprovedNoFacePhoto } from "../src/engine/photoPo
 import { fitTextToBox } from "../src/engine/textLayout";
 import { getPaletteSaturationScale } from "../src/engine/assetPaths";
 import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
+import { checkSpatialIntegrity, visibleAssetBox } from "../src/engine/spatialIntegrity";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -50,6 +51,34 @@ test("proxy render scale always produces integer 1080p dimensions", () => {
     height: 540,
   });
   assert.throws(() => getScaledDimensions(1920, 1080, 0.333), /non-integer dimensions/);
+});
+
+test("spatial integrity blocks undeclared asset overlap and permits an authored held prop", () => {
+  const base: any = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 120,
+    events: [
+      { frame: 0, type: "enter", assetId: "cat", src: "characters/cat", position: { x: 0.5, y: 0.5 }, scale: 1.5, animation: "none" },
+      { frame: 0, type: "enter", assetId: "prop", src: "finance/money", position: { x: 0.5, y: 0.5 }, scale: 1, animation: "none" },
+    ],
+  };
+  assert.ok(checkSpatialIntegrity(base).issues.some((issue) => issue.code === "UNDECLARED_ASSET_OVERLAP"));
+  base.events[1].allowOverlapWith = ["cat"];
+  assert.strictEqual(checkSpatialIntegrity(base).passed, true);
+});
+
+test("stage-anchored fixed assets receive no automatic spatial move", () => {
+  const timeline: any = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 360,
+    events: [{ frame: 0, type: "enter", assetId: "cat", src: "characters/cat", position: { x: 0.4, y: 0.54 }, scale: 1.8, animation: "none", motionPolicy: "fixed" }],
+  };
+  injectLiveliness(timeline, { sceneSpans: [{ start: 0, end: 360, narrationBeatFrames: [100, 240] }] });
+  assert.strictEqual(timeline.events.filter((event: any) => event.type === "move").length, 0);
+});
+
+test("visible asset geometry stays inside its real alpha bounds", () => {
+  const box = visibleAssetBox({ assetId: "x", src: "characters/cat", position: { x: 0.5, y: 0.5 }, scale: 1, opacity: 1, zIndex: 1, visible: true }, 1920, 1080);
+  assert.ok(box.x0 < box.x1 && box.y0 < box.y1);
+  assert.ok(box.x0 >= 0 && box.x1 <= 1920);
 });
 
 test("canonical JSON checksums ignore formatting but detect semantic changes", () => {
