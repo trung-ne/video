@@ -151,6 +151,11 @@ npx ts-node scripts/build-storyboard.ts --project <id>
 
 # storyboard-data.ts của video >=8 scene phải export VISUAL_TREATMENT_PLAN
 
+# Extract schema-v2 spoken text + hand-authored TTS direction, then synthesize
+# and verify every scene through the backend selected in .env.
+npx ts-node scripts/storyboard-to-tts.ts --storyboard projects/<id>/storyboard.json
+py -3.11 scripts/tts_router.py --project <id>
+
 # Compile storyboard → timeline (cần durations.json + words.json trước)
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
   --out projects/<id>/timeline.json --durations projects/<id>/durations.json \
@@ -163,8 +168,9 @@ npx ts-node scripts/render.ts --project <id>
 npx tsc --noEmit
 ```
 
-Route A (`build-storyboard.ts` + TTS local + `compile-storyboard.ts` +
-`render.ts`) chạy hoàn toàn offline và không dùng API key.
+Route A (`build-storyboard.ts` + `tts_router.py` + `compile-storyboard.ts` +
+`render.ts`) không dùng SaaS TTS key. Qwen/Cosy/Style-Bert chạy qua private
+local HTTP model server; Edge/Kokoro vẫn là backend tương thích tại máy local.
 
 ---
 
@@ -178,8 +184,8 @@ Transcript ─→ projects/<id>/storyboard-data.ts   ← agent đọc transcript
                  ↓ scripts/build-storyboard.ts --project <id>   (thuần cơ học)
               storyboard.json
                       │
-                      ├─ storyboard-to-tts.ts → tts_*.py → voice.wav + durations.json
-                      └─ align_words.py → words.json
+                      └─ storyboard-to-tts.ts → tts_router.py → per-scene TTS + fidelity gate
+                                                         → voice.wav + durations.json + words.json
                       ↓ scripts/compile-storyboard.ts (cần durations + words)
               projects/<id>/timeline.json  (SceneTimeline — scenes[])
                       ↓ loadTimeline()  ← điểm compile DUY NHẤT (compileScenes + injectLiveliness)

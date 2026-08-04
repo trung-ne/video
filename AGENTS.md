@@ -58,12 +58,9 @@ phiên chat và viết tay nội dung scene:
 # 1. Viết projects/<id>/storyboard-data.ts  (export SCENES, CAST) — việc authoring
 npx ts-node scripts/build-storyboard.ts --project <id>          # → storyboard.json
 npx ts-node scripts/storyboard-to-tts.ts --storyboard projects/<id>/storyboard.json
- # Vietnamese projects must use Edge's Vietnamese voice; Kokoro is English-only
- # in this repo. Use Kokoro only for a language it explicitly supports.
-py -3.11 scripts/tts_edge.py --scenes projects/<id>/tts_scenes.json --outdir public/audio/<id> \
-    --manifest projects/<id>/durations.json --voice vi-VN-NamMinhNeural
-py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir projects/<id> \
-    --model small --lang vi --scenes projects/<id>/tts_scenes.json
+# Router chọn backend theo TTS_BACKEND_<LANG> trong .env, sinh/verify từng scene.
+# Vietnamese mặc định Edge; EN/JA/KO mặc định Qwen3 qua local HTTP model server.
+py -3.11 scripts/tts_router.py --project <id>
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
     --out projects/<id>/timeline.json --durations projects/<id>/durations.json \
     --words projects/<id>/words.json --audio audio/<id>/voice.wav

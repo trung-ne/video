@@ -35,6 +35,14 @@ class AlignmentIndexTests(unittest.TestCase):
         self.assertEqual(provenance["source"], "canonical-tts-scenes")
         self.assertEqual(provenance["coverage"], 1.0)
 
+    def test_japanese_canonical_alignment_uses_character_units(self):
+        aligned = [{"word": "日本", "confidence": .9, "startSec": 0, "endSec": .2}]
+        result, provenance = attach_canonical_scene_indices(aligned, [
+            {"id": "scene-001", "spokenText": "日本"},
+        ], "ja")
+        self.assertEqual([item["word"] for item in result], ["日", "本"])
+        self.assertEqual(provenance["matchedWordCount"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

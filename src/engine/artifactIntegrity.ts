@@ -4,7 +4,7 @@ import { checksumJson } from "../ai/transcriptCoverage";
 import { sha256File } from "../audio/prepareAudio";
 import { TimingIssue, TimingProvenance } from "./timingIntegrity";
 
-export type ArtifactKind = "audio" | "storyboard" | "durations" | "words";
+export type ArtifactKind = "audio" | "storyboard" | "durations" | "words" | "alignment" | "tts-generation";
 
 export interface ArtifactInput {
   kind: ArtifactKind;
@@ -74,6 +74,20 @@ export function adjacentArtifactInputs(
       kind: "words",
       filePath: path.join(dir, "words.json"),
       expected: provenance.wordsChecksum,
+    });
+  }
+  if (provenance.alignmentChecksum) {
+    inputs.push({
+      kind: "alignment",
+      filePath: path.join(dir, "alignment.json"),
+      expected: provenance.alignmentChecksum,
+    });
+  }
+  if (provenance.ttsGenerationChecksum) {
+    inputs.push({
+      kind: "tts-generation",
+      filePath: path.join(dir, "tts-generation.json"),
+      expected: provenance.ttsGenerationChecksum,
     });
   }
   return inputs;

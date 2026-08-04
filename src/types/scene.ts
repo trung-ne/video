@@ -306,6 +306,9 @@ export interface TimingProvenance {
   storyboardChecksum?: string;
   durationsChecksum?: string;
   wordsChecksum?: string;
+  /** Hashes bind expressive-TTS verification to the compiled timing artifact. */
+  alignmentChecksum?: string;
+  ttsGenerationChecksum?: string;
   /** Subtitle alignment is independently provenance-bound to the spoken TTS text. */
   subtitleTiming?: {
     source: "canonical-tts-scenes" | "legacy-transcript";

@@ -24,6 +24,10 @@ import re
 import unicodedata
 import hashlib
 from difflib import SequenceMatcher
+try:
+    from tts_fidelity import units as fidelity_units
+except ModuleNotFoundError:  # imported as scripts.align_words in unit tests
+    from scripts.tts_fidelity import units as fidelity_units
 
 
 def normalize_word(value):
@@ -31,8 +35,17 @@ def normalize_word(value):
     return "".join(ch for ch in value if ch.isalnum())
 
 
-def transcript_words(text):
-    return re.findall(r"[\w]+(?:['’\-][\w]+)*", unicodedata.normalize("NFC", text), flags=re.UNICODE)
+def is_japanese_language(language):
+    return str(language or "").lower().startswith("ja")
+
+
+def transcript_words(text, language=None):
+    value = unicodedata.normalize("NFC", text)
+    if is_japanese_language(language):
+        # Whisper's Japanese "word" segmentation is not stable. Character
+        # units give canonical subtitles deterministic coverage/timestamps.
+        return [char for char in value if ("\u3040" <= char <= "\u30ff") or ("\u3400" <= char <= "\u9fff") or char.isdigit()]
+    return re.findall(r"[\w]+(?:['’\-][\w]+)*", value, flags=re.UNICODE)
 
 
 def attach_transcript_indices(aligned, transcript):
@@ -57,15 +70,18 @@ def attach_transcript_indices(aligned, transcript):
     return aligned
 
 
-def canonical_tts_tokens(scenes):
+def canonical_tts_tokens(scenes, language=None):
     """Return the exact tokens spoken by TTS, retaining scene-local identity."""
     tokens = []
     for scene in scenes:
         scene_id = str(scene.get("id") or "").strip()
-        text = str(scene.get("text") or "")
+        # schema-v2 separates direction from the exact words expected in the
+        # waveform. Legacy text remains readable for diagnostic artifacts.
+        text = str(scene.get("spokenText") or scene.get("text") or "")
         if not scene_id:
             raise ValueError("tts_scenes.json contains a scene without id")
-        for scene_word_index, word in enumerate(transcript_words(text)):
+        scene_language = scene.get("language") or language
+        for scene_word_index, word in enumerate(transcript_words(text, scene_language)):
             tokens.append({
                 "scene": scene_id,
                 "sceneWordIndex": scene_word_index,
@@ -74,15 +90,61 @@ def canonical_tts_tokens(scenes):
     return tokens
 
 
-def attach_canonical_scene_indices(aligned, scenes):
+def japanese_canonical_tokens(scenes, language=None):
+    """Build kana comparison units while retaining original subtitle chars.
+
+    Sudachi's reading form can contain more kana than the original Kanji span.
+    We distribute those reading units across visible source characters, then
+    later group their ASR timestamps back to one canonical subtitle character.
+    """
+    reading_tokens, surface_tokens = [], []
+    for scene in scenes:
+        scene_id = str(scene.get("id") or "").strip()
+        text = str(scene.get("spokenText") or scene.get("text") or "")
+        surface = transcript_words(text, "ja")
+        if not scene_id:
+            raise ValueError("tts_scenes.json contains a scene without id")
+        if not surface:
+            continue
+        base = len(surface_tokens)
+        surface_tokens.extend({"scene": scene_id, "sceneWordIndex": index, "word": word} for index, word in enumerate(surface))
+        readings = fidelity_units(text, "ja")
+        for index, reading in enumerate(readings):
+            surface_index = min(len(surface) - 1, index * len(surface) // max(1, len(readings)))
+            reading_tokens.append({
+                "scene": scene_id, "sceneWordIndex": surface_index,
+                "surfaceCanonicalIndex": base + surface_index, "word": surface[surface_index],
+                "matchWord": reading,
+            })
+    return reading_tokens, surface_tokens
+
+
+def _expand_japanese_aligned(aligned):
+    result = []
+    for item in aligned:
+        chars = transcript_words(item.get("word", ""), "ja")
+        if not chars:
+            continue
+        start, end = float(item.get("startSec", 0)), float(item.get("endSec", 0))
+        for index, char in enumerate(chars):
+            left = start + (end - start) * index / len(chars)
+            right = start + (end - start) * (index + 1) / len(chars)
+            result.append({**item, "word": char, "startSec": round(left, 3), "endSec": round(right, 3)})
+    return result
+
+
+def attach_canonical_scene_indices(aligned, scenes, language=None):
     """Map Whisper words to the exact scene narration read by TTS.
 
     `sourceRange` refers to the input transcript and may deliberately differ
     from `narrationOverride`. Subtitle timing must never use that source range:
     it has to follow the words the voice actually spoke.
     """
-    expected = canonical_tts_tokens(scenes)
-    expected_norm = [normalize_word(item["word"]) for item in expected]
+    japanese = is_japanese_language(language)
+    expected, surface_expected = japanese_canonical_tokens(scenes, language) if japanese else (canonical_tts_tokens(scenes, language), None)
+    if is_japanese_language(language):
+        aligned = _expand_japanese_aligned(aligned)
+    expected_norm = [normalize_word(item.get("matchWord", item["word"])) for item in expected]
     aligned_norm = [normalize_word(item["word"]) for item in aligned]
     matcher = SequenceMatcher(None, expected_norm, aligned_norm, autojunk=False)
     index_map = {}
@@ -92,6 +154,19 @@ def attach_canonical_scene_indices(aligned, scenes):
 
     canonical_matches = {canonical_index: aligned[aligned_index]
                          for aligned_index, canonical_index in index_map.items()}
+    if japanese:
+        grouped = {}
+        for reading_index, observed in canonical_matches.items():
+            grouped.setdefault(expected[reading_index]["surfaceCanonicalIndex"], []).append(observed)
+        canonical_matches = {
+            surface_index: {
+                "startSec": min(float(item["startSec"]) for item in observations),
+                "endSec": max(float(item["endSec"]) for item in observations),
+                "confidence": min(float(item.get("confidence", 0)) for item in observations),
+            }
+            for surface_index, observations in grouped.items()
+        }
+        expected = surface_expected
     matched = len(canonical_matches)
 
     # Whisper is an ASR model, not a Vietnamese forced aligner. It can omit a
@@ -201,12 +276,14 @@ def main() -> int:
     provenance = None
     if args.scenes:
         with open(args.scenes, "r", encoding="utf-8-sig") as f:
-            scenes = json.load(f)
+            payload = json.load(f)
+        scenes = payload.get("scenes", []) if isinstance(payload, dict) else payload
         if not isinstance(scenes, list) or not scenes:
             print("[align_words] --scenes must be a non-empty tts_scenes.json array", file=sys.stderr)
             return 1
-        words, provenance = attach_canonical_scene_indices(words, scenes)
+        words, provenance = attach_canonical_scene_indices(words, scenes, args.lang or detected_language)
         provenance["language"] = detected_language
+        provenance["ttsSchemaVersion"] = payload.get("schemaVersion", 1) if isinstance(payload, dict) else 1
     elif args.transcript:
         with open(args.transcript, "r", encoding="utf-8-sig") as f:
             words = attach_transcript_indices(words, f.read())

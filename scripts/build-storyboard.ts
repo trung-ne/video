@@ -239,6 +239,7 @@ const scenes = SCENES.map((s, i) => {
   return {
     id,
     narration,
+    ttsInstruction: s.ttsInstruction?.trim() || undefined,
     purpose: s.purpose,
     emotion: s.emotion,
     viewerFocus: s.viewerFocus,

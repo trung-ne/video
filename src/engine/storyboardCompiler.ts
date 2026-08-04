@@ -164,6 +164,9 @@ function resolveBeatOffset(
 // Whitespace splitting counts punctuation-only fragments (for example an em
 // dash) that Whisper never emits, which would corrupt sceneWordIndex coverage.
 function canonicalNarrationTokens(value: string): string[] {
+  if (/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/u.test(value)) {
+    return Array.from(value).filter((char) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff0-9]/u.test(char));
+  }
   return value.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) ?? [];
 }
 
@@ -247,7 +250,9 @@ function buildSubtitleCues(
     const first = byIndex.get(start)!;
     const last = byIndex.get(offset - 1)!;
     raw.push({
-      text: chunk.join(" "),
+      text: chunk.every((token) => /^[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff0-9]$/u.test(token))
+        ? chunk.join("")
+        : chunk.join(" "),
       startFrame: Math.max(0, Math.round(first.startSec * fps) - timing.startFrame),
       endFrame: Math.min(timing.frames, Math.max(1, Math.round(last.endSec * fps) - timing.startFrame)),
     });

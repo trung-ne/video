@@ -149,6 +149,11 @@ export interface SceneBrief {
   id: string;
   // Full spoken line for this scene — becomes narration (subtitle source).
   narration: string;
+  /**
+   * Performance direction for the TTS backend. It is never rendered or
+   * considered part of narration/subtitles.
+   */
+  ttsInstruction?: string;
 
   // ── Authoring intent (what the LLM is actually good at) ──
   purpose: string;        // one line: what this scene must make the viewer get
@@ -220,6 +225,8 @@ export interface Storyboard {
 export interface AuthoredScene {
   marker: string;
   narrationOverride?: string;
+  /** Hand-authored delivery direction for expressive TTS; never spoken. */
+  ttsInstruction?: string;
   grammar: VisualGrammar;
   emotion: Emotion;
   purpose: string;

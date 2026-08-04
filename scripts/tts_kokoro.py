@@ -7,7 +7,8 @@ Usage:
     py -3.11 scripts/tts_kokoro.py --scenes scenes.json --outdir public/audio/<proj> \
         --voice af_heart --lang a
 
-Input  (scenes.json): [{"id": "scene-01", "text": "..."}, ...]
+Input  (scenes.json): schema-v2 `{scenes:[{id, spokenText, ttsInstruction?}]}`
+                     (legacy `[{id,text}]` is diagnostic-compatible)
 Output (in outdir):
     voice.wav        — all scenes concatenated (the track the video plays)
     durations.json   — {"fps":30,"sampleRate":24000,"totalSec":..,
@@ -53,7 +54,10 @@ def main():
     args = ap.parse_args()
 
     with open(args.scenes, "r", encoding="utf-8-sig") as f:
-        scenes = json.load(f)
+        payload = json.load(f)
+    scenes = payload.get("scenes", []) if isinstance(payload, dict) else payload
+    if not isinstance(scenes, list):
+        raise ValueError("scenes JSON must be schema-v2 object or legacy array")
 
     combined_text = " ".join(str(scene.get("text") or "") for scene in scenes)
     if args.lang in {"a", "b"} and looks_vietnamese(combined_text):
@@ -84,7 +88,9 @@ def main():
 
     for idx, scene in enumerate(scenes):
         sid = scene.get("id", f"scene-{idx+1:02d}")
-        text = (scene.get("text") or "").strip()
+        # Kokoro has no instruction channel. Direction is intentionally not
+        # appended to spoken text; it is provenance for the router only.
+        text = (scene.get("spokenText") or scene.get("text") or "").strip()
         if not text:
             print(f"  [skip] {sid}: empty text", file=sys.stderr)
             continue

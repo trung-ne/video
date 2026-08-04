@@ -7,7 +7,8 @@ Usage:
     python scripts/tts_edge.py --scenes scenes.json --outdir public/audio/<proj> \
         --voice en-US-AvaNeural
 
-Input  (scenes.json): [{"id": "scene-01", "text": "..."}, ...]
+Input  (scenes.json): schema-v2 `{scenes:[{id, spokenText, ttsInstruction?}]}`
+                     (legacy `[{id,text}]` is diagnostic-compatible)
 Output (in outdir):
     voice.wav        — all scenes concatenated (the track the video plays)
     durations.json   — {"fps":30,"sampleRate":24000,"totalSec":..,
@@ -165,7 +166,10 @@ def mp3_to_wav_samples(mp3_path: str, target_sr: int = 24000):
 async def main_async(args):
     started_at = time.perf_counter()
     with open(args.scenes, "r", encoding="utf-8-sig") as f:
-        scenes = json.load(f)
+        payload = json.load(f)
+    scenes = payload.get("scenes", []) if isinstance(payload, dict) else payload
+    if not isinstance(scenes, list):
+        raise ValueError("scenes JSON must be schema-v2 object or legacy array")
 
     os.makedirs(args.outdir, exist_ok=True)
 
@@ -178,7 +182,7 @@ async def main_async(args):
 
     for idx, scene in enumerate(scenes):
         sid = scene.get("id", f"scene-{idx+1:02d}")
-        text = (scene.get("text") or "").strip()
+        text = (scene.get("spokenText") or scene.get("text") or "").strip()
         if not text:
             print(f"  [skip] {sid}: empty text", file=sys.stderr)
             continue

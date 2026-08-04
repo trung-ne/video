@@ -80,13 +80,22 @@ if (dPath) {
 
 let words: AlignedWord[] | undefined;
 let alignment: any;
+let alignmentChecksum: string | undefined;
+let ttsGenerationChecksum: string | undefined;
 const wPath = getArg("--words");
 if (wPath) {
   requireFile("--words", wPath);
   const w = JSON.parse(fs.readFileSync(wPath, "utf-8"));
   words = Array.isArray(w) ? w : w.words;
   const alignmentPath = getArg("--alignment") ?? path.join(path.dirname(wPath), "alignment.json");
-  if (fs.existsSync(alignmentPath)) alignment = JSON.parse(fs.readFileSync(alignmentPath, "utf-8"));
+  if (fs.existsSync(alignmentPath)) {
+    alignment = JSON.parse(fs.readFileSync(alignmentPath, "utf-8"));
+    alignmentChecksum = checksumJson(alignment);
+  }
+  const generationPath = path.join(path.dirname(wPath), "tts-generation.json");
+  if (fs.existsSync(generationPath)) {
+    ttsGenerationChecksum = checksumJson(JSON.parse(fs.readFileSync(generationPath, "utf-8")));
+  }
 }
 
 /** Measured length of the actual voice track, or undefined if not probeable. */
@@ -184,6 +193,8 @@ const provenance = {
   storyboardChecksum,
   durationsChecksum: dPath ? checksumJson(JSON.parse(fs.readFileSync(dPath, "utf-8"))) : undefined,
   wordsChecksum: wPath ? checksumJson(JSON.parse(fs.readFileSync(wPath, "utf-8"))) : undefined,
+  alignmentChecksum,
+  ttsGenerationChecksum,
   subtitleTiming: alignment ? {
     source: alignment.source,
     canonicalWordCount: Number(alignment.canonicalWordCount ?? 0),
