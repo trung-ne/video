@@ -18,6 +18,7 @@ import soundfile as sf
 
 from tts_fidelity import compare, passes, require_japanese_tokenizer, units
 from align_words import attach_canonical_scene_indices
+from kokoro_adapter import KokoroSynthesizer, load_versioned_profile
 
 FPS, SAMPLE_RATE = 30, 24000
 HTTP_BACKENDS = {"qwen3": "TTS_QWEN_BASE_URL", "cosy": "TTS_COSY_BASE_URL", "style_bert_vits2": "TTS_STYLE_BERT_BASE_URL"}
@@ -72,6 +73,8 @@ class Backend:
 
     def health(self) -> None: raise NotImplementedError
     def synthesize(self, scene: dict[str, Any], language: str, voice: str, seed: int, attempt: int, target: Path) -> SynthesisResult: raise NotImplementedError
+    def generation_settings(self, language: str, voice: str) -> dict[str, Any]: return {}
+    def attempt_limit(self, configured_limit: int) -> int: return configured_limit
 
 
 class HttpBackend(Backend):
@@ -134,11 +137,8 @@ class LocalScriptBackend(Backend):
         work.write_text(json.dumps({"schemaVersion": 2, "language": language, "scenes": [scene]}, ensure_ascii=False), encoding="utf-8")
         outdir = target.parent / f".{scene['id']}.local"
         shutil.rmtree(outdir, ignore_errors=True); outdir.mkdir(parents=True)
-        if self.name == "edge":
-            command = [sys.executable, str(self.root / "scripts" / "tts_edge.py"), "--scenes", str(work), "--outdir", str(outdir), "--voice", voice, "--gap", "0"]
-        else:
-            speed = self.env.get(f"TTS_KOKORO_SPEED_{language.upper()}", "1.0")
-            command = ["py", "-3.11", str(self.root / "scripts" / "tts_kokoro.py"), "--scenes", str(work), "--outdir", str(outdir), "--voice", voice, "--lang", {"en": "a", "ja": "j"}.get(language, "a"), "--speed", speed, "--gap", "0"]
+        if self.name != "edge": raise RuntimeError(f"LocalScriptBackend cannot serve {self.name}")
+        command = [sys.executable, str(self.root / "scripts" / "tts_edge.py"), "--scenes", str(work), "--outdir", str(outdir), "--voice", voice, "--gap", "0"]
         subprocess.run(command, cwd=self.root, check=True)
         produced = outdir / f"{scene['id']}.wav"
         if not produced.exists(): raise RuntimeError(f"{self.name} did not write {produced}")
@@ -147,9 +147,53 @@ class LocalScriptBackend(Backend):
         return SynthesisResult(self.name, None, seed)
 
 
+class KokoroBackend(Backend):
+    """Deterministic in-process Kokoro; model and voice load once per router run."""
+    def __init__(self, name: str, env: dict[str, str], root: Path):
+        super().__init__(name, env, root)
+        self._settings: dict[tuple[str, str], dict[str, Any]] = {}
+        self._synthesizers: dict[tuple[str, str], KokoroSynthesizer] = {}
+
+    def health(self) -> None:
+        try:
+            from importlib.metadata import version
+            version("kokoro")
+        except Exception as exc:
+            raise RuntimeError("Kokoro Python package is required for local Kokoro TTS") from exc
+
+    def generation_settings(self, language: str, voice: str) -> dict[str, Any]:
+        key = (language, voice)
+        if key not in self._settings:
+            if language not in {"en", "ja"}:
+                raise RuntimeError(f"Kokoro backend does not support production language {language!r}")
+            self._settings[key] = load_versioned_profile(self.root, self.env, language, voice)
+        return self._settings[key]
+
+    def attempt_limit(self, configured_limit: int) -> int:
+        # Kokoro is deterministic: changing only attempt/seed creates the same WAV.
+        return min(configured_limit, 1)
+
+    def synthesize(self, scene, language, voice, seed, attempt, target) -> SynthesisResult:
+        settings = self.generation_settings(language, voice)
+        key = (language, voice)
+        if key not in self._synthesizers:
+            lang_code = {"en": "a", "ja": "j"}[language]
+            self._synthesizers[key] = KokoroSynthesizer(
+                lang_code=lang_code,
+                voice_spec=settings["voice"],
+                speed=float(settings["speed"]),
+                repo_id=settings["repoId"],
+            )
+        synthesizer = self._synthesizers[key]
+        synthesizer.synthesize(scene["spokenText"], target)
+        return SynthesisResult(settings["repoId"], synthesizer.package_version, seed)
+
+
 def build_backend(name: str, env: dict[str, str], root: Path) -> Backend:
     if name not in ALL_BACKENDS: raise RuntimeError(f"Unsupported TTS backend {name!r}; expected {sorted(ALL_BACKENDS)}")
-    return HttpBackend(name, env, root) if name in HTTP_BACKENDS else LocalScriptBackend(name, env, root)
+    if name in HTTP_BACKENDS: return HttpBackend(name, env, root)
+    if name == "kokoro": return KokoroBackend(name, env, root)
+    return LocalScriptBackend(name, env, root)
 
 
 class Transcriber:
@@ -202,6 +246,8 @@ def main() -> int:
     voice = require(env, f"TTS_VOICE_{language.upper()}")
     backend = build_backend(backend_name, env, root); backend.health()
     max_attempts = int(env.get("TTS_ALIGNMENT_MAX_ATTEMPTS", "3"))
+    backend_attempts = backend.attempt_limit(max_attempts)
+    generation_settings = backend.generation_settings(language, voice)
     min_precision, min_recall, max_edit = (float(env.get("TTS_ALIGNMENT_MIN_PRECISION", "0.98")), float(env.get("TTS_ALIGNMENT_MIN_RECALL", "0.98")), float(env.get("TTS_ALIGNMENT_MAX_EDIT_RATE", "0.03")))
     gap_seconds = float(env.get("TTS_INTER_SCENE_GAP_SECONDS", "0.08"))
     run_id = time.strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]
@@ -216,7 +262,7 @@ def main() -> int:
             raise RuntimeError("Every schema-v2 scene requires id and spokenText")
         if scene.get("spokenTextSha256") != text_sha(scene["spokenText"]) or scene.get("instructionSha256") != text_sha(scene.get("ttsInstruction", "")):
             raise RuntimeError(f"{scene['id']}: TTS text/instruction checksum is stale; rerun storyboard-to-tts.ts")
-        settings = {"backend": backend_name, "voice": voice, "language": language, "model": getattr(backend, "model", backend_name), "spokenText": scene["spokenText"], "ttsInstruction": scene.get("ttsInstruction", "")}
+        settings = {"backend": backend_name, "voice": voice, "language": language, "model": getattr(backend, "model", backend_name), "generationSettings": generation_settings, "spokenText": scene["spokenText"], "ttsInstruction": scene.get("ttsInstruction", "")}
         cache_key = sha(settings)
         wav = audio_dir / f"{scene['id']}.wav"; sidecar = audio_dir / f"{scene['id']}.tts.json"
         cached = json.loads(sidecar.read_text(encoding="utf-8")) if sidecar.exists() else None
@@ -225,14 +271,14 @@ def main() -> int:
             cached["_wavPath"] = str(wav)
             accepted.append(cached); print(f"  [cache] {scene['id']}"); continue
         scene_passed = None
-        for attempt in range(1, max_attempts + 1):
+        for attempt in range(1, backend_attempts + 1):
             seed = int(sha({"project": args.project, "scene": scene["id"], "cache": cache_key, "attempt": attempt})[:8], 16)
             staged = run_dir / f"{scene['id']}.attempt-{attempt}.wav"
             result = backend.synthesize(scene, language, voice, seed, attempt, staged)
             seconds = validate_wav(staged)
             observed_words, detected_language = transcriber.transcribe(staged, language)
             metrics = compare(units(scene["spokenText"], language), units(" ".join(item["word"] for item in observed_words), language))
-            record = {"id": scene["id"], "cacheKey": cache_key, "passed": passes(metrics, min_precision, min_recall, max_edit), "attempt": attempt, "backend": backend_name, "model": result.model, "backendVersion": result.backend_version, "voice": voice, "seed": result.seed, "language": language, "detectedLanguage": detected_language, "spokenTextSha256": text_sha(scene["spokenText"]), "instructionSha256": text_sha(scene.get("ttsInstruction", "")), "seconds": round(seconds, 3), "metrics": metrics.as_dict(), "words": observed_words}
+            record = {"id": scene["id"], "cacheKey": cache_key, "passed": passes(metrics, min_precision, min_recall, max_edit), "attempt": attempt, "backend": backend_name, "model": result.model, "backendVersion": result.backend_version, "voice": voice, "generationSettings": generation_settings, "seed": result.seed, "language": language, "detectedLanguage": detected_language, "spokenTextSha256": text_sha(scene["spokenText"]), "instructionSha256": text_sha(scene.get("ttsInstruction", "")), "seconds": round(seconds, 3), "metrics": metrics.as_dict(), "words": observed_words}
             if record["passed"]:
                 accepted_wav = staged_accepted / f"{scene['id']}.wav"
                 shutil.copy2(staged, accepted_wav)
@@ -242,8 +288,8 @@ def main() -> int:
             shutil.copy2(staged, rejected / staged.name); atomic_json(rejected / f"{scene['id']}.attempt-{attempt}.json", record)
             print(f"  [retry] {scene['id']} attempt={attempt} precision={metrics.precision:.1%} recall={metrics.recall:.1%} edit={metrics.editRate:.1%}")
         if not scene_passed:
-            atomic_json(run_dir / "failed.json", {"sceneId": scene["id"], "backend": backend_name, "maxAttempts": max_attempts})
-            raise RuntimeError(f"Scene {scene['id']} failed content-fidelity gate after {max_attempts} attempts; production audio unchanged")
+            atomic_json(run_dir / "failed.json", {"sceneId": scene["id"], "backend": backend_name, "maxAttempts": backend_attempts, "deterministic": generation_settings.get("deterministic", False)})
+            raise RuntimeError(f"Scene {scene['id']} failed content-fidelity gate after {backend_attempts} attempt(s); production audio unchanged")
 
     gap = np.zeros(round(SAMPLE_RATE * gap_seconds), dtype=np.float32)
     all_audio, all_words, durations, cursor_samples, cursor_frames = [], [], [], 0, 0
@@ -266,8 +312,8 @@ def main() -> int:
     canonical["generationManifestSha256"] = sha(public_records)
     full = np.concatenate(all_audio)
     staging_audio = run_dir / "voice.wav"; sf.write(str(staging_audio), full, SAMPLE_RATE)
-    durations_doc = {"fps": FPS, "sampleRate": SAMPLE_RATE, "voice": voice, "backend": backend_name, "lang": language, "totalSec": round(len(full) / SAMPLE_RATE, 3), "totalFrames": cursor_frames, "scenes": durations, "ttsMetrics": {"chunkCount": len(accepted), "gapCount": max(0, len(accepted)-1), "maxInterSceneGapSeconds": gap_seconds, "totalGapSeconds": round(max(0, len(accepted)-1) * gap_seconds, 3), "routerRunId": run_id}}
-    generation = {"schemaVersion": 1, "runId": run_id, "projectId": args.project, "backend": backend_name, "voice": voice, "language": language, "scenes": public_records, "generatedAt": time.time()}
+    durations_doc = {"fps": FPS, "sampleRate": SAMPLE_RATE, "voice": voice, "backend": backend_name, "lang": language, "totalSec": round(len(full) / SAMPLE_RATE, 3), "totalFrames": cursor_frames, "scenes": durations, "ttsMetrics": {"chunkCount": len(accepted), "gapCount": max(0, len(accepted)-1), "maxInterSceneGapSeconds": gap_seconds, "totalGapSeconds": round(max(0, len(accepted)-1) * gap_seconds, 3), "routerRunId": run_id, "generationSettings": generation_settings}}
+    generation = {"schemaVersion": 1, "runId": run_id, "projectId": args.project, "backend": backend_name, "voice": voice, "language": language, "generationSettings": generation_settings, "scenes": public_records, "generatedAt": time.time()}
     # Publish only after all JSON has been constructed and every scene passed.
     # New scene cache files are promoted now, never while a later scene might
     # still fail. Existing cache WAVs were read-only input to this run.

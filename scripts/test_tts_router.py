@@ -30,7 +30,7 @@ if _AUDIO_DEP_ERROR:
             pass
 else:
     sys.path.insert(0, str(Path(__file__).parent))
-    from tts_router import HttpBackend  # noqa: E402
+    from tts_router import HttpBackend, KokoroBackend  # noqa: E402
 
     class ContractHandler(BaseHTTPRequestHandler):
         request_body: dict = {}
@@ -86,6 +86,9 @@ else:
             with tempfile.TemporaryDirectory() as directory:
                 with self.assertRaisesRegex(RuntimeError, "only accepts configured style labels"):
                     backend.synthesize({"id": "scene-001", "spokenText": "こんにちは", "ttsInstruction": "Warm, skeptical."}, "ja", "Ono_Anna", 1, 1, Path(directory) / "scene.wav")
+        def test_kokoro_deterministic_backend_does_not_repeat_identical_attempts(self):
+            backend = KokoroBackend("kokoro", {}, Path.cwd())
+            self.assertEqual(backend.attempt_limit(3), 1)
 
 
 if __name__ == "__main__":

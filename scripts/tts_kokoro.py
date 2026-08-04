@@ -25,7 +25,9 @@ import json
 import os
 import sys
 import time
-import re
+from pathlib import Path
+
+from kokoro_adapter import KokoroSynthesizer, parse_weighted_voice, validate_voice_for_language
 
 FPS = 30
 SR = 24000          # Kokoro output sample rate
@@ -44,47 +46,6 @@ def looks_vietnamese(text: str) -> bool:
     letters = sum(ch.isalpha() for ch in text)
     marked = sum(ch in VIETNAMESE_MARKS for ch in text)
     return marked >= 12 and marked / max(1, letters) >= 0.01
-
-
-JAPANESE_VOICES = {"jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"}
-
-
-def parse_weighted_voice(spec: str) -> list[tuple[str, float]]:
-    """Parse a stable, explicit blend such as ``jf_alpha:0.8,jf_nezumi:0.2``."""
-    parts = [part.strip() for part in spec.split(",") if part.strip()]
-    if not parts:
-        raise ValueError("Kokoro voice must not be empty")
-    weighted: list[tuple[str, float]] = []
-    for part in parts:
-        match = re.fullmatch(r"([A-Za-z0-9_-]+)(?::([0-9]+(?:\.[0-9]+)?))?", part)
-        if not match:
-            raise ValueError(f"Invalid Kokoro voice blend element {part!r}; use voice:weight")
-        name, raw_weight = match.groups()
-        weighted.append((name, float(raw_weight) if raw_weight is not None else 1.0))
-    if len(weighted) > 2:
-        raise ValueError("Kokoro supports at most two voices in a production blend")
-    if any(weight <= 0 for _, weight in weighted):
-        raise ValueError("Kokoro blend weights must be positive")
-    total = sum(weight for _, weight in weighted)
-    return [(name, weight / total) for name, weight in weighted]
-
-
-def register_weighted_voice(pipeline, spec: str, lang: str) -> str:
-    """Add a weighted voice embedding to the official Kokoro pipeline cache."""
-    weighted = parse_weighted_voice(spec)
-    names = [name for name, _ in weighted]
-    if lang == "j" and any(name not in JAPANESE_VOICES for name in names):
-        raise ValueError(
-            f"Japanese Kokoro requires a Japanese voice ({sorted(JAPANESE_VOICES)}), got {names}"
-        )
-    if len(weighted) == 1:
-        return weighted[0][0]
-    import torch
-    key = "weighted:" + ",".join(f"{name}:{weight:.6f}" for name, weight in weighted)
-    if key not in pipeline.voices:
-        packs = [pipeline.load_single_voice(name) for name, _ in weighted]
-        pipeline.voices[key] = sum(pack * weight for pack, (_, weight) in zip(packs, weighted))
-    return key
 
 
 def main():
@@ -117,7 +78,6 @@ def main():
 
     import numpy as np
     import soundfile as sf
-    from kokoro import KPipeline
 
     os.makedirs(args.outdir, exist_ok=True)
 
@@ -125,8 +85,8 @@ def main():
     os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
 
     started_at = time.perf_counter()
-    pipeline = KPipeline(lang_code=args.lang)
-    voice_key = register_weighted_voice(pipeline, args.voice, args.lang)
+    validate_voice_for_language(args.voice, args.lang)
+    synthesizer = KokoroSynthesizer(args.lang, args.voice, args.speed)
 
     gap = np.zeros(int(SR * max(0.0, args.gap)), dtype=np.float32)
     all_audio = []
@@ -143,16 +103,13 @@ def main():
             print(f"  [skip] {sid}: empty text", file=sys.stderr)
             continue
 
-        chunks = []
-        for _gs, _ps, audio in pipeline(text, voice=voice_key, speed=args.speed):
-            chunks.append(audio)
-        if not chunks:
-            print(f"  [skip] {sid}: no audio produced", file=sys.stderr)
-            continue
-
-        clip = np.concatenate(chunks)
+        scene_path = os.path.join(args.outdir, f"{sid}.wav")
+        synthesizer.synthesize(text, Path(scene_path))
+        clip, clip_rate = sf.read(scene_path, dtype="float32", always_2d=False)
+        if clip_rate != SR or clip.ndim != 1:
+            raise RuntimeError(f"{sid}: Kokoro adapter returned invalid WAV shape/rate")
         # per-scene wav (handy for debugging / re-renders)
-        sf.write(os.path.join(args.outdir, f"{sid}.wav"), clip, SR)
+        sf.write(scene_path, clip, SR)
 
         all_audio.append(clip)
         if idx < len(scenes) - 1:

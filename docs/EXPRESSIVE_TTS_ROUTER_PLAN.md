@@ -19,9 +19,12 @@ language routing is stored in `.env`:
 
 ```dotenv
 TTS_BACKEND_EN=qwen3
-TTS_BACKEND_JA=qwen3
+TTS_BACKEND_JA=kokoro
 TTS_BACKEND_KO=qwen3
 TTS_BACKEND_VI=edge
+TTS_VOICE_JA=jf_alpha:0.80,jf_nezumi:0.20
+TTS_KOKORO_PROFILE_JA=tokyo-female-conversational-v1
+TTS_KOKORO_SPEED_JA=0.96
 ```
 
 Supported backend values are `qwen3`, `cosy`, `style_bert_vits2`, `kokoro`, and
@@ -45,7 +48,25 @@ POST /v1/synthesize
 Deploy each model in an isolated Python environment/container on the Linux GPU
 host: Qwen on port 8020, CosyVoice on 50000, and Style-Bert-VITS2 on 50001.
 Expose ports only through LAN/VPN/reverse proxy with bearer authentication.
-Qwen is the default EN/JA/KO backend; Cosy and JP-Extra are opt-in A/B routes.
+Qwen remains available for EN/JA/KO; this workstation's Japanese route uses the
+local Kokoro profile below. Cosy and JP-Extra are opt-in A/B routes.
+
+## Local Kokoro Japanese profile
+
+Japanese Kokoro runs inside `tts_router.py`; its `KPipeline(lang_code="j")` and
+weighted voice embedding are loaded once and reused for every scene in the run.
+The versioned baseline in `config/tts/kokoro-ja-profiles.json` is an adult female
+neutral-conversational blend, `jf_alpha:0.80,jf_nezumi:0.20`, at speed `0.96`.
+It targets stable Standard Japanese within Kokoro's G2P/prosody limits; it is not
+a voice clone or a guarantee of a specific Tokyo speaker/accent.
+
+Weighted profiles accept at most two same-language, same-gender voices. Weights
+are normalized before synthesis. Profile ID, normalized blend, speed, Kokoro
+repository and installed package version are recorded in generation settings;
+changing voice, weights or speed invalidates the accepted-scene cache.
+
+Kokoro has no instruction channel, so `ttsInstruction` is never appended to
+`spokenText`. The same narrator profile is used throughout the video.
 
 ## Fidelity gate and retries
 
@@ -56,9 +77,11 @@ For every scene the router:
    lexical insertions against `spokenText`.
 3. Accepts only precision/recall >= 0.98, edit rate <= 0.03, and zero lexical
    insertion runs.
-4. Retries only a rejected scene up to three times, always on the same backend
+4. Retries only a rejected scene up to three times for stochastic backends, always on the same backend
    and voice; later attempts use a new seed and stricter no-add/no-omit direction.
-5. Hard-fails after the third attempt without replacing any production artifact.
+5. Treats Kokoro as deterministic and performs one attempt per unchanged setting,
+   avoiding three identical WAVs. A failed scene hard-fails without publication.
+6. Hard-fails after the final allowed attempt without replacing any production artifact.
 
 Accepted scene audio is cached by backend, model, voice, language, text, and
 instruction hash. Rejected WAV and reports live under
@@ -80,6 +103,20 @@ a blocker. `alignment.json` and `tts-generation.json` checksums are included in
 timeline timing provenance and checked again before render/publish.
 
 ## Verification
+
+Create fidelity-gated blind Japanese comparisons without touching production:
+
+```bash
+py -3.11 scripts/evaluate_kokoro_ja.py --round 1
+py -3.11 scripts/evaluate_kokoro_ja.py --round 2 --voice-a jf_alpha --voice-b jf_nezumi
+```
+
+Round 1 compares the four Japanese female voices at speed 0.96. Round 2 compares
+90/10, 80/20, 70/30 and 50/50 blends at speeds 0.94, 0.96 and 0.98. Only
+candidates whose 20-scene corpus passes the Japanese fidelity gate appear in
+`accepted/`; `blind-manifest.json` hides the profile and `answer-key.json` reveals
+it after listening. The selected result must be written explicitly to the
+versioned profile and `.env`; until then, the baseline remains active.
 
 Run `npm run check` for TypeScript, existing engine tests, canonical alignment
 tests, and lexical-fidelity unit tests. GPU smoke tests must generate the same
