@@ -137,7 +137,8 @@ class LocalScriptBackend(Backend):
         if self.name == "edge":
             command = [sys.executable, str(self.root / "scripts" / "tts_edge.py"), "--scenes", str(work), "--outdir", str(outdir), "--voice", voice, "--gap", "0"]
         else:
-            command = ["py", "-3.11", str(self.root / "scripts" / "tts_kokoro.py"), "--scenes", str(work), "--outdir", str(outdir), "--voice", voice, "--lang", {"en": "a", "ja": "j"}.get(language, "a"), "--gap", "0"]
+            speed = self.env.get(f"TTS_KOKORO_SPEED_{language.upper()}", "1.0")
+            command = ["py", "-3.11", str(self.root / "scripts" / "tts_kokoro.py"), "--scenes", str(work), "--outdir", str(outdir), "--voice", voice, "--lang", {"en": "a", "ja": "j"}.get(language, "a"), "--speed", speed, "--gap", "0"]
         subprocess.run(command, cwd=self.root, check=True)
         produced = outdir / f"{scene['id']}.wav"
         if not produced.exists(): raise RuntimeError(f"{self.name} did not write {produced}")

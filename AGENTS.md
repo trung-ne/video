@@ -59,7 +59,9 @@ phiên chat và viết tay nội dung scene:
 npx ts-node scripts/build-storyboard.ts --project <id>          # → storyboard.json
 npx ts-node scripts/storyboard-to-tts.ts --storyboard projects/<id>/storyboard.json
 # Router chọn backend theo TTS_BACKEND_<LANG> trong .env, sinh/verify từng scene.
-# Vietnamese mặc định Edge; EN/JA/KO mặc định Qwen3 qua local HTTP model server.
+# Vietnamese/Korean dùng Edge local; Kokoro đã xác minh cho EN/JA (voice JA:
+# jf_alpha, jf_gongitsune, jf_nezumi, jf_tebukuro, jm_kumo). Qwen3 remains the
+# default cloud-GPU choice for EN/JA/KO when its HTTP server is configured.
 py -3.11 scripts/tts_router.py --project <id>
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
     --out projects/<id>/timeline.json --durations projects/<id>/durations.json \
