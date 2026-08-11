@@ -298,8 +298,11 @@ function compositionFingerprint(result: GrammarResult, brief: SceneBrief): strin
   const stage = background.startsWith("assets/scenes/") ? `stage:${background.split("/").pop()?.replace(/\.[^.]+$/, "")}` :
     /\.(jpg|jpeg|png|webp)$/i.test(String(result.backgroundSrc ?? "")) ? "photo" : "graphic";
   const quadrants = entities.map((entity) => entity.anchor ?? entity.slot ?? "free").sort().join(",") || "none";
+  // `shot` is applied to the grammar result before this fingerprint is built.
+  // Include it here so close/wide authored framing is not incorrectly reported
+  // as the same rendered composition as a medium shot.
   return [brief.visualGrammar, brief.visualRegister ?? "unknown", stage, `${actors}a:${props}p`,
-    quadrants, components, brief.captionTreatment ?? "none", brief.photoTreatment ?? "none"].join("|");
+    quadrants, components, brief.shot ?? "medium", brief.captionTreatment ?? "none", brief.photoTreatment ?? "none"].join("|");
 }
 
 /**

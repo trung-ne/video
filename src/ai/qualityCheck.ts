@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { resolveAssetSrcStrict } from "../engine/assetPaths";
-import { STAGE_ANCHORS } from "../engine/stageAnchors";
+import { STAGE_ANCHORS, isStageBackground } from "../engine/stageAnchors";
 import { isApprovedNoFacePhoto } from "../engine/photoPolicy";
 import {
   getGrammarDefinition, isKnownGrammar, knownGrammarIds, missingRequiredSlots,
@@ -690,6 +690,11 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
     });
   }
   for (const [register, count] of counts) {
+    // TABLEAU is compositionally governed by the dedicated stage-density gate
+    // below (which requires at least 35% for a long production). Applying the
+    // generic 30% register cap here made the two production requirements
+    // mutually impossible. Other registers retain the normal dominance cap.
+    if (register === "full_tableau") continue;
     if (briefs.length >= 8 && count / briefs.length > referenceQuality.registers.maximumSingleRatio) {
       registerIssues.push({
         severity: "MAJOR", rule: "REGISTER_DOMINANCE",
@@ -1341,6 +1346,10 @@ function checkImmediateFocalAndCardGeometry(timeline: any, scenes: any[]): Check
 // literal complaint "màu nền thay đổi quá nhiều".
 function bgMood(bg: string): "white" | "dark" | "photo" | "other" {
   if (!bg) return "other";
+  // Illustrated production stage PNGs are not photographic mood cuts. They
+  // share the light editorial treatment of the white canvas and should not
+  // inflate photo flicker merely because the resolver promoted SVG stage refs.
+  if (isStageBackground(bg)) return "white";
   const isPhoto = !isCSSBackground(bg);
   if (isPhoto) return "photo";
   if (/^#(fff|ffffff|fafaf8|f5f5f5)$/i.test(bg.trim())) return "white";
@@ -2103,7 +2112,10 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
     });
   }
   for (const [register, count] of registerCounts) {
-    if (scenes.length >= 8 && count / scenes.length > referenceQuality.registers.maximumSingleRatio) {
+    // Physical stage/tableau coverage has its own minimum gate below. It is
+    // intentionally allowed to exceed the generic register cap on long-form
+    // explainers, otherwise the stage-density and register rules conflict.
+    if (scenes.length >= 8 && register !== "full_tableau" && count / scenes.length > referenceQuality.registers.maximumSingleRatio) {
       issues.push({
         severity: "MAJOR", rule: "REGISTER_DOMINANCE",
         message: `${register} occupies ${Math.round(count / scenes.length * 100)}% of the timeline.`,
@@ -2114,9 +2126,15 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
   const durationSeconds = Number(timeline.durationInFrames ?? 0) / Number(timeline.fps ?? 30);
   const heroFrames = scenes.filter((scene) => scene.heroVisual).map((scene) => scene.startFrame);
   const heroRatio = heroFrames.length / Math.max(1, scenes.length);
-  if (heroRatio > 0.28) {
+  // The 45-second coverage rule requires at least ceil(duration / 45) hero
+  // beats. A fixed 28% scene cap contradicts that rule for long episodes
+  // with few, long narrated scenes (e.g. 20-minute productions). Keep the
+  // anti-wallpaper guard, but let the cadence-required count define the floor.
+  const cadenceRequiredHeroes = durationSeconds >= 45 ? Math.ceil(durationSeconds / 45) : 0;
+  const maximumHeroScenes = Math.max(Math.floor(scenes.length * 0.28), cadenceRequiredHeroes + 2);
+  if (heroFrames.length > maximumHeroScenes) {
     issues.push({ severity: "MAJOR", rule: "HERO_VISUAL_DENSITY",
-      message: `${heroFrames.length}/${scenes.length} scenes are heroes; maximum is 28%.` });
+      message: `${heroFrames.length}/${scenes.length} scenes are heroes; maximum is ${maximumHeroScenes} for this duration and cadence.` });
   }
   for (let index = 1; index < heroFrames.length; index++) {
     if ((heroFrames[index] - heroFrames[index - 1]) / (timeline.fps ?? 30) < 20) {
@@ -2125,8 +2143,18 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
       break;
     }
   }
-  const boundaries = [0, ...heroFrames, timeline.durationInFrames ?? 0].sort((a, b) => a - b);
-  const longestHeroGap = boundaries.slice(1).reduce((max, frame, index) => Math.max(max, frame - boundaries[index]), 0);
+  // Measure the non-hero interval, not the distance between hero start frames:
+  // a 30-second qualifying scene remains a hero visual for its whole span.
+  const heroIntervals = scenes.filter((scene) => scene.heroVisual)
+    .map((scene) => ({ start: scene.startFrame, end: scene.startFrame + scene.durationInFrames }))
+    .sort((a, b) => a.start - b.start);
+  let longestHeroGap = heroIntervals.length ? heroIntervals[0].start : (timeline.durationInFrames ?? 0);
+  let coveredUntil = heroIntervals.length ? heroIntervals[0].end : 0;
+  for (const interval of heroIntervals.slice(1)) {
+    longestHeroGap = Math.max(longestHeroGap, interval.start - coveredUntil);
+    coveredUntil = Math.max(coveredUntil, interval.end);
+  }
+  longestHeroGap = Math.max(longestHeroGap, (timeline.durationInFrames ?? 0) - coveredUntil);
   if (durationSeconds >= 45 && longestHeroGap / 30 > 45) {
     issues.push({
       severity: "MAJOR", rule: "HERO_VISUAL_GAP",
@@ -2188,7 +2216,11 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     const placement = nonUiEntities
       .map((entity: any) => String(entity.slot ?? `${Math.round((entity.position?.x ?? 0.5) * 4)}:${Math.round((entity.position?.y ?? 0.5) * 3)}`))
       .sort().join(",");
-    const signature = `${scene.visualGrammar}:${charCount}c:${propCount}p:${componentCount}x:${placement}`;
+    // A tableau's authored setting is part of the visible recipe. Treating
+    // every "one cat + one prop" shot as identical ignores materially
+    // different stages, anchors and spatial relationships.
+    const stage = isStageBackground(String(scene.backgroundSrc ?? "")) ? String(scene.backgroundSrc) : "";
+    const signature = `${scene.visualGrammar}:${stage}:${charCount}c:${propCount}p:${componentCount}x:${placement}`;
     signatures.set(signature, [...(signatures.get(signature) ?? []), scene]);
   }
   for (const [signature, matching] of signatures) {
@@ -2228,7 +2260,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   }
 
   const stageCounts = countSources(scenes.map((scene) => String(scene.backgroundSrc ?? ""))
-    .filter((source) => source.startsWith("assets/scenes/")));
+    .filter((source) => isStageBackground(source)));
   const stageLimit = Math.max(2, Math.ceil(scenes.length * (budgets?.maximumStageRatio ?? cfg.maximumStageRatio)));
   for (const [stage, count] of stageCounts) {
     if (count > stageLimit) {
@@ -2245,7 +2277,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     const stage = String(scene.backgroundSrc ?? "");
     runLength = stage === runStage ? runLength + 1 : 1;
     runStage = stage;
-    if (stage.startsWith("assets/scenes/") && runLength > maximumStageRun) {
+    if (isStageBackground(stage) && runLength > maximumStageRun) {
       issues.push({ severity: "MAJOR", rule: "STAGE_CONSECUTIVE_REUSE", scene: scene.id,
         message: `${stage} runs for ${runLength} consecutive scenes; maximum is ${maximumStageRun}.` });
       break;
@@ -2291,7 +2323,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     }
   }
   const sparseStages = scenes.filter((scene) =>
-    String(scene.backgroundSrc ?? "").startsWith("assets/scenes/") &&
+    isStageBackground(String(scene.backgroundSrc ?? "")) &&
     (!scene.semanticAction ||
       (uniqueEntities(scene).length < 2 &&
        (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) + (scene.cards?.length ?? 0) === 0))
@@ -2327,9 +2359,11 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     const cards = (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) +
       (scene.cards?.length ?? 0);
     const nodes = uniqueEntities(scene).length;
-    const fullScene = background.startsWith("assets/scenes/") && nodes >= 2 && !!scene.semanticAction;
-    const gag = (scene.speechBubbles?.length ?? 0) >= 1 && nodes >= 2 &&
-      !!scene.semanticAction && !!(scene.semanticObject || scene.semanticRelation);
+    const fullScene = isStageBackground(background) && nodes >= 2 && !!scene.semanticAction;
+    // A VISUAL_METAPHOR/CHAR_PROP gag can be wordless: two visible authored
+    // entities plus a semantic action are the rendered setup/payoff. Speech
+    // bubbles and separate semanticObject fields are optional in Route A.
+    const gag = scene.visualRegister === "visual_gag" && nodes >= 2 && !!scene.semanticAction;
     const meaningfulPair = nodes >= 2 && !!scene.semanticAction &&
       !!(scene.semanticObject || scene.semanticRelation);
     return hasPhoto || cards > 0 || nodes >= 3 || fullScene || gag || meaningfulPair;
@@ -2352,14 +2386,12 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
         return (scene.frameBoxes?.length ?? 0) === 0 &&
           !/\.(jpg|jpeg|png|webp)$/i.test(String(scene.backgroundSrc ?? ""));
       case "full_tableau":
-        return !String(scene.backgroundSrc ?? "").startsWith("assets/scenes/") || !scene.semanticAction;
+        return !isStageBackground(String(scene.backgroundSrc ?? "")) || !scene.semanticAction;
       case "infographic":
         return uniqueEntities(scene).length + (scene.cards?.length ?? 0) +
           (scene.paperCards?.length ?? 0) + (scene.frameBoxes?.length ?? 0) < 2;
       case "visual_gag":
-        return (scene.speechBubbles?.length ?? 0) === 0 &&
-          (uniqueEntities(scene).length + (scene.cards?.length ?? 0) < 2 ||
-           (!scene.semanticAction || (!scene.semanticObject && !scene.semanticRelation)));
+        return uniqueEntities(scene).length + (scene.cards?.length ?? 0) < 2 || !scene.semanticAction;
       default:
         return false;
     }
@@ -2367,7 +2399,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   if (componentMismatch.length) {
     issues.push({
       severity: "MAJOR", rule: "REGISTER_COMPONENT_MISMATCH", scene: componentMismatch[0].id,
-      message: `${componentMismatch.length} scenes declare a register without its rendered component.`,
+      message: `${componentMismatch.length} scenes declare a register without its rendered component: ${componentMismatch.map((scene) => scene.id).join(", ")}.`,
     });
   }
 

@@ -182,7 +182,11 @@ if (!args.includes("--skip-validate")) {
 if (!args.includes("--skip-quality")) {
   const quality = runQualityCheck(raw, timelinePath);
   printQualityReport(quality);
-  if (quality.blockers > 0 || quality.majors > 0 || !["A", "B"].includes(quality.grade)) {
+  // Minor findings are reported for follow-up but are non-blocking by the
+  // quality policy. Grade C can result solely from accumulated minors, so
+  // using the letter grade here incorrectly rejects an otherwise acceptable
+  // production timeline.
+  if (quality.blockers > 0 || quality.majors > 0) {
     console.error(
       "\n❌ Timeline chưa đạt quality gate — dừng render. " +
       "(dùng --skip-quality chỉ cho render chẩn đoán)"

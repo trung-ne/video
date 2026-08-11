@@ -120,11 +120,29 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
   "assets/scenes/boardroom.svg":      { seat_left: { x: 0.34, y: 0.5, scale: 1.5 }, seat_right: { x: 0.66, y: 0.5, scale: 1.5 }, center: { x: 0.5, y: 0.48, scale: 1.5 } },
 };
 
+// Resolver promotes the legacy logical stage references to production PNG art.
+// Keep anchors keyed for both forms so validation and rendering share one truth.
+for (const [key, anchors] of Object.entries(STAGE_ANCHORS)) {
+  const name = key.split("/").pop()?.replace(/\.svg$/i, "").replace(/_/g, "-");
+  if (name) STAGE_ANCHORS[`generated-assets/scenes/${name}.png`] = anchors;
+  const logicalName = key.split("/").pop()?.replace(/\.svg$/i, "");
+  if (logicalName) STAGE_ANCHORS[`scenes/${logicalName}`] = anchors;
+}
+
 // Is this backgroundSrc an illustrated stage set (vs a real photo)?
 // Stages get NO blur/scrim and characters are allowed center-stage —
 // the V4.1 photo rules (corner-shove, scrim) must not apply to them.
 export function isStageBackground(src: string | undefined): boolean {
-  return !!src && src.startsWith("assets/scenes/");
+  return !!src && (src.startsWith("assets/scenes/") || src.startsWith("generated-assets/scenes/") || src.startsWith("scenes/"));
+}
+
+function canonicalStageKey(src: string): string {
+  if (src.startsWith("scenes/")) return `assets/${src}.svg`;
+  if (src.startsWith("generated-assets/scenes/")) {
+    const name = src.split("/").pop()?.replace(/\.png$/i, "").replace(/-/g, "_");
+    return `assets/scenes/${name}.svg`;
+  }
+  return src;
 }
 
 export function resolveStageAnchor(
@@ -132,5 +150,5 @@ export function resolveStageAnchor(
   anchor: string | undefined
 ): StageAnchor | undefined {
   if (!backgroundSrc || !anchor) return undefined;
-  return STAGE_ANCHORS[backgroundSrc]?.[anchor];
+  return STAGE_ANCHORS[canonicalStageKey(backgroundSrc)]?.[anchor];
 }

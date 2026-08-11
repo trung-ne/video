@@ -240,6 +240,10 @@ const scenes = SCENES.map((s, i) => {
     id,
     narration,
     ttsInstruction: s.ttsInstruction?.trim() || undefined,
+    criticalClaims: Array.isArray(s.criticalClaims)
+      ? s.criticalClaims.map((claim: unknown) => String(claim).trim()).filter(Boolean)
+      : undefined,
+    pronunciationOverrides: s.pronunciationOverrides,
     purpose: s.purpose,
     emotion: s.emotion,
     viewerFocus: s.viewerFocus,
