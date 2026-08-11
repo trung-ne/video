@@ -7,7 +7,7 @@ after every scene has passed the lexical content gate.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, os, shutil, subprocess, sys, time, uuid
+import argparse, hashlib, json, os, re, shutil, subprocess, sys, time, uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -16,7 +16,9 @@ from urllib import request, error
 import numpy as np
 import soundfile as sf
 
-from tts_fidelity import compare, passes, require_japanese_tokenizer, units
+from tts_fidelity import (
+    diff_signature, evaluate, require_japanese_tokenizer, resolve_policy,
+)
 from align_words import attach_canonical_scene_indices
 from kokoro_adapter import KokoroSynthesizer, load_versioned_profile
 
@@ -67,6 +69,15 @@ class SynthesisResult:
     seed: int
 
 
+class SceneTooLongError(RuntimeError):
+    def __init__(self, chunk_count: int, max_subchunks: int):
+        super().__init__(
+            f"scene requires {chunk_count} sentence-boundary subchunks; production limit is {max_subchunks}"
+        )
+        self.chunk_count = chunk_count
+        self.max_subchunks = max_subchunks
+
+
 class Backend:
     def __init__(self, name: str, env: dict[str, str], root: Path):
         self.name, self.env, self.root = name, env, root
@@ -75,6 +86,7 @@ class Backend:
     def synthesize(self, scene: dict[str, Any], language: str, voice: str, seed: int, attempt: int, target: Path) -> SynthesisResult: raise NotImplementedError
     def generation_settings(self, language: str, voice: str) -> dict[str, Any]: return {}
     def attempt_limit(self, configured_limit: int) -> int: return configured_limit
+    def is_deterministic(self, language: str, voice: str) -> bool: return False
 
 
 class HttpBackend(Backend):
@@ -132,6 +144,12 @@ class HttpBackend(Backend):
 class LocalScriptBackend(Backend):
     def health(self) -> None: return
 
+    def attempt_limit(self, configured_limit: int) -> int:
+        return 1
+
+    def is_deterministic(self, language: str, voice: str) -> bool:
+        return True
+
     def synthesize(self, scene, language, voice, seed, attempt, target) -> SynthesisResult:
         work = target.parent / f".{scene['id']}.request.json"
         work.write_text(json.dumps({"schemaVersion": 2, "language": language, "scenes": [scene]}, ensure_ascii=False), encoding="utf-8")
@@ -173,6 +191,9 @@ class KokoroBackend(Backend):
         # Kokoro is deterministic: changing only attempt/seed creates the same WAV.
         return min(configured_limit, 1)
 
+    def is_deterministic(self, language: str, voice: str) -> bool:
+        return True
+
     def synthesize(self, scene, language, voice, seed, attempt, target) -> SynthesisResult:
         settings = self.generation_settings(language, voice)
         key = (language, voice)
@@ -205,7 +226,9 @@ class Transcriber:
         self.model = WhisperModel(model_name, device="cpu", compute_type="int8")
 
     def transcribe(self, wav: Path, language: str) -> tuple[list[dict[str, Any]], str]:
-        segments, info = self.model.transcribe(str(wav), word_timestamps=True, language=language, vad_filter=False)
+        # Let Whisper detect the language. Passing ``language=`` forces the
+        # reported language and makes a wrong-language hard gate impossible.
+        segments, info = self.model.transcribe(str(wav), word_timestamps=True, vad_filter=False)
         words: list[dict[str, Any]] = []
         for segment in segments:
             for item in segment.words or []:
@@ -219,7 +242,117 @@ def validate_wav(path: Path) -> float:
     info = sf.info(str(path))
     if info.samplerate != SAMPLE_RATE or info.channels != 1:
         raise RuntimeError(f"{path.name}: expected mono {SAMPLE_RATE}Hz WAV, got {info.channels}ch {info.samplerate}Hz")
-    return info.frames / info.samplerate
+    seconds = info.frames / info.samplerate
+    if info.frames <= 0 or seconds < 0.1:
+        raise RuntimeError(f"{path.name}: audio is empty or truncated ({seconds:.3f}s)")
+    return seconds
+
+
+def file_sha(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def apply_pronunciation_overrides(text: str, overrides: Any) -> str:
+    result = text
+    if not isinstance(overrides, dict):
+        return result
+    # Longest first prevents a short term from consuming part of a longer one.
+    for surface, reading in sorted(overrides.items(), key=lambda item: len(str(item[0])), reverse=True):
+        surface, reading = str(surface).strip(), str(reading).strip()
+        if surface and reading:
+            result = re.sub(re.escape(surface), lambda _match: reading, result, flags=re.IGNORECASE)
+    return result
+
+
+def reconcile_asr_results(primary: dict[str, Any], secondary: dict[str, Any], policy: Any) -> dict[str, Any]:
+    """Resolve the bounded two-model verification contract."""
+    if secondary["policyResult"] == "pass":
+        return {**secondary, "classification": "asr_uncertain"} if primary["policyResult"] != "pass" else secondary
+    if diff_signature(primary) & diff_signature(secondary):
+        return secondary
+    critical_uncertainty = bool(primary["criticalClaimDiff"] or secondary["criticalClaimDiff"]) or secondary["classification"] == "wrong_language"
+    uncertain_result = "fail" if policy.mode == "hard" or critical_uncertainty else "warn"
+    return {**secondary, "classification": "asr_uncertain",
+            "criticalClaimDiff": secondary["criticalClaimDiff"] or primary["criticalClaimDiff"],
+            "policyResult": uncertain_result, "passed": uncertain_result != "fail"}
+
+
+def scene_cache_identity(scene: dict[str, Any], synthesis_text: str, backend_name: str,
+                         voice: str, language: str, model: str,
+                         generation_settings: dict[str, Any], max_chunk_chars: int,
+                         policy: Any) -> tuple[dict[str, Any], str]:
+    settings = {"backend": backend_name, "voice": voice, "language": language,
+                "model": model, "generationSettings": generation_settings,
+                "spokenText": scene["spokenText"], "synthesisText": synthesis_text,
+                "ttsInstruction": scene.get("ttsInstruction", ""),
+                "criticalClaims": scene.get("criticalClaims", []),
+                "pronunciationOverrides": scene.get("pronunciationOverrides", {}),
+                "maxChunkChars": max_chunk_chars, "fidelityPolicy": policy.as_dict()}
+    return settings, sha(settings)
+
+
+def split_spoken_text(text: str, max_chars: int) -> list[str]:
+    """Split a long scene only at authored sentence boundaries."""
+    clean = text.strip()
+    if len(clean) <= max_chars:
+        return [clean]
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?。！？])\s*", clean) if part.strip()]
+    if len(sentences) < 2:
+        return [clean]
+    chunks: list[str] = []
+    current = ""
+    for sentence in sentences:
+        candidate = f"{current} {sentence}".strip()
+        if current and len(candidate) > max_chars:
+            chunks.append(current)
+            current = sentence
+        else:
+            current = candidate
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def synthesize_with_rechunk(backend: Backend, scene: dict[str, Any], language: str,
+                            voice: str, seed: int, attempt: int, target: Path,
+                            max_chars: int, max_subchunks: int) -> tuple[SynthesisResult, int]:
+    chunks = split_spoken_text(scene["spokenText"], max_chars)
+    if len(chunks) > max_subchunks:
+        raise SceneTooLongError(len(chunks), max_subchunks)
+    results: list[SynthesisResult] = []
+    audio: list[np.ndarray] = []
+    for index, chunk in enumerate(chunks):
+        part_target = target if len(chunks) == 1 else target.with_name(f"{target.stem}.part-{index + 1}.wav")
+        part_scene = {**scene, "id": f"{scene['id']}-part-{index + 1}", "spokenText": chunk}
+        last_error: Exception | None = None
+        # A deterministic backend must not retry a WAV that merely failed
+        # fidelity. It may retry once when synthesis itself failed (transport).
+        for transport_try in range(2):
+            try:
+                part_target.unlink(missing_ok=True)
+                results.append(backend.synthesize(part_scene, language, voice, seed, attempt, part_target))
+                last_error = None
+                break
+            except Exception as exc:
+                last_error = exc
+                if transport_try == 0:
+                    print(f"  [network-retry] {scene['id']} part={index + 1}: {exc}")
+        if last_error:
+            raise last_error
+        validate_wav(part_target)
+        samples, sr = sf.read(str(part_target), dtype="float32", always_2d=False)
+        if sr != SAMPLE_RATE or samples.ndim != 1:
+            raise RuntimeError(f"{part_target.name}: invalid audio format")
+        audio.append(samples)
+        if part_target != target:
+            part_target.unlink(missing_ok=True)
+    if len(chunks) > 1:
+        sf.write(str(target), np.concatenate(audio), SAMPLE_RATE)
+    return results[0], len(chunks)
 
 
 def main() -> int:
@@ -245,16 +378,31 @@ def main() -> int:
     if backend_name == "style_bert_vits2" and language != "ja": raise RuntimeError("style_bert_vits2 is supported for Japanese only")
     voice = require(env, f"TTS_VOICE_{language.upper()}")
     backend = build_backend(backend_name, env, root); backend.health()
-    max_attempts = int(env.get("TTS_ALIGNMENT_MAX_ATTEMPTS", "3"))
-    backend_attempts = backend.attempt_limit(max_attempts)
+    policy = resolve_policy(env, language)
+    max_attempts = int(env.get(f"TTS_ALIGNMENT_MAX_ATTEMPTS_{language.upper()}", env.get("TTS_ALIGNMENT_MAX_ATTEMPTS", "3")))
+    # One initial candidate plus at most one stochastic re-synthesis. A
+    # deterministic backend always collapses this to one candidate.
+    backend_attempts = backend.attempt_limit(min(max_attempts, 2))
     generation_settings = backend.generation_settings(language, voice)
-    min_precision, min_recall, max_edit = (float(env.get("TTS_ALIGNMENT_MIN_PRECISION", "0.98")), float(env.get("TTS_ALIGNMENT_MIN_RECALL", "0.98")), float(env.get("TTS_ALIGNMENT_MAX_EDIT_RATE", "0.03")))
+    max_chunk_chars = int(env.get(f"TTS_MAX_CHUNK_CHARS_{language.upper()}", env.get("TTS_MAX_CHUNK_CHARS", "420")))
+    max_subchunks = int(env.get(f"TTS_MAX_SUBCHUNKS_{language.upper()}", env.get("TTS_MAX_SUBCHUNKS", "4")))
     gap_seconds = float(env.get("TTS_INTER_SCENE_GAP_SECONDS", "0.08"))
     run_id = time.strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]
     run_dir = project / ".tts-runs" / run_id; rejected = run_dir / "rejected"; rejected.mkdir(parents=True)
     staged_accepted = run_dir / "accepted"; staged_accepted.mkdir()
     audio_dir = root / "public" / "audio" / args.project; audio_dir.mkdir(parents=True, exist_ok=True)
-    transcriber = Transcriber(env.get("TTS_ALIGNMENT_MODEL", "small"))
+    cache_dir = project / ".tts-cache"; cache_dir.mkdir(parents=True, exist_ok=True)
+    transcribers: dict[str, Transcriber] = {}
+    def get_transcriber(model: str) -> Transcriber:
+        if model not in transcribers: transcribers[model] = Transcriber(model)
+        return transcribers[model]
+    transcriber = get_transcriber(policy.model)
+    try:
+        repair_counts = json.loads(env.get("TTS_REPAIR_COUNTS_JSON", "{}"))
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("TTS_REPAIR_COUNTS_JSON must be a JSON object") from exc
+    if not isinstance(repair_counts, dict):
+        raise RuntimeError("TTS_REPAIR_COUNTS_JSON must be a JSON object")
     accepted: list[dict[str, Any]] = []
 
     for scene in scenes:
@@ -262,33 +410,87 @@ def main() -> int:
             raise RuntimeError("Every schema-v2 scene requires id and spokenText")
         if scene.get("spokenTextSha256") != text_sha(scene["spokenText"]) or scene.get("instructionSha256") != text_sha(scene.get("ttsInstruction", "")):
             raise RuntimeError(f"{scene['id']}: TTS text/instruction checksum is stale; rerun storyboard-to-tts.ts")
-        settings = {"backend": backend_name, "voice": voice, "language": language, "model": getattr(backend, "model", backend_name), "generationSettings": generation_settings, "spokenText": scene["spokenText"], "ttsInstruction": scene.get("ttsInstruction", "")}
-        cache_key = sha(settings)
+        synthesis_text = apply_pronunciation_overrides(scene["spokenText"], scene.get("pronunciationOverrides"))
+        comparison_claims = [apply_pronunciation_overrides(str(claim), scene.get("pronunciationOverrides")) for claim in scene.get("criticalClaims", [])]
+        settings, cache_key = scene_cache_identity(
+            scene, synthesis_text, backend_name, voice, language,
+            getattr(backend, "model", backend_name), generation_settings, max_chunk_chars, policy,
+        )
         wav = audio_dir / f"{scene['id']}.wav"; sidecar = audio_dir / f"{scene['id']}.tts.json"
-        cached = json.loads(sidecar.read_text(encoding="utf-8")) if sidecar.exists() else None
-        if cached and cached.get("cacheKey") == cache_key and wav.exists() and cached.get("passed"):
-            validate_wav(wav)
-            cached["_wavPath"] = str(wav)
-            accepted.append(cached); print(f"  [cache] {scene['id']}"); continue
+        candidate_wav = cache_dir / f"{cache_key}.wav"
+        candidate_sidecar = cache_dir / f"{cache_key}.json"
+        cache_sources = ((sidecar, wav), (candidate_sidecar, candidate_wav))
+        cache_hit = False
+        for cached_sidecar, cached_wav in cache_sources:
+            cached = json.loads(cached_sidecar.read_text(encoding="utf-8")) if cached_sidecar.exists() else None
+            if (cached and cached.get("cacheKey") == cache_key and cached_wav.exists() and cached.get("passed")
+                    and cached.get("wavSha256") == file_sha(cached_wav)):
+                validate_wav(cached_wav)
+                # The content-addressed cache may serve two authored scenes with
+                # identical TTS inputs; retain the current scene identity.
+                cached["id"] = scene["id"]
+                cached["repairCount"] = int(repair_counts.get(scene["id"], cached.get("repairCount", 0)) or 0)
+                cached["_wavPath"] = str(cached_wav)
+                accepted.append(cached); print(f"  [cache] {scene['id']}")
+                cache_hit = True
+                break
+        if cache_hit:
+            continue
         scene_passed = None
+        record: dict[str, Any] | None = None
         for attempt in range(1, backend_attempts + 1):
             seed = int(sha({"project": args.project, "scene": scene["id"], "cache": cache_key, "attempt": attempt})[:8], 16)
             staged = run_dir / f"{scene['id']}.attempt-{attempt}.wav"
-            result = backend.synthesize(scene, language, voice, seed, attempt, staged)
-            seconds = validate_wav(staged)
+            try:
+                result, subchunk_count = synthesize_with_rechunk(
+                    backend, {**scene, "spokenText": synthesis_text}, language, voice, seed, attempt, staged, max_chunk_chars, max_subchunks,
+                )
+                seconds = validate_wav(staged)
+            except Exception as exc:
+                if isinstance(exc, SceneTooLongError):
+                    classification = "scene_too_long"
+                else:
+                    classification = "invalid_audio" if staged.exists() else "network/backend_error"
+                record = {"id": scene["id"], "cacheKey": cache_key, "passed": False,
+                          "policyResult": "fail", "classification": classification,
+                          "tokenDiff": [], "criticalClaimDiff": [],
+                          "repairCount": int(repair_counts.get(scene["id"], 0) or 0),
+                          "candidateFingerprint": cache_key,
+                          "error": str(exc), "attempt": attempt,
+                          "subchunkCount": getattr(exc, "chunk_count", None),
+                          "maxSubchunks": getattr(exc, "max_subchunks", None)}
+                atomic_json(rejected / f"{scene['id']}.attempt-{attempt}.json", record)
+                print(f"  [failed] {scene['id']} attempt={attempt} class={classification}: {exc}")
+                break
             observed_words, detected_language = transcriber.transcribe(staged, language)
-            metrics = compare(units(scene["spokenText"], language), units(" ".join(item["word"] for item in observed_words), language))
-            record = {"id": scene["id"], "cacheKey": cache_key, "passed": passes(metrics, min_precision, min_recall, max_edit), "attempt": attempt, "backend": backend_name, "model": result.model, "backendVersion": result.backend_version, "voice": voice, "generationSettings": generation_settings, "seed": result.seed, "language": language, "detectedLanguage": detected_language, "spokenTextSha256": text_sha(scene["spokenText"]), "instructionSha256": text_sha(scene.get("ttsInstruction", "")), "seconds": round(seconds, 3), "metrics": metrics.as_dict(), "words": observed_words}
+            observed_text = " ".join(item["word"] for item in observed_words)
+            primary = evaluate(synthesis_text, observed_text, language, detected_language, observed_words, policy, comparison_claims)
+            verification = [{"model":policy.model, **primary}]
+            final_eval, final_words, final_language, asr_model = primary, observed_words, detected_language, policy.model
+            if primary["needsEscalation"] and policy.escalationModel != policy.model:
+                secondary_words, secondary_language = get_transcriber(policy.escalationModel).transcribe(staged, language)
+                secondary_text = " ".join(item["word"] for item in secondary_words)
+                secondary = evaluate(synthesis_text, secondary_text, language, secondary_language, secondary_words, policy, comparison_claims)
+                verification.append({"model":policy.escalationModel, **secondary})
+                final_eval = reconcile_asr_results(primary, secondary, policy)
+                final_words, final_language, asr_model = secondary_words, secondary_language, policy.escalationModel
+            wav_sha256 = file_sha(staged)
+            record = {"id": scene["id"], "cacheKey": cache_key, "passed": final_eval["passed"], "policyResult":final_eval["policyResult"], "classification":final_eval["classification"], "tokenDiff":final_eval["tokenDiff"], "criticalClaimDiff":final_eval["criticalClaimDiff"], "asrModel":asr_model, "asrConfidence":final_eval["asrConfidence"], "repairCount":int(repair_counts.get(scene["id"], 0) or 0), "candidateFingerprint":cache_key, "wavSha256":wav_sha256, "attempt": attempt, "backend": backend_name, "model": result.model, "backendVersion": result.backend_version, "voice": voice, "generationSettings": generation_settings, "seed": result.seed, "language": language, "detectedLanguage": final_language, "spokenTextSha256": text_sha(scene["spokenText"]), "instructionSha256": text_sha(scene.get("ttsInstruction", "")), "pronunciationOverridesSha256": sha(scene.get("pronunciationOverrides", {})), "seconds": round(seconds, 3), "subchunkCount": subchunk_count, "metrics": final_eval["metrics"], "words": final_words, "verification":verification}
             if record["passed"]:
                 accepted_wav = staged_accepted / f"{scene['id']}.wav"
                 shutil.copy2(staged, accepted_wav)
                 record["_wavPath"] = str(accepted_wav)
                 accepted.append(record); scene_passed = record
-                print(f"  [ok] {scene['id']} attempt={attempt} precision={metrics.precision:.1%} recall={metrics.recall:.1%}"); break
+                cache_temp = candidate_wav.with_suffix(".wav.tmp")
+                shutil.copy2(staged, cache_temp); os.replace(cache_temp, candidate_wav)
+                atomic_json(candidate_sidecar, {key: value for key, value in record.items() if key != "_wavPath"})
+                marker = "warn" if record["policyResult"] == "warn" else "ok"
+                print(f"  [{marker}] {scene['id']} attempt={attempt} precision={record['metrics']['precision']:.1%} recall={record['metrics']['recall']:.1%} class={record['classification']}"); break
             shutil.copy2(staged, rejected / staged.name); atomic_json(rejected / f"{scene['id']}.attempt-{attempt}.json", record)
-            print(f"  [retry] {scene['id']} attempt={attempt} precision={metrics.precision:.1%} recall={metrics.recall:.1%} edit={metrics.editRate:.1%}")
+            print(f"  [retry] {scene['id']} attempt={attempt} precision={record['metrics']['precision']:.1%} recall={record['metrics']['recall']:.1%} edit={record['metrics']['editRate']:.1%} class={record['classification']}")
         if not scene_passed:
-            atomic_json(run_dir / "failed.json", {"sceneId": scene["id"], "backend": backend_name, "maxAttempts": backend_attempts, "deterministic": generation_settings.get("deterministic", False)})
+            assert record is not None
+            atomic_json(run_dir / "failed.json", {"sceneId": scene["id"], "backend": backend_name, "maxAttempts": backend_attempts, "deterministic": backend.is_deterministic(language, voice), "policy":policy.as_dict(), "classification":record["classification"], "policyResult":record["policyResult"], "tokenDiff":record["tokenDiff"], "criticalClaimDiff":record["criticalClaimDiff"], "candidateFingerprint":record["candidateFingerprint"], "error":record.get("error")})
             raise RuntimeError(f"Scene {scene['id']} failed content-fidelity gate after {backend_attempts} attempt(s); production audio unchanged")
 
     gap = np.zeros(round(SAMPLE_RATE * gap_seconds), dtype=np.float32)
@@ -306,14 +508,14 @@ def main() -> int:
         cursor_samples += clip_samples; cursor_frames += frames
     canonical_words, canonical = attach_canonical_scene_indices(all_words, scenes, language)
     canonical["language"] = language; canonical["ttsSchemaVersion"] = 2
-    canonical["fidelityPolicy"] = {"minPrecision": min_precision, "minRecall": min_recall, "maxEditRate": max_edit, "maxContiguousInsertion": 0}
-    canonical["sceneMetrics"] = [{key: record[key] for key in ("id", "backend", "model", "voice", "attempt", "seed", "language", "metrics")} for record in accepted]
+    canonical["fidelityPolicy"] = policy.as_dict()
+    canonical["sceneMetrics"] = [{key: record[key] for key in ("id", "backend", "model", "voice", "attempt", "seed", "language", "metrics", "policyResult", "classification", "asrModel", "asrConfidence", "candidateFingerprint")} for record in accepted]
     public_records = [{key: value for key, value in record.items() if key != "_wavPath"} for record in accepted]
     canonical["generationManifestSha256"] = sha(public_records)
     full = np.concatenate(all_audio)
     staging_audio = run_dir / "voice.wav"; sf.write(str(staging_audio), full, SAMPLE_RATE)
-    durations_doc = {"fps": FPS, "sampleRate": SAMPLE_RATE, "voice": voice, "backend": backend_name, "lang": language, "totalSec": round(len(full) / SAMPLE_RATE, 3), "totalFrames": cursor_frames, "scenes": durations, "ttsMetrics": {"chunkCount": len(accepted), "gapCount": max(0, len(accepted)-1), "maxInterSceneGapSeconds": gap_seconds, "totalGapSeconds": round(max(0, len(accepted)-1) * gap_seconds, 3), "routerRunId": run_id, "generationSettings": generation_settings}}
-    generation = {"schemaVersion": 1, "runId": run_id, "projectId": args.project, "backend": backend_name, "voice": voice, "language": language, "generationSettings": generation_settings, "scenes": public_records, "generatedAt": time.time()}
+    durations_doc = {"fps": FPS, "sampleRate": SAMPLE_RATE, "voice": voice, "backend": backend_name, "lang": language, "totalSec": round(len(full) / SAMPLE_RATE, 3), "totalFrames": cursor_frames, "scenes": durations, "ttsMetrics": {"chunkCount": len(accepted), "subchunkCount": sum(int(record.get("subchunkCount", 1)) for record in accepted), "warningCount": sum(record.get("policyResult") == "warn" for record in accepted), "gapCount": max(0, len(accepted)-1), "maxInterSceneGapSeconds": gap_seconds, "totalGapSeconds": round(max(0, len(accepted)-1) * gap_seconds, 3), "routerRunId": run_id, "generationSettings": generation_settings, "fidelityPolicy": policy.as_dict(), "generationManifestSha256": canonical["generationManifestSha256"]}}
+    generation = {"schemaVersion": 2, "runId": run_id, "projectId": args.project, "backend": backend_name, "voice": voice, "language": language, "generationSettings": generation_settings, "fidelityPolicy": policy.as_dict(), "generationManifestSha256": canonical["generationManifestSha256"], "scenes": public_records, "generatedAt": time.time()}
     # Publish only after all JSON has been constructed and every scene passed.
     # New scene cache files are promoted now, never while a later scene might
     # still fail. Existing cache WAVs were read-only input to this run.

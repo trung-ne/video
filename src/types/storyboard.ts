@@ -154,6 +154,10 @@ export interface SceneBrief {
    * considered part of narration/subtitles.
    */
   ttsInstruction?: string;
+  /** Claims whose wording/value must survive TTS and ASR comparison exactly. */
+  criticalClaims?: string[];
+  /** TTS-only surface-to-reading hints; canonical narration is unchanged. */
+  pronunciationOverrides?: Record<string, string>;
 
   // ── Authoring intent (what the LLM is actually good at) ──
   purpose: string;        // one line: what this scene must make the viewer get
@@ -227,6 +231,10 @@ export interface AuthoredScene {
   narrationOverride?: string;
   /** Hand-authored delivery direction for expressive TTS; never spoken. */
   ttsInstruction?: string;
+  /** Proper names, terms, or numeric claims that must not be lost or changed. */
+  criticalClaims?: string[];
+  /** TTS-only surface-to-reading hints; never rewrite subtitle narration. */
+  pronunciationOverrides?: Record<string, string>;
   grammar: VisualGrammar;
   emotion: Emotion;
   purpose: string;

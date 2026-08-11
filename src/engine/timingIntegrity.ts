@@ -492,13 +492,17 @@ export function checkCanonicalSubtitleAlignment(
     for (const scene of scenes ?? []) {
       const report = sceneMetrics.find((item: any) => item?.id === scene.id);
       const metrics = report?.metrics;
-      if (!report || !metrics || metrics.precision < minPrecision || metrics.recall < minRecall
-          || metrics.editRate > maxEditRate || Number(metrics.maxContiguousInsertion ?? 0) > 0) {
+      const policyAware = typeof report?.policyResult === "string";
+      const failed = policyAware
+        ? report.policyResult === "fail"
+        : (!metrics || metrics.precision < minPrecision || metrics.recall < minRecall
+          || metrics.editRate > maxEditRate || Number(metrics.maxContiguousInsertion ?? 0) > 0);
+      if (!report || !metrics || failed) {
         return [{
           code: "TTS_CONTENT_FIDELITY",
           severity: "BLOCKER",
-          message: `${scene.id ?? "scene"} failed expressive TTS fidelity (precision/recall/edit/insertion).`,
-          hint: "Regenerate only this scene through scripts/tts_router.py; it must not add, omit, or paraphrase lexical words.",
+          message: `${scene.id ?? "scene"} failed expressive TTS fidelity (${report?.classification ?? "legacy metrics"}).`,
+          hint: "Inspect the router token diff and critical claims; regenerate only when verification identifies a real TTS error.",
         }];
       }
     }

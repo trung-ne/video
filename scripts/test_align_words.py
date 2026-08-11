@@ -43,6 +43,14 @@ class AlignmentIndexTests(unittest.TestCase):
         self.assertEqual([item["word"] for item in result], ["日", "本"])
         self.assertEqual(provenance["matchedWordCount"], 2)
 
+    def test_korean_canonical_alignment_ignores_asr_spacing(self):
+        aligned = [{"word": "한국시장", "confidence": .9, "startSec": 0, "endSec": .4}]
+        result, provenance = attach_canonical_scene_indices(aligned, [
+            {"id": "scene-001", "spokenText": "한국 시장"},
+        ], "ko")
+        self.assertEqual([item["word"] for item in result], ["한국", "시장"])
+        self.assertEqual(provenance["matchedWordCount"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

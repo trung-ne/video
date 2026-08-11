@@ -23,6 +23,7 @@ import {
   checkWordAlignment,
   checkTimingProvenance,
   checkSceneBeatTimingSources,
+  checkCanonicalSubtitleAlignment,
   hasBlocker,
 } from "../src/engine/timingIntegrity";
 import { canonicalJsonChecksum, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
@@ -1022,6 +1023,27 @@ test("flags aligned words that carry no transcript index", () => {
 
 test("accepts word alignment covering the whole track", () => {
   assert.deepStrictEqual(checkWordAlignment([{ startSec: 0, endSec: 1430, wordIndex: 0 }], 1434.47), []);
+});
+
+test("canonical fidelity accepts a policy warning but blocks a policy failure", () => {
+  const words = [
+    { word: "hello", startSec: 0, endSec: .2, scene: "scene-001", sceneWordIndex: 0 },
+    { word: "world", startSec: .2, endSec: .4, scene: "scene-001", sceneWordIndex: 1 },
+  ];
+  const base = {
+    source: "canonical-tts-scenes", coverage: 1, matchedCoverage: .95, ttsSchemaVersion: 2,
+    fidelityPolicy: { minPrecision: .95, minRecall: .95, maxEditRate: .06 },
+  };
+  const warning = checkCanonicalSubtitleAlignment(words, [{ id: "scene-001", narration: "hello world" }], {
+    ...base, sceneMetrics: [{ id: "scene-001", policyResult: "warn", classification: "asr_uncertain",
+      metrics: { precision: .9, recall: .9, editRate: .1, maxContiguousInsertion: 0 } }],
+  });
+  assert.deepStrictEqual(warning, []);
+  const failure = checkCanonicalSubtitleAlignment(words, [{ id: "scene-001", narration: "hello world" }], {
+    ...base, sceneMetrics: [{ id: "scene-001", policyResult: "fail", classification: "critical_claim_mismatch",
+      metrics: { precision: .99, recall: .99, editRate: .01, maxContiguousInsertion: 0 } }],
+  });
+  assert.ok(failure.some((issue) => issue.code === "TTS_CONTENT_FIDELITY"));
 });
 
 test("warns on proportional drift that stays inside the absolute budget", () => {

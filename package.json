@@ -12,6 +12,7 @@
     "generate": "npx ts-node scripts/generate-timeline.ts",
     "build-storyboard": "npx ts-node scripts/build-storyboard.ts",
     "storyboard-to-tts": "npx ts-node scripts/storyboard-to-tts.ts",
+    "auto-fidelity-render": "powershell -ExecutionPolicy Bypass -File scripts/auto-fidelity-render.ps1",
     "compile-storyboard": "npx ts-node scripts/compile-storyboard.ts",
     "validate": "npx ts-node scripts/validate.ts",
     "quality": "npx ts-node scripts/quality-check.ts",
@@ -23,7 +24,7 @@
     "asset-status": "npx ts-node scripts/asset-status.ts",
     "typecheck": "npx tsc --noEmit",
     "test": "npx ts-node scripts/test.ts",
-    "check": "npm run typecheck && npm test && python -m unittest scripts/test_align_words.py scripts/test_tts_fidelity.py scripts/test_kokoro_adapter.py scripts/test_visual_audit.py"
+    "check": "npm run typecheck && npm test && python -m unittest scripts/test_align_words.py scripts/test_tts_fidelity.py scripts/test_tts_router_policy.py scripts/test_kokoro_adapter.py scripts/test_visual_audit.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",

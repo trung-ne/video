@@ -39,6 +39,10 @@ def is_japanese_language(language):
     return str(language or "").lower().startswith("ja")
 
 
+def is_korean_language(language):
+    return str(language or "").lower().startswith("ko")
+
+
 def transcript_words(text, language=None):
     value = unicodedata.normalize("NFC", text)
     if is_japanese_language(language):
@@ -119,17 +123,45 @@ def japanese_canonical_tokens(scenes, language=None):
     return reading_tokens, surface_tokens
 
 
-def _expand_japanese_aligned(aligned):
+def korean_canonical_tokens(scenes, language=None):
+    """Use spacing-independent Hangul units while retaining subtitle words."""
+    reading_tokens, surface_tokens = [], []
+    for scene in scenes:
+        scene_id = str(scene.get("id") or "").strip()
+        text = str(scene.get("spokenText") or scene.get("text") or "")
+        surface = transcript_words(text, "ko")
+        if not scene_id:
+            raise ValueError("tts_scenes.json contains a scene without id")
+        if not surface:
+            continue
+        base = len(surface_tokens)
+        surface_tokens.extend({"scene": scene_id, "sceneWordIndex": index, "word": word}
+                              for index, word in enumerate(surface))
+        readings = fidelity_units(text, "ko")
+        for index, reading in enumerate(readings):
+            surface_index = min(len(surface) - 1, index * len(surface) // max(1, len(readings)))
+            reading_tokens.append({
+                "scene": scene_id, "sceneWordIndex": surface_index,
+                "surfaceCanonicalIndex": base + surface_index, "word": surface[surface_index],
+                "matchWord": reading,
+            })
+    return reading_tokens, surface_tokens
+
+
+def _expand_reading_aligned(aligned, language):
     result = []
     for item in aligned:
-        chars = transcript_words(item.get("word", ""), "ja")
-        if not chars:
+        # Compare ASR surface (Kanji/kana) using the same Sudachi reading units
+        # as canonical narration.  Keeping surface characters here made "日本"
+        # compare against "にほん" and falsely report zero matches.
+        readings = fidelity_units(item.get("word", ""), language)
+        if not readings:
             continue
         start, end = float(item.get("startSec", 0)), float(item.get("endSec", 0))
-        for index, char in enumerate(chars):
-            left = start + (end - start) * index / len(chars)
-            right = start + (end - start) * (index + 1) / len(chars)
-            result.append({**item, "word": char, "startSec": round(left, 3), "endSec": round(right, 3)})
+        for index, reading in enumerate(readings):
+            left = start + (end - start) * index / len(readings)
+            right = start + (end - start) * (index + 1) / len(readings)
+            result.append({**item, "word": reading, "startSec": round(left, 3), "endSec": round(right, 3)})
     return result
 
 
@@ -141,9 +173,16 @@ def attach_canonical_scene_indices(aligned, scenes, language=None):
     it has to follow the words the voice actually spoke.
     """
     japanese = is_japanese_language(language)
-    expected, surface_expected = japanese_canonical_tokens(scenes, language) if japanese else (canonical_tts_tokens(scenes, language), None)
-    if is_japanese_language(language):
-        aligned = _expand_japanese_aligned(aligned)
+    korean = is_korean_language(language)
+    reading_based = japanese or korean
+    if japanese:
+        expected, surface_expected = japanese_canonical_tokens(scenes, language)
+    elif korean:
+        expected, surface_expected = korean_canonical_tokens(scenes, language)
+    else:
+        expected, surface_expected = canonical_tts_tokens(scenes, language), None
+    if reading_based:
+        aligned = _expand_reading_aligned(aligned, "ja" if japanese else "ko")
     expected_norm = [normalize_word(item.get("matchWord", item["word"])) for item in expected]
     aligned_norm = [normalize_word(item["word"]) for item in aligned]
     matcher = SequenceMatcher(None, expected_norm, aligned_norm, autojunk=False)
@@ -154,7 +193,7 @@ def attach_canonical_scene_indices(aligned, scenes, language=None):
 
     canonical_matches = {canonical_index: aligned[aligned_index]
                          for aligned_index, canonical_index in index_map.items()}
-    if japanese:
+    if reading_based:
         grouped = {}
         for reading_index, observed in canonical_matches.items():
             grouped.setdefault(expected[reading_index]["surfaceCanonicalIndex"], []).append(observed)

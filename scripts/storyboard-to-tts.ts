@@ -34,14 +34,40 @@ const scenes = (sb.scenes ?? []).map((s: any) => {
   const ttsInstruction = typeof s.ttsInstruction === "string" && s.ttsInstruction.trim()
     ? s.ttsInstruction.trim()
     : undefined;
+  const pronunciationOverrides = s.pronunciationOverrides && typeof s.pronunciationOverrides === "object"
+    ? Object.fromEntries(Object.entries(s.pronunciationOverrides)
+      .map(([surface, reading]) => [surface.trim(), String(reading).trim()])
+      .filter(([surface, reading]) => surface && reading))
+    : {};
   return {
     id: s.id,
+    sourceRange: s.sourceRange,
     spokenText,
     ttsInstruction,
+    criticalClaims: Array.isArray(s.criticalClaims)
+      ? s.criticalClaims.map((value: unknown) => String(value).trim()).filter(Boolean)
+      : [],
+    pronunciationOverrides,
     spokenTextSha256: crypto.createHash("sha256").update(spokenText, "utf8").digest("hex"),
     instructionSha256: crypto.createHash("sha256").update(ttsInstruction ?? "", "utf8").digest("hex"),
   };
 });
+
+// Fail closed on classic UTF-8-as-Windows-1252 mojibake before it can become
+// production speech. Correct Vietnamese contains characters such as "ắ/ớ/ố";
+// broken decoding turns them into clusters such as "áº¯/á»›/á»‘" or "HÃ ".
+// Console rendering is handled separately, but authored/generated artifacts
+// must never carry these byte-decoding scars into TTS, alignment, or subtitles.
+const mojibakePattern = /(?:Ã.|Â.|â€|â†|âœ|áº|á»|ï¸)/u;
+const mojibakeScenes = scenes.filter((s: any) => mojibakePattern.test(s.spokenText));
+if (mojibakeScenes.length) {
+  console.error(
+    `❌ UTF-8 mojibake detected in ${mojibakeScenes.length} TTS scene(s): ` +
+    `${mojibakeScenes.slice(0, 5).map((s: any) => s.id).join(", ")}.\n` +
+    `   Fix the authored storyboard encoding; do not synthesize or align this text.`
+  );
+  process.exit(1);
+}
 
 // Dropping a silent scene here would leave it absent from durations.json, which
 // surfaces much later as an unsatisfiable TIMING_ID_MISSING at compile time.
