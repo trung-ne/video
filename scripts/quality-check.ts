@@ -19,6 +19,7 @@ import { checkSceneBeatTimingSources, checkTimingProvenance, formatTimingIssues,
 import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { checkSpatialIntegrity, formatSpatialIntegrityReport } from "../src/engine/spatialIntegrity";
+import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
 
 const args = process.argv.slice(2);
 const timelinePath = args.find((arg) => !arg.startsWith("--"));
@@ -34,6 +35,12 @@ if (!fs.existsSync(timelinePath)) {
 }
 
 const timeline = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+try {
+  assertTimelineAssetStyle(timeline.timingProvenance);
+} catch (error) {
+  console.error(`❌ ${(error as Error).message}`);
+  process.exit(1);
+}
 
 // Optional: auto-fix backgrounds before checking
 if (autoFix && Array.isArray(timeline.scenes)) {

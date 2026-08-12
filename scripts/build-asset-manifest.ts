@@ -94,6 +94,11 @@ function inferKind(relative: string): AssetKind {
 // resolver's DEFAULT_STYLE_FAMILIES filters it out automatically.
 function inferStyle(relative: string, kind: AssetKind): AssetStyleFamily {
   const normalized = relative.replace(/\\/g, "/");
+  if (normalized.startsWith("styles/")) {
+    if (kind === "character") return "editorial_cat_v2";
+    if (kind === "stage") return "flat_stage_v2";
+    return "flat_icon_v2";
+  }
   if (styleOverrides.has(normalized)) {
     if (kind === "character") return "editorial_cat_v2";
     if (kind === "stage") return "flat_stage_v2";
@@ -121,7 +126,7 @@ function buildEntry(file: string): AssetManifestEntry {
   const kind = inferKind(relative);
   const tags = words(relative);
   const hash = crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
-  const generatedLead = relative.startsWith("generated-assets/characters/");
+  const generatedLead = relative.startsWith("generated-assets/characters/") || /styles\/[cdf]\/generated-assets\/characters\//.test(relative);
   const photoPolicy = kind === "photo" ? photoPolicyEntry(sourcePath) : undefined;
   const visualMetrics = assetVisuals[relative];
   const geometry = visualMetrics as (AssetVisualMetrics & {
@@ -170,6 +175,7 @@ const files = [
   ...walk(path.join(publicDir, "generated-assets")),
   ...walk(path.join(publicDir, "backgrounds")),
   ...walk(path.join(publicDir, "generated-backgrounds")),
+  ...walk(path.join(publicDir, "styles")),
 ].filter((file) => extensions.has(path.extname(file).toLowerCase()));
 
 const entries = files.map(buildEntry).sort((a, b) => a.id.localeCompare(b.id));
@@ -254,6 +260,49 @@ for (const file of generatedCharacters) {
   aliases[`characters/${name}`] = `generated-assets/characters/${file}`;
 }
 
+// The legacy SVG directory can be absent in a production checkout. Derive the
+// same stable authoring vocabulary directly from the production file inventory
+// so manifest/style generation never depends on retired compatibility art.
+for (const file of generatedIcons) {
+  const stem = path.basename(file, path.extname(file));
+  const physical = `generated-assets/icons/${file}`;
+  for (const category of ["finance", "props", "people", "ui"] as const) {
+    const prefix = `${category}-`;
+    if (stem.startsWith(prefix)) aliases[`${category}/${stem.slice(prefix.length).replace(/-/g, "_")}`] = physical;
+  }
+  aliases[stem.replace(/-/g, "/")] ??= physical;
+}
+for (const file of generatedScenes) {
+  const stem = path.basename(file, path.extname(file));
+  const ref = stem.replace(/-/g, "_");
+  aliases[`scenes/${ref}`] = `generated-assets/scenes/${file}`;
+  aliases[`assets/scenes/${ref}.svg`] = `generated-assets/scenes/${file}`;
+}
+for (const file of generatedBackgrounds) {
+  const stem = path.basename(file, path.extname(file));
+  const ref = stem.replace(/-/g, "_");
+  aliases[`scenes/${ref}`] = `generated-backgrounds/${file}`;
+  aliases[`assets/scenes/${ref}.svg`] = `generated-backgrounds/${file}`;
+}
+
+// Style trees mirror the legacy production layout under public/styles/<style>/.
+// Build an independent map so one authored logical ref can be pinned to the
+// correct physical art at compile time rather than dynamically at render.
+const styleAliases: Partial<Record<"c" | "d" | "f", Record<string, string>>> = {};
+const styleHashes: Partial<Record<"c" | "d" | "f", string>> = {};
+for (const style of ["c", "d", "f"] as const) {
+  const prefix = `styles/${style}/`;
+  const map: Record<string, string> = {};
+  for (const [ref, basePath] of Object.entries(aliases)) {
+    if (!basePath.startsWith("generated-assets/") && !basePath.startsWith("generated-backgrounds/")) continue;
+    const styled = `${prefix}${basePath}`;
+    if (fs.existsSync(path.join(publicDir, styled))) map[ref] = styled;
+  }
+  styleAliases[style] = map;
+  styleHashes[style] = crypto.createHash("sha256")
+    .update(JSON.stringify(Object.entries(map).sort((a, b) => a[0].localeCompare(b[0])))).digest("hex");
+}
+
 const legacyRefs = files.filter((f) => {
   const r = path.relative(publicDir, f).replace(/\\/g, "/");
   return r.startsWith("assets/") && r.endsWith(".svg");
@@ -270,6 +319,8 @@ const manifest: AssetManifest = {
   generatedAt: new Date().toISOString(),
   entries: deduped,
   aliases,
+  styleAliases,
+  styleHashes,
   contentScales,
 };
 fs.writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");

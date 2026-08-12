@@ -313,6 +313,9 @@ export interface TimingProvenance {
   storyboardChecksum?: string;
   durationsChecksum?: string;
   wordsChecksum?: string;
+  /** Asset style is selected at compile time so placement/audits cannot drift at render. */
+  assetStyle?: "c" | "d" | "f";
+  assetStyleManifestHash?: string;
   /** Subtitle alignment is independently provenance-bound to the spoken TTS text. */
   subtitleTiming?: {
     source: "canonical-tts-scenes" | "legacy-transcript";

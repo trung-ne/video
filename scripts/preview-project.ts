@@ -4,6 +4,7 @@ import * as path from "path";
 import { spawnSync } from "child_process";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { checkTimingProvenance, formatTimingIssues } from "../src/engine/timingIntegrity";
+import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
 
 const args = process.argv.slice(2);
 const index = args.indexOf("--project");
@@ -25,6 +26,7 @@ if (timelinePath === estimatedTimelinePath) {
 }
 
 const authored = JSON.parse(fs.readFileSync(timelinePath, "utf8"));
+assertTimelineAssetStyle(authored.timingProvenance);
 
 // Preview does not gate — you often want to look at something broken. But it must
 // say what it is showing, so an estimate-timed or legacy timeline is never mistaken

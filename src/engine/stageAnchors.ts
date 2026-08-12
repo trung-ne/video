@@ -124,7 +124,21 @@ export const STAGE_ANCHORS: Record<string, Record<string, StageAnchor>> = {
 // Stages get NO blur/scrim and characters are allowed center-stage —
 // the V4.1 photo rules (corner-shove, scrim) must not apply to them.
 export function isStageBackground(src: string | undefined): boolean {
-  return !!src && src.startsWith("assets/scenes/");
+  return !!src && canonicalStagePath(src).startsWith("assets/scenes/");
+}
+
+/** Style-locked stage paths retain their authored anchor contract. */
+export function canonicalStagePath(src: string): string {
+  const unstyled = src.replace(/^styles\/[cdf]\//, "");
+  if (unstyled.startsWith("generated-backgrounds/")) {
+    const name = unstyled.slice("generated-backgrounds/".length).replace(/\.png$/i, "").replace(/-/g, "_");
+    return `assets/scenes/${name}.svg`;
+  }
+  if (unstyled.startsWith("generated-assets/scenes/")) {
+    const name = unstyled.slice("generated-assets/scenes/".length).replace(/\.png$/i, "").replace(/-/g, "_");
+    return `assets/scenes/${name}.svg`;
+  }
+  return unstyled;
 }
 
 export function resolveStageAnchor(
@@ -132,5 +146,5 @@ export function resolveStageAnchor(
   anchor: string | undefined
 ): StageAnchor | undefined {
   if (!backgroundSrc || !anchor) return undefined;
-  return STAGE_ANCHORS[backgroundSrc]?.[anchor];
+  return STAGE_ANCHORS[canonicalStagePath(backgroundSrc)]?.[anchor];
 }

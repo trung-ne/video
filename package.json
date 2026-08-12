@@ -21,6 +21,7 @@
     "build-assets": "npx ts-node scripts/build-asset-manifest.ts",
     "audit-assets": "python scripts/measure-asset-visuals.py public",
     "asset-status": "npx ts-node scripts/asset-status.ts",
+    "check-style-assets": "npx ts-node scripts/check-style-assets.ts",
     "typecheck": "npx tsc --noEmit",
     "test": "npx ts-node scripts/test.ts",
     "check": "npm run typecheck && npm test && python -m unittest scripts/test_align_words.py scripts/test_visual_audit.py"

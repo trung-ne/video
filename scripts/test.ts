@@ -7,6 +7,7 @@ import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest, resolveAssetRequests } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
+import { assertStyleInventory, requestedAssetStyle } from "../src/engine/assetStyle";
 import {
   measureTeachingTextCoverage,
   runQualityCheck,
@@ -1438,6 +1439,20 @@ test("compiler derives durationInFrames from max end, not array order", () => {
     ],
   });
   assert.strictEqual(timeline.durationInFrames, 150);
+});
+
+test("style inventory fails closed until a complete style batch exists", () => {
+  assert.throws(() => assertStyleInventory("f", ["characters/cat", "finance/money"]), /missing .*required production asset/i);
+});
+
+test("asset style defaults to f and rejects unknown environment values", () => {
+  const saved = process.env.ASSET_STYLE;
+  delete process.env.ASSET_STYLE;
+  assert.strictEqual(requestedAssetStyle(), "f");
+  process.env.ASSET_STYLE = "not-a-style";
+  assert.throws(() => requestedAssetStyle(), /ASSET_STYLE must be one of/);
+  if (saved === undefined) delete process.env.ASSET_STYLE;
+  else process.env.ASSET_STYLE = saved;
 });
 
 let failures = 0;

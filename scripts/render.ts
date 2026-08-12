@@ -37,6 +37,7 @@ import {
   hasBlocker,
 } from "../src/engine/timingIntegrity";
 import referenceQuality from "../config/reference-quality.json";
+import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
 
 const args = process.argv.slice(2);
 
@@ -163,6 +164,12 @@ if (!fs.existsSync(timelinePath)) {
 }
 
 const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+try {
+  assertTimelineAssetStyle(raw.timingProvenance);
+} catch (error) {
+  console.error(`❌ ${(error as Error).message}`);
+  process.exit(1);
+}
 let preparedAudio: any = null;
 
 // Schema gate — fail fast with a clear message instead of crashing deep inside

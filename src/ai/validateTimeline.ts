@@ -3,8 +3,9 @@ import * as path from "path";
 import { Timeline, EnterEvent } from "../types/timeline";
 import { SceneTimeline, SLOT_POSITIONS, TEXT_SLOT_POSITIONS } from "../types/scene";
 import { isCSSBackground, backgroundImageExists } from "./backgroundResolver";
-import { STAGE_ANCHORS } from "../engine/stageAnchors";
+import { STAGE_ANCHORS, canonicalStagePath } from "../engine/stageAnchors";
 import { resolveAssetSrc } from "../engine/assetPaths";
+import { ASSET_STYLES, styleManifestHash } from "../engine/assetStyle";
 
 export interface ValidationResult {
   valid: boolean;
@@ -71,6 +72,11 @@ export function validateSceneTimeline(input: any): ValidationResult {
         errors.push(
           `timingProvenance says ${p.measuredSceneCount} measured scenes but the timeline has ${input.scenes.length}`
         );
+      }
+      if (!ASSET_STYLES.includes(p.assetStyle)) errors.push(`timingProvenance.assetStyle invalid: ${JSON.stringify(p.assetStyle)}`);
+      if (typeof p.assetStyleManifestHash !== "string") errors.push("timingProvenance.assetStyleManifestHash must be a string");
+      if (ASSET_STYLES.includes(p.assetStyle) && p.assetStyleManifestHash !== styleManifestHash(p.assetStyle)) {
+        errors.push(`Asset style ${p.assetStyle} manifest hash changed after compile; recompile the storyboard.`);
       }
     }
   }
@@ -168,7 +174,7 @@ export function validateSceneTimeline(input: any): ValidationResult {
           warnings.push(`${ep} unknown slot "${e.slot}"`);
         }
         if (e.anchor) {
-          const anchors = STAGE_ANCHORS[scene.backgroundSrc ?? ""];
+          const anchors = STAGE_ANCHORS[canonicalStagePath(scene.backgroundSrc ?? "")];
           if (!anchors) {
             errors.push(`${ep} anchor "${e.anchor}" nhưng backgroundSrc không phải stage set (assets/scenes/*)`);
           } else if (!anchors[e.anchor]) {

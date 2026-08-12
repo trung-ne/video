@@ -21,6 +21,7 @@ import { SceneTimeline } from "../src/types/scene";
 import { AlignedWord } from "../src/types/storyboard";
 import { checksumJson } from "../src/ai/transcriptCoverage";
 import { sha256File } from "../src/audio/prepareAudio";
+import { assertStyleInventory, requestedAssetStyle, styleManifestHash } from "../src/engine/assetStyle";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 import {
   checkSceneIdAlignment,
@@ -42,6 +43,7 @@ const outPath = getArg("--out") ?? "timeline.json";
 if (!sbPath || !fs.existsSync(sbPath)) { console.error(`❌ storyboard not found: ${sbPath}`); process.exit(1); }
 
 const sb = JSON.parse(fs.readFileSync(sbPath, "utf-8"));
+const assetStyle = requestedAssetStyle();
 const storyboardChecksum = checksumJson(sb);
 if (getArg("--audio")) sb.audio = getArg("--audio");
 
@@ -202,6 +204,30 @@ try {
   console.error(`\n❌ Compile refused: ${(error as Error).message}\n`);
   process.exit(1);
 }
+
+// Pin every image reference to a physical file from the selected style. This is
+// deliberately after scene compilation: authored storyboard refs remain stable,
+// but every downstream renderer/audit receives style-specific geometry.
+const styleRefs: string[] = [];
+for (const scene of timeline.scenes) {
+  if (scene.backgroundSrc && !scene.backgroundSrc.startsWith("#") && !scene.backgroundSrc.includes("gradient") && !scene.backgroundSrc.startsWith("rgb")) styleRefs.push(scene.backgroundSrc);
+  for (const entity of scene.entities) styleRefs.push(entity.src);
+  for (const card of scene.cards ?? []) if (card.iconSrc) styleRefs.push(card.iconSrc);
+  for (const frame of scene.frameBoxes ?? []) if (frame.contentSrc) styleRefs.push(frame.contentSrc);
+}
+const stylePaths = assertStyleInventory(assetStyle, styleRefs);
+const pin = (src: string) => stylePaths[src] ?? src;
+for (const scene of timeline.scenes) {
+  if (scene.backgroundSrc) scene.backgroundSrc = pin(scene.backgroundSrc);
+  for (const entity of scene.entities) entity.src = pin(entity.src);
+  for (const card of scene.cards ?? []) if (card.iconSrc) card.iconSrc = pin(card.iconSrc);
+  for (const frame of scene.frameBoxes ?? []) if (frame.contentSrc) frame.contentSrc = pin(frame.contentSrc);
+}
+timeline.timingProvenance = {
+  ...timeline.timingProvenance,
+  assetStyle,
+  assetStyleManifestHash: styleManifestHash(assetStyle),
+};
 
 if (timingGate && audioSeconds !== undefined) {
   const timelineSeconds = timeline.durationInFrames / timeline.fps;

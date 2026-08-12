@@ -70,4 +70,8 @@ export interface AssetManifest {
   // Physical path → contentScale, for the renderer to look up without walking
   // the full entry list. Only assets whose padding differs from 1 appear here.
   contentScales?: Record<string, number>;
+  /** Style-locked logical ref → physical style asset path. */
+  styleAliases?: Partial<Record<"c" | "d" | "f", Record<string, string>>>;
+  /** Hash of every style alias; compile pins it and production verifies it. */
+  styleHashes?: Partial<Record<"c" | "d" | "f", string>>;
 }
