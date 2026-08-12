@@ -27,6 +27,7 @@ import type { VisualTreatmentPlan } from "../src/types/storyboard";
 import type { AssetManifest } from "../src/types/assets";
 import { resolveAssetRequest } from "../src/engine/assetResolver";
 import referenceQuality from "../config/reference-quality.json";
+import { ENTRANCE_STYLES } from "../src/engine/entrancePolicy";
 
 const args = process.argv.slice(2);
 function getArg(flag: string, defaultVal?: string): string | undefined {
@@ -173,6 +174,9 @@ const scenes = SCENES.map((s, i) => {
   if (!isKnownGrammar(s.grammar)) {
     fail(`unknown visualGrammar "${s.grammar}". Valid: ${knownGrammarIds().join(", ")}`);
   }
+  if (s.entranceStyle !== undefined && !ENTRANCE_STYLES.includes(s.entranceStyle)) {
+    fail(`invalid entranceStyle "${s.entranceStyle}". Valid: ${ENTRANCE_STYLES.join(", ")}`);
+  }
   const definition = getGrammarDefinition(s.grammar);
   if (definition) {
     for (const slot of missingRequiredSlots(definition, slots)) {
@@ -241,6 +245,7 @@ const scenes = SCENES.map((s, i) => {
     narration,
     purpose: s.purpose,
     emotion: s.emotion,
+    entranceStyle: s.entranceStyle,
     viewerFocus: s.viewerFocus,
     visualGrammar: s.grammar,
     sourceRange: range,

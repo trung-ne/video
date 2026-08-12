@@ -95,7 +95,7 @@ export const CatExplainerVideo: React.FC<Props> = ({ timeline }) => {
           const exitInfo = state.assetExitFrames.get(assetId) ?? null;
 
           const enterInfo = state.assetEnterInfo.get(assetId);
-          const enterAnimation = enterInfo?.animation ?? "popIn";
+          const enterAnimation = enterInfo?.animation ?? "fadeIn";
           const enterDuration = enterInfo?.duration ?? 18;
 
           return (

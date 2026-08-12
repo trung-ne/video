@@ -92,6 +92,7 @@ export const AnimatedAsset: React.FC<Props> = ({
         justifyContent: "center",
         opacity: resolved.opacity * asset.opacity,
         transform: `translate(${totalTX}px, ${totalTY}px) scale(${totalScale})`,
+        clipPath: resolved.clipPath,
         filter: emphasisFilter || undefined,
         zIndex: asset.zIndex,
         pointerEvents: "none",

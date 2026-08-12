@@ -1,6 +1,7 @@
 import React from "react";
 import { interpolate, spring } from "remotion";
 import { TextState } from "../engine/timelineEngine";
+import { clampEntranceProgress, getEnterAnimation } from "../animations";
 
 interface Props {
   text: TextState;
@@ -10,7 +11,7 @@ interface Props {
   canvasHeight: number;
 }
 
-const SPRING_CFG = { damping: 16, mass: 0.7, stiffness: 150, overshootClamping: false };
+const SPRING_CFG = { damping: 16, mass: 0.7, stiffness: 150, overshootClamping: true };
 
 export const AnimatedText: React.FC<Props> = ({
   text,
@@ -48,12 +49,12 @@ export const AnimatedText: React.FC<Props> = ({
 
   if (style === "STAT") {
     // Dramatic scale-in for statistics
-    const sp = spring({ frame: localFrame, fps, config: SPRING_CFG, durationInFrames: 18 });
+    const sp = clampEntranceProgress(spring({ frame: localFrame, fps, config: SPRING_CFG, durationInFrames: 18 }));
     opacity = interpolate(localFrame, [0, 8], [0, 1], { extrapolateRight: "clamp" });
     scale = interpolate(sp, [0, 1], [0.4, 1]);
   } else if (style === "CALLOUT") {
     // Pop in from below
-    const sp = spring({ frame: localFrame, fps, config: SPRING_CFG, durationInFrames: 14 });
+    const sp = clampEntranceProgress(spring({ frame: localFrame, fps, config: SPRING_CFG, durationInFrames: 14 }));
     opacity = interpolate(localFrame, [0, 6], [0, 1], { extrapolateRight: "clamp" });
     translateY = interpolate(sp, [0, 1], [30, 0]);
   } else if (style === "SECTION") {
@@ -71,6 +72,14 @@ export const AnimatedText: React.FC<Props> = ({
     translateY = interpolate(localFrame, [0, fadeDuration * 1.5], [20, 0], { extrapolateRight: "clamp" });
   }
 
+  // All text now shares the production entrance engine. STAT no longer gets a
+  // separate dramatic overshoot, and subtitles remain the deliberately quiet fade.
+  const entrance = getEnterAnimation(text.animation ?? "fadeIn", localFrame, 18, fps);
+  opacity = entrance.opacity;
+  scale = entrance.scale;
+  translateX = entrance.translateX;
+  translateY = entrance.translateY;
+
   const pixelX = text.position.x * canvasWidth;
   const pixelY = text.position.y * canvasHeight;
 
@@ -79,15 +88,16 @@ export const AnimatedText: React.FC<Props> = ({
     const bg = text.background ?? "#FF6B35";
     const focusPhase = Math.floor(Math.max(0, localFrame) / (fps * 4)) % 3;
     const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -170 : 170;
-    const focusScale = focusPhase === 0 ? 1 : focusPhase === 1 ? 1.18 : 0.82;
+    const focusScale = 1;
     return (
       <div
         style={{
           position: "absolute",
           left: pixelX,
           top: pixelY,
-          transform: `translate(-50%, -50%) translate(${focusX}px, ${translateY}px) scale(${scale * focusScale})`,
+          transform: `translate(-50%, -50%) translate(${focusX + translateX}px, ${translateY}px) scale(${scale * focusScale})`,
           opacity,
+          clipPath: entrance.clipPath,
           zIndex: 60,
           pointerEvents: "none",
         }}
@@ -128,6 +138,7 @@ export const AnimatedText: React.FC<Props> = ({
           top: pixelY,
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
+          clipPath: entrance.clipPath,
           fontSize: statFontSize,
           color,
           fontWeight,
@@ -157,8 +168,9 @@ export const AnimatedText: React.FC<Props> = ({
           position: "absolute",
           left: pixelX,
           top: pixelY,
-          transform: `translate(-50%, -50%) translateY(${translateY}px)`,
+          transform: `translate(-50%, -50%) translate(${translateX}px, ${translateY}px)`,
           opacity,
+          clipPath: entrance.clipPath,
           zIndex: 55,
           pointerEvents: "none",
           display: "flex",
@@ -206,6 +218,7 @@ export const AnimatedText: React.FC<Props> = ({
           bottom: canvasHeight - (text.position.y * canvasHeight + 40),
           transform: `translateX(-50%)`,
           opacity,
+          clipPath: entrance.clipPath,
           zIndex: 80,
           pointerEvents: "none",
           // Wide enough to hold ~42 chars/line without wrapping to 3 lines,
@@ -264,6 +277,7 @@ export const AnimatedText: React.FC<Props> = ({
         top: pixelY,
         transform: `translate(-50%, -50%) translateY(${translateY}px) translateX(${translateX}px) scale(${scale})`,
         opacity,
+        clipPath: entrance.clipPath,
         fontSize,
         color,
         fontWeight,

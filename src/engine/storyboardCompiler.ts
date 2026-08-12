@@ -15,6 +15,7 @@ import { Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, TimingProvena
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext, GrammarResult } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
+import { selectEntranceStyle } from "./entrancePolicy";
 import {
   SceneTimingSource,
   checkCompiledTimings,
@@ -600,6 +601,13 @@ function compileBrief(
     startFrame: timing.startFrame,
     durationFrames: timing.frames,
     layout: result.layout,
+    entranceStyle: selectEntranceStyle({
+      requested: brief.entranceStyle,
+      grammar: brief.visualGrammar,
+      emotion: brief.emotion,
+      heroVisual: brief.heroVisual,
+      visualRegister: brief.visualRegister,
+    }),
     narration: brief.narration,
     sourceRange: brief.sourceRange,
     visualRegister: brief.visualRegister,

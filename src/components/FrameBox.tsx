@@ -1,7 +1,8 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import { FrameBoxState } from "../engine/timelineEngine";
 import { getPaletteSaturationScale, resolveAssetSrc } from "../engine/assetPaths";
+import { getEnterAnimation } from "../animations";
 
 interface Props {
   frameBox: FrameBoxState;
@@ -21,14 +22,7 @@ export const FrameBox: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const entranceProgress = spring({
-    frame: frame - frameBox.enterFrame,
-    fps,
-    config: { damping: 14, stiffness: 160 },
-  });
-  // A FrameBox is the evidence focal, so the scene must never open on only
-  // its blurred/dimmed background while the monitor scales up from zero.
-  const progress = Math.max(0.82, entranceProgress);
+  const entrance = getEnterAnimation(frameBox.animation, frame - frameBox.enterFrame, 18, fps);
 
   const x = frameBox.position.x * canvasWidth;
   const y = frameBox.position.y * canvasHeight;
@@ -44,7 +38,6 @@ export const FrameBox: React.FC<Props> = ({
   const panPhase = Math.min(1, contentAge / (fps * 10));
   const focusPhase = Math.floor(contentAge / (fps * 4)) % 3;
   const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -76 : 76;
-  const focusScale = focusPhase === 0 ? 1 : focusPhase === 1 ? 1.04 : 0.96;
   const photoScale = 1 + panPhase * 0.24;
   const photoX = 38 + panPhase * 24;
 
@@ -55,7 +48,9 @@ export const FrameBox: React.FC<Props> = ({
         left: x - w / 2,
         top: y - h / 2,
         width: w,
-        transform: `translateX(${focusX}px) scale(${progress * focusScale})`,
+        transform: `translate(${focusX + entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
+        opacity: entrance.opacity,
+        clipPath: entrance.clipPath,
         transformOrigin: "center center",
         zIndex: 11,
         display: "flex",

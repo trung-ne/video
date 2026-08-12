@@ -38,6 +38,8 @@ import { fitTextToBox } from "../src/engine/textLayout";
 import { getPaletteSaturationScale } from "../src/engine/assetPaths";
 import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
 import { checkSpatialIntegrity, visibleAssetBox } from "../src/engine/spatialIntegrity";
+import { getEnterAnimation } from "../src/animations";
+import { animationForEntranceStyle, normalizeEntranceAnimation, selectEntranceStyle } from "../src/engine/entrancePolicy";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
@@ -51,6 +53,27 @@ test("proxy render scale always produces integer 1080p dimensions", () => {
     height: 540,
   });
   assert.throws(() => getScaledDimensions(1920, 1080, 0.333), /non-integer dimensions/);
+});
+
+test("all six entrance styles finish at authored size without overshoot", () => {
+  const styles = ["fade", "rise", "slide", "softScale", "reveal", "cut"] as const;
+  for (const style of styles) {
+    const values = Array.from({ length: 61 }, (_, frame) =>
+      getEnterAnimation(animationForEntranceStyle(style, { x: 0.25, y: 0.5 }), frame, 18, 30)
+    );
+    assert.ok(values.every((value) => value.scale <= 1 && value.scale > 0));
+    assert.strictEqual(values.at(-1)?.scale, 1);
+  }
+});
+
+test("entrance policy respects explicit direction and semantic fallback", () => {
+  assert.strictEqual(selectEntranceStyle({ requested: "cut", grammar: "EVIDENCE", emotion: "sad" }), "cut");
+  assert.strictEqual(selectEntranceStyle({ grammar: "EVIDENCE", emotion: "neutral" }), "reveal");
+  assert.strictEqual(selectEntranceStyle({ grammar: "DIALOGUE_QA", emotion: "sad" }), "slide");
+  assert.strictEqual(selectEntranceStyle({ grammar: "SOLO", emotion: "happy" }), "rise");
+  assert.strictEqual(animationForEntranceStyle("slide", { x: 0.2, y: 0.5 }), "slideRight");
+  assert.strictEqual(animationForEntranceStyle("slide", { x: 0.8, y: 0.5 }), "slideLeft");
+  assert.strictEqual(normalizeEntranceAnimation("popIn"), "softScaleIn");
 });
 
 test("spatial integrity blocks undeclared asset overlap and permits an authored held prop", () => {
@@ -546,7 +569,7 @@ test("liveliness never invents motion beyond storyboard-authored beats", () => {
       src: "characters/cat",
       position: { x: 0.5, y: 0.5 },
       scale: 1,
-      animation: "popIn",
+      animation: "softScaleIn",
     }],
   };
   const result = injectLiveliness(timeline, {
@@ -579,7 +602,7 @@ test("liveliness never invents motion beyond storyboard-authored beats", () => {
       src: "characters/cat_worker",
       position: { x: 0.5, y: 0.5 },
       scale: 1,
-      animation: "popIn",
+      animation: "softScaleIn",
     }],
   };
   const costumedResult = injectLiveliness(costumed);

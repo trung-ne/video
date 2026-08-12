@@ -90,7 +90,7 @@ Video mẫu không lặp 1 khuôn: nó LUÂN PHIÊN 5 "thanh ghi" (register). M�
 5. **QUY TẮC 180°:** trong DIALOGUE, mèo A luôn ở trái nhìn phải, mèo B luôn ở phải nhìn trái — GIỮ NGUYÊN vị trí 2 nhân vật qua mọi scene sau đó, không đổi bên.
 6. **CHEKHOV'S GUN (callback):** prop/nhân vật xuất hiện ở hook mở đầu PHẢI quay lại ở scene kết luận — người xem cảm nhận vòng tròn khép kín. Ghi chú trong scene cuối: dùng lại đúng asset của scene 1.
 7. **KHOẢNG THỞ (let it land):** sau mỗi reveal lớn (STAT, twist), giữ 1.5-2s KHÔNG thêm phần tử mới, không text mới — chỉ nhân vật phản ứng (pose swap surprised/sad). Cảm xúc cần thời gian ngấm.
-8. **KULESHOV (mặt + vật = suy nghĩ):** muốn diễn tả nhân vật "muốn/sợ/nghĩ về X" → cắt: mèo close-up nhìn về hướng prop → prop popIn ở hướng đó → mèo đổi pose phản ứng. Không cần text.
+8. **KULESHOV (mặt + vật = suy nghĩ):** muốn diễn tả nhân vật "muốn/sợ/nghĩ về X" → cắt: mèo close-up nhìn về hướng prop → prop reveal/slide ở hướng đó → mèo đổi pose phản ứng. Không cần text.
 9. **NHỊP CẮT THEO CẢM XÚC:** đoạn giải thích bình tĩnh = scene dài 12-18s; đoạn cao trào/liệt kê = scene ngắn dồn dập 5-8s. Nhịp đều tăm tắp suốt video = ru ngủ.
 
 ## THÔNG SỐ
@@ -451,7 +451,7 @@ Layout:     SOLO
 Background: ấm, sáng — "linear-gradient(135deg, #FFF9F0 0%, #FDE8D0 100%)"
 Cat:        cat_explain hoặc cat — x=0.50, y=0.52, scale ĐỂ TRỐNG (auto 3.0)
 Text:       1 TITLE lớn (câu hỏi/hook) + 1 BODY ngắn (context)
-Transition: popIn cho cat, TITLE fadeIn delay 10 frames
+Transition: riseIn cho cat, TITLE fadeIn delay 10 frames
 Nhịp:       durationFrames ≥ 180 (6s) — không rush
 \`\`\`
 *Ví dụ: "Cho 1 tỷ vẫn không chịu đẻ?" | "Bitcoin là gì mà ai cũng nói?"*
@@ -497,7 +497,7 @@ Cat:        KHÔNG có mèo trong scene ICON_TRIPLE (đè icon giữa) — mèo 
 Icons:      x=0.22/0.50/0.78, y=0.42, scale 1.0, stagger 60 frames mỗi icon
 Labels:     slot LABEL_UNDER_LEFT/CENTER/RIGHT, màu khác nhau (#2D9CDB/#27AE60/#FF6B35)
 Text:       1 SECTION header trên cùng + 1 BODY tóm tắt sau khi 3 icons đã xuất hiện
-Transition: không flash — dùng slideUp cho từng icon
+Transition: không flash — dùng riseIn cho từng icon
 \`\`\`
 *Dùng khi: 3 nguyên tắc, 3 loại X, 3 bước làm Y*
 
@@ -669,7 +669,7 @@ Transcript kết thúc series          → [CTA]
   "scale": 1.6,
   "zIndex": 2,
 
-  "enterAnimation": "popIn",
+  "enterAnimation": "softScaleIn",
   "enterDelay": 10,
   "animationDuration": 20,
 
@@ -689,20 +689,23 @@ TOP:    y=0.28  MID:    y=0.52  BOTTOM: y=0.72
 
 **Enter animations — chọn theo vị trí và ý nghĩa:**
 \`\`\`
-popIn       — nhân vật chính, concept quan trọng, reveal bất ngờ
+softScaleIn — surprise/urgent hero, chỉ 94% → 100%, không overshoot
 slideLeft   — asset ở bên trái, nguyên nhân, thứ đến trước
 slideRight  — asset ở bên phải, hệ quả, thứ đến sau
-slideUp     — kết luận, điểm nhấn, bước cuối
+riseIn      — kết luận, hopeful/happy, nâng nhẹ 28px
 fadeIn      — asset phụ, background element, subtle
-zoomIn      — CHỈ dùng cho STAT drama reveal (số liệu sốc)
+revealLeft/revealRight — evidence, paper, chart, map, monitor
+cutIn       — full-bleed emotional beat hoặc montage nhanh
 \`\`\`
 
 **Stagger pattern** (tạo nhịp điệu kể chuyện):
 \`\`\`json
 { "assetId": "cat_a",  "enterDelay": 0,  "enterAnimation": "slideRight" },
 { "assetId": "cat_b",  "enterDelay": 15, "enterAnimation": "slideLeft"  },
-{ "assetId": "icon1",  "enterDelay": 30, "enterAnimation": "popIn"      }
+{ "assetId": "icon1",  "enterDelay": 30, "enterAnimation": "fadeIn"     }
 \`\`\`
+
+**Scene entrance direction:** chọn một \`entranceStyle\` cho focal của mỗi scene: \`fade\`, \`rise\`, \`slide\`, \`softScale\`, \`reveal\`, hoặc \`cut\`. Chỉ focal dùng style biểu cảm; asset phụ và subtitle dùng \`fadeIn\`/\`cutIn\`. Chọn theo emotion + visual grammar, không xoay vòng máy móc và không cố dùng đủ sáu loại.
 
 **animationDuration:** luôn 18–25 frames — đừng để mặc định ngắn/giật
 
@@ -869,14 +872,14 @@ Kỹ thuật tạo 2 giai đoạn trong cùng 1 scene — không cần tạo sce
     "assetId": "cat_question",
     "src": "characters/cat_think",
     "position": { "x": 0.5, "y": 0.52 },
-    "enterAnimation": "popIn",
+    "enterAnimation": "softScaleIn",
     "enterDelay": 0
   },
   {
     "assetId": "cat_answer",
     "src": "characters/cat_happy",
     "position": { "x": 0.5, "y": 0.52 },
-    "enterAnimation": "zoomIn",
+    "enterAnimation": "softScaleIn",
     "enterDelay": 300,
     "clearPrevious": ["cat_question"]
   }
@@ -905,7 +908,7 @@ Kỹ thuật tạo 2 giai đoạn trong cùng 1 scene — không cần tạo sce
 
 3. **BONG BÓNG THOẠI xuất hiện/biến mất** (\`speechBubble\` hoặc CALLOUT có duration ngắn) — mỗi câu thoại 1 bong bóng, hết câu thì biến, câu sau bong bóng mới.
 
-4. **ICON POP-IN theo lời dẫn** — khi narration nhắc tới "tiền/nhà/thời gian" → icon tương ứng popIn đúng lúc đó (enterDelay khớp câu), rồi exit khi qua ý.
+4. **ICON entrance theo lời dẫn** — khi narration nhắc tới "tiền/nhà/thời gian" → icon tương ứng fade/reveal đúng lúc đó (enterDelay khớp câu), rồi exit khi qua ý.
 
 5. **MŨI TÊN NỐI nhân quả** — "X dẫn đến Y": đặt asset X (trái) + \`ui/arrow_up\` hoặc arrow (giữa) + asset Y (phải), stagger xuất hiện. Giống video mẫu: mèo → mũi tên → icon like.
 
@@ -1115,7 +1118,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
 | "cạnh tranh / ranking" | mèo có số trên người (dùng LINEUP) | "vị trí thứ X" |
 | "3 khái niệm song song" | ICON_TRIPLE với stagger reveal | bullet points text |
 | "nhân quả / liên kết" | 2 asset + arrow icon GIỮA họ | "vì vậy / dẫn đến" |
-| "thành công / chiến thắng" | trophy popIn + cat_happy | "thành công" |
+| "thành công / chiến thắng" | trophy riseIn + cat_happy | "thành công" |
 | "gravity / nghiêm trọng" | dark backgroundSrc + cat_surprised | bold text |
 
 ---
@@ -1161,7 +1164,7 @@ Chỉ override \`scale\` khi thật sự cần. Nhân vật chính KHÔNG BAO GI
           "assetId": "cat",
           "src": "characters/cat_shrug",
           "position": { "x": 0.50, "y": 0.52 },
-          "enterAnimation": "popIn",
+          "enterAnimation": "softScaleIn",
           "animationDuration": 20,
           "emphasize": { "animation": "bounce", "delay": 80, "duration": 25 }
         }

@@ -1,6 +1,7 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { PaperCardState } from "../engine/timelineEngine";
+import { clampEntranceProgress, getEnterAnimation } from "../animations";
 
 interface Props {
   card: PaperCardState;
@@ -15,24 +16,16 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const entranceProgress = spring({
-    frame: frame - card.enterFrame,
-    fps,
-    config: { damping: 14, stiffness: 160 },
-  });
-  // A paper card is the focal evidence, so it must already read as a card on
-  // its first sampled beat. Starting from scale 0 made white paper disappear
-  // into the white stage even though the semantic component was present.
-  const progress = Math.max(0.82, entranceProgress);
+  const entrance = getEnterAnimation(card.animation, frame - card.enterFrame, 18, fps);
   // Evidence should unfold with the narration instead of landing as one
   // frozen slide. Survey cards have a meaningful title to hold the first
   // beat, then reveal the finding and keep it on screen.
   const bodyProgress = card.variant === "survey" && card.title
-    ? spring({
+    ? clampEntranceProgress(spring({
         frame: frame - card.enterFrame - Math.round(fps * 2.4),
         fps,
-        config: { damping: 18, stiffness: 130 },
-      })
+        config: { damping: 18, stiffness: 130, overshootClamping: true },
+      }))
     : 1;
 
   const x = card.position.x * canvasWidth;
@@ -47,7 +40,6 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
   const evidenceAge = Math.max(0, frame - card.enterFrame);
   const evidencePhase = Math.floor(evidenceAge / (fps * 4)) % 3;
   const evidenceX = evidencePhase === 0 ? 0 : evidencePhase === 1 ? -88 : 88;
-  const evidenceScale = evidencePhase === 0 ? 1 : evidencePhase === 1 ? 1.05 : 0.95;
   const paperBackground = isSurvey
     ? ["#FFF1CF", "#F7E3AF", "#E8F3F1"][evidencePhase]
     : ["#FFFFFF", "#FFF4C7", "#E8F3F1"][evidencePhase];
@@ -59,7 +51,9 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
         left: x - w / 2,
         top: y,
         width: w,
-        transform: `translate(${evidenceX}px, -50%) rotate(${card.rotation}deg) scale(${progress * evidenceScale})`,
+        transform: `translate(${evidenceX + entrance.translateX}px, calc(-50% + ${entrance.translateY}px)) rotate(${card.rotation}deg) scale(${entrance.scale})`,
+        opacity: entrance.opacity,
+        clipPath: entrance.clipPath,
         transformOrigin: "center center",
         zIndex: 12,
         // Shadow is a separate offset silhouette below; no per-frame blur.

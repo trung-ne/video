@@ -18,6 +18,7 @@ import {
   TransitionEvent,
 } from "../types/timeline";
 import { interpolate, spring } from "remotion";
+import { normalizeEntranceAnimation } from "./entrancePolicy";
 
 export interface BackgroundState {
   src: string;
@@ -40,6 +41,7 @@ export interface SpeechBubbleState {
   widthRatio: number;
   background: string;
   textColor: string;
+  animation: string;
 }
 
 export interface CardState {
@@ -193,7 +195,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         });
         state.assetEnterFrames.set(e.assetId, e.frame);
         state.assetEnterInfo.set(e.assetId, {
-          animation: e.animation ?? "popIn",
+          animation: normalizeEntranceAnimation(e.animation),
           duration: e.animationDuration ?? 18,
         });
       }
@@ -319,6 +321,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         widthRatio: e.widthRatio ?? 0.38,
         background: e.background ?? "white",
         textColor: e.textColor ?? "#1a1a1a",
+        animation: normalizeEntranceAnimation(e.animation ?? "fadeIn"),
       });
       if (e.exitFrame !== null && currentFrame >= (e.exitFrame ?? 0)) {
         state.speechBubbles.delete(e.bubbleId);
@@ -334,7 +337,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         background: e.background,
         iconSrc: e.iconSrc,
         label: e.label,
-        animation: e.animation ?? "popIn",
+        animation: normalizeEntranceAnimation(e.animation),
         enterFrame: e.frame,
         exitFrame: e.exitFrame ?? null,
         width: e.width ?? 280,
@@ -356,7 +359,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         body: e.body,
         choices: e.choices,
         rotation: e.rotation ?? (e.variant === "evidence" ? -2 : 0),
-        animation: e.animation ?? "popIn",
+        animation: normalizeEntranceAnimation(e.animation),
         enterFrame: e.frame,
         exitFrame: e.exitFrame ?? null,
         width: e.width ?? 1100,
@@ -377,7 +380,7 @@ export function computeFrameState(timeline: Timeline, currentFrame: number): Fra
         scale: e.scale ?? 1,
         contentSrc: e.contentSrc,
         caption: e.caption,
-        animation: e.animation ?? "popIn",
+        animation: normalizeEntranceAnimation(e.animation),
         enterFrame: e.frame,
         exitFrame: e.exitFrame ?? null,
         width: e.width ?? 1000,

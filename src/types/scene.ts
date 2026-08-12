@@ -1,4 +1,4 @@
-import { AnimationType, EmphasizeType, ExitType, TextStyle } from "./timeline";
+import { AnimationType, EmphasizeType, EntranceStyle, ExitType, TextStyle } from "./timeline";
 import { SourceRange, VisualRegister, VisualTreatmentPlan, PhotoTreatment } from "./storyboard";
 
 // ============================================================
@@ -102,7 +102,7 @@ export interface SceneEntity {
   badge?: string;                      // number/text badge on character (e.g. "4")
   circle?: string;                     // colored disc behind icon (icon-in-circle grouping, e.g. "#8E44AD")
 
-  enterAnimation?: AnimationType;      // default: popIn
+  enterAnimation?: AnimationType;
   enterDelay?: number;                 // frames after scene.startFrame, default 0
   animationDuration?: number;          // frames, default 20
 
@@ -141,6 +141,7 @@ export interface SceneText {
   align?: "left" | "center" | "right";
   fontWeight?: number;
   fontSize?: number;
+  enterAnimation?: AnimationType;
 }
 
 export interface SceneConceptCard {
@@ -154,6 +155,7 @@ export interface SceneConceptCard {
   duration?: number;
   width?: number;
   height?: number;
+  enterAnimation?: AnimationType;
 }
 
 // ─── Paper card (evidence / survey) inside a scene ───────────
@@ -172,6 +174,7 @@ export interface ScenePaperCard {
   source?: string;
   date?: string;
   highlight?: string;
+  enterAnimation?: AnimationType;
 }
 
 // ─── TV/monitor frame with data content inside a scene ───────
@@ -186,6 +189,7 @@ export interface SceneFrameBox {
   width?: number;
   source?: string;
   objectFit?: "contain" | "cover";
+  enterAnimation?: AnimationType;
 }
 
 // ─── Speech bubble attached to a character in a scene ────────
@@ -208,6 +212,7 @@ export interface SceneSpeechBubble {
   fontSize?: number;
   /** Bubble width cap as a fraction of canvas width. Defaults to 0.38. */
   widthRatio?: number;
+  enterAnimation?: AnimationType;
 }
 
 // ─── Transition between scenes ───────────────────────────────
@@ -227,6 +232,8 @@ export interface Scene {
   durationFrames: number;  // how long this scene lasts
 
   layout: LayoutPreset;
+  /** Scene-level choice for its focal entrance; supporting elements fade or cut. */
+  entranceStyle?: EntranceStyle;
   narration?: string;      // the words being spoken (helps compiler time things)
   sourceRange?: SourceRange;
   visualRegister?: VisualRegister;

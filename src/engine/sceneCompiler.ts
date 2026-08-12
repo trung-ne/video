@@ -28,6 +28,7 @@ import {
   SpeechBubbleEvent,
 } from "../types/timeline";
 import { isStageBackground, resolveStageAnchor } from "./stageAnchors";
+import { animationForEntranceStyle, selectEntranceStyle } from "./entrancePolicy";
 
 // ============================================================
 // SceneCompiler — translates SceneTimeline → Timeline (events)
@@ -185,7 +186,7 @@ function compileScene(
   // ── 5b. Paper cards (evidence / survey) ──────────────────
   if (scene.paperCards) {
     for (const pc of scene.paperCards) {
-      compilePaperCard(pc, start, sceneEnd, events, totalFrames, transitionDur);
+      compilePaperCard(pc, scene, start, sceneEnd, events, totalFrames, transitionDur);
     }
   }
   if (scene.cards) {
@@ -200,7 +201,7 @@ function compileScene(
         background: card.background,
         iconSrc: card.iconSrc,
         label: card.label,
-        animation: "popIn",
+        animation: card.enterAnimation ?? (scene.cards.length === 1 ? defaultComponentAnimation(scene, card.position) : "fadeIn"),
         exitFrame: card.duration !== undefined
           ? Math.min(frame + card.duration, totalFrames - 1)
           : Math.min(sceneEnd - 5, totalFrames - 1),
@@ -213,14 +214,14 @@ function compileScene(
   // ── 5c. TV/monitor data frames ───────────────────────────
   if (scene.frameBoxes) {
     for (const fb of scene.frameBoxes) {
-      compileFrameBox(fb, start, sceneEnd, events, totalFrames, transitionDur);
+      compileFrameBox(fb, scene, start, sceneEnd, events, totalFrames, transitionDur);
     }
   }
 
   // ── 5d. Speech bubbles (dialogue lines above characters) ──
   if (scene.speechBubbles) {
     for (const sb of scene.speechBubbles) {
-      compileSpeechBubble(sb, start, sceneEnd, events, totalFrames, transitionDur);
+      compileSpeechBubble(sb, scene, start, sceneEnd, events, totalFrames, transitionDur);
     }
   }
 
@@ -319,7 +320,7 @@ function compileEntity(
     src: entity.src,
     position,
     scale,
-    animation: entity.enterAnimation ?? defaultEnterAnimation(entity.role),
+    animation: entity.enterAnimation ?? defaultEnterAnimation(entity.role, scene, position, entityIndex),
     animationDuration: entity.animationDuration ?? 20,
     label: entity.label,
     badge: entity.badge,
@@ -447,7 +448,7 @@ function compileText(
     align: text.align ?? "center",
     fontWeight: text.fontWeight,
     fontSize: text.fontSize,
-    animation: "fadeIn",
+    animation: text.enterAnimation ?? defaultTextAnimation(scene, text),
     exitFrame,
   } as TextEvent);
 }
@@ -542,6 +543,7 @@ function compileSubtitles(
 
 function compilePaperCard(
   pc: ScenePaperCard,
+  scene: Scene,
   sceneStart: number,
   sceneEnd: number,
   events: TimelineEvent[],
@@ -576,7 +578,7 @@ function compilePaperCard(
     date: pc.date,
     highlight: pc.highlight,
     rotation: pc.rotation,
-    animation: "popIn",
+    animation: pc.enterAnimation ?? defaultComponentAnimation(scene, pc.position),
     exitFrame,
     width: pc.width ?? autoWidth,
   } as PaperCardEvent);
@@ -586,6 +588,7 @@ function compilePaperCard(
 // Sequenced bubbles (delay/duration) let two cats trade lines within a scene.
 function compileSpeechBubble(
   sb: SceneSpeechBubble,
+  scene: Scene,
   sceneStart: number,
   sceneEnd: number,
   events: TimelineEvent[],
@@ -609,11 +612,13 @@ function compileSpeechBubble(
     exitFrame,
     fontSize: sb.fontSize,
     widthRatio: sb.widthRatio,
+    animation: sb.enterAnimation ?? "fadeIn",
   } as SpeechBubbleEvent);
 }
 
 function compileFrameBox(
   fb: SceneFrameBox,
+  scene: Scene,
   sceneStart: number,
   sceneEnd: number,
   events: TimelineEvent[],
@@ -636,7 +641,7 @@ function compileFrameBox(
     caption: fb.caption,
     source: fb.source,
     objectFit: fb.objectFit,
-    animation: "popIn",
+    animation: fb.enterAnimation ?? defaultComponentAnimation(scene, fb.position),
     exitFrame,
     width: fb.width,
   } as FrameBoxEvent);
@@ -742,15 +747,26 @@ function compileCamera(
 // ─── Helpers ─────────────────────────────────────────────────
 
 function defaultEnterAnimation(
-  role?: SceneEntity["role"]
+  role: SceneEntity["role"] | undefined,
+  scene: Scene,
+  position: { x: number; y: number },
+  entityIndex: number,
 ): string {
-  switch (role) {
-    case "host": return "popIn";
-    case "hero": return "popIn";
-    case "cause": return "slideLeft";
-    case "effect": return "slideRight";
-    default: return "popIn";
-  }
+  if (scene.entities.length > 1 && entityIndex > 0) return "fadeIn";
+  if (role === "cause") return "slideRight";
+  if (role === "effect") return "slideLeft";
+  return defaultComponentAnimation(scene, position);
+}
+
+function defaultComponentAnimation(scene: Scene, position?: { x: number; y: number }): string {
+  const style = selectEntranceStyle({ requested: scene.entranceStyle, grammar: scene.visualGrammar });
+  return animationForEntranceStyle(style, position);
+}
+
+function defaultTextAnimation(scene: Scene, text: SceneText): string {
+  if (text.style === "SUBTITLE") return "fadeIn";
+  const isFocal = text.style === "STAT" || scene.texts.length === 1;
+  return isFocal ? defaultComponentAnimation(scene, text.position) : "fadeIn";
 }
 
 function defaultTextPosition(style: string): { x: number; y: number } {

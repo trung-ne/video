@@ -44,6 +44,8 @@ export type Emotion =
   | "neutral" | "surprise" | "concern" | "sad" | "hopeful"
   | "sarcastic" | "curious" | "urgent" | "happy";
 
+export type { EntranceStyle } from "./timeline";
+
 // Camera shot size — drives character scale + optional gentle zoom.
 export type Shot = "wide" | "medium" | "close";
 
@@ -153,6 +155,8 @@ export interface SceneBrief {
   // ── Authoring intent (what the LLM is actually good at) ──
   purpose: string;        // one line: what this scene must make the viewer get
   emotion: Emotion;
+  /** Optional authored choice; the compiler applies a semantic fallback when omitted. */
+  entranceStyle?: import("./timeline").EntranceStyle;
   viewerFocus: string;    // the ONE thing the eye should land on
   visualGrammar: VisualGrammar;
   sectionId?: string;
@@ -222,6 +226,7 @@ export interface AuthoredScene {
   narrationOverride?: string;
   grammar: VisualGrammar;
   emotion: Emotion;
+  entranceStyle?: import("./timeline").EntranceStyle;
   purpose: string;
   viewerFocus: string;
   slots?: Record<string, string>;

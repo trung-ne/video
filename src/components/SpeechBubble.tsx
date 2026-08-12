@@ -1,8 +1,9 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import { SpeechBubbleState } from "../engine/timelineEngine";
 import { AssetState } from "../types/timeline";
 import { fitTextToBox } from "../engine/textLayout";
+import { getEnterAnimation } from "../animations";
 
 interface Props {
   bubble: SpeechBubbleState;
@@ -20,11 +21,7 @@ export const SpeechBubble: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const progress = spring({
-    frame: frame - bubble.enterFrame,
-    fps,
-    config: { damping: 14, stiffness: 200 },
-  });
+  const entrance = getEnterAnimation(bubble.animation, frame - bubble.enterFrame, 18, fps);
   const bubbleAge = Math.max(0, frame - bubble.enterFrame);
   const focusPhase = Math.floor(bubbleAge / (fps * 4)) % 3;
   const focusOffset = focusPhase === 0 ? 0 : focusPhase === 1 ? -36 : 36;
@@ -65,7 +62,9 @@ export const SpeechBubble: React.FC<Props> = ({
         left: bubbleX,
         top: bubbleY,
         width: bubbleWidth,
-        transform: `translate(${focusX}px, ${focusOffset}px) rotate(${focusRotate}deg) scale(${progress})`,
+        transform: `translate(${focusX + entrance.translateX}px, ${focusOffset + entrance.translateY}px) rotate(${focusRotate}deg) scale(${entrance.scale})`,
+        opacity: entrance.opacity,
+        clipPath: entrance.clipPath,
         transformOrigin: bubble.direction === "left" ? "right bottom" : "left bottom",
         zIndex: 100,
       }}

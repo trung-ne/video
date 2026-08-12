@@ -1,8 +1,10 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import { CardState } from "../engine/timelineEngine";
 import { resolveAssetSrc } from "../engine/assetPaths";
 import { fitTextToBox } from "../engine/textLayout";
+import { clampEntranceProgress } from "../animations";
+import { getEnterAnimation } from "../animations";
 
 interface Props {
   card: CardState;
@@ -20,16 +22,7 @@ export const ConceptCard: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const progress = spring({
-    frame: frame - card.enterFrame,
-    fps,
-    config: { damping: 12, stiffness: 180 },
-  });
-  // A scene cut may be sampled on the very frame a card enters.  A literal
-  // scale(0) leaves an otherwise authored opening completely blank for that
-  // frame.  Keep the card legible immediately, like the other semantic
-  // components, while retaining the small settle animation afterwards.
-  const visibleProgress = Math.max(0.82, progress);
+  const entrance = getEnterAnimation(card.animation, frame - card.enterFrame, 18, fps);
 
   const x = card.position.x * canvasWidth;
   const y = card.position.y * canvasHeight;
@@ -52,7 +45,9 @@ export const ConceptCard: React.FC<Props> = ({
         top: y - h / 2,
         width: w,
         height: h,
-        transform: `translateX(${focusX}px) scale(${visibleProgress})`,
+        transform: `translate(${focusX + entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
+        opacity: entrance.opacity,
+        clipPath: entrance.clipPath,
         transformOrigin: "center center",
         zIndex: 10,
       }}

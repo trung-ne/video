@@ -129,7 +129,7 @@ function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
       ? "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"
       : WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 22 },
+      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterDelay: 22 },
     ],
     cards: [{
       // Caption and icon are one semantic component on the left; the large
@@ -280,7 +280,6 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
       scale: propScale,
       motionPolicy: "fixed",
       ...(placement === "held" && actor ? { allowOverlapWith: [actor.assetId] } : {}),
-      enterAnimation: "popIn",
       enterDelay: 24,
       emphasize: { animation: "pulse", delay: 24, duration: 20 },
     });
@@ -322,7 +321,7 @@ function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "CUSTOM",
     backgroundSrc: WHITE,
     entities: ctx.strict ? [] : [
-      { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "LEFT_MID", enterAnimation: "popIn", enterDelay: 8 },
+      { assetId: `${b.id}-cat`, src: emotionPose(b.emotion), slot: "LEFT_MID", enterDelay: 8 },
     ],
     texts: [],
     paperCards: [
@@ -351,7 +350,7 @@ function grammarSolo(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
-    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 1.6, enterAnimation: "popIn", enterDelay: 8 }],
+    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 1.6, enterDelay: 8 }],
     // A 760×570 card beside one character left ~65% of the content band as bare
     // background, so every SOLO sample measured flat. The keyword IS the scene's
     // teaching point, so it becomes the focal element at the size STAT_REVEAL
@@ -383,7 +382,7 @@ function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "SOLO",
     backgroundSrc: WHITE,
     entities: b.slots?.who ? [
-      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 1.4, enterAnimation: "popIn", enterDelay: 14 },
+      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 1.4, enterDelay: 14 },
     ] : [],
     texts: [],
     focusAssetId: b.slots?.who ? `${b.id}-cat` : undefined,
@@ -403,7 +402,7 @@ function grammarCharProp(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     backgroundSrc: WHITE,
     entities: [
       { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "LEFT", scale: 2.8, enterAnimation: "slideLeft", enterDelay: 8 },
-      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 2.2, label, enterAnimation: "popIn", enterDelay: 24,
+      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 2.2, label, enterDelay: 24,
         emphasize: { animation: "pulse", delay: 30, duration: 20 } },
     ],
     texts: [],
@@ -465,7 +464,7 @@ function grammarQaReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "QA_REVEAL",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterAnimation: "popIn", enterDelay: 8,
+      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterDelay: 8,
         emphasize: { animation: "bounce", delay: 60, duration: 20 } },
     ],
     cards: [

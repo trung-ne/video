@@ -1,12 +1,17 @@
+/** Director-facing entrance families. No family may overshoot its final size. */
+export type EntranceStyle = "fade" | "rise" | "slide" | "softScale" | "reveal" | "cut";
+
+/** Runtime variants. slide/reveal directions are resolved from the final position. */
 export type AnimationType =
-  | "popIn"
   | "fadeIn"
+  | "riseIn"
   | "slideLeft"
   | "slideRight"
-  | "slideUp"
-  | "slideDown"
-  | "zoomIn"
-  | "drawSVG"
+  | "softScaleIn"
+  | "revealLeft"
+  | "revealRight"
+  | "cutIn"
+  // Used only by continuity pose swaps; it is not an authored entrance style.
   | "none";
 
 export type EmphasizeType =
@@ -162,6 +167,7 @@ export interface SpeechBubbleEvent {
   widthRatio?: number;     // width cap as fraction of canvas width, default 0.38
   background?: string;     // bubble color, default white
   textColor?: string;      // default #1a1a1a
+  animation?: AnimationType;
 }
 
 // NEW: Concept card (framed box with icon + label)
@@ -193,7 +199,7 @@ export interface PaperCardEvent {
   body: string;                   // main document/question text
   choices?: string[];             // survey checkbox options (variant="survey")
   rotation?: number;              // tilt degrees, default -2 (evidence), 0 (survey)
-  animation?: AnimationType;      // default popIn
+  animation?: AnimationType;
   exitFrame?: number;
   width?: number;                 // px, default 1100
   source?: string;
@@ -210,7 +216,7 @@ export interface FrameBoxEvent {
   scale?: number;                 // default 1
   contentSrc: string;             // image path under public/ shown inside the TV
   caption?: string;               // small caption under the frame
-  animation?: AnimationType;      // default popIn
+  animation?: AnimationType;
   exitFrame?: number;
   width?: number;                 // px, default 1000
   source?: string;
