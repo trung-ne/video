@@ -22,6 +22,7 @@ import { AlignedWord } from "../src/types/storyboard";
 import { checksumJson } from "../src/ai/transcriptCoverage";
 import { sha256File } from "../src/audio/prepareAudio";
 import { assertStyleInventory, requestedAssetStyle, styleManifestHash } from "../src/engine/assetStyle";
+import { isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 import {
   checkSceneIdAlignment,
@@ -208,12 +209,23 @@ try {
 // Pin every image reference to a physical file from the selected style. This is
 // deliberately after scene compilation: authored storyboard refs remain stable,
 // but every downstream renderer/audit receives style-specific geometry.
+const isCssValue = (value: string): boolean =>
+  value.startsWith("#") || /^(?:rgb|hsl)a?\(/i.test(value) || /gradient\(/i.test(value);
+// Photos are a separately reviewed treatment under the repo policy; they are
+// never style-substituted. Every other visual ref must resolve inside the
+// selected style tree, so CSS tokens and photos cannot accidentally make the
+// selected style fall back to base art.
+const styleRef = (value: string | undefined): string | undefined => {
+  if (!value || isCssValue(value)) return undefined;
+  if (isApprovedNoFacePhoto(value)) return undefined;
+  return value;
+};
 const styleRefs: string[] = [];
 for (const scene of timeline.scenes) {
-  if (scene.backgroundSrc && !scene.backgroundSrc.startsWith("#") && !scene.backgroundSrc.includes("gradient") && !scene.backgroundSrc.startsWith("rgb")) styleRefs.push(scene.backgroundSrc);
-  for (const entity of scene.entities) styleRefs.push(entity.src);
-  for (const card of scene.cards ?? []) if (card.iconSrc) styleRefs.push(card.iconSrc);
-  for (const frame of scene.frameBoxes ?? []) if (frame.contentSrc) styleRefs.push(frame.contentSrc);
+  const background = styleRef(scene.backgroundSrc); if (background) styleRefs.push(background);
+  for (const entity of scene.entities) { const ref = styleRef(entity.src); if (ref) styleRefs.push(ref); }
+  for (const card of scene.cards ?? []) { const ref = styleRef(card.iconSrc); if (ref) styleRefs.push(ref); }
+  for (const frame of scene.frameBoxes ?? []) { const ref = styleRef(frame.contentSrc); if (ref) styleRefs.push(ref); }
 }
 const stylePaths = assertStyleInventory(assetStyle, styleRefs);
 const pin = (src: string) => stylePaths[src] ?? src;

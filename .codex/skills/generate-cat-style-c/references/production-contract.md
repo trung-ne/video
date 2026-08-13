@@ -24,7 +24,7 @@ Use one prompt per asset or coherent pose set; never ask a model to create a spr
 
 ## Style C prompt clauses
 
-**Style clause:** raw thin black marker contour with intentional gaps; opaque flat gouache blocks with dry-brush edges; lightly textured off-white paper; lavender cat with cream muzzle and coral scarf; palette teal, mustard, coral and lavender; original editorial illustration.
+**Style clause:** thin slightly imperfect charcoal felt-tip contour; nearly texture-free matte dry-gouache blocks; warm cream paper; lavender cat with cream muzzle and coral scarf; palette only pale lavender, warm cream and soft coral; original quiet editorial illustration.
 
 **Stage clause:** frontal stage only; edge-cropped rough objects; 55–65% blank center; no realistic room construction.
 

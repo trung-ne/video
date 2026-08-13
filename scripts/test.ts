@@ -7,7 +7,7 @@ import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest, resolveAssetRequests } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
 import { compileStoryboard } from "../src/engine/storyboardCompiler";
-import { assertStyleInventory, requestedAssetStyle } from "../src/engine/assetStyle";
+import { assertStyleInventory, assertTimelineAssetStyle, requestedAssetStyle, styleManifestHash } from "../src/engine/assetStyle";
 import {
   measureTeachingTextCoverage,
   runQualityCheck,
@@ -1441,8 +1441,22 @@ test("compiler derives durationInFrames from max end, not array order", () => {
   assert.strictEqual(timeline.durationInFrames, 150);
 });
 
-test("style inventory fails closed until a complete style batch exists", () => {
-  assert.throws(() => assertStyleInventory("f", ["characters/cat", "finance/money"]), /missing .*required production asset/i);
+test("complete style inventories resolve every production ref", () => {
+  for (const style of ["c", "d", "f"] as const) {
+    const resolved = assertStyleInventory(style, ["characters/cat", "finance/money"]);
+    assert.ok(resolved["characters/cat"]);
+    assert.ok(resolved["finance/money"]);
+  }
+});
+
+test("style provenance rejects an environment-style or manifest mismatch", () => {
+  const provenance = { assetStyle: "c", assetStyleManifestHash: styleManifestHash("c") };
+  assert.strictEqual(assertTimelineAssetStyle(provenance, "c"), "c");
+  assert.throws(() => assertTimelineAssetStyle(provenance, "d"), /does not match timeline style/);
+  assert.throws(
+    () => assertTimelineAssetStyle({ ...provenance, assetStyleManifestHash: "stale" }, "c"),
+    /manifest changed after compile/,
+  );
 });
 
 test("asset style defaults to f and rejects unknown environment values", () => {

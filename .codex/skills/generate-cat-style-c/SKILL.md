@@ -1,24 +1,35 @@
 ---
 name: generate-cat-style-c
-description: Generate or extend the Style C asset library for this cat explainer repository. Use when creating Style C characters, props, icons, scenes, or backgrounds under public/styles/c.
+description: Generate or extend the Style C asset library under public/styles/c. Use for Style C cat characters, transparent icons/props, sparse stages, and backgrounds; enforce pale thin felt-tip plus matte gouache, never crayon or print.
 ---
 
 # Generate Cat Style C
 
-Create original production PNG assets only under `public/styles/c/`, preserving the existing filename and category of the matching base asset.
+Create only original PNGs under `public/styles/c/`, at the matching base filename/category.
 
-## Style master
+## Immutable identity
 
-- **Character identity:** original lavender cat with a very wide crescent/moon-shaped head: the top edge dips in the middle and rises into two far-apart sharp ears. One ear may be taller. Face sits low: left eye is a short sleepy horizontal stroke, right eye is a small dot; small cream oval muzzle; three long whiskers per side. Body is a narrow, slightly tilted rectangle/trapezoid, markedly smaller than the head. Limbs are thin single-stroke-like tubes; tail is a loose S or hook, never a fluffy mascot tail. Coral scarf is the only costume constant.
-- **Line and paint:** thin black felt-tip outline, 3–5 px at 1920px, uneven and deliberately broken at 10–20% of contours. Flat opaque gouache areas with dry-brush/chalky edge loss, never modeled volume. Paper grain is subtle and uniform.
-- **Palette:** lavender `#A590C7`, cream `#F4E8C8`, coral `#EF765E`, teal `#41A7A9`, mustard `#E3B53A`, ink `#161616`, paper `#FBF8EE`. Use 2–4 colors plus ink per asset.
-- **Staging:** front-facing white-paper theatre, edge-cropped objects only, 55–65% empty center. Suggest settings with 2–4 crude blocks/brush marks, never a finished interior.
-- **Forbidden:** round symmetric mascot head, large glossy eyes, smooth vector curves, airbrush, gradients, shadows, 3D form, perspective grids, realistic lighting, text, logo or watermark.
+Use `assets/canonical-cat-identity.png` as Image 1 for every character. Preserve the broad lavender crescent head with its deeply concave top, unequal pointed ears, sleepy line eye + dot eye, small cream muzzle, narrow angular limbs, hooked tail and coral scarf. Change the entire body pose, never the character design.
 
-## Batch workflow
+## Material and palette lock
 
-1. Read the matching file inventory under `public/generated-assets/` and `public/generated-backgrounds/`.
-2. Generate one category batch at a time: characters, icons, scenes, then backgrounds. Characters and icons need a removable chroma-key background and alpha validation; stages are 16:9.
-3. Save at the identical relative filename under `public/styles/c/`.
-4. Inspect each batch for pose-specific silhouette and consistent marker/gouache treatment. Run `npm run build-assets` after a batch.
-5. Do not overwrite another style or modify storyboards. A missing item must remain missing so the compile gate catches it.
+Use `assets/style-c-material-board.png` as Image 2 for medium/palette only. C is the **lightest and quietest** family:
+
+- 2–3px soft-charcoal felt-tip contour at 1920px: quick, slightly dry, but not heavy or wobbly.
+- Nearly texture-free matte dry gouache fills. Only faint uniform paper tooth; no pigment flecks inside colour areas.
+- Pale lavender `#B7A7D8`, warm cream `#FFF8E8`, soft coral `#F49A7A`, and charcoal `#29272B` only.
+- Use 2–3 light colours plus charcoal; coral scarf is mandatory. Teal, cyan, mustard, ochre and burnt orange are forbidden in C. Cyan and mustard belong only to D; burnt orange belongs only to F; ochre is not allowed in any production style.
+
+Never use linocut/newsprint (chipped black, paper voids, hatch marks, offset print) or crayon (thick outline, scribbles, bright saturated colour, pressure crumbs).
+
+## Staging and export
+
+Use a white-paper frontal theatre: 2–4 crude edge objects, 55–65% clear center, no cat in stages. No perspective, lighting, finished interiors, text, logos, gradients, shadows or 3D. Characters/icons use solid `#ff00ff` chroma then alpha QA; stages are opaque 16:9.
+
+## Prompt lock and acceptance test
+
+Start every prompt: “Image 1 locks identity only. Image 2 locks Style C: pale, quiet, thin 2–3px charcoal felt-tip contour and almost texture-free matte dry gouache. This is NOT distressed print, linocut, crayon, speckle, hatch, misregistration, or a dark outline.”
+
+At 25% scale C must read as the lightest, cleanest, thinnest-lined family. Reject black fleck texture across the cat, an orange-brown F scarf, thick D crayon line, or any pose that only changes a hand/face.
+
+After each approved batch mirror the exact relative filename, run `npm run build-assets`, and never substitute C with base/D/F art.

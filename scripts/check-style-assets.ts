@@ -1,6 +1,7 @@
 /** Verify that one style tree mirrors every required production asset exactly. */
 import * as fs from "fs";
 import * as path from "path";
+import { execFileSync } from "child_process";
 
 const styleIndex = process.argv.indexOf("--style");
 const style = styleIndex >= 0 ? process.argv[styleIndex + 1] : process.argv.find((arg) => /^[cdf]$/i.test(arg)) ?? "";
@@ -38,3 +39,11 @@ console.log(`Style ${style}: ${expected.length - missing.length}/${expected.leng
 if (missing.length) console.log(`Missing (${missing.length}):\n${missing.join("\n")}`);
 if (extras.length) console.log(`Unexpected (${extras.length}):\n${extras.join("\n")}`);
 if (missing.length || extras.length) process.exitCode = 1;
+if (!process.exitCode) {
+  const checker = path.join(root, "scripts", "check-style-raster.py");
+  try {
+    execFileSync("python", [checker, style], { stdio: "inherit" });
+  } catch {
+    process.exitCode = 1;
+  }
+}

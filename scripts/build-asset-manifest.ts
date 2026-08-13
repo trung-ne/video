@@ -295,8 +295,21 @@ for (const style of ["c", "d", "f"] as const) {
   const map: Record<string, string> = {};
   for (const [ref, basePath] of Object.entries(aliases)) {
     if (!basePath.startsWith("generated-assets/") && !basePath.startsWith("generated-backgrounds/")) continue;
-    const styled = `${prefix}${basePath}`;
-    if (fs.existsSync(path.join(publicDir, styled))) map[ref] = styled;
+    // A style may provide a scene asset while base happens to use the
+    // higher-fidelity background override (or the reverse). Keep the authored
+    // logical stage ref resolvable within that style, with style-backgrounds
+    // retaining the same precedence as the base library.
+    const candidates = basePath.startsWith("generated-backgrounds/")
+      ? [
+          `${prefix}${basePath}`,
+          `${prefix}generated-assets/scenes/${path.basename(basePath)}`,
+        ]
+      : [
+          `${prefix}generated-backgrounds/${path.basename(basePath)}`,
+          `${prefix}${basePath}`,
+        ];
+    const styled = candidates.find((candidate) => fs.existsSync(path.join(publicDir, candidate)));
+    if (styled) map[ref] = styled;
   }
   styleAliases[style] = map;
   styleHashes[style] = crypto.createHash("sha256")

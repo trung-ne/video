@@ -1,24 +1,34 @@
 ---
 name: generate-cat-style-d
-description: Generate or extend the Style D asset library for this cat explainer repository. Use when creating Style D characters, props, icons, scenes, or backgrounds under public/styles/d.
+description: Generate or extend the Style D asset library under public/styles/d. Use for Style D cat characters, transparent icons/props, naive doodle stages, and backgrounds; enforce bold wax-crayon/pencil, never gouache or linocut.
 ---
 
 # Generate Cat Style D
 
-Create original production PNG assets only under `public/styles/d/`, preserving the existing filename and category of the matching base asset.
+Create only original PNGs under `public/styles/d/`, at the matching base filename/category.
 
-## Style master
+## Immutable identity
 
-- **Character identity:** use the same original crescent-head lavender cat so the cast is recognizable across styles: broad moon-shaped head, far-apart triangular ears of unequal height, low face with one sleepy line eye and one dot eye, small cream muzzle, three straight whiskers each side. Body is a tiny angled trapezoid, limbs are long noodles, tail is a hook/spiral. Use a muted mustard or coral scarf. Poses must bend/lean/crouch/run with visible leg and tail changes; never make a neutral standing mascot with a different arm.
-- **Line and print:** thick dry black crayon/pencil outline, 7–12 px at 1920px, grainy, heavily wobbled and pressure-variable. Lines may double back or leave crumbs. Flat screen-print fills are slightly misregistered from outlines; show soft paper grain and faint pigment speckle.
-- **Palette:** lavender `#9D8AC5`, cream `#F1E6C8`, cyan-teal `#25AEB8`, vermilion `#F05A36`, mustard `#D9B33F`, crayon black `#151515`, white paper `#FCFBF4`. Use flat fills only.
-- **Staging:** naïve two-dimensional doodle panel. Optional rough black border; window/table/plant are geometric symbols with crude proportions, no converging lines. Keep most of the panel blank for action/subtitles.
-- **Forbidden:** thin clean pen line, watercolor/gouache softness, vector-perfect shapes, polished mascot anatomy, gradients, realistic furnishing, cast shadows, 3D/perspective, text, logo or watermark.
+Use `assets/canonical-cat-identity.png` as Image 1 for every character. Preserve the broad lavender crescent head with concave top, unequal ears, line eye + dot eye, cream muzzle, skinny angular limbs, hooked tail and orange scarf. Change torso, limbs, tail and stance for every pose.
 
-## Batch workflow
+## Material and palette lock
 
-1. Mirror the existing asset inventory exactly: characters, icons, scenes, backgrounds.
-2. Generate one category batch at a time; alpha-validate characters/icons and make stages 16:9.
-3. Save at the identical relative filename under `public/styles/d/`.
-4. Reject art whose black outline is not materially crayon-like or whose pose is a neutral stock mascot. Run `npm run build-assets` after every accepted batch.
-5. Never fill a missing item with C/F or base art; the style compile gate must remain fail-closed.
+Use `assets/style-d-material-board.png` as Image 2 for medium/palette only. D is the **boldest, most playful crayon** family:
+
+- 7–10px blunt wax-crayon/pencil contour at 1920px, visibly wobbly and pressure-variable.
+- Mostly solid flat fills with a few directional wax scribbles along edges only. Keep every contour in crayon black; do not add lavender ghost contours or C-style pastel edging.
+- Saturated violet `#7B63B6`, paper white `#FFFDF5`, vermilion `#EF563D`, bright cyan `#22B7C1`, sunny mustard `#E2B646`, crayon black `#201E21`. Cyan and mustard are D-exclusive; do not introduce C coral/lavender treatment or F burnt orange/ochre.
+
+Never use F-style linocut/newspaper: no heavy chipped solid-black edge, carved hatching, pervasive cream paper flecks, aged brown palette. Never use C’s thin delicate pen/gouache.
+
+## Staging and export
+
+Use naïve frontal doodle panels: rough geometric edge objects and optional crooked border, but no converging lines or realistic rooms. Keep center empty for action/subtitles. Characters/icons use `#ff00ff` chroma then alpha QA; stages are opaque 16:9.
+
+## Prompt lock and acceptance test
+
+Start every prompt: “Image 1 locks identity only. Image 2 locks Style D: bold wax-crayon/pencil outlines with hand-drawn wobble, bright violet/vermilion/cyan, and sparse directional crayon marks. This is NOT linocut, newspaper, distressed ink, halftone, gouache, or a pale pastel asset.”
+
+At 25% scale D must read as the boldest crayon family. Reject dense black/cream fleck texture, aged paper/ink, thin C pen line, or neutral stock-mascot posing.
+
+After each approved batch mirror the exact relative filename, run `npm run build-assets`, and never substitute D with base/C/F art.

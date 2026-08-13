@@ -18,11 +18,11 @@ Use the `cat_*` filename as the actor direction: neutral, explaining/pointing, t
 
 ## Generation contract
 
-Use built-in image generation one asset at a time. Cutouts require a perfectly flat magenta chroma-key background, local chroma removal and alpha/fringe inspection. Prompt exact semantic subject, filename role, category/output, Style F clause and avoid clause.
+Use built-in image generation one asset at a time. For every character, pass `../assets/canonical-cat-identity.png` as Image 1. This same immutable identity reference is shared by C, D and F and locks identity only, never F material or colors. Cutouts require a perfectly flat magenta chroma-key background, local chroma removal and alpha/fringe inspection. Prompt exact semantic subject, filename role, category/output, Style F clause and avoid clause.
 
 ## Style F prompt clauses
 
-**Style clause:** hand-carved linocut/newspaper print, thick rough black ink, distressed lavender spot color, cream muzzle with speckled ink, burnt-orange scarf, sparse teal/orange accents, pale recycled paper; original editorial print illustration.
+**Style clause:** one-pass hand-carved linocut/newspaper print, thick chipped black relief ink, distressed dusty-lavender and burnt-orange spot color, aged cream paper and sparse carved hatch/voids; original editorial print illustration. No bright cyan, vermilion, wax scribbles or thin gouache line.
 
 **Stage clause:** flat frontal paper stage, edge-cropped window/table/plant only, thin rough ground stripe, 55–65% blank center; limited spot colors and distressed print edges.
 

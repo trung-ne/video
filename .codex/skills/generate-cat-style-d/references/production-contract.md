@@ -22,13 +22,13 @@ Use the built-in image generator. Cutouts use a flat magenta chroma key, local c
 
 ## Style D prompt clauses
 
-**Style clause:** primitive black crayon/pencil outlines with heavy gritty uneven pressure; screen-print flat lavender/cream/teal/orange fills and slight misregistration; white paper; original naïve editorial doodle. Lavender cat has cream muzzle and muted yellow or coral scarf.
+**Style clause:** blunt wobbly black wax-crayon/pencil outlines with uneven pressure; bright violet, vermilion, cyan and mustard flat fills plus sparse directional edge scribbles; white paper; original naïve editorial doodle. No muted aged-orange print palette, pale gouache, or dense ink flecks.
 
 **Stage clause:** bold uneven black border only when the scene calls for a panel; otherwise white paper with a few crayon props; frontal flat geometry and broad blank center.
 
 **Avoid clause:** thin marker lines, clean vector outlines, smooth mascot anatomy, gradients, shadows, 3D form, polished interior perspective, readable text, logo, watermark.
 
-**Self-contained prompt opener:** “Original naïve editorial doodle, not based on an existing character. A lavender cat with a wide crescent head whose top edge dips between two uneven pointed ears; one sleepy-line eye, one dot eye, tiny cream muzzle, noodle limbs, hooked S tail, muted scarf.”
+**Self-contained prompt opener:** “Original naïve editorial doodle, not based on an existing character. A violet cat with a wide crescent head whose top edge dips between two uneven pointed ears; one sleepy-line eye, one dot eye, tiny cream muzzle, skinny angular limbs, hooked S tail, vermilion scarf.”
 
 ## QA and promotion
 
