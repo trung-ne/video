@@ -22,6 +22,7 @@ import { AlignedWord } from "../src/types/storyboard";
 import { checksumJson } from "../src/ai/transcriptCoverage";
 import { sha256File } from "../src/audio/prepareAudio";
 import { assertStyleInventory, requestedAssetStyle, styleManifestHash } from "../src/engine/assetStyle";
+import { loadLocalEnvironment } from "./load-env";
 import { isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
 import { runStoryboardCheck, printQualityReport } from "../src/ai/qualityCheck";
 import {
@@ -33,6 +34,8 @@ import {
   hasBlocker,
   TimingIssue,
 } from "../src/engine/timingIntegrity";
+
+loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 const getArg = (f: string) => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : undefined; };

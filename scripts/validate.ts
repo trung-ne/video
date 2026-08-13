@@ -1,6 +1,9 @@
 import * as fs from "fs";
 import { printValidationResult, validateTimeline } from "../src/ai/validateTimeline";
 import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
+import { loadLocalEnvironment } from "./load-env";
+
+loadLocalEnvironment();
 
 const timelinePath = process.argv[2];
 if (!timelinePath) {

@@ -20,6 +20,9 @@ import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/arti
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { checkSpatialIntegrity, formatSpatialIntegrityReport } from "../src/engine/spatialIntegrity";
 import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
+import { loadLocalEnvironment } from "./load-env";
+
+loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 const timelinePath = args.find((arg) => !arg.startsWith("--"));

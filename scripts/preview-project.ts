@@ -5,6 +5,9 @@ import { spawnSync } from "child_process";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { checkTimingProvenance, formatTimingIssues } from "../src/engine/timingIntegrity";
 import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
+import { loadLocalEnvironment } from "./load-env";
+
+loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 const index = args.indexOf("--project");

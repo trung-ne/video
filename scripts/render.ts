@@ -16,6 +16,7 @@
 import { execFileSync, execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { loadLocalEnvironment } from "./load-env";
 import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
 import { checkSpatialIntegrity, formatSpatialIntegrityReport } from "../src/engine/spatialIntegrity";
@@ -38,6 +39,8 @@ import {
 } from "../src/engine/timingIntegrity";
 import referenceQuality from "../config/reference-quality.json";
 import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
+
+loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 
