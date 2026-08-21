@@ -7,6 +7,21 @@ argument-hint: <transcript-file> hoặc <project-id>
 
 > **ROUTE A ONLY. Route B/API generation is locked.**
 
+## Điều kiện hoàn thành — bắt buộc với mọi agent
+
+`/new-video` là lệnh **end-to-end**, không phải lệnh tạo storyboard. Agent phải
+tự tiếp tục qua build storyboard → asset resolution → TTS đo thời lượng → word
+alignment → compile → validate → quality → render → render audit. Không được
+trả lời "đã xong", handoff, hoặc tự dừng sau một artifact trung gian như
+`storyboard.json`, `tts_scenes.json`, `durations.json` hay `timeline.json`.
+
+Chỉ được kết thúc khi `output/<id>/video.mp4` **mới được tạo trong lần chạy
+hiện tại** và production report/audit cho artifact đó đều pass. Nếu một bước
+thất bại, agent phải tự chẩn đoán, sửa đúng authored source hoặc asset, rồi chạy
+lại pipeline; cấm dùng skip gate. Chỉ hỏi/dừng khi cần quyền, input hoặc quyết
+định sáng tạo mà agent không thể tự suy ra an toàn. User interrupt là ngoại lệ:
+agent báo state hiện tại ngắn gọn và tiếp tục khi user yêu cầu tiếp tục.
+
 ## Production authoring contract
 
 Trước khi viết `SCENES`, bắt buộc export `VISUAL_TREATMENT_PLAN` đầy đủ: usage budgets,

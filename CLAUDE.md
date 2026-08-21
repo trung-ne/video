@@ -287,9 +287,16 @@ Bộ rule V3 gốc + phân tích 241 frames video mẫu đã chuyển sang [docs
 
 Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có thứ thay đổi (pose mèo, bong bóng, icon, mũi tên, cắt cảnh). Hệ thống hỗ trợ điều này ở 3 tầng:
 
-1. **Scene density** — Route A phải author scene theo từng câu/beat, mục tiêu khoảng
-   1 scene / 11–15s. Trước đây cap cứng "6–8 scenes" gây ra video 25 phút chỉ
-   7 scene → cực nhàm. Quality check `SCENE_DENSITY` cảnh báo nếu TB > 45s/scene.
+1. **Scene density — hard authoring gate** — Route A phải author scene theo từng
+   câu/beat, mục tiêu khoảng 1 scene / 11–15s. **Trước khi build storyboard và
+   tuyệt đối trước TTS**, Codex phải tính `minimumScenes = ceil(transcriptWords / 40)`
+   và ghi con số đó vào quyết định authoring. `SCENES.length < minimumScenes` là
+   lỗi authoring: không được build/TTS/render, phải tách lại các beat. Mỗi scene
+   cũng không được ôm quá 60 từ nguồn trừ khi có lý do đạo diễn được ghi rõ trong
+   `purpose`; một đoạn giải thích dài phải được tách ở đổi chủ thể, hành động,
+   số liệu, ví dụ, cú lật cảm xúc hoặc kết luận. Không được coi "coverage 100%"
+   là bằng chứng storyboard đạt mật độ. Builder thực thi ngưỡng tổng để không
+   thể lặp lại lỗi video dài với quá ít scene.
 
 2. **AI micro-variation** — prompt hướng dẫn AI tự thêm pose swap / bubble / icon pop-in / mũi tên nhân quả / emphasize mỗi 4-8s (section "CHỐNG NHÀM CHÁN" trong systemPrompt).
 

@@ -9,7 +9,7 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
 
 ---
 
-## 7 luật KHÔNG ĐƯỢC VI PHẠM
+## 9 luật KHÔNG ĐƯỢC VI PHẠM
 
 1. **KHÔNG dùng helper modulo/keyword để thay storyboard.** Không sinh scene bằng
    `index % N`, bảng regex từ khoá, hay vòng lặp gán layout máy móc. Mỗi scene phải
@@ -45,7 +45,19 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
    `scripts/generate-timeline.ts`, hay `new-project.ts --auto`. Mọi project phải
    được agent đọc transcript và viết tay `storyboard-data.ts` theo từng câu/beat,
    sau đó mới chạy `build-storyboard.ts`. Không được chạy TTS chỉ vì source
-   coverage pass.
+    coverage pass.
+
+8. **Mật độ storyboard là hard gate, không chỉ là cảnh báo.** Trước build/TTS,
+   tính `minimumScenes = ceil(số từ transcript / 40)`. Nếu `SCENES.length` thấp
+   hơn số này thì dừng, tách lại theo từng câu/beat; cấm render chỉ vì coverage
+   đã đủ. Xem quy tắc đầy đủ ở mục *Scene density — hard authoring gate* trong
+   `CLAUDE.md`.
+
+9. **`/new-video` phải chạy đến render production.** Không được tự kết thúc ở
+   storyboard, TTS, alignment hay timeline. Chỉ được báo hoàn thành khi MP4 mới
+   trong `output/<id>/video.mp4` cùng report/audit production đã pass; fail thì
+   tự sửa source/asset và chạy lại, không bỏ gate. Xem hợp đồng đầy đủ trong
+   `.claude/commands/new-video.md`.
 
 ---
 
