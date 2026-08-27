@@ -311,6 +311,33 @@ for (const style of ["c", "d", "f"] as const) {
     const styled = candidates.find((candidate) => fs.existsSync(path.join(publicDir, candidate)));
     if (styled) map[ref] = styled;
   }
+  // Style-local production additions do not have a retired base-library
+  // counterpart, so they are absent from `aliases` above. Publish stable
+  // logical refs for them directly from the selected style tree.
+  const styleIconDir = path.join(publicDir, prefix, "generated-assets", "icons");
+  if (fs.existsSync(styleIconDir)) {
+    for (const file of fs.readdirSync(styleIconDir)) {
+      if (!/\.png$/i.test(file)) continue;
+      const stem = path.basename(file, path.extname(file));
+      for (const category of ["finance", "props", "people", "ui"] as const) {
+        const categoryPrefix = `${category}-`;
+        if (stem.startsWith(categoryPrefix)) {
+          map[`${category}/${stem.slice(categoryPrefix.length).replace(/-/g, "_")}`] =
+            `${prefix}generated-assets/icons/${file}`;
+        }
+      }
+    }
+  }
+  // Style-local photo/evidence backgrounds are deliberate additions rather
+  // than mirrors of a legacy base asset. Publish them by their stable logical
+  // background ref so a selected style can own an authored PHOTO_EVIDENCE shot.
+  const styleBackgroundDir = path.join(publicDir, prefix, "generated-backgrounds");
+  if (fs.existsSync(styleBackgroundDir)) {
+    for (const file of fs.readdirSync(styleBackgroundDir)) {
+      if (!/\.(png|jpe?g|webp)$/i.test(file)) continue;
+      map[`backgrounds/${file}`] = `${prefix}generated-backgrounds/${file}`;
+    }
+  }
   styleAliases[style] = map;
   styleHashes[style] = crypto.createHash("sha256")
     .update(JSON.stringify(Object.entries(map).sort((a, b) => a[0].localeCompare(b[0])))).digest("hex");
