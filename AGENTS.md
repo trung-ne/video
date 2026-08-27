@@ -21,6 +21,15 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
    `--diagnostic*`, `--allow-unprovenanced-timing` **chỉ** dùng để chẩn đoán;
    artifact tạo theo đường này không được xuất bản. Gate fail → sửa
    storyboard/asset/timing source rồi chạy lại, không hạ ngưỡng.
+   **Bốn lỗi pixel `LOW_VISUAL_DENSITY`, `WITHIN_SCENE_SIMILARITY`,
+   `STATIC_SCENE_RUN`, `FLAT_REGISTER` là blocker production tuyệt đối:**
+   không được coi là “còn lại”, không được handoff/report rồi dừng. Agent phải
+   sửa scene-local beats, pose/prop/card hoặc asset tại source, render full lại
+   và chỉ tiếp tục khi audit artifact mới không còn các lỗi này.
+   Gate chỉ là hậu kiểm: nguyên nhân phải được sửa ở generation contract. Builder
+   bắt buộc một semantic state/28 từ; beat phải phrase-aligned và renderable.
+   Component/compiler bị cấm tự tạo chuyển động/đổi màu/reveal theo chu kỳ; mật độ
+   bố cục phải suy ra từ geometry thật, không từ `focalOccupancyTarget` tự khai.
 
 3. **Sửa đúng tầng.** Nguồn authored là `storyboard.json` (hoặc
    `projects/<id>/storyboard-data.ts` ở route A). `timeline.json` là **sản phẩm
@@ -53,11 +62,16 @@ Hệ thống tạo video giải thích tài chính 2D phong cách "Mèo giải t
    đã đủ. Xem quy tắc đầy đủ ở mục *Scene density — hard authoring gate* trong
    `CLAUDE.md`.
 
+   Không được dùng `%`, `index`, hay `BEATS.map(...helper...)` để tự điền pose,
+   prop, grammar hoặc slot. Mỗi scene phải là object authored riêng; builder sẽ
+   reject authoring cơ học trước khi build.
+
 9. **`/new-video` phải chạy đến render production.** Không được tự kết thúc ở
    storyboard, TTS, alignment hay timeline. Chỉ được báo hoàn thành khi MP4 mới
    trong `output/<id>/video.mp4` cùng report/audit production đã pass; fail thì
    tự sửa source/asset và chạy lại, không bỏ gate. Xem hợp đồng đầy đủ trong
-   `.claude/commands/new-video.md`.
+   `.claude/commands/new-video.md`. Render audit fail không phải một trạng thái
+   để báo cáo cho user: đó là tín hiệu bắt buộc quay lại source và lặp pipeline.
 
 ---
 

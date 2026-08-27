@@ -298,9 +298,28 @@ Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có th�
    là bằng chứng storyboard đạt mật độ. Builder thực thi ngưỡng tổng để không
    thể lặp lại lỗi video dài với quá ít scene.
 
-2. **AI micro-variation** — prompt hướng dẫn AI tự thêm pose swap / bubble / icon pop-in / mũi tên nhân quả / emphasize mỗi 4-8s (section "CHỐNG NHÀM CHÁN" trong systemPrompt).
+   **Không được nén authoring bằng factory cơ học.** `storyboard-data.ts` không
+   được dùng modulo/index để chọn pose, prop, grammar hay slot; cũng không được
+   dùng `BEATS.map(...helper...)` để biến hàng marker thành scene chung. Mỗi
+   `AuthoredScene` phải có direction/slots/semantic intent riêng. Builder từ
+   chối hai pattern này trước khi tạo storyboard.
 
-3. **Liveliness auto-injector** — [liveliness.ts](src/engine/liveliness.ts) chạy sau compile (trong [render.ts](scripts/render.ts)): quét mọi nhân vật, lấp các "quiet window" dài bằng `emphasize` (pulse/bounce) + `swap` pose (chỉ trong họ pose cùng nhân vật, chỉ pose có file tồn tại). Đây là lưới an toàn — kể cả timeline "chết" vẫn có nhịp.
+   **Cấm bulk-mutate authored storyboard.** Không dùng regex, source transform,
+   codemod, hay override map sinh hàng loạt để đổi grammar/register/slots trong
+   `storyboard-data.ts`. Sửa theo scene-local patch, build ngay sau batch nhỏ;
+   source fail phải được sửa bằng patch có mục tiêu, không tiếp tục transform.
+
+2. **Authored semantic cadence** — mỗi scene phải có một trạng thái hình bền vững
+   cho tối đa 28 từ narration. Builder gọi `authoredCadenceIssues`; beat phải chứa
+   cụm từ nguyên văn và action/target mà grammar thật sự render được. `advance: next`
+   chỉ được dùng để chuyển sang teaching layer đã author sẵn. Grammar không có trạng
+   thái kế tiếp thì phải tách scene hoặc author pose/prop/focus/cutaway thật.
+
+3. **Compiler/renderer không được bịa nhịp** — cấm component tự lắc, đổi màu, pan,
+   zoom hay hiện card theo chu kỳ thời gian. `liveliness.ts` chỉ bảo toàn authored
+   events; `emphasize` ngắn không được tính là đổi semantic state. Quality gate đo
+   maximum stable hold từ component xuất hiện thật và đo stable painted geometry
+   từ kích thước compiler tạo ra; không tin `focalOccupancyTarget` tự khai.
 
 ---
 

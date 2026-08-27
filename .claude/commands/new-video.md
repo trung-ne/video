@@ -22,6 +22,21 @@ lại pipeline; cấm dùng skip gate. Chỉ hỏi/dừng khi cần quyền, inp
 định sáng tạo mà agent không thể tự suy ra an toàn. User interrupt là ngoại lệ:
 agent báo state hiện tại ngắn gọn và tiếp tục khi user yêu cầu tiếp tục.
 
+**Visual-audit fail is never a handoff condition.** `LOW_VISUAL_DENSITY`,
+`WITHIN_SCENE_SIMILARITY`, `STATIC_SCENE_RUN`, hoặc `FLAT_REGISTER` nghĩa là
+scene source chưa đạt. Agent phải sửa diễn tiến có chủ đích trong từng scene
+(pose swap, prop/card reveal, evidence hoặc asset composition), compile và
+render full lại. Không được thêm overlay/rail/camera drift toàn cục để đánh lừa
+audit, không hạ ngưỡng, và không trả lời dừng khi một trong bốn lỗi còn tồn tại.
+
+**Sửa cơ chế sinh, không chỉ chặn output.** Trước TTS, builder phải pass cadence
+theo từng scene: tối đa 28 từ cho mỗi semantic state; phần vượt phải có beat chứa
+cụm từ nguyên văn với transition bền vững mà grammar render được, hoặc phải tách
+scene. `advance: next` chỉ timing teaching layer đã author sẵn. Component/compiler
+không được tự lắc, đổi màu, pan/zoom hay reveal theo đồng hồ để tạo khác biệt pixel.
+Trước render, stable composition density phải được suy ra từ geometry thật của
+card/frame/evidence/circle; `focalOccupancyTarget` không phải bằng chứng.
+
 ## Production authoring contract
 
 Trước khi viết `SCENES`, bắt buộc export `VISUAL_TREATMENT_PLAN` đầy đủ: usage budgets,
