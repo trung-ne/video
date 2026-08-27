@@ -2,9 +2,10 @@
  * render.ts — CLI render pipeline
  *
  * Usage:
- *   npx ts-node scripts/render.ts
  *   npx ts-node scripts/render.ts --project <id> --out output/<id>/video.mp4
  *   npx ts-node scripts/render.ts --timeline timeline.json --out output/video.mp4
+ *
+ * Exactly one of --project or --timeline is required.
  *
  * Without --out, the output path defaults to output/<id>/video.mp4 (id from
  * --project, or from the parent folder name when --timeline points inside
@@ -44,18 +45,55 @@ loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 
-function getArg(flag: string, defaultVal: string): string {
-  const idx = args.indexOf(flag);
-  return idx !== -1 && args[idx + 1] ? args[idx + 1] : defaultVal;
+const VALUE_FLAGS = new Set(["--project", "--timeline", "--out", "--composition", "--frames"]);
+const BOOLEAN_FLAGS = new Set([
+  "--proxy",
+  "--skip-validate",
+  "--skip-quality",
+  "--skip-audio-prepare",
+  "--skip-visual-audit",
+  "--skip-audio-audit",
+  "--allow-unprovenanced-timing",
+]);
+
+function parseCli(argv: string[]): Map<string, string | true> {
+  const parsed = new Map<string, string | true>();
+  for (let index = 0; index < argv.length; index += 1) {
+    const flag = argv[index];
+    if (!flag.startsWith("--")) throw new Error(`Unexpected positional argument: ${flag}`);
+    if (!VALUE_FLAGS.has(flag) && !BOOLEAN_FLAGS.has(flag)) throw new Error(`Unknown option: ${flag}`);
+    if (parsed.has(flag)) throw new Error(`Option may be specified only once: ${flag}`);
+    if (VALUE_FLAGS.has(flag)) {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) throw new Error(`Option requires a value: ${flag}`);
+      parsed.set(flag, value);
+      index += 1;
+    } else {
+      parsed.set(flag, true);
+    }
+  }
+  const sourceCount = Number(parsed.has("--project")) + Number(parsed.has("--timeline"));
+  if (sourceCount !== 1) throw new Error("Exactly one of --project or --timeline is required.");
+  return parsed;
 }
 
-const projectArg = getArg("--project", "");
+let cli: Map<string, string | true>;
+try {
+  cli = parseCli(args);
+} catch (error) {
+  console.error(`Render CLI error: ${(error as Error).message}`);
+  process.exit(1);
+}
+const valueOf = (flag: string, fallback = ""): string => String(cli.get(flag) ?? fallback);
+const hasFlag = (flag: string): boolean => cli.has(flag);
+
+const projectArg = valueOf("--project");
 const projectPath = projectArg
   ? (fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
       ? projectArg
       : path.join("projects", projectArg))
   : "";
-const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "timeline.json");
+const timelinePath = valueOf("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "");
 
 // Derive a project id for the default output folder: from --project, or from
 // the parent directory name when --timeline points inside projects/<id>/.
@@ -69,14 +107,25 @@ function defaultOutPath(): string {
   return id ? path.join("output", id, "video.mp4") : "output/video.mp4";
 }
 
-const outPath = getArg("--out", defaultOutPath());
-const compositionId = getArg("--composition", "CatExplainer");
-const isProxy = args.includes("--proxy");
-const framesArg = getArg("--frames", "");
-if (framesArg && path.resolve(outPath) === path.resolve(defaultOutPath())) {
+const outPath = valueOf("--out", defaultOutPath());
+const compositionId = valueOf("--composition", "CatExplainer");
+const isProxy = hasFlag("--proxy");
+const framesArg = valueOf("--frames");
+const diagnosticFlags = [
+  "--proxy",
+  "--frames",
+  "--skip-validate",
+  "--skip-quality",
+  "--skip-audio-prepare",
+  "--skip-visual-audit",
+  "--skip-audio-audit",
+  "--allow-unprovenanced-timing",
+].filter(hasFlag);
+const diagnosticRun = diagnosticFlags.length > 0;
+if (diagnosticRun && (!hasFlag("--out") || path.resolve(outPath) === path.resolve(defaultOutPath()))) {
   console.error(
-    "A --frames diagnostic must use a non-canonical --out path (for example output/<id>/slices/check.mp4). " +
-    "A partial render can never replace the production video."
+    `Diagnostic options (${diagnosticFlags.join(", ")}) require an explicit noncanonical --out path. ` +
+    "They can never replace the canonical production candidate."
   );
   process.exit(1);
 }
@@ -160,6 +209,32 @@ function runEncodingAudit(videoPath: string, recordAs = videoPath): any {
   return report;
 }
 
+/**
+ * Remotion's H.264 bitrate flag is a quality target, not a delivery-rate
+ * guarantee: low-detail white frames can make a long explainer fall below the
+ * production floor. Normalize the staged candidate with explicit ABR bounds
+ * before auditing it. This never touches a published artifact.
+ */
+function normalizeProductionBitrate(videoPath: string): void {
+  const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path as string;
+  const normalizedPath = videoPath.replace(/\.mp4$/i, ".normalized.mp4");
+  const target = referenceQuality.encoding.targetVideoBitrate;
+  execFileSync(ffmpegPath, [
+    "-y", "-i", videoPath,
+    "-map", "0:v:0", "-map", "0:a?",
+    "-c:v", "libx264", "-preset", "medium",
+    "-b:v", target, "-minrate", target, "-maxrate", target,
+    "-bufsize", referenceQuality.encoding.encodingBufferSize,
+    // libx264 only enforces a delivery-rate floor when its HRD mode is CBR.
+    // Without this, -minrate still produced low-detail explainers near 1 Mbps.
+    "-x264-params", "nal-hrd=cbr:force-cfr=1",
+    "-pix_fmt", referenceQuality.encoding.pixelFormat,
+    "-c:a", "aac", "-b:a", referenceQuality.encoding.audioBitrate,
+    "-movflags", "+faststart", normalizedPath,
+  ], { stdio: "inherit" });
+  fs.renameSync(normalizedPath, videoPath);
+}
+
 // Validate timeline file
 if (!fs.existsSync(timelinePath)) {
   console.error(`❌ Timeline file not found: ${timelinePath}`);
@@ -177,7 +252,7 @@ let preparedAudio: any = null;
 
 // Schema gate — fail fast with a clear message instead of crashing deep inside
 // Remotion on a malformed/hand-edited timeline. Pass --skip-validate to bypass.
-if (!args.includes("--skip-validate")) {
+if (!hasFlag("--skip-validate")) {
   const validation = validateTimeline(raw);
   printValidationResult(validation, timelinePath);
   if (!validation.valid) {
@@ -189,7 +264,7 @@ if (!args.includes("--skip-validate")) {
 // Director gate — schema-valid is not the same as production-ready. Refuse to
 // spend minutes rendering a timeline with blockers/majors unless the caller
 // explicitly opts out for debugging.
-if (!args.includes("--skip-quality")) {
+if (!hasFlag("--skip-quality")) {
   const quality = runQualityCheck(raw, timelinePath);
   printQualityReport(quality);
   if (quality.blockers > 0 || quality.majors > 0 || !["A", "B"].includes(quality.grade)) {
@@ -204,7 +279,7 @@ if (!args.includes("--skip-quality")) {
 // Provenance gate — a timeline must say how it was timed. Absent provenance is a
 // refusal, not a pass: every artifact written before that field existed lacks it,
 // including ones whose durations were spread proportionally by word count.
-const allowUnprovenanced = args.includes("--allow-unprovenanced-timing");
+const allowUnprovenanced = hasFlag("--allow-unprovenanced-timing");
 {
   const issues = checkTimingProvenance(raw.timingProvenance, { allowUnprovenanced });
   issues.push(...checkSceneBeatTimingSources(raw.scenes, raw.timingProvenance));
@@ -245,7 +320,13 @@ if (sourceAudioSeconds !== undefined) {
   }
 }
 
-if (raw.audio && !isProxy && !args.includes("--skip-audio-prepare")) {
+const finalDir = path.dirname(outPath);
+const runId = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+// Audio mastering writes shared files under public/audio, so serialize the run
+// before preparation rather than only around Remotion output promotion.
+const renderLock = acquireRenderLock(finalDir, runId);
+
+if (raw.audio && !isProxy && !hasFlag("--skip-audio-prepare")) {
   preparedAudio = prepareTimelineAudio(raw.audio);
   raw.audio = preparedAudio.publicPath;
   console.log(`Audio prepared: ${preparedAudio.audit.integratedLufs} LUFS${preparedAudio.mastered ? " (mastered)" : ""}`);
@@ -301,10 +382,7 @@ console.log(`   Events: ${timeline.events.length}`);
 // passed. Previously a blocked run left a fresh MP4 sitting beside the previous
 // run's audits with a report that said "diagnostic" — anything globbing
 // output/<id>/*.visual-audit.json then picked up data describing a different file.
-const finalDir = path.dirname(outPath);
-const runId = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 const stagingDir = path.join(finalDir, ".runs", runId);
-const renderLock = acquireRenderLock(finalDir, runId);
 fs.mkdirSync(stagingDir, { recursive: true });
 const stagedOut = path.join(stagingDir, path.basename(outPath));
 
@@ -364,8 +442,12 @@ try {
     "--log=info",
     "--codec=h264",
     isProxy ? `--scale=${DEFAULT_PROXY_SCALE}` : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
-    isProxy ? "--crf=23" : `--encoding-max-rate=${referenceQuality.encoding.maximumVideoBitrate}`,
-    isProxy ? "--muted" : `--encoding-buffer-size=${referenceQuality.encoding.encodingBufferSize}`,
+    // Remotion CLI exposes FFmpeg's rate-control options as --max-rate and
+    // --buffer-size. The older flag names below were silently ignored by the
+    // CLI, so low-detail portions could collapse well below the production
+    // bitrate floor despite the requested target bitrate.
+    isProxy ? "--crf=23" : `--max-rate=${referenceQuality.encoding.maximumVideoBitrate}`,
+    isProxy ? "--muted" : `--buffer-size=${referenceQuality.encoding.encodingBufferSize}`,
     framesArg ? `--frames=${framesArg}` : "",
     `--audio-bitrate=${referenceQuality.encoding.audioBitrate}`,
     `--pixel-format=${referenceQuality.encoding.pixelFormat}`,
@@ -377,6 +459,10 @@ try {
   execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
 
   console.log(`\nEncoded media: ${stagedOut}. Running publish audits...`);
+  if (!isProxy && !framesArg) {
+    console.log("Normalizing staged H.264 delivery bitrate before audit...");
+    normalizeProductionBitrate(stagedOut);
+  }
   // A bounded --frames render is a diagnostic slice, never a publishable
   // deliverable. Its average bitrate is dominated by its particular few
   // seconds (especially a quiet white opening) and cannot prove or disprove
@@ -412,32 +498,55 @@ try {
 
   // Pixel-level regression gate. Timeline quotas cannot detect semantically
   // empty or visually repetitive frames, so sample the actual encoded MP4.
-  if (!args.includes("--skip-visual-audit")) {
+  const visualAuditPath = stagedOut.replace(/\.mp4$/i, ".visual-audit.json");
+  const contactSheetPath = stagedOut.replace(/\.mp4$/i, ".contact.jpg");
+  let visualAudit: any = null;
+  if (!hasFlag("--skip-visual-audit")) {
     const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path as string;
     const auditScript = path.join(process.cwd(), "scripts", "visual-audit.py");
-    if (fs.existsSync(auditScript)) {
-      execSync(
-        `python "${auditScript}" --video "${path.resolve(stagedOut)}" --record-video-path "${path.resolve(outPath)}" --ffmpeg "${ffmpegPath}" --timeline "${path.resolve(timelinePath)}" --timeline-offset-seconds "${frameRangeStart / timeline.fps}" --config "${path.resolve("config/reference-quality.json")}" --contact-sheet "${path.resolve(stagedOut.replace(/\.mp4$/i, ".contact.jpg"))}" --record-contact-sheet "${path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg"))}"`,
-        { stdio: "inherit", cwd: process.cwd() }
-      );
+    if (!fs.existsSync(auditScript)) {
+      throw new Error(`Required visual audit script not found: ${auditScript}`);
     }
+    fs.rmSync(visualAuditPath, { force: true });
+    fs.rmSync(contactSheetPath, { force: true });
+    execFileSync("python", [
+      auditScript,
+      "--video", path.resolve(stagedOut),
+      "--record-video-path", path.resolve(outPath),
+      "--ffmpeg", ffmpegPath,
+      "--timeline", path.resolve(timelinePath),
+      "--timeline-offset-seconds", String(frameRangeStart / timeline.fps),
+      "--config", path.resolve("config/reference-quality.json"),
+      "--contact-sheet", path.resolve(contactSheetPath),
+      "--record-contact-sheet", path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg")),
+    ], { stdio: "inherit", cwd: process.cwd() });
+    if (!fs.existsSync(visualAuditPath)) {
+      throw new Error(`Visual audit did not produce its required report: ${visualAuditPath}`);
+    }
+    visualAudit = JSON.parse(fs.readFileSync(visualAuditPath, "utf8"));
+    if (visualAudit.passed !== true) {
+      throw new Error("Visual audit report did not record passed=true.");
+    }
+    if (path.resolve(String(visualAudit.video ?? "")) !== path.resolve(outPath)) {
+      throw new Error("Visual audit report identifies a different candidate video.");
+    }
+    if (!diagnosticRun && !fs.existsSync(contactSheetPath)) {
+      throw new Error(`Visual audit did not produce its required contact sheet: ${contactSheetPath}`);
+    }
+  } else if (!diagnosticRun) {
+    throw new Error("Production candidates require the visual audit.");
   }
   // Loudness targets describe a whole narration track. Measuring a --frames slice
   // against them is meaningless — a two-second excerpt legitimately sits outside
   // the full-track LUFS window — so a partial render skips the audio audit for the
   // same reason a proxy does.
   const audioAuditPath = stagedOut.replace(/\.mp4$/i, ".audio-audit.json");
-  const audioAudit = isProxy || framesArg || args.includes("--skip-audio-audit")
+  const audioAudit = isProxy || framesArg || hasFlag("--skip-audio-audit")
     ? null
     : writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath));
-  const visualAuditPath = stagedOut.replace(/\.mp4$/i, ".visual-audit.json");
-  const referenceComparison =
-    fs.existsSync(visualAuditPath)
-      ? buildReferenceComparison(
-          JSON.parse(fs.readFileSync(visualAuditPath, "utf8")),
-          referenceBaseline,
-        )
-      : null;
+  const referenceComparison = visualAudit
+    ? buildReferenceComparison(visualAudit, referenceBaseline)
+    : null;
   if (!isProxy && !framesArg && referenceComparison) {
     const profile = JSON.parse(fs.readFileSync(path.resolve("config/reference-quality.json"), "utf8"));
     const deltaLimit = Number(profile.visualAudit?.maximumSaturationAboveReference ?? 0.025);
@@ -459,14 +568,21 @@ try {
         measurement: "legacy manifest; gap and wall-clock metrics unavailable",
       }
     : null);
-  const contactSheetPath = stagedOut.replace(/\.mp4$/i, ".contact.jpg");
   const encodingAuditPath = stagedOut.replace(/\.mp4$/i, ".encoding-audit.json");
+  const promotionEligible = !diagnosticRun
+    && Boolean(encodingAudit?.passed)
+    && Boolean(audioAudit?.passed)
+    && visualAudit?.passed === true
+    && fs.existsSync(contactSheetPath);
+  if (!diagnosticRun && !promotionEligible) {
+    throw new Error("Production candidate is missing one or more mandatory passing audits.");
+  }
   const productionReport = {
     schemaVersion: 1,
     // Rendering proves a technical candidate only. Publication is a separate,
     // hash-bound editorial decision made by publish.ts after manual review.
-    status: isProxy ? "proxy-ready" : framesArg ? "diagnostic" : "candidate-ready",
-    video: path.resolve(outPath),
+    status: promotionEligible ? "candidate-ready" : "diagnostic",
+    video: path.resolve(promotionEligible ? outPath : stagedOut),
     timeline: path.resolve(timelinePath),
     timingProvenance: raw.timingProvenance ?? null,
     unprovenancedTimingAllowed: allowUnprovenanced || undefined,
@@ -474,9 +590,9 @@ try {
     encodingAudit,
     timingAudit,
     audioAudit,
-    visualAudit: args.includes("--skip-visual-audit")
-      ? null
-      : path.resolve(outPath.replace(/\.mp4$/i, ".visual-audit.json")),
+    visualAudit: visualAudit
+      ? path.resolve(promotionEligible ? outPath.replace(/\.mp4$/i, ".visual-audit.json") : visualAuditPath)
+      : null,
     referenceComparison,
     directionSummary: buildDirectionSummary(raw),
     spatialIntegrity: spatialReport,
@@ -495,12 +611,15 @@ try {
     "utf8",
   );
 
-  // Every gate passed — only now does the published build change.
   if (fs.existsSync(propsTmpFile)) fs.unlinkSync(propsTmpFile);
-  const previousBuild = promoteArtifacts(stagingDir, finalDir, runId);
-  pruneRunHistory(finalDir);
-  if (previousBuild) console.log(`   Previous successful build archived at: ${previousBuild}`);
-  console.log(`\n✅ ${isProxy ? "Proxy audit" : framesArg ? "Diagnostic slice" : "Production render"} complete: ${outPath}`);
+  if (promotionEligible) {
+    const previousBuild = promoteArtifacts(stagingDir, finalDir, runId);
+    pruneRunHistory(finalDir);
+    if (previousBuild) console.log(`   Previous successful build archived at: ${previousBuild}`);
+    console.log(`\n✅ Production render complete: ${outPath}`);
+  } else {
+    console.log(`\n✅ Diagnostic render complete. Artifacts kept at: ${stagingDir}`);
+  }
 } catch (err) {
   // The previously published build is left exactly as it was. The failed run
   // stays in its staging dir so its artifacts can be inspected without being

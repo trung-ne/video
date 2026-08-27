@@ -41,12 +41,72 @@ import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDi
 import { checkSpatialIntegrity, visibleAssetBox } from "../src/engine/spatialIntegrity";
 import { getEnterAnimation } from "../src/animations";
 import { animationForEntranceStyle, normalizeEntranceAnimation, selectEntranceStyle } from "../src/engine/entrancePolicy";
+import {
+  authoredCadenceIssues,
+  authoredTransitionCapabilityIssues,
+  maximumVisualHold,
+  requiredAuthoredTransitions,
+} from "../src/engine/visualCadence";
+import { estimateStablePaintedRatio } from "../src/engine/compositionDensity";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
 function test(name: string, run: () => void): void {
   tests.push({ name, run });
 }
+
+test("authoring cadence rejects long narration without persistent semantic beats", () => {
+  const narration = Array.from({ length: 57 }, (_, index) => `word${index}`).join(" ");
+  assert.strictEqual(requiredAuthoredTransitions(narration), 2);
+  assert.ok(authoredCadenceIssues("scene-x", narration, undefined)[0]?.includes("needs 2"));
+  const beats: any[] = [
+    { text: "word20", importance: 0.7, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_think" },
+    { text: "word45", importance: 0.8, kind: "turn", action: "focus_asset", targetSlot: "prop" },
+  ];
+  assert.deepStrictEqual(authoredCadenceIssues("scene-x", narration, beats), []);
+});
+
+test("authoring rejects oversized scenes and beats the grammar cannot render", () => {
+  const narration = Array.from({ length: 61 }, (_, index) => `word${index}`).join(" ");
+  assert.ok(authoredCadenceIssues("scene-x", narration, [
+    { text: "word20", importance: 0.8, kind: "turn", action: "advance", targetSlot: "next" },
+    { text: "word40", importance: 0.8, kind: "turn", action: "advance", targetSlot: "next" },
+  ])[0]?.includes("hard maximum"));
+  assert.ok(authoredTransitionCapabilityIssues("scene-x", "EVIDENCE", {}, [
+    { text: "word20", importance: 0.8, kind: "turn", action: "advance", targetSlot: "next" },
+  ])[0]?.includes("no authored teaching layer"));
+  assert.deepStrictEqual(authoredTransitionCapabilityIssues("scene-x", "COMPARE", {}, [
+    { text: "word20", importance: 0.8, kind: "turn", action: "advance", targetSlot: "next" },
+  ]), []);
+});
+
+test("measured cadence ignores temporary emphasis and catches a static tail", () => {
+  const scene: any = {
+    durationFrames: 720,
+    entities: [{ enterDelay: 0, emphasize: { delay: 240, duration: 20 } }],
+    cards: [{ delay: 180 }],
+  };
+  assert.deepStrictEqual(maximumVisualHold(scene), { frames: 540, start: 180 });
+});
+
+test("stable density derives from compiled geometry, never declared occupancy", () => {
+  const sparse = {
+    backgroundSrc: "#FFFFFF",
+    focalOccupancyTarget: 0.9,
+    cards: [{ width: 280, height: 200 }],
+  };
+  const dense = {
+    backgroundSrc: "#FFFFFF",
+    focalOccupancyTarget: 0.1,
+    paperCards: [{ variant: "evidence", width: 1560 }],
+  };
+  assert.ok((estimateStablePaintedRatio(sparse) ?? 1) < 0.1);
+  assert.ok((estimateStablePaintedRatio(dense) ?? 0) > 0.6);
+  assert.strictEqual(
+    estimateStablePaintedRatio({ ...sparse, focalOccupancyTarget: 0.1 }),
+    estimateStablePaintedRatio(sparse),
+  );
+});
 
 test("proxy render scale always produces integer 1080p dimensions", () => {
   assert.deepStrictEqual(getScaledDimensions(1920, 1080, DEFAULT_PROXY_SCALE), {
@@ -130,17 +190,27 @@ test("artifact promotion archives the previous canonical set and publishes repor
   fs.writeFileSync(path.join(finalDir, "video.production-report.json"), "old-report");
   fs.writeFileSync(path.join(finalDir, "video.visual-audit.json"), "stale-audit");
   fs.writeFileSync(path.join(stagingDir, "video.mp4"), "new-video");
-  fs.writeFileSync(path.join(stagingDir, "video.production-report.json"), "new-report");
+  fs.writeFileSync(path.join(stagingDir, "video.contact.jpg"), "contact");
+  for (const name of ["video.encoding-audit.json", "video.audio-audit.json", "video.visual-audit.json"]) {
+    fs.writeFileSync(path.join(stagingDir, name), JSON.stringify({ passed: true }));
+  }
+  fs.writeFileSync(
+    path.join(stagingDir, "video.production-report.json"),
+    JSON.stringify({ status: "candidate-ready" }),
+  );
   try {
     const archive = promoteArtifacts(stagingDir, finalDir, "run-test");
     assert.strictEqual(fs.readFileSync(path.join(finalDir, "video.mp4"), "utf8"), "new-video");
     assert.strictEqual(
-      fs.readFileSync(path.join(finalDir, "video.production-report.json"), "utf8"),
-      "new-report"
+      JSON.parse(fs.readFileSync(path.join(finalDir, "video.production-report.json"), "utf8")).status,
+      "candidate-ready"
     );
     assert.ok(archive);
     assert.strictEqual(fs.readFileSync(path.join(archive!, "video.mp4"), "utf8"), "old-video");
-    assert.ok(!fs.existsSync(path.join(finalDir, "video.visual-audit.json")));
+    assert.strictEqual(
+      JSON.parse(fs.readFileSync(path.join(finalDir, "video.visual-audit.json"), "utf8")).passed,
+      true,
+    );
     assert.strictEqual(
       fs.readFileSync(path.join(archive!, "video.visual-audit.json"), "utf8"),
       "stale-audit"
@@ -150,9 +220,69 @@ test("artifact promotion archives the previous canonical set and publishes repor
   }
 });
 
+test("diagnostic artifact sets cannot alter canonical files", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-promotion-guard-test-"));
+  const finalDir = path.join(dir, "output");
+  const stagingDir = path.join(finalDir, ".runs", "run-test");
+  fs.mkdirSync(stagingDir, { recursive: true });
+  fs.writeFileSync(path.join(finalDir, "video.mp4"), "old-video");
+  fs.writeFileSync(path.join(stagingDir, "video.mp4"), "diagnostic-video");
+  fs.writeFileSync(path.join(stagingDir, "video.contact.jpg"), "contact");
+  for (const name of ["video.encoding-audit.json", "video.audio-audit.json", "video.visual-audit.json"]) {
+    fs.writeFileSync(path.join(stagingDir, name), JSON.stringify({ passed: true }));
+  }
+  fs.writeFileSync(
+    path.join(stagingDir, "video.production-report.json"),
+    JSON.stringify({ status: "diagnostic" }),
+  );
+  try {
+    assert.throws(() => promoteArtifacts(stagingDir, finalDir, "run-test"), /candidate-ready/i);
+    assert.strictEqual(fs.readFileSync(path.join(finalDir, "video.mp4"), "utf8"), "old-video");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("failed visual audits preserve the staged MP4 for re-audit", () => {
   assert.strictEqual(shouldPreserveFailedMp4("Command failed: visual-audit.py"), true);
   assert.strictEqual(shouldPreserveFailedMp4("storyboard quality gate failed"), false);
+});
+
+test("render lock cannot be stolen from a live PID with an old heartbeat", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-render-lock-heartbeat-test-"));
+  const lock = acquireRenderLock(dir, "first");
+  try {
+    const ownerPath = path.join(dir, ".runs", ".lock", "owner.json");
+    const stale = new Date(Date.now() - 10 * 60 * 1000);
+    fs.utimesSync(ownerPath, stale, stale);
+    assert.throws(() => acquireRenderLock(dir, "second"), /live local owner/i);
+  } finally {
+    lock.release();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("render lock reclaims a dead local owner", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-render-lock-dead-test-"));
+  const lockDir = path.join(dir, ".runs", ".lock");
+  fs.mkdirSync(lockDir, { recursive: true });
+  fs.writeFileSync(path.join(lockDir, "owner.json"), JSON.stringify({
+    schemaVersion: 1,
+    pid: 2_147_483_647,
+    procStart: 0,
+    runId: "dead",
+    host: os.hostname(),
+    acquiredAt: new Date(0).toISOString(),
+    heartbeatSeconds: 30,
+  }));
+  const lock = acquireRenderLock(dir, "replacement");
+  try {
+    const owner = JSON.parse(fs.readFileSync(path.join(lockDir, "owner.json"), "utf8"));
+    assert.strictEqual(owner.runId, "replacement");
+  } finally {
+    lock.release();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("render lock refuses a concurrent writer and names the absolute lock", () => {
@@ -344,22 +474,26 @@ test("QA_REVEAL may omit its optional character role in strict mode", () => {
   assert.strictEqual(result.entities[0].src, "characters/cat_think");
 });
 
-test("long multi-card scenes stage persistent reveals about four seconds apart", () => {
+test("multi-card scenes advance only on an authored narration phrase", () => {
   const storyboard = timingFixture(["scene-001"]);
   storyboard.scenes[0].visualGrammar = "CAUSE_EFFECT";
   storyboard.scenes[0].slots = {
     cause: "Debt", effect: "Stress",
     causeIcon: "finance/debt", effectIcon: "props/brain",
   };
+  storyboard.scenes[0].beats = [{
+    text: "three", importance: 0.8, kind: "turn", action: "advance", targetSlot: "next",
+  }];
   const timeline = compileStoryboard(storyboard, {
     durations: [{ id: "scene-001", startFrame: 0, frames: 360 }],
+    words: [{ scene: "scene-001", word: "three", startSec: 4, endSec: 4.2 }],
   });
-  // The first focal lands on the cut frame; later cards keep
-  // the persistent ~4-second staging that prevents a static long scene.
+  // The first focal lands on the cut frame. The second card follows the
+  // storyboard phrase, never a component-level or compiler-level timer.
   assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 0);
   assert.strictEqual(timeline.scenes[0].cards?.[1].delay, 120);
   assert.deepStrictEqual(timeline.timingProvenance?.beatTimingSummary, {
-    "source-range-proportional": 1,
+    "aligned-words": 1,
   });
   assert.deepStrictEqual(
     checkSceneBeatTimingSources(timeline.scenes, timeline.timingProvenance),
@@ -762,7 +896,7 @@ test("schema v2 compiler preserves semantic background and resolved assets", () 
   const timeline = compileStoryboard(storyboard, { allowEstimatedTiming: true });
   assert.strictEqual(timeline.scenes[0].backgroundSrc, "#FFFFFF");
   assert.deepStrictEqual(timeline.scenes[0].semanticAssetIds, ["finance/money", "finance/house"]);
-  assert.strictEqual(timeline.scenes[0].visualFingerprint, "COMPARE|infographic|graphic|0a:0p|none|card,card|none|none");
+  assert.strictEqual(timeline.scenes[0].visualFingerprint, "COMPARE|infographic|graphic|0a:0p|none|card:house:2:1,card:money:1:1|none|none");
   assert.strictEqual(timeline.scenes[0].semanticAction, "contrast");
   assert.strictEqual(timeline.scenes[0].visualGrammar, "COMPARE");
 });

@@ -73,9 +73,9 @@ def main() -> int:
     try:
         import numpy as np
         from PIL import Image, ImageFilter
-    except ImportError:
-        print("Visual audit skipped: install Pillow + numpy.")
-        return 0
+    except ImportError as error:
+        print(f"Visual audit cannot run: missing required dependency: {error}")
+        return 2
 
     video = Path(args.video).resolve()
     if not video.exists():
@@ -107,8 +107,8 @@ def main() -> int:
             max(0.0, args.sample_offset), args.sample_seconds,
         )
         if len(samples) < 4:
-            print("Visual audit skipped: fewer than four sampled frames.")
-            return 0
+            print("Visual audit failed: fewer than four sampled frames.")
+            return 2
 
         rows = []
         thumbs = []

@@ -47,18 +47,25 @@ export function acquireRenderLock(finalDir: string, runId: string): RenderLock {
     const heartbeatAgeMs = fs.existsSync(ownerPath)
       ? Date.now() - fs.statSync(ownerPath).mtimeMs
       : Number.POSITIVE_INFINITY;
-    const dead = owner ? !processIsAlive(owner.pid) : true;
+    const sameHost = owner?.host === os.hostname();
+    const ownerAlive = Boolean(owner && sameHost && processIsAlive(owner.pid));
     const heartbeatStale = heartbeatAgeMs > 5 * 60 * 1000;
-    if (!dead && !heartbeatStale) {
+    // Synchronous Remotion/FFmpeg children can block Node's heartbeat timer for
+    // much longer than five minutes. A locally-owned lock is therefore live for
+    // as long as its PID is live; heartbeat age is only useful for another host.
+    const stale = owner ? (sameHost ? !ownerAlive : heartbeatStale) : heartbeatStale;
+    if (!stale) {
       throw new Error(
         `Render already in progress. Lock: ${lockPath}. ` +
         `Owner pid=${owner?.pid}, run=${owner?.runId}. ` +
-        "The lock is cleared only when its process is dead or its heartbeat is older than 5 minutes."
+        (sameHost
+          ? "A live local owner cannot be displaced by a stale heartbeat."
+          : "A foreign-host lock is cleared only after its heartbeat is older than 5 minutes.")
       );
     }
     console.warn(
       `Clearing stale render lock at ${lockPath} ` +
-      `(${dead ? "owner process is dead" : "heartbeat is older than 5 minutes"}).`
+      `(${sameHost ? "owner process is dead" : "foreign-host heartbeat is older than 5 minutes"}).`
     );
     fs.rmSync(lockPath, { recursive: true, force: true });
     fs.mkdirSync(lockPath);
@@ -83,17 +90,23 @@ export function acquireRenderLock(finalDir: string, runId: string): RenderLock {
   heartbeat.unref();
 
   let released = false;
-  const release = () => {
+  const onExit = () => release();
+  const onSigint = () => { release(); process.exit(130); };
+  const onSigterm = () => { release(); process.exit(143); };
+  function release() {
     if (released) return;
     released = true;
     clearInterval(heartbeat);
+    process.removeListener("exit", onExit);
+    process.removeListener("SIGINT", onSigint);
+    process.removeListener("SIGTERM", onSigterm);
     const current = readOwner(ownerPath);
     if (current?.pid === process.pid && current.procStart === owner.procStart) {
       fs.rmSync(lockPath, { recursive: true, force: true });
     }
-  };
-  process.once("exit", release);
-  process.once("SIGINT", () => { release(); process.exit(130); });
-  process.once("SIGTERM", () => { release(); process.exit(143); });
+  }
+  process.once("exit", onExit);
+  process.once("SIGINT", onSigint);
+  process.once("SIGTERM", onSigterm);
   return { path: lockPath, release };
 }

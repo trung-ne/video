@@ -1,6 +1,42 @@
 import * as fs from "fs";
 import * as path from "path";
 
+function readJson(filePath: string): any {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch (error) {
+    throw new Error(`Invalid promotion artifact ${filePath}: ${(error as Error).message}`);
+  }
+}
+
+function assertPromotionSet(stagingDir: string, names: string[]): string {
+  const videos = names.filter((name) => name.toLowerCase().endsWith(".mp4"));
+  if (videos.length !== 1) {
+    throw new Error(`Promotion requires exactly one staged MP4; found ${videos.length}.`);
+  }
+  const stem = videos[0].replace(/\.mp4$/i, "");
+  const required = [
+    `${stem}.mp4`,
+    `${stem}.encoding-audit.json`,
+    `${stem}.audio-audit.json`,
+    `${stem}.visual-audit.json`,
+    `${stem}.contact.jpg`,
+    `${stem}.production-report.json`,
+  ];
+  const missing = required.filter((name) => !names.includes(name));
+  if (missing.length) throw new Error(`Promotion artifact set is incomplete: ${missing.join(", ")}`);
+
+  const report = readJson(path.join(stagingDir, `${stem}.production-report.json`));
+  const encoding = readJson(path.join(stagingDir, `${stem}.encoding-audit.json`));
+  const audio = readJson(path.join(stagingDir, `${stem}.audio-audit.json`));
+  const visual = readJson(path.join(stagingDir, `${stem}.visual-audit.json`));
+  if (report.status !== "candidate-ready") throw new Error("Only candidate-ready reports may be promoted.");
+  if (encoding.passed !== true || audio.passed !== true || visual.passed !== true) {
+    throw new Error("Promotion requires passing encoding, audio, and visual audit reports.");
+  }
+  return stem;
+}
+
 /**
  * Transactionally replaces the canonical artifact set. Existing files are first
  * archived; if any move fails, both the old set and staged set are restored.
@@ -9,8 +45,7 @@ import * as path from "path";
 export function promoteArtifacts(stagingDir: string, finalDir: string, runId: string): string | undefined {
   fs.mkdirSync(finalDir, { recursive: true });
   const names = fs.readdirSync(stagingDir).filter((name) => name !== "_props.json");
-  const stagedVideo = names.find((name) => name.toLowerCase().endsWith(".mp4"));
-  const stem = stagedVideo?.replace(/\.mp4$/i, "");
+  const stem = assertPromotionSet(stagingDir, names);
   const canonicalSuffixes = [
     ".mp4",
     ".encoding-audit.json",

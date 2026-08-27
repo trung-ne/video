@@ -26,6 +26,7 @@ import asyncio
 import edge_tts
 import json
 import os
+import subprocess
 import struct
 import sys
 import time
@@ -88,15 +89,23 @@ async def speak_scene(text: str, voice: str, out_path: str, retries: int = 4):
     """
     last_err = None
     for attempt in range(retries):
+        temp_path = f"{out_path}.part"
         try:
             communicate = edge_tts.Communicate(text, voice)
-            with open(out_path, "wb") as f:
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        f.write(chunk["data"])
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+            # save() keeps the websocket operation inside a single cancellable
+            # awaitable.  Streaming directly could leave a half-written target
+            # file when Edge stalled during the final chunk.
+            await asyncio.wait_for(communicate.save(temp_path), timeout=45)
+            if not os.path.exists(temp_path) or os.path.getsize(temp_path) == 0:
+                raise RuntimeError("Edge TTS returned an empty audio stream")
+            os.replace(temp_path, out_path)
             return
         except Exception as e:
             last_err = e
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
             print(f" [retry {attempt+1}/{retries}: {e}]", end="", flush=True)
             await asyncio.sleep(1.5 * (attempt + 1))
     raise last_err
@@ -150,13 +159,22 @@ def mp3_duration_sec(path: str) -> float:
 
 
 def mp3_to_wav_samples(mp3_path: str, target_sr: int = 24000):
-    """Convert MP3 to float32 mono samples. Uses miniaudio (pure Python, no ffmpeg)."""
-    import miniaudio
+    """Convert MP3 to mono PCM with a bounded ffmpeg child process.
 
-    # Decode MP3 to PCM via miniaudio (handles MP3/WAV/FLAC natively)
-    decoded = miniaudio.decode_file(mp3_path, output_format=miniaudio.SampleFormat.SIGNED16,
-                                    nchannels=1, sample_rate=target_sr)
-    raw = bytes(decoded.samples)
+    Certain short Edge MP3 chunks can make miniaudio block indefinitely while
+    parsing their trailing metadata. ffmpeg is already a production dependency
+    in this repository and lets the caller fail fast instead.
+    """
+    result = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", mp3_path, "-f", "s16le", "-ac", "1", "-ar", str(target_sr), "pipe:1"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=30,
+        check=False,
+    )
+    if result.returncode != 0 or not result.stdout:
+        raise RuntimeError(f"ffmpeg could not decode {mp3_path}: {result.stderr.decode('utf-8', 'replace').strip()}")
+    raw = result.stdout
     n = len(raw) // 2
     samples = [struct.unpack_from("<h", raw, i*2)[0] / 32768.0 for i in range(n)]
     return samples, target_sr
@@ -186,8 +204,14 @@ async def main_async(args):
         mp3_path = os.path.join(args.outdir, f"{sid}.mp3")
         wav_path = os.path.join(args.outdir, f"{sid}.wav")
 
-        print(f"  [tts] {sid}…", end="", flush=True)
-        await speak_scene(text, args.voice, mp3_path)
+        resume_before = args.start_index is not None and idx < args.start_index
+        if resume_before and (not os.path.exists(mp3_path) or os.path.getsize(mp3_path) == 0):
+            raise RuntimeError(f"Cannot resume at scene index {args.start_index}: missing prior clip {sid}")
+        if resume_before or (not args.force and os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 0):
+            print(f"  [reuse] {sid}", end="", flush=True)
+        else:
+            print(f"  [tts] {sid}…", end="", flush=True)
+            await speak_scene(text, args.voice, mp3_path)
 
         clip_samples, clip_sr = mp3_to_wav_samples(mp3_path, TARGET_SR)
 
@@ -256,6 +280,10 @@ def main():
                     help="Edge TTS voice name (default: en-US-AvaNeural)")
     ap.add_argument("--gap", type=float, default=GAP_SEC,
                     help="silence between per-scene TTS chunks")
+    ap.add_argument("--force", action="store_true",
+                    help="Regenerate every scene clip instead of reusing matching IDs")
+    ap.add_argument("--start-index", type=int,
+                    help="Zero-based scene index to resume forced TTS from; prior valid clips are retained")
     args = ap.parse_args()
     asyncio.run(main_async(args))
 
