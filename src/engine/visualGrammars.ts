@@ -89,6 +89,12 @@ function semanticAsset(ctx: GrammarContext, value: string | undefined, label: st
 function grammarCompare(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const left = b.slots?.left ?? "A";
   const right = b.slots?.right ?? "B";
+  const comparisonLayout = b.slots?.comparisonLayout ?? "balanced";
+  const positions = comparisonLayout === "stacked"
+    ? [{ x: 0.5, y: 0.31 }, { x: 0.5, y: 0.69 }]
+    : comparisonLayout === "inset"
+      ? [{ x: 0.31, y: 0.42 }, { x: 0.72, y: 0.58 }]
+      : [{ x: 0.25, y: 0.47 }, { x: 0.75, y: 0.47 }];
   const leftAsset = semanticAsset(ctx, b.slots?.leftAsset, "leftAsset", "characters/cat_explain");
   const rightAsset = semanticAsset(ctx, b.slots?.rightAsset, "rightAsset", "characters/cat_think");
   return {
@@ -96,9 +102,9 @@ function grammarCompare(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     backgroundSrc: WHITE,
     entities: [],
     cards: [
-      { id: `${b.id}-l`, position: { x: 0.25, y: 0.47 }, background: "#286F7A",
+      { id: `${b.id}-l`, position: positions[0], background: "#286F7A",
         iconSrc: leftAsset, label: left, width: 660, height: 540, delay: 8 },
-      { id: `${b.id}-r`, position: { x: 0.75, y: 0.47 }, background: "#B54848",
+      { id: `${b.id}-r`, position: positions[1], background: "#B54848",
         iconSrc: rightAsset, label: right, width: 660, height: 540, delay: 22 },
     ],
     texts: [],
@@ -129,7 +135,7 @@ function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
       ? "linear-gradient(160deg, #0d0d1a 0%, #1a0a0a 100%)"
       : WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterDelay: 22 },
+      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 2.2, circle: "#F1D8C5", enterDelay: 22 },
     ],
     cards: [{
       // Caption and icon are one semantic component on the left; the large
@@ -140,8 +146,8 @@ function grammarStatReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
       background: dramatic ? "#351A2B" : "#547A80",
       iconSrc: b.slots?.anchor,
       label: caption,
-      width: 430,
-      height: 520,
+      width: 560,
+      height: 680,
       delay: 4,
     }],
     texts,
@@ -208,12 +214,14 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   if (b.slots?.askerText)
     bubbles.push({
       id: `${b.id}-qa`, anchorAssetId: `${b.id}-a`, text: b.slots.askerText,
-      direction: "right", delay: 12, duration: 48, fontSize: 46, widthRatio: 0.50,
+      direction: "right", delay: 12, duration: 48, fontSize: 46, widthRatio: 0.54,
+      background: "#D7E8E6",
     });
   if (b.slots?.answererText)
     bubbles.push({
       id: `${b.id}-qb`, anchorAssetId: `${b.id}-b`, text: b.slots.answererText,
-      direction: "left", delay: 72, fontSize: 46, widthRatio: 0.50,
+      direction: "left", delay: 72, fontSize: 46, widthRatio: 0.54,
+      background: "#F1D8C5",
     });
   return {
     layout: "DIALOGUE",
@@ -221,11 +229,13 @@ function grammarDialogueQA(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     entities: [
       {
         assetId: `${b.id}-a`, src: a.src, badge: a.badge,
+        circle: "#D7E8E6",
         ...(stage && anchorA ? { anchor: anchorA } : { slot: "LEFT" as const }),
         enterAnimation: "slideLeft", enterDelay: 8,
       },
       {
         assetId: `${b.id}-b`, src: c.src, badge: c.badge,
+        circle: "#F1D8C5",
         ...(stage && anchorB ? { anchor: anchorB } : { slot: "RIGHT" as const }),
         enterAnimation: "slideRight", enterDelay: 18,
       },
@@ -296,7 +306,17 @@ function grammarTableau(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     ? [{ id: `${b.id}-cap`, content: caption, style: "CALLOUT", slot: "CALLOUT_CENTER", delay: 12, hold: "scene-end" }]
     : [];
 
-  return { layout: "TABLEAU", backgroundSrc: stage, entities, texts, speechBubbles: bubbles, focusAssetId: entities[0]?.assetId };
+  // `label` is an authored teaching object, not decorative text. Previously it
+  // was silently ignored unless a separate chapter treatment happened to be
+  // selected, leaving otherwise rich staged scenes with an inert background.
+  const label = b.slots?.label;
+  const cards: SceneConceptCard[] = label ? [{
+    id: `${b.id}-label`, position: { x: 0.74, y: 0.24 },
+    background: b.emotion === "sad" || b.emotion === "urgent" ? "#B54848" : "#286F7A",
+    iconSrc: b.slots?.prop, label, width: 560, height: 250, delay: 18,
+  }] : [];
+
+  return { layout: "TABLEAU", backgroundSrc: stage, entities, texts, speechBubbles: bubbles, cards, focusAssetId: entities[0]?.assetId };
 }
 
 // ── EVIDENCE ────────────────────────────────────────────────
@@ -312,11 +332,11 @@ function grammarEvidence(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   // x=.66 left most of the frame empty. Let the authored evidence itself own
   // the stage.
   const evidencePosition = evidenceLayout === "left" ? { x: 0.34, y: 0.38 }
-    : evidenceLayout === "right" ? { x: 0.66, y: 0.38 }
-    : evidenceLayout === "lower" ? { x: 0.5, y: 0.46 }
+    : evidenceLayout === "right" ? { x: 0.66, y: 0.68 }
+    : evidenceLayout === "lower" ? { x: 0.34, y: 0.68 }
     : ctx.strict ? { x: 0.5, y: 0.4 } : { x: 0.66, y: 0.4 };
   const evidenceWidth = evidenceLayout === "left" || evidenceLayout === "right" ? 1080
-    : ctx.strict ? 1450 : 1100;
+    : ctx.strict ? 1560 : 1100;
   return {
     layout: "CUSTOM",
     backgroundSrc: WHITE,
@@ -350,7 +370,7 @@ function grammarSolo(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   return {
     layout: "SOLO",
     backgroundSrc: WHITE,
-    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 1.6, enterDelay: 8 }],
+    entities: [{ assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "LEFT_MID", scale: 2.5, enterDelay: 8 }],
     // A 760×570 card beside one character left ~65% of the content band as bare
     // background, so every SOLO sample measured flat. The keyword IS the scene's
     // teaching point, so it becomes the focal element at the size STAT_REVEAL
@@ -382,7 +402,7 @@ function grammarFrameBox(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "SOLO",
     backgroundSrc: WHITE,
     entities: b.slots?.who ? [
-      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 1.4, enterDelay: 14 },
+      { assetId: `${b.id}-cat`, src: castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src, slot: "RIGHT_BOTTOM", scale: 2.1, enterDelay: 14 },
     ] : [],
     texts: [],
     focusAssetId: b.slots?.who ? `${b.id}-cat` : undefined,
@@ -401,8 +421,8 @@ function grammarCharProp(b: SceneBrief, ctx: GrammarContext): GrammarResult {
     layout: "CHAR_PROP",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "LEFT", scale: 2.8, enterAnimation: "slideLeft", enterDelay: 8 },
-      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 2.2, label, enterDelay: 24,
+      { assetId: `${b.id}-cat`, src: b.slots?.who ? castSrc(ctx, b.slots.who, emotionPose(b.emotion)).src : emotionPose(b.emotion), slot: "LEFT", scale: 2.8, circle: "#D7E8E6", enterAnimation: "slideLeft", enterDelay: 8 },
+      { assetId: `${b.id}-prop`, src: prop, slot: "RIGHT", scale: 2.2, circle: "#F1D8C5", label, enterDelay: 24,
         emphasize: { animation: "pulse", delay: 30, duration: 20 } },
     ],
     texts: [],
@@ -459,19 +479,21 @@ function grammarCauseEffect(b: SceneBrief, ctx: GrammarContext): GrammarResult {
 function grammarQaReveal(b: SceneBrief, ctx: GrammarContext): GrammarResult {
   const q = b.slots?.question ?? b.slots?.q ?? "";
   const a = b.slots?.answer ?? b.slots?.a ?? "";
+  const qaLayout = b.slots?.qaLayout ?? "right-cat";
+  const cardPosition = qaLayout === "left-cat" ? { x: 0.62, y: 0.46 } : { x: 0.43, y: 0.46 };
   const cat = castSrc(ctx, b.slots?.who, emotionPose(b.emotion));
   return {
     layout: "QA_REVEAL",
     backgroundSrc: WHITE,
     entities: [
-      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 1.45, enterDelay: 8,
+      { assetId: `${b.id}-cat`, src: cat.src, badge: cat.badge, slot: "RIGHT_BOTTOM", scale: 2.1, circle: "#F1D8C5", enterDelay: 8,
         emphasize: { animation: "bounce", delay: 60, duration: 20 } },
     ],
     cards: [
-      ...(q ? [{ id: `${b.id}-q`, position: { x: 0.43, y: 0.46 }, background: "#286F7A",
-        label: q, width: 1050, height: 580, delay: 10, duration: 70 }] : []),
-      ...(a ? [{ id: `${b.id}-a`, position: { x: 0.43, y: 0.46 }, background: "#B54848",
-        iconSrc: b.slots?.answerAsset, label: a, width: 1050, height: 580, delay: 80 }] : []),
+      ...(q ? [{ id: `${b.id}-q`, position: cardPosition, background: "#286F7A",
+        label: q, width: 1200, height: 700, delay: 0, duration: 70 }] : []),
+      ...(a ? [{ id: `${b.id}-a`, position: cardPosition, background: "#B54848",
+        iconSrc: b.slots?.answerAsset, label: a, width: 1200, height: 700, delay: 80 }] : []),
     ],
     texts: [],
     focusAssetId: `${b.id}-cat`,

@@ -28,6 +28,7 @@ import type { AssetManifest } from "../src/types/assets";
 import { resolveAssetRequest } from "../src/engine/assetResolver";
 import referenceQuality from "../config/reference-quality.json";
 import { ENTRANCE_STYLES } from "../src/engine/entrancePolicy";
+import { authoredCadenceIssues, authoredTransitionCapabilityIssues } from "../src/engine/visualCadence";
 
 const args = process.argv.slice(2);
 function getArg(flag: string, defaultVal?: string): string | undefined {
@@ -54,6 +55,25 @@ if (!fs.existsSync(transcriptPath)) {
 }
 if (!fs.existsSync(dataPath)) {
   console.error(`❌ Storyboard data file not found: ${dataPath}`);
+  process.exit(1);
+}
+
+// Route A authoring must contain concrete directorial decisions. A compact
+// catalogue is fine, but using an indexed/modulo helper to manufacture props,
+// poses, grammar slots, or every scene's semantic contract creates the exact
+// mechanical storyboard the production policy forbids. Catch the two known
+// failure shapes before loading the module or creating any downstream asset.
+const authoredSource = fs.readFileSync(dataPath, "utf8");
+const mechanicalAuthoringErrors: string[] = [];
+if (/\b[a-zA-Z_$][\w$]*\s*%\s*[a-zA-Z_$][\w$]*/.test(authoredSource)) {
+  mechanicalAuthoringErrors.push("modulo expressions are forbidden in storyboard-data.ts; author each scene's visual decision explicitly");
+}
+if (/\bSCENES\s*(?::[^=]+)?=\s*\w+\.map\([^\n]*=>\s*\w+\(/.test(authoredSource)) {
+  mechanicalAuthoringErrors.push("SCENES cannot be produced by mapping beat rows into a generic scene helper; write explicit AuthoredScene objects with scene-specific slots, assets, poses and beats");
+}
+if (mechanicalAuthoringErrors.length) {
+  console.error(`❌ Mechanical authoring rejected in ${dataPath}:`);
+  for (const message of mechanicalAuthoringErrors) console.error(`   ${message}`);
   process.exit(1);
 }
 
@@ -167,6 +187,8 @@ const scenes = SCENES.map((s, i) => {
   const narration = s.narrationOverride ?? sourceExcerpt(transcript, words, range);
   const slots = { ...(s.slots ?? {}) };
   const fail = (msg: string) => authorErrors.push(`${id}: ${msg}`);
+  authorErrors.push(...authoredCadenceIssues(id, narration, s.beats));
+  authorErrors.push(...authoredTransitionCapabilityIssues(id, s.grammar, slots, s.beats));
 
   // ── Route A authoring contract. These are creative decisions; the builder
   // refuses to invent them. Previously they were silently absent, which made

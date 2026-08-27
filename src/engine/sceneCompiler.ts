@@ -29,6 +29,7 @@ import {
 } from "../types/timeline";
 import { isStageBackground, resolveStageAnchor } from "./stageAnchors";
 import { animationForEntranceStyle, selectEntranceStyle } from "./entrancePolicy";
+import { isCharacterAssetSrc, isUiAssetSrc } from "./assetPaths";
 
 // ============================================================
 // SceneCompiler — translates SceneTimeline → Timeline (events)
@@ -261,12 +262,12 @@ function compileEntity(
   // A stage anchor carries its own tuned scale (cat must FIT the furniture).
   let scale =
     stageAnchor?.scale ?? entity.scale ?? defaultScaleForLayout(scene.layout, entityIndex);
-  if (stageAnchor && entity.src.startsWith("characters/")) {
+  if (stageAnchor && isCharacterAssetSrc(entity.src)) {
     // The stage registry was tuned for the retired SVG cats, whose opaque
     // footprint filled more of each nominal square. Production PNG actors
     // otherwise read as tiny stickers inside a detailed set. Keep furniture
     // anchors, but restore the reference-like 25–40% character footprint.
-    scale = Math.min(2.4, scale * 1.35);
+    scale = Math.min(2.8, scale * 1.6);
   }
 
   // Anti-tiny-cat clamp: AI-generated timelines sometimes hand-write small
@@ -278,7 +279,7 @@ function compileEntity(
     !stageAnchor &&
     entity.scale !== undefined &&
     entity.scale < 1.4 &&
-    !entity.src.startsWith("ui/")
+    !isUiAssetSrc(entity.src)
   ) {
     scale = defaultScaleForLayout(scene.layout, entityIndex);
   }
@@ -612,6 +613,8 @@ function compileSpeechBubble(
     exitFrame,
     fontSize: sb.fontSize,
     widthRatio: sb.widthRatio,
+    background: sb.background,
+    textColor: sb.textColor,
     animation: sb.enterAnimation ?? "fadeIn",
   } as SpeechBubbleEvent);
 }

@@ -24,6 +24,7 @@ const CONTENT_SCALES: Record<string, number> =
 const ASSET_ENTRIES = (manifest as {
   entries?: Array<{
     path: string;
+    kind?: string;
     aspectRatio?: number;
     contentBox?: { x: number; y: number; width: number; height: number };
     visualMetrics?: { meanSaturation?: number };
@@ -39,6 +40,9 @@ const SATURATION_BY_PATH = new Map(
   ASSET_ENTRIES
     .filter((entry) => typeof entry.visualMetrics?.meanSaturation === "number")
     .map((entry) => [entry.path, entry.visualMetrics!.meanSaturation!] as const),
+);
+const KIND_BY_PATH = new Map(
+  ASSET_ENTRIES.map((entry) => [entry.path, entry.kind] as const),
 );
 
 const HAS_EXTENSION = /\.(?:png|jpe?g|webp|gif|svg)$/i;
@@ -95,6 +99,18 @@ export function resolveAssetSrcStrict(src: string): {
 export function getContentScale(src: string): number {
   if (!src) return 1;
   return CONTENT_SCALES[resolveAssetSrc(src)] ?? 1;
+}
+
+/** True for a character whether the source is a logical ref or a style-pinned path. */
+export function isCharacterAssetSrc(src: string): boolean {
+  const path = resolveAssetSrc(src);
+  return KIND_BY_PATH.get(path) === "character" || /(?:^|\/)characters\//.test(path);
+}
+
+/** True for UI art whether the source is a logical ref or a style-pinned path. */
+export function isUiAssetSrc(src: string): boolean {
+  const path = resolveAssetSrc(src);
+  return KIND_BY_PATH.get(path) === "ui" || /(?:^|\/)ui\//.test(path);
 }
 
 /** Visible alpha geometry, normalized to the source image. */

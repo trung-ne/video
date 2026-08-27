@@ -22,11 +22,6 @@ export const SpeechBubble: React.FC<Props> = ({
   const { fps } = useVideoConfig();
 
   const entrance = getEnterAnimation(bubble.animation, frame - bubble.enterFrame, 18, fps);
-  const bubbleAge = Math.max(0, frame - bubble.enterFrame);
-  const focusPhase = Math.floor(bubbleAge / (fps * 4)) % 3;
-  const focusOffset = focusPhase === 0 ? 0 : focusPhase === 1 ? -36 : 36;
-  const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -64 : 64;
-  const focusRotate = focusPhase === 0 ? 0 : focusPhase === 1 ? -1.2 : 1.2;
 
   if (!anchor) return null;
 
@@ -62,7 +57,7 @@ export const SpeechBubble: React.FC<Props> = ({
         left: bubbleX,
         top: bubbleY,
         width: bubbleWidth,
-        transform: `translate(${focusX + entrance.translateX}px, ${focusOffset + entrance.translateY}px) rotate(${focusRotate}deg) scale(${entrance.scale})`,
+        transform: `translate(${entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
         opacity: entrance.opacity,
         clipPath: entrance.clipPath,
         transformOrigin: bubble.direction === "left" ? "right bottom" : "left bottom",

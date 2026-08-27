@@ -212,6 +212,8 @@ export interface SceneSpeechBubble {
   fontSize?: number;
   /** Bubble width cap as a fraction of canvas width. Defaults to 0.38. */
   widthRatio?: number;
+  background?: string;
+  textColor?: string;
   enterAnimation?: AnimationType;
 }
 

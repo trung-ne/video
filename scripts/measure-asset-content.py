@@ -25,8 +25,17 @@ def main() -> int:
 
     public = Path(sys.argv[1] if len(sys.argv) > 1 else "public")
     out = {}
-    for directory in ("generated-assets", "generated-backgrounds"):
-        root = public / directory
+    # Production art may live in the base library or in a selected style tree.
+    # Both need identical transparent-padding measurements: style assets are
+    # rendered through the same AnimatedAsset component and otherwise appear
+    # visibly smaller than their base-library counterparts.
+    directories = [
+        public / "generated-assets",
+        public / "generated-backgrounds",
+        *sorted((public / "styles").glob("*/generated-assets")),
+        *sorted((public / "styles").glob("*/generated-backgrounds")),
+    ]
+    for root in directories:
         if not root.is_dir():
             continue
         for path in sorted(root.rglob("*.png")):

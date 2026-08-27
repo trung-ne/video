@@ -64,8 +64,14 @@ def main():
         return 0
     public = Path(sys.argv[1] if len(sys.argv) > 1 else "public")
     output = {}
-    for folder in ("generated-assets", "generated-backgrounds", "backgrounds"):
-        root = public / folder
+    roots = [
+        public / "generated-assets",
+        public / "generated-backgrounds",
+        public / "backgrounds",
+        *sorted((public / "styles").glob("*/generated-assets")),
+        *sorted((public / "styles").glob("*/generated-backgrounds")),
+    ]
+    for root in roots:
         if not root.is_dir():
             continue
         for path in sorted(root.rglob("*")):

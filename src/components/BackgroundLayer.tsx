@@ -55,7 +55,6 @@ export const BackgroundLayer: React.FC<Props> = ({
           ? interpolate(crossfadeProgress, [0, 1], [0, bg.opacity])
           : bg.opacity;
         const isPhoto = /(?:^|\/)backgrounds\//.test(bg.src) && !bg.src.includes("generated-backgrounds/");
-        const isGeneratedStage = bg.src.includes("generated-backgrounds/") || bg.src.includes("generated-assets/scenes/");
         const age = Math.max(0, frame - bg.enterFrame);
         const photoPan = Math.min(1, age / 300);
 
@@ -95,7 +94,7 @@ export const BackgroundLayer: React.FC<Props> = ({
                 objectFit: "cover",
                 filter: [
                   bg.blur > 0 ? `blur(${bg.blur}px)` : "",
-                  (isPhoto || isGeneratedStage) && bg.saturationScale !== undefined
+                  isPhoto && bg.saturationScale !== undefined
                     ? `saturate(${bg.saturationScale}) contrast(${isPhoto ? 0.98 : 1})`
                     : "",
                 ].filter(Boolean).join(" ") || undefined,

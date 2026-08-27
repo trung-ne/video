@@ -1,7 +1,7 @@
 import React from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import { CardState } from "../engine/timelineEngine";
-import { resolveAssetSrc } from "../engine/assetPaths";
+import { getContentScale, resolveAssetSrc } from "../engine/assetPaths";
 import { fitTextToBox } from "../engine/textLayout";
 import { clampEntranceProgress } from "../animations";
 import { getEnterAnimation } from "../animations";
@@ -29,9 +29,7 @@ export const ConceptCard: React.FC<Props> = ({
   const w = card.width * card.scale;
   const h = card.height * card.scale;
   const iconPath = card.iconSrc ? resolveAssetSrc(card.iconSrc) : "";
-  const contentAge = Math.max(0, frame - card.enterFrame);
-  const focusPhase = Math.floor(contentAge / (fps * 4)) % 3;
-  const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -72 : 72;
+  const iconScale = card.iconSrc ? Math.min(1.28, getContentScale(card.iconSrc)) : 1;
   const labelFit = card.label
     ? fitTextToBox(card.label, Math.min(52, w * 0.1), 24, w - 44,
         h * (card.iconSrc ? 0.30 : 0.72), card.iconSrc ? 3 : 5)
@@ -45,7 +43,7 @@ export const ConceptCard: React.FC<Props> = ({
         top: y - h / 2,
         width: w,
         height: h,
-        transform: `translate(${focusX + entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
+        transform: `translate(${entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
         opacity: entrance.opacity,
         clipPath: entrance.clipPath,
         transformOrigin: "center center",
@@ -83,26 +81,28 @@ export const ConceptCard: React.FC<Props> = ({
             gap: 8,
             paddingLeft: card.iconSrc && !card.label ? 54 : 0,
             boxSizing: "border-box",
-            filter: focusPhase === 0
-              ? "brightness(1)"
-              : focusPhase === 1 ? "brightness(1.14)" : "brightness(0.84)",
-            transform: `translateY(${focusPhase === 0 ? 0 : focusPhase === 1 ? -18 : 18}px)`,
-            transition: "none",
-            boxShadow: focusPhase === 0
-              ? "inset 0 0 0 0 rgba(255,255,255,0)"
-              : `inset 0 ${focusPhase === 1 ? -18 : 18}px 0 rgba(255,255,255,0.42)`,
           }}
         >
           {/* Icon */}
           {card.iconSrc && (
-            <img
-              src={staticFile(iconPath)}
-              style={{
-                width: h * (card.label ? 0.45 : 0.36),
-                height: h * (card.label ? 0.45 : 0.36),
-                objectFit: "contain",
-              }}
-            />
+            <div style={{
+              width: h * (card.label ? 0.45 : 0.36),
+              height: h * (card.label ? 0.45 : 0.36),
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <img
+                src={staticFile(iconPath)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  transform: `scale(${iconScale})`,
+                }}
+              />
+            </div>
           )}
           {/* Label */}
           {card.label && (

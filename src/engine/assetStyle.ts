@@ -35,12 +35,14 @@ export function assertStyleInventory(style: AssetStyle, refs: string[]): Record<
   // A production compile must never certify a partial style library merely
   // because this particular storyboard used only a few props. Every base
   // production logical ref needs a corresponding selected-style file first.
-  const required = [
-    ...refs,
-    ...Object.entries(styleManifest.aliases ?? {})
+  const baseInventoryRefs = Object.entries(styleManifest.aliases ?? {})
       .filter(([, physical]) => physical.startsWith("generated-assets/") || physical.startsWith("generated-backgrounds/"))
-      .map(([ref]) => ref),
-  ];
+      .map(([ref]) => ref);
+  // A newly authored production ref may deliberately exist only in the
+  // selected style family. It still must resolve for that style; demanding C
+  // and F siblings merely because the project renders in D prevents legitimate
+  // style-local art from ever entering a production storyboard.
+  const required = [...baseInventoryRefs, ...refs];
   for (const ref of [...new Set(required.filter(Boolean))]) {
     const path = resolveStyledAsset(ref, style);
     if (path) resolved[ref] = path;

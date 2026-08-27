@@ -285,7 +285,13 @@ function compositionFingerprint(result: GrammarResult, brief: SceneBrief): strin
   const actors = entities.filter((entity) => entity.src.startsWith("characters/")).length;
   const props = entities.length - actors;
   const components = [
-    ...(result.cards ?? []).map(() => "card"),
+    ...(result.cards ?? []).map((card) => {
+      // A concept card's icon is a visible part of its composition. Ignoring it
+      // made semantically distinct comparisons (house vs. loan, bank vs.
+      // investor, etc.) look identical to the reuse audit.
+      const icon = String(card.iconSrc ?? "none").split("/").pop()?.replace(/\.[^.]+$/, "") ?? "none";
+      return `card:${icon}:${Math.round(card.position.x * 3)}:${Math.round(card.position.y * 3)}`;
+    }),
     ...(result.paperCards ?? []).map((card) => `paper:${Math.round(card.position.x * 3)}:${Math.round(card.position.y * 3)}`),
     ...(result.frameBoxes ?? []).map((frame) => `frame:${Math.round(frame.position.x * 3)}:${Math.round(frame.position.y * 3)}`),
     ...(result.speechBubbles ?? []).map(() => "bubble"),
@@ -318,6 +324,17 @@ function applyAuthoredBeatTransitions(
   words: AlignedWord[] | undefined,
 ): SceneBeatTimingSource | undefined {
   if (!brief.beats?.length) return undefined;
+
+  // The narration phrase is authored; the grammar owns component IDs/layout.
+  // This makes staging semantic instead of moving every card on a global clock.
+  const advanceCandidates = [
+    ...(result.cards ?? []),
+    ...(result.paperCards ?? []),
+    ...(result.frameBoxes ?? []),
+  ]
+    .filter((layer) => (layer.delay ?? 0) > 0)
+    .sort((a, b) => (a.delay ?? 0) - (b.delay ?? 0));
+  let advanceIndex = 0;
 
   const appendPoseSwap = (targetSlot: string, targetAssetId: string | undefined, delay: number) => {
     if (!targetAssetId?.startsWith("characters/")) {
@@ -429,6 +446,17 @@ function applyAuthoredBeatTransitions(
     sources.push(resolved.source);
     const delay = Math.max(2, Math.min(timing.frames - 20, resolved.offset));
 
+    if (beat.action === "advance" && beat.targetSlot === "next") {
+      const layer = advanceCandidates[advanceIndex++];
+      if (!layer) {
+        throw new Error(
+          `${brief.id} marks advance:next, but ${brief.visualGrammar} has no unrevealed teaching layer. Split the scene or author a pose/prop/focus transition.`,
+        );
+      }
+      layer.delay = delay;
+      continue;
+    }
+
     if (beat.action === "reveal" && beat.targetSlot === "cutaway") {
       if (!beat.targetAssetId || !/\.(jpg|jpeg|png|webp)$/i.test(beat.targetAssetId)) {
         throw new Error(
@@ -536,20 +564,6 @@ function compileBrief(
   applyShot(result, brief.shot);
   ensureImmediateFocal(result);
   const authoredTransitionTiming = applyAuthoredBeatTransitions(brief, result, timing, fps, words);
-  // Stagger multi-card reveals so a long scene keeps changing. A LONE card gets
-  // no such treatment: delaying the only element four seconds just leaves the
-  // opening of every long scene as background plus one character — which is why
-  // SOLO measured 100% flat frames. Mid-scene change for a single-card scene has
-  // to come from something that holds state (a pose beat, a swap), not from the
-  // one piece of content arriving late.
-  if (timing.frames >= fps * 8 && (result.cards?.length ?? 0) > 1) {
-    result.cards!.forEach((card, index) => {
-      card.delay = index === 0
-        ? Math.min(card.delay ?? 8, 12)
-        : Math.min(timing.frames - 45, index * fps * 4);
-    });
-  }
-
   // Layer beat-emphasis onto the focal entity at the aligned frame.
   const entities: SceneEntity[] = result.entities.map((e) => ({ ...e }));
   const focal = entities.find((e) => e.assetId === result.focusAssetId);

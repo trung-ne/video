@@ -34,12 +34,6 @@ export const FrameBox: React.FC<Props> = ({
   const isColor = frameBox.contentSrc.startsWith("#") || frameBox.contentSrc.startsWith("rgb");
   const src = isColor ? frameBox.contentSrc : staticFile(resolveAssetSrc(frameBox.contentSrc));
   const saturationScale = isColor ? 1 : getPaletteSaturationScale(frameBox.contentSrc);
-  const contentAge = Math.max(0, frame - frameBox.enterFrame);
-  const panPhase = Math.min(1, contentAge / (fps * 10));
-  const focusPhase = Math.floor(contentAge / (fps * 4)) % 3;
-  const focusX = focusPhase === 0 ? 0 : focusPhase === 1 ? -76 : 76;
-  const photoScale = 1 + panPhase * 0.24;
-  const photoX = 38 + panPhase * 24;
 
   return (
     <div
@@ -48,7 +42,7 @@ export const FrameBox: React.FC<Props> = ({
         left: x - w / 2,
         top: y - h / 2,
         width: w,
-        transform: `translate(${focusX + entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
+        transform: `translate(${entrance.translateX}px, ${entrance.translateY}px) scale(${entrance.scale})`,
         opacity: entrance.opacity,
         clipPath: entrance.clipPath,
         transformOrigin: "center center",
@@ -104,7 +98,6 @@ export const FrameBox: React.FC<Props> = ({
           ) : (
             <img src={src} style={{
               width: "100%", height: "100%", objectFit: frameBox.objectFit, background: "#FFFFFF",
-              transform: `scale(${photoScale})`, transformOrigin: `${photoX}% 50%`,
               filter: `saturate(${saturationScale}) contrast(0.98)`,
             }} />
           )}

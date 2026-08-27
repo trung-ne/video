@@ -1,7 +1,7 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import { PaperCardState } from "../engine/timelineEngine";
-import { clampEntranceProgress, getEnterAnimation } from "../animations";
+import { getEnterAnimation } from "../animations";
 
 interface Props {
   card: PaperCardState;
@@ -17,16 +17,6 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
   const { fps } = useVideoConfig();
 
   const entrance = getEnterAnimation(card.animation, frame - card.enterFrame, 18, fps);
-  // Evidence should unfold with the narration instead of landing as one
-  // frozen slide. Survey cards have a meaningful title to hold the first
-  // beat, then reveal the finding and keep it on screen.
-  const bodyProgress = card.variant === "survey" && card.title
-    ? clampEntranceProgress(spring({
-        frame: frame - card.enterFrame - Math.round(fps * 2.4),
-        fps,
-        config: { damping: 18, stiffness: 130, overshootClamping: true },
-      }))
-    : 1;
 
   const x = card.position.x * canvasWidth;
   const y = card.position.y * canvasHeight;
@@ -37,12 +27,7 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
     "polygon(0% 3%, 3% 1%, 8% 4%, 14% 1%, 22% 3%, 30% 0%, 40% 3%, 50% 1%, 60% 3%, 70% 0%, 80% 3%, 88% 1%, 95% 4%, 99% 1%, 100% 5%, 99% 95%, 100% 99%, 92% 97%, 84% 100%, 75% 97%, 66% 100%, 56% 97%, 47% 100%, 38% 97%, 28% 100%, 19% 97%, 10% 100%, 4% 97%, 1% 99%, 0% 95%)";
 
   const isSurvey = card.variant === "survey";
-  const evidenceAge = Math.max(0, frame - card.enterFrame);
-  const evidencePhase = Math.floor(evidenceAge / (fps * 4)) % 3;
-  const evidenceX = evidencePhase === 0 ? 0 : evidencePhase === 1 ? -88 : 88;
-  const paperBackground = isSurvey
-    ? ["#FFF1CF", "#F7E3AF", "#E8F3F1"][evidencePhase]
-    : ["#FFFFFF", "#FFF4C7", "#E8F3F1"][evidencePhase];
+  const paperBackground = isSurvey ? "#FFF1CF" : "#FFF8E7";
 
   return (
     <div
@@ -51,7 +36,7 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
         left: x - w / 2,
         top: y,
         width: w,
-        transform: `translate(${evidenceX + entrance.translateX}px, calc(-50% + ${entrance.translateY}px)) rotate(${card.rotation}deg) scale(${entrance.scale})`,
+        transform: `translate(${entrance.translateX}px, calc(-50% + ${entrance.translateY}px)) rotate(${card.rotation}deg) scale(${entrance.scale})`,
         opacity: entrance.opacity,
         clipPath: entrance.clipPath,
         transformOrigin: "center center",
@@ -72,7 +57,9 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
       <div
         style={{
           width: "100%",
+          minHeight: isSurvey ? 680 : 700,
           background: paperBackground,
+          border: "5px solid #1a1a1a",
           clipPath: tornClip,
           padding: isSurvey ? "56px 64px" : "48px 56px",
           boxSizing: "border-box",
@@ -121,12 +108,10 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
             lineHeight: 1.45,
             textAlign: isSurvey ? "left" : "center",
             fontStyle: isSurvey ? "normal" : "italic",
-            opacity: bodyProgress,
-            transform: `translateY(${(1 - bodyProgress) * 18}px)`,
-            background: isSurvey ? "rgba(255, 214, 102, 0.34)" : evidencePhase > 0 ? "rgba(255,255,255,0.62)" : undefined,
-            borderLeft: isSurvey || evidencePhase > 0 ? `${Math.max(5, w * 0.008)}px solid ${isSurvey ? "#E03131" : "#286F7A"}` : undefined,
-            borderRadius: isSurvey ? 10 : undefined,
-            padding: isSurvey ? "18px 22px" : undefined,
+            background: isSurvey ? "rgba(255, 214, 102, 0.34)" : "rgba(255,255,255,0.7)",
+            borderLeft: `${Math.max(5, w * 0.008)}px solid ${isSurvey ? "#E03131" : "#286F7A"}`,
+            borderRadius: 10,
+            padding: "18px 22px",
           }}
         >
           {card.body}
@@ -140,8 +125,6 @@ export const PaperCard: React.FC<Props> = ({ card, canvasWidth, canvasHeight }) 
               gap: "28px 40px",
               marginTop: 36,
               justifyContent: "flex-start",
-              opacity: bodyProgress,
-              transform: `translateY(${(1 - bodyProgress) * 18}px)`,
             }}
           >
             {card.choices.map((choice, i) => (
