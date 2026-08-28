@@ -7,6 +7,10 @@ export interface ProjectManifest {
   characterBible?: string;
   storyboardPath: string;
   timelinePath: string;
+  /** Derived long-video checkpoint plan; never an authored source. */
+  chunkManifestPath?: string;
+  /** Bumps when the hash-bound Route A build lineage changes. */
+  buildIdentity?: string;
   audioPath?: string;
   wordsPath?: string;
   qualityProfile: string;

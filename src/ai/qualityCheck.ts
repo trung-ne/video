@@ -14,6 +14,7 @@ import { stageMatchesSetting } from "../engine/stageRegistry";
 import referenceQuality from "../../config/reference-quality.json";
 import { MAX_VISUAL_HOLD_FRAMES, maximumVisualHold } from "../engine/visualCadence";
 import { estimateStablePaintedRatio } from "../engine/compositionDensity";
+import { QualityScope } from "../types/chunk";
 
 const STAGE_ANCHORS_KEYS = new Set(Object.keys(STAGE_ANCHORS));
 
@@ -3281,6 +3282,72 @@ function checkSubtitleCoverage(scenes: any[]): CheckResult {
 }
 
 // ─── Main runner ─────────────────────────────────────────────
+
+/**
+ * Long-video checkpoints must not score a small chapter as if it were the
+ * complete film. This uses a core+halo context: local and adjacency rules see
+ * the neighbouring scene, but only core-scene findings count for this chunk.
+ * Global quotas deliberately remain exclusive to runQualityCheck().
+ */
+function runChunkQualityCheck(
+  timeline: any,
+  scope: Extract<QualityScope, { kind: "chunk" }>,
+  timelinePath: string,
+): QualityReport {
+  const allScenes: any[] = Array.isArray(timeline?.scenes) ? timeline.scenes : [];
+  const core = new Set(scope.coreSceneIds);
+  const contextIds = new Set([
+    ...scope.haloBeforeSceneIds,
+    ...scope.coreSceneIds,
+    ...scope.haloAfterSceneIds,
+  ]);
+  const scenes = allScenes.filter((scene) => contextIds.has(scene.id));
+  const localTimeline = { ...timeline, scenes };
+  const checks: CheckResult[] = [
+    checkAssetPaths(scenes),
+    checkUniqueIds(scenes),
+    checkBackgroundReal(scenes),
+    checkSceneDuration(scenes),
+    checkTextWordCap(scenes),
+    checkTextOverlap(scenes),
+    checkTextDuration(scenes),
+    checkTeachingTextLifetime(scenes),
+    checkNarration(scenes),
+    checkCatPoseDiversity(scenes),
+    checkAssetScale(scenes),
+    checkStableCompositionDensity(localTimeline, scenes),
+    checkVisualRhythm(scenes),
+    checkCameraUsage(scenes),
+    checkIconTriple(scenes),
+    checkPaperCardCollision(scenes),
+    checkStatDrama(scenes),
+    checkImmediateFocalAndCardGeometry(localTimeline, scenes),
+    checkDialogue(scenes),
+    checkStagger(scenes),
+    checkNoEmoji(scenes),
+    checkSignatureComponents(localTimeline, scenes),
+    checkSubtitleCoverage(scenes),
+    checkSemanticTimeline(localTimeline, scenes),
+    checkRenderedIntentProxies(localTimeline, scenes),
+    checkOverlayNarrationDuplication(scenes),
+    // These read adjacent states. Their global-ratio diagnostics have no scene
+    // and are intentionally dropped below; seam-specific findings are retained.
+    checkClearPrevious(scenes),
+  ].map((check) => ({
+    ...check,
+    issues: check.issues.filter((issue) => issue.scene && core.has(issue.scene)),
+  }));
+  return assembleReport(checks, `${timelinePath} [chunk ${scope.chunkId}]`);
+}
+
+export function runScopedQualityCheck(
+  timeline: any,
+  scope: QualityScope = { kind: "global" },
+  timelinePath = "(unknown)",
+): QualityReport {
+  if (scope.kind === "chunk") return runChunkQualityCheck(timeline, scope, timelinePath);
+  return runQualityCheck(timeline, timelinePath);
+}
 
 export function runQualityCheck(
   timeline: any,

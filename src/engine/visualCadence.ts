@@ -87,7 +87,7 @@ export function authoredTransitionCapabilityIssues(
       if (!["TABLEAU", "CHAR_PROP"].includes(grammar) || !slots.prop) issues.push(`${label} requires a rendered prop`);
     } else if (beat.action === "reveal") {
       const caption = beat.targetSlot === "caption" && grammar === "TABLEAU" && Boolean(slots.caption ?? slots.keyword);
-      const cutaway = beat.targetSlot === "cutaway" && /\.(jpg|jpeg|png|webp)$/i.test(String(beat.targetAssetId ?? "")) && Boolean(beat.targetLabel?.trim());
+      const cutaway = beat.targetSlot === "cutaway" && Boolean(beat.targetAssetId) && Boolean(beat.targetLabel?.trim());
       if (!caption && !cutaway) issues.push(`${label} is not a renderable caption or fully authored cutaway`);
     }
   }

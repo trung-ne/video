@@ -458,9 +458,9 @@ function applyAuthoredBeatTransitions(
     }
 
     if (beat.action === "reveal" && beat.targetSlot === "cutaway") {
-      if (!beat.targetAssetId || !/\.(jpg|jpeg|png|webp)$/i.test(beat.targetAssetId)) {
+      if (!beat.targetAssetId) {
         throw new Error(
-          `${brief.id} marks a cutaway reveal but does not name a production image.`,
+          `${brief.id} marks a cutaway reveal but does not name a production asset.`,
         );
       }
       if (!beat.targetLabel?.trim()) {

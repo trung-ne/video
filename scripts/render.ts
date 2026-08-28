@@ -14,7 +14,7 @@
  * instead of flat output/<id>-suffix.ext files.
  */
 
-import { execFileSync, execSync } from "child_process";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { loadLocalEnvironment } from "./load-env";
@@ -40,6 +40,10 @@ import {
 } from "../src/engine/timingIntegrity";
 import referenceQuality from "../config/reference-quality.json";
 import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
+import {
+  ProcessRunError,
+  runProcessWithDllInitRetry,
+} from "../src/engine/childProcessRunner";
 
 loadLocalEnvironment();
 
@@ -215,11 +219,11 @@ function runEncodingAudit(videoPath: string, recordAs = videoPath): any {
  * production floor. Normalize the staged candidate with explicit ABR bounds
  * before auditing it. This never touches a published artifact.
  */
-function normalizeProductionBitrate(videoPath: string): void {
+async function normalizeProductionBitrate(videoPath: string): Promise<void> {
   const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path as string;
   const normalizedPath = videoPath.replace(/\.mp4$/i, ".normalized.mp4");
   const target = referenceQuality.encoding.targetVideoBitrate;
-  execFileSync(ffmpegPath, [
+  const args = [
     "-y", "-i", videoPath,
     "-map", "0:v:0", "-map", "0:a?",
     "-c:v", "libx264", "-preset", "medium",
@@ -231,7 +235,22 @@ function normalizeProductionBitrate(videoPath: string): void {
     "-pix_fmt", referenceQuality.encoding.pixelFormat,
     "-c:a", "aac", "-b:a", referenceQuality.encoding.audioBitrate,
     "-movflags", "+faststart", normalizedPath,
-  ], { stdio: "inherit" });
+  ];
+  try {
+    await runProcessWithDllInitRetry({
+      phase: "bitrate-normalization",
+      executable: ffmpegPath,
+      args,
+      cwd: process.cwd(),
+      retryDllInitFailure: true,
+      beforeRetry: () => fs.rmSync(normalizedPath, { force: true }),
+    });
+  } catch (error) {
+    // A failed encoder can leave a plausible-looking but incomplete MP4. It is
+    // never a valid input to a later audit or a resumed normalization.
+    fs.rmSync(normalizedPath, { force: true });
+    throw error;
+  }
   fs.renameSync(normalizedPath, videoPath);
 }
 
@@ -354,6 +373,11 @@ if (fs.existsSync(charDir)) {
     if (f.endsWith(".svg")) availablePoses.add(`characters/${f.replace(".svg", "")}`);
   }
 }
+if (fs.existsSync(generatedCharDir)) {
+  for (const f of fs.readdirSync(generatedCharDir)) {
+    if (f.endsWith(".png")) availablePoses.add(`characters/${f.replace(".png", "")}`);
+  }
+}
 
 // Single compile point — scenes → events + liveliness (shared with preview).
 const { timeline, liveliness } = loadTimeline(raw, availablePoses);
@@ -428,17 +452,23 @@ let timingAudit: {
   mp4Seconds: number; expectedSeconds: number; driftSeconds: number; scope: string;
 } | null = null;
 
+async function runRenderPipeline(): Promise<void> {
 try {
   if (isProxy) {
     getScaledDimensions(timeline.width, timeline.height, DEFAULT_PROXY_SCALE);
   }
   const browserExecutable = findCachedChromeHeadlessShell();
-  const cmd = [
-    "npx remotion render",
-    `src/index.ts`,
+  const remotionCli = path.join(
+    path.dirname(require.resolve("@remotion/cli/package.json")),
+    "remotion-cli.js",
+  );
+  const remotionArgs = [
+    remotionCli,
+    "render",
+    "src/index.ts",
     compositionId,
-    `"${stagedOut}"`,
-    `--props="${propsTmpFile}"`,
+    stagedOut,
+    `--props=${propsTmpFile}`,
     "--log=info",
     "--codec=h264",
     isProxy ? `--scale=${DEFAULT_PROXY_SCALE}` : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
@@ -451,17 +481,27 @@ try {
     framesArg ? `--frames=${framesArg}` : "",
     `--audio-bitrate=${referenceQuality.encoding.audioBitrate}`,
     `--pixel-format=${referenceQuality.encoding.pixelFormat}`,
-    browserExecutable ? `--browser-executable="${browserExecutable}"` : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+    browserExecutable ? `--browser-executable=${browserExecutable}` : "",
+  ].filter(Boolean);
 
-  execSync(cmd, { stdio: "inherit", cwd: process.cwd() });
+  try {
+    await runProcessWithDllInitRetry({
+      phase: "remotion-render",
+      executable: process.execPath,
+      args: remotionArgs,
+      cwd: process.cwd(),
+      retryDllInitFailure: true,
+      beforeRetry: () => fs.rmSync(stagedOut, { force: true }),
+    });
+  } catch (error) {
+    fs.rmSync(stagedOut, { force: true });
+    throw error;
+  }
 
   console.log(`\nEncoded media: ${stagedOut}. Running publish audits...`);
   if (!isProxy && !framesArg) {
     console.log("Normalizing staged H.264 delivery bitrate before audit...");
-    normalizeProductionBitrate(stagedOut);
+    await normalizeProductionBitrate(stagedOut);
   }
   // A bounded --frames render is a diagnostic slice, never a publishable
   // deliverable. Its average bitrate is dominated by its particular few
@@ -509,17 +549,34 @@ try {
     }
     fs.rmSync(visualAuditPath, { force: true });
     fs.rmSync(contactSheetPath, { force: true });
-    execFileSync("python", [
-      auditScript,
-      "--video", path.resolve(stagedOut),
-      "--record-video-path", path.resolve(outPath),
-      "--ffmpeg", ffmpegPath,
-      "--timeline", path.resolve(timelinePath),
-      "--timeline-offset-seconds", String(frameRangeStart / timeline.fps),
-      "--config", path.resolve("config/reference-quality.json"),
-      "--contact-sheet", path.resolve(contactSheetPath),
-      "--record-contact-sheet", path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg")),
-    ], { stdio: "inherit", cwd: process.cwd() });
+    try {
+      await runProcessWithDllInitRetry({
+        phase: "visual-audit",
+        executable: "python",
+        args: [
+          auditScript,
+          "--video", path.resolve(stagedOut),
+          "--record-video-path", path.resolve(outPath),
+          "--ffmpeg", ffmpegPath,
+          "--timeline", path.resolve(timelinePath),
+          "--timeline-offset-seconds", String(frameRangeStart / timeline.fps),
+          "--config", path.resolve("config/reference-quality.json"),
+          "--contact-sheet", path.resolve(contactSheetPath),
+          "--record-contact-sheet", path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg")),
+        ],
+        cwd: process.cwd(),
+        retryDllInitFailure: true,
+        beforeRetry: () => {
+          fs.rmSync(visualAuditPath, { force: true });
+          fs.rmSync(contactSheetPath, { force: true });
+        },
+      });
+    } catch (error) {
+      // A completed audit that fails a quality threshold is valuable diagnostic
+      // evidence. Keep its report/contact sheet in staging; only the bounded
+      // DLL-init retry above clears partial outputs before rerunning.
+      throw error;
+    }
     if (!fs.existsSync(visualAuditPath)) {
       throw new Error(`Visual audit did not produce its required report: ${visualAuditPath}`);
     }
@@ -624,14 +681,20 @@ try {
   // The previously published build is left exactly as it was. The failed run
   // stays in its staging dir so its artifacts can be inspected without being
   // mistaken for the current production output.
+  const processFailure = err instanceof ProcessRunError ? err.result : null;
   const failedReport = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     status: "diagnostic",
     video: fs.existsSync(stagedOut) ? path.resolve(stagedOut) : null,
     timeline: path.resolve(timelinePath),
     timingProvenance: raw.timingProvenance ?? null,
     timingAudit,
     stagingDir: path.resolve(stagingDir),
+    failureKind: processFailure?.phase === "visual-audit" && processFailure.exitCode === 3
+      ? "quality"
+      : processFailure ? "infrastructure" : "pipeline",
+    phase: processFailure?.phase ?? null,
+    process: processFailure,
     error: err instanceof Error ? err.message : String(err),
   };
   fs.writeFileSync(
@@ -649,8 +712,6 @@ try {
   }
   renderLock.release();
 }
-if (fs.existsSync(generatedCharDir)) {
-  for (const f of fs.readdirSync(generatedCharDir)) {
-    if (f.endsWith(".png")) availablePoses.add(`characters/${f.replace(".png", "")}`);
-  }
 }
+
+void runRenderPipeline();

@@ -333,6 +333,23 @@ if (authorErrors.length) {
   process.exit(1);
 }
 
+// Sections are chapter boundaries, not marker-sized excerpts. Resolve every
+// authored marker against the complete transcript, then turn adjacent starts
+// into contiguous source ranges just as scene markers do. This is deliberately
+// done only after the full storyboard's ranges exist; chunk tooling must never
+// slice SCENES and re-run marker resolution on a partial transcript.
+const resolvedSections = SECTIONS.length
+  ? (() => {
+      const starts = SECTIONS.map((section, index) =>
+        index === 0 ? 0 : findMarker(String(section.sourceMarker ?? ""), 0));
+      return SECTIONS.map((section, index) => ({
+        ...section,
+        sourceRange: makeSourceRange(words, starts[index],
+          index + 1 < starts.length ? starts[index + 1] - 1 : words.length - 1),
+      }));
+    })()
+  : [];
+
 const storyboard = {
   schemaVersion: 2,
   transcriptChecksum: checksumText(transcript),
@@ -341,12 +358,7 @@ const storyboard = {
   width: 1920,
   height: 1080,
   cast: CAST,
-  sections: SECTIONS.map((section) => {
-    if (!section.sourceMarker) return section;
-    const start = findMarker(String(section.sourceMarker), 0);
-    const length = tokenize(String(section.sourceMarker)).length;
-    return { ...section, sourceRange: makeSourceRange(words, start, start + length - 1) };
-  }),
+  sections: resolvedSections,
   claims: CLAIMS.map((claim) => {
     if (!claim.sourceMarker) return claim;
     const start = findMarker(String(claim.sourceMarker), 0);

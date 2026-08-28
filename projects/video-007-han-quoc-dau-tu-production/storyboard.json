@@ -177,6 +177,26 @@
           "targetAssetId": "backgrounds/evidence-retail-pexels-12706241.jpg",
           "targetLabel": "Cú rơi mở màn",
           "holdState": "the measured KOSPI fall persists as the painful leverage question arrives"
+        },
+        {
+          "text": "đổi đời",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-market-pexels-10653886.jpg",
+          "targetLabel": "Đầu tư thành đường tắt",
+          "holdState": "a retail-market evidence frame persists as investing is recast as a shortcut to change one's life"
+        },
+        {
+          "text": "càng nhiều người tin rằng là đầu tư",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-retail-pexels-17546505.jpg",
+          "targetLabel": "Đầu tư thành đường tắt",
+          "holdState": "retail evidence persists as investing becomes a shared shortcut story"
         }
       ],
       "visualFingerprint": "STAT_REVEAL|evidence|chart|graphic|actor|medium|none|none|none",
@@ -216,6 +236,7 @@
         "who": "characters/cat_explain",
         "anchorA": "counter_left",
         "prop": "finance/investment",
+        "propPlacement": "foreground",
         "caption": "Cổ phiếu · coin · bất động sản"
       },
       "visualRegister": "character_action",
@@ -242,10 +263,10 @@
           "text": "người lao vào",
           "importance": 0.9,
           "kind": "turn",
-          "action": "swap_pose",
+          "action": "focus_actor",
           "targetSlot": "who",
           "targetAssetId": "characters/cat_investor_phone",
-          "holdState": "the surprised observer becomes an investor rushing into the trade"
+          "holdState": "the investor fills the frame as the rush into the trade begins"
         },
         {
           "text": "tiền vay để đầu tư",
@@ -255,6 +276,15 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_investor_panic",
           "holdState": "the rush turns into borrowed-risk panic"
+        },
+        {
+          "text": "rất nhiều là Marin",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_investor_panic",
+          "holdState": "the investor fills the frame as borrowing turns the rush into margin risk"
         }
       ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -605,6 +635,14 @@
           "targetSlot": "asker",
           "targetAssetId": "characters/cat_think",
           "holdState": "the host pauses on the risky wager"
+        },
+        {
+          "text": "chúng ta sẽ cùng",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "holdState": "the investor fills the frame as the investigation turns to why people borrow"
         }
       ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|graphic|actor,actor|medium|none|none|none",
@@ -1493,6 +1531,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_sad",
           "holdState": "panic turns into irreversible loss"
+        },
+        {
+          "text": "để thu hồi khoản vay",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the debt claim fills the frame as the broker recovers the loan through a forced sale"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -1913,13 +1959,21 @@
           "holdState": "host confronts the debt scale"
         },
         {
-          "text": "20 năm qua",
+          "text": "nợ hộ gia đình",
           "importance": 0.9,
           "kind": "number",
-          "action": "swap_asset",
+          "action": "focus_asset",
           "targetSlot": "prop",
           "targetAssetId": "finance/trending_up",
-          "holdState": "two decades of rising household debt replaces the snapshot"
+          "holdState": "the rising debt trend fills the frame as household debt becomes the structural alarm"
+        },
+        {
+          "text": "gần toàn bộ GDP",
+          "importance": 0.95,
+          "kind": "number",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the debt trend fills the frame as the household burden approaches the size of national GDP"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -2112,6 +2166,15 @@
           "action": "handoff",
           "targetSlot": "answerer",
           "holdState": "broker introduces Jeonse"
+        },
+        {
+          "text": "Sư. Tức là thay vì trả tiền nhà mỗi",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "targetAssetId": "characters/cat_business",
+          "holdState": "the broker fills the frame as Jeonse replaces rent with a large deposit"
         }
       ],
       "visualFingerprint": "DIALOGUE_QA|full_tableau|character_action|stage|actor,actor,prop|medium|none|none|none",
@@ -2194,6 +2257,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_sad",
           "holdState": "the deposit burden lands"
+        },
+        {
+          "text": "vài năm mà không phải",
+          "importance": 0.92,
+          "kind": "number",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the house fills the frame as the required deposit reaches homeowner-scale cash"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -2272,6 +2343,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_sad",
           "holdState": "renter sees the cash barrier"
+        },
+        {
+          "text": "phải có sẵn một khoản tiền lớn",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the cash pile fills the frame as the hidden upfront barrier becomes explicit"
         }
       ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
@@ -2507,6 +2586,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_think",
           "holdState": "host focuses on young workers"
+        },
+        {
+          "text": "tỉ lệ có việc làm",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the budget fills the frame as the weaker youth job market becomes the material constraint"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -2609,6 +2696,16 @@
           "targetAssetId": "backgrounds/stock_chart.png",
           "targetLabel": "Thu nhập chậm",
           "holdState": "slow income growth becomes the final pressure against rising costs"
+        },
+        {
+          "text": "gian hoặc làm những công việc thiếu ổn",
+          "importance": 0.95,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-document-pexels-33175649.jpg",
+          "targetLabel": "Hợp đồng mong manh",
+          "holdState": "a document cutaway persists as unstable work becomes a concrete constraint"
         }
       ],
       "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|evidence|photo|prop|medium|none|none|document",
@@ -2829,6 +2926,15 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_sunglasses",
           "holdState": "the promise of quick money turns the young worker visibly overconfident"
+        },
+        {
+          "text": "rất là hấp dẫn",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_sunglasses",
+          "holdState": "the overconfident young worker fills the frame as the market starts to look like the only remaining route"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -3056,6 +3162,18 @@
       "focalType": "character_action",
       "silentFrameTakeaway": "The fear is being left behind.",
       "focalOccupancyTarget": 0.48,
+      "beats": [
+        {
+          "text": "bị bỏ lại phía sau",
+          "importance": 0.92,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-street-pexels-37319814.jpg",
+          "targetLabel": "Cảm giác bị bỏ lại",
+          "holdState": "a distant street cutaway replaces the isolated investor as the fear of falling behind is named"
+        }
+      ],
       "visualFingerprint": "SOLO|character_action|character_action|graphic|prop,actor|medium|none|none|none",
       "assetRequests": [
         {
@@ -3125,6 +3243,16 @@
           "targetAssetId": "backgrounds/urban_apartments.jpg",
           "targetLabel": "Đứng yên khi tài sản tăng",
           "holdState": "the apartment cutaway holds the widening generational gap"
+        },
+        {
+          "text": "bản thân mình",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-street-pexels-37319834.jpg",
+          "targetLabel": "Đứng yên khi người khác giàu lên",
+          "holdState": "a street cutaway persists as the viewer remains still while surrounding wealth accelerates"
         }
       ],
       "visualFingerprint": "ICON_TRIPLE|infographic|diagram|graphic|prop,prop,prop|medium|none|none|none",
@@ -3278,6 +3406,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_investor_panic",
           "holdState": "thin confidence becomes a rushed trade"
+        },
+        {
+          "text": "bị giá nhà",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the book fills the frame as thin preparation collides with the costs chasing the investor"
         }
       ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
@@ -3495,6 +3631,18 @@
       "focalOccupancyTarget": 0.57,
       "characterRequired": false,
       "photoTreatment": "cutaway",
+      "beats": [
+        {
+          "text": "đầu tư cá nhân chiếm tỉ trọng rất lớn",
+          "importance": 0.92,
+          "kind": "keyword",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-retail-pexels-4483608.jpg",
+          "targetLabel": "Cá nhân chi phối thanh khoản",
+          "holdState": "a second retail-market image replaces the opening evidence as the ownership share lands"
+        }
+      ],
       "visualFingerprint": "BEAT|photo_broll|photo|photo|prop|medium|none|none|cutaway",
       "assetRequests": [
         {
@@ -3719,6 +3867,14 @@
           "action": "focus_asset",
           "targetSlot": "prop",
           "holdState": "the liquidity pool is pinned to the 2020 share"
+        },
+        {
+          "text": "họ từng chiếm khoảng 2/3 khối lượng",
+          "importance": 0.95,
+          "kind": "number",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the liquidity pool fills the frame as the two-thirds share becomes the scale of retail power"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -4259,6 +4415,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_surprised",
           "holdState": "host recognizes the recurring behavior"
+        },
+        {
+          "text": "bị ảnh hưởng bởi",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the crowd symbol fills the frame as familiar behavior becomes a collective market force"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -4474,6 +4638,16 @@
           "targetAssetId": "backgrounds/evidence-market-pexels-28682356.jpg",
           "targetLabel": "Giữ lỗ quá lâu",
           "holdState": "the losing chart persists as the behavioral asymmetry lands"
+        },
+        {
+          "text": "hy vọng là giá",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-device-pexels-34862486.jpg",
+          "targetLabel": "Chờ giá quay đầu",
+          "holdState": "a device-focused cutaway persists as losing positions are held in hope of a reversal"
         }
       ],
       "visualFingerprint": "COMPARE|infographic|diagram|graphic|prop,prop|medium|none|none|none",
@@ -4625,6 +4799,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_surprised",
           "holdState": "margin turns the behavioral error extreme"
+        },
+        {
+          "text": "khi mà Marin xuất",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the margin card fills the frame as ordinary behavioral mistakes become extreme"
         }
       ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
@@ -4697,6 +4879,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_surprised",
           "holdState": "host sees the outsized turnover"
+        },
+        {
+          "text": "giao dịch họ tạo ra thì lại lớn hơn rất",
+          "importance": 0.92,
+          "kind": "number",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the exchange fills the frame as the small margin cohort produces outsized turnover"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -4778,6 +4968,16 @@
           "targetAssetId": "backgrounds/trading_workstation.jpg",
           "targetLabel": "Giao dịch tập trung",
           "holdState": "the concentrated trading workstation persists as active risk compounds"
+        },
+        {
+          "text": "tập trung hơn",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/office_trading.jpg",
+          "targetLabel": "Danh mục ngày càng tập trung",
+          "holdState": "an office-trading cutaway persists as concentrated holdings complete the margin profile"
         }
       ],
       "visualFingerprint": "ICON_TRIPLE|infographic|diagram|graphic|prop,prop,prop|medium|none|none|none",
@@ -5364,6 +5564,14 @@
           "targetSlot": "prop",
           "targetAssetId": "finance/savings",
           "holdState": "the abstract pressure becomes an unaffordable home"
+        },
+        {
+          "text": "tăng quá nhanh",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the savings symbol fills the frame as ordinary accumulation recedes beyond reach"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -5493,6 +5701,18 @@
       "silentFrameTakeaway": "A trade fits in a phone tap.",
       "focalOccupancyTarget": 0.56,
       "characterRequired": false,
+      "beats": [
+        {
+          "text": "khoản giao dịch xong rồi",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "finance/investment",
+          "targetLabel": "Một cú chạm vào thị trường",
+          "holdState": "a phone-trading cutaway replaces the frame once the nearly frictionless order action arrives"
+        }
+      ],
       "visualFingerprint": "FRAMEBOX|framebox|evidence|graphic|prop|medium|none|none|none",
       "assetRequests": [
         {
@@ -5913,6 +6133,14 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_surprised",
           "holdState": "governance concern becomes the valuation weight"
+        },
+        {
+          "text": "quyền lợi cổ đông nhỏ",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "holdState": "the company fills the frame as the minority-shareholder dispute becomes the valuation concern"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -6380,6 +6608,14 @@
           "action": "handoff",
           "targetSlot": "answerer",
           "holdState": "broker names the perceived advantage"
+        },
+        {
+          "text": "quỹ nước ngoài",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "holdState": "the broker fills the frame as institutional access becomes the source of the fairness concern"
         }
       ],
       "visualFingerprint": "DIALOGUE_QA|character_action|character_action|stage|actor,actor,prop|medium|none|none|none",
@@ -6513,6 +6749,16 @@
           "targetAssetId": "backgrounds/evidence-document-pexels-8296970.jpg",
           "targetLabel": "Kiếm tiền nhanh trước",
           "holdState": "the cash cutaway persists as lost trust shortens the investment horizon"
+        },
+        {
+          "text": "kiếm tiền nhanh",
+          "importance": 0.93,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/money_counting.jpg",
+          "targetLabel": "Kiếm tiền trước khi bị bỏ lại",
+          "holdState": "the money-counting cutaway persists as distrust turns investment into a race for fast cash"
         }
       ],
       "visualFingerprint": "CAUSE_EFFECT|infographic|diagram|graphic|prop,prop|medium|none|none|none",
@@ -6587,13 +6833,13 @@
           "holdState": "ease of trading becomes the new risk"
         },
         {
-          "text": "trò này quá là dễ",
-          "importance": 0.9,
+          "text": "Chưa bao giờ",
+          "importance": 0.92,
           "kind": "turn",
-          "action": "swap_asset",
-          "targetSlot": "prop",
-          "targetAssetId": "props/computer_desk",
-          "holdState": "the abstract market becomes an always-open phone trade"
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_investor_phone",
+          "holdState": "the host becomes a phone-driven investor as frictionless market access is named"
         }
       ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -6866,13 +7112,13 @@
           "holdState": "repeated claims trigger urgency"
         },
         {
-          "text": "mã sắp tăng rồi",
-          "importance": 0.9,
+          "text": "đang có cơ hội đấy",
+          "importance": 0.94,
           "kind": "turn",
-          "action": "swap_asset",
+          "action": "focus_asset",
           "targetSlot": "prop",
           "targetAssetId": "finance/chart_up",
-          "holdState": "a specific rising ticker replaces the generic promise"
+          "holdState": "the rising chart fills the frame as each alert insists an opportunity is about to disappear"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -7529,6 +7775,15 @@
           "holdState": "host opens the CFD door"
         },
         {
+          "text": "sản phẩm",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/credit_card",
+          "holdState": "the portfolio becomes a credit product as demand creates a new speculative door"
+        },
+        {
           "text": "ví dụ",
           "importance": 0.9,
           "kind": "turn",
@@ -7763,6 +8018,15 @@
           "targetSlot": "prop",
           "targetAssetId": "props/computer_desk",
           "holdState": "the portfolio becomes a trade record with obscured ownership"
+        },
+        {
+          "text": "đầu tư cá nhân nhưng mà trên dữ liệu",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_police",
+          "holdState": "the investigator fills the frame as reported labels hide retail participants"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -8198,13 +8462,13 @@
       "focalOccupancyTarget": 0.5,
       "beats": [
         {
-          "text": "Trong",
-          "importance": 0.85,
+          "text": "ro cao bao gồm cả những cái dạng đòn bảy",
+          "importance": 0.92,
           "kind": "turn",
-          "action": "swap_pose",
-          "targetSlot": "who",
-          "targetAssetId": "characters/cat_investor_panic",
-          "holdState": "investor reaches for a harder-to-see product"
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/crypto",
+          "holdState": "the portfolio becomes a speculative crypto warning as the foreign product's risk level becomes explicit"
         }
       ],
       "visualFingerprint": "CHAR_PROP|character_action|character_action|graphic|prop,actor|medium|none|none|none",
@@ -8269,7 +8533,7 @@
       "focalOccupancyTarget": 0.55,
       "beats": [
         {
-          "text": "được chơi xong sân nhà thì người ta đi",
+          "text": "Đây cũng là lý do",
           "importance": 0.9,
           "kind": "turn",
           "action": "reveal",
@@ -8341,7 +8605,7 @@
       "focalOccupancyTarget": 0.55,
       "beats": [
         {
-          "text": "một dọc nước nhưng mà nước nó lại tự tìm",
+          "text": "Càng chặn mạnh",
           "importance": 0.9,
           "kind": "turn",
           "action": "reveal",
@@ -8736,7 +9000,7 @@
       "focalOccupancyTarget": 0.56,
       "beats": [
         {
-          "text": "Tại vì là khi mà cả một hệ thống",
+          "text": "mỗi ngày",
           "importance": 0.9,
           "kind": "turn",
           "action": "reveal",
@@ -8810,13 +9074,13 @@
       "focalOccupancyTarget": 0.57,
       "beats": [
         {
-          "text": "Bây",
-          "importance": 0.85,
+          "text": "chả biết tương lai như nào",
+          "importance": 0.92,
           "kind": "turn",
-          "action": "swap_pose",
+          "action": "focus_actor",
           "targetSlot": "who",
           "targetAssetId": "characters/cat_sad",
-          "holdState": "the worker visibly absorbs the pressure"
+          "holdState": "the worker fills the frame as their future becomes uncertain"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -9428,6 +9692,15 @@
           "targetSlot": "prop",
           "targetAssetId": "finance/profit",
           "holdState": "the rebound becomes a tempting account profit"
+        },
+        {
+          "text": "thì những người dùng đoàn 7 lại cảm thấy",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/chart_up",
+          "holdState": "the rebound chart fills the frame as leveraged traders feel newly validated"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -9510,6 +9783,15 @@
           "targetSlot": "who",
           "targetAssetId": "characters/cat_explain",
           "holdState": "the win story shifts toward a correction"
+        },
+        {
+          "text": "trí mạng",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_sunglasses",
+          "holdState": "the self-proclaimed expert fills the frame as the false mastery lands"
         }
       ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -9794,14 +10076,14 @@
       "photoTreatment": "cutaway",
       "beats": [
         {
-          "text": "Nợ",
-          "importance": 0.85,
+          "text": "tài sản tăng nhanh hơn thu nhập, tiền rẻ",
+          "importance": 0.92,
           "kind": "turn",
           "action": "reveal",
           "targetSlot": "cutaway",
-          "targetAssetId": "backgrounds/finance_desk.png",
-          "targetLabel": "Áp lực tích tụ",
-          "holdState": "desk photo reveals the multi-year imbalance"
+          "targetAssetId": "backgrounds/evidence-document-pexels-33175657.jpg",
+          "targetLabel": "Tiền rẻ kéo dài",
+          "holdState": "a document cutaway persists as cheap money compounds the long imbalance"
         }
       ],
       "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|evidence|photo|prop|medium|none|none|cutaway",
@@ -10003,6 +10285,16 @@
           "targetAssetId": "backgrounds/market_monitor.jpg",
           "targetLabel": "Chưa có câu trả lời",
           "holdState": "the unresolved market chart persists after the question"
+        },
+        {
+          "text": "câu trả lời là cũng",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "targetAssetId": "backgrounds/evidence-device-pexels-8296993.jpg",
+          "targetLabel": "Vẫn chưa có lối thoát",
+          "holdState": "a device cutaway persists as awareness still fails to provide an exit"
         }
       ],
       "visualFingerprint": "QA_REVEAL|infographic|diagram|graphic||medium|none|none|none",
@@ -10058,10 +10350,10 @@
           "text": "liên tục rút vốn",
           "importance": 0.9,
           "kind": "turn",
-          "action": "swap_asset",
+          "action": "focus_asset",
           "targetSlot": "prop",
           "targetAssetId": "finance/money",
-          "holdState": "foreign capital outflow replaces the broad market tension"
+          "holdState": "foreign capital fills the frame as the market splits between outflow and retail buying"
         }
       ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -10386,14 +10678,22 @@
           "holdState": "host acknowledges the optimistic case"
         },
         {
-          "text": "ngành bán dẫn",
-          "importance": 0.9,
+          "text": "doanh nghiệp hàng đầu thế giới, vẫn có",
+          "importance": 0.92,
           "kind": "turn",
-          "action": "reveal",
-          "targetSlot": "cutaway",
-          "targetAssetId": "backgrounds/evidence-factory-pexels-21405378.jpg",
-          "targetLabel": "Năng lực bán dẫn và AI",
-          "holdState": "the semiconductor factory makes the optimistic industrial case concrete"
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_explain",
+          "holdState": "the host fills the frame as Korea's leading companies make the optimistic case concrete"
+        },
+        {
+          "text": "cái động lực tăng trưởng rất là mạnh",
+          "importance": 0.94,
+          "kind": "turn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "targetAssetId": "finance/company",
+          "holdState": "the company icon fills the frame as long-term growth becomes the final optimistic evidence"
         }
       ],
       "visualFingerprint": "TABLEAU|full_tableau|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -10530,13 +10830,13 @@
       "focalOccupancyTarget": 0.56,
       "beats": [
         {
-          "text": "Nhưng",
-          "importance": 0.85,
+          "text": "nợ hộ gia đình vẫn thuộc nhóm cao",
+          "importance": 0.92,
           "kind": "turn",
-          "action": "swap_pose",
+          "action": "focus_actor",
           "targetSlot": "who",
-          "targetAssetId": "characters/cat_sad",
-          "holdState": "risk returns beneath the optimism"
+          "targetAssetId": "characters/cat_think",
+          "holdState": "the worried host fills the frame as household debt remains among the world's highest"
         }
       ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
@@ -10612,14 +10912,14 @@
       "focalOccupancyTarget": 0.55,
       "beats": [
         {
-          "text": "thực thì lại phục hồi chậm hơn nhiều",
-          "importance": 0.9,
+          "text": "chất đầy đoàn bảy thì mọi cú sốc đều trở",
+          "importance": 0.94,
           "kind": "turn",
           "action": "reveal",
           "targetSlot": "cutaway",
-          "targetAssetId": "backgrounds/evidence-device-pexels-34862486.jpg",
-          "targetLabel": "Hệ thống nhạy cảm",
-          "holdState": "the trading floor persists as slow recovery amplifies every shock"
+          "targetAssetId": "backgrounds/evidence-document-pexels-8296974.jpg",
+          "targetLabel": "Hệ thống đầy đòn bẩy",
+          "holdState": "a document cutaway persists as leverage makes every shock more sensitive"
         }
       ],
       "visualFingerprint": "CAUSE_EFFECT|infographic|diagram|graphic|prop,prop|medium|none|none|none",
@@ -10682,14 +10982,12 @@
       "focalOccupancyTarget": 0.58,
       "beats": [
         {
-          "text": "xốc về lãi suất toàn cầu này, có thể là",
-          "importance": 0.9,
+          "text": "tâm lý thị trường đổi",
+          "importance": 0.92,
           "kind": "turn",
-          "action": "reveal",
-          "targetSlot": "cutaway",
-          "targetAssetId": "backgrounds/evidence-factory-pexels-21405378.jpg",
-          "targetLabel": "Cú sốc ngành chip",
-          "holdState": "the factory cutaway persists as the third shock channel lands"
+          "action": "advance",
+          "targetSlot": "next",
+          "holdState": "the final shock card arrives as market sentiment changes direction"
         }
       ],
       "visualFingerprint": "ICON_TRIPLE|infographic|diagram|graphic|prop,prop,prop|medium|none|none|none",
@@ -10831,6 +11129,17 @@
       "focalType": "character_action",
       "silentFrameTakeaway": "The host thanks the audience.",
       "focalOccupancyTarget": 0.48,
+      "beats": [
+        {
+          "text": "Đừng quên",
+          "importance": 0.92,
+          "kind": "turn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "targetAssetId": "characters/cat_happy",
+          "holdState": "the host closes with a clear audience call to action"
+        }
+      ],
       "visualFingerprint": "TABLEAU|character_action|character_action|stage|prop,prop,actor|medium|none|none|none",
       "assetRequests": [
         {

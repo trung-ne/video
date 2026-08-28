@@ -48,12 +48,72 @@ import {
   requiredAuthoredTransitions,
 } from "../src/engine/visualCadence";
 import { estimateStablePaintedRatio } from "../src/engine/compositionDensity";
+import { planSemanticChunks, qualityScopeForChunk } from "../src/types/chunk";
+import { createStageAttestation, verifyStageAttestation, writeStageAttestation, readStageAttestation, checksumArtifact } from "../src/engine/chunkAttestations";
 
 type Test = { name: string; run: () => void };
 const tests: Test[] = [];
 function test(name: string, run: () => void): void {
   tests.push({ name, run });
 }
+
+test("chunk planning partitions authored semantic sections with seam halos", () => {
+  const range = (startWord: number, endWord: number) => ({ startWord, endWord, quoteChecksum: `${startWord}-${endWord}` });
+  const storyboard: Storyboard = {
+    fps: 30, width: 1920, height: 1080, transcriptChecksum: "transcript", sections: [
+      { id: "hook", sourceRange: range(0, 4), thesis: "Shock", emotionalTurn: "alarm", energyCurve: "build", targetDurationSeconds: 60, treatmentSequence: ["full_tableau"] },
+      { id: "why", sourceRange: range(5, 9), thesis: "Why", emotionalTurn: "pressure", energyCurve: "sustain", targetDurationSeconds: 60, treatmentSequence: ["infographic"] },
+      { id: "close", sourceRange: range(10, 14), thesis: "Close", emotionalTurn: "release", energyCurve: "release", targetDurationSeconds: 60, treatmentSequence: ["photo_broll"] },
+    ],
+    scenes: [
+      { id: "s1", narration: "one", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "TABLEAU", sourceRange: range(0, 4) },
+      { id: "s2", narration: "two", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "TABLEAU", sourceRange: range(5, 9) },
+      { id: "s3", narration: "three", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "TABLEAU", sourceRange: range(10, 14) },
+    ],
+  };
+  const planned = planSemanticChunks(storyboard, { projectId: "fixture", storyboardChecksum: "storyboard", targetChunkSeconds: 120 });
+  assert.deepStrictEqual(planned.issues, []);
+  assert.strictEqual(planned.plan?.chunks.length, 2);
+  assert.deepStrictEqual(planned.plan?.chunks[0].sceneIds, ["s1", "s2"]);
+  const scope = qualityScopeForChunk(planned.plan!, planned.plan!.chunks[1].id);
+  assert.deepStrictEqual(scope, {
+    kind: "chunk", chunkId: planned.plan!.chunks[1].id, coreSceneIds: ["s3"], haloBeforeSceneIds: ["s2"], haloAfterSceneIds: [],
+  });
+});
+
+test("chunk planning refuses an oversized section rather than mechanically splitting it", () => {
+  const range = { startWord: 0, endWord: 4, quoteChecksum: "x" };
+  const result = planSemanticChunks({
+    fps: 30, width: 1920, height: 1080, sections: [{ id: "too-long", sourceRange: range, thesis: "x", emotionalTurn: "x", energyCurve: "build", targetDurationSeconds: 181, treatmentSequence: ["full_tableau"] }],
+    scenes: [{ id: "s", narration: "x", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "TABLEAU", sourceRange: range }],
+  }, { projectId: "fixture", storyboardChecksum: "x" });
+  assert.ok(result.issues.some((issue) => issue.code === "SECTION_TOO_LARGE"));
+});
+test("chunk attestations fail closed when a checked output changes", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-attestation-"));
+  try {
+    const output = path.join(temp, "timeline.json");
+    fs.writeFileSync(output, JSON.stringify({ scene: "first" }));
+    const attestation = createStageAttestation({
+      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: "source" },
+      outputHashes: { timeline: checksumArtifact(output) }, policyVersion: "v1", thresholdProfileHash: "profile",
+      passed: true, blockerCount: 0, majorCount: 0,
+    });
+    const record = path.join(temp, "attestation.json");
+    writeStageAttestation(record, attestation);
+    assert.deepStrictEqual(verifyStageAttestation(readStageAttestation(record), {
+      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: "source" },
+      outputPaths: { timeline: output }, policyVersion: "v1", thresholdProfileHash: "profile",
+    }), []);
+    fs.writeFileSync(output, JSON.stringify({ scene: "edited" }));
+    assert.ok(verifyStageAttestation(readStageAttestation(record), {
+      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: "source" },
+      outputPaths: { timeline: output }, policyVersion: "v1", thresholdProfileHash: "profile",
+    }).some((issue) => issue.code === "ATTESTATION_OUTPUT_DRIFT"));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
 
 test("authoring cadence rejects long narration without persistent semantic beats", () => {
   const narration = Array.from({ length: 57 }, (_, index) => `word${index}`).join(" ");
@@ -1362,6 +1422,15 @@ test("an authored cutaway is phrase-aligned, persistent and fully specified", ()
   assert.strictEqual(cutaway?.caption, "Market evidence");
   assert.strictEqual(cutaway?.delay, 120);
   assert.strictEqual(cutaway?.duration, undefined);
+
+  // Cutaways may use a logical production asset alias, not only a raw photo
+  // filename. The renderer resolves this to its generated PNG at load time.
+  storyboard.scenes[0].beats![0].targetAssetId = "finance/investment";
+  const logicalAssetTimeline = compileStoryboard(storyboard, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    words: [{ scene: "scene-001", word: "three", startSec: 4, endSec: 4.2 }],
+  });
+  assert.strictEqual(logicalAssetTimeline.scenes[0].frameBoxes?.find((frame) => frame.id === "scene-001-cutaway")?.contentSrc, "finance/investment");
 
   storyboard.scenes[0].beats![0].targetLabel = "";
   assert.throws(

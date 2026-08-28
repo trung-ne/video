@@ -11,15 +11,14 @@
     "sceneTimingSource": "durations",
     "beatTimingSource": "proportional",
     "beatTimingSummary": {
-      "aligned-words": 88,
-      "sentence-boundary": 5,
-      "source-range-proportional": 63,
-      "authored-beat": 2
+      "aligned-words": 94,
+      "sentence-boundary": 4,
+      "source-range-proportional": 60
     },
     "measuredSceneCount": 158,
     "audioSeconds": 1201.04,
     "audioSha256": "2b86c038514abeb5410f720c3eb6dca716e11461de6e4c9f72ef5c64fac05c19",
-    "storyboardChecksum": "85fa51d8e9e865be05ff3fe1b67239324901646a59c53760aecbe48af980934d",
+    "storyboardChecksum": "fff9bcbe1ff94c6353a408d34dd8d8c91e03b8a6cef7f750cbb408f3b3e64702",
     "durationsChecksum": "8dd1e3ac96ca54c827d523adfaaf2836a26b1a135a46316f32f88fb323855ef1",
     "wordsChecksum": "4a8460699f41a2732d8f0f08cb1082a1c3a36794928820e2d04be04e61a18743",
     "subtitleTiming": {
@@ -113,12 +112,14 @@
       "semanticAssetIds": [
         "characters/cat_surprised",
         "finance/trending_down",
-        "backgrounds/evidence-retail-pexels-12706241.jpg"
+        "backgrounds/evidence-retail-pexels-12706241.jpg",
+        "backgrounds/evidence-market-pexels-10653886.jpg",
+        "backgrounds/evidence-retail-pexels-17546505.jpg"
       ],
       "heroVisual": true,
       "focalType": "chart",
       "characterRequired": false,
-      "visualFingerprint": "STAT_REVEAL|evidence|graphic|1a:0p|RIGHT_BOTTOM|card:trending_down:1:1,frame:2:1|none|none",
+      "visualFingerprint": "STAT_REVEAL|evidence|graphic|1a:0p|RIGHT_BOTTOM|card:trending_down:1:1,frame:2:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "KOSPI falls 18 percent.",
       "focalOccupancyTarget": 0.46,
       "noveltyFromPrevious": [
@@ -168,7 +169,7 @@
           "enterDelay": 22,
           "emphasize": {
             "animation": "shake",
-            "delay": 121,
+            "delay": 166,
             "duration": 24
           }
         }
@@ -215,6 +216,30 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 143
+        },
+        {
+          "id": "fresh-001-cutaway",
+          "contentSrc": "backgrounds/evidence-market-pexels-10653886.jpg",
+          "caption": "Đầu tư thành đường tắt",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 317
+        },
+        {
+          "id": "fresh-001-cutaway",
+          "contentSrc": "backgrounds/evidence-retail-pexels-17546505.jpg",
+          "caption": "Đầu tư thành đường tắt",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 188
         }
       ]
     },
@@ -248,7 +273,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|character_action|stage:cafe|4a:1p|counter_left,counter_left,counter_left,counter_left,free|none|none|none",
+      "visualFingerprint": "TABLEAU|character_action|stage:cafe|5a:1p|counter_left,counter_left,counter_left,free,free,free|none|none|none",
       "silentFrameTakeaway": "Money chases stocks, crypto and homes.",
       "focalOccupancyTarget": 0.55,
       "noveltyFromPrevious": [
@@ -314,8 +339,8 @@
           "assetId": "fresh-002-prop",
           "src": "styles/d/generated-assets/icons/finance-investment.png",
           "position": {
-            "x": 0.76,
-            "y": 0.59
+            "x": 0.72,
+            "y": 0.68
           },
           "scale": 1.1,
           "motionPolicy": "fixed",
@@ -339,11 +364,17 @@
         {
           "assetId": "fresh-002-a",
           "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
-          "anchor": "counter_left",
           "enterAnimation": "none",
           "enterDelay": 185,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
           "clearPrevious": [
-            "fresh-002-a"
+            "fresh-002-a",
+            "fresh-002-prop"
           ]
         },
         {
@@ -354,6 +385,22 @@
           "enterDelay": 375,
           "clearPrevious": [
             "fresh-002-a"
+          ]
+        },
+        {
+          "assetId": "fresh-002-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "enterAnimation": "none",
+          "enterDelay": 313,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-002-a",
+            "fresh-002-prop"
           ]
         }
       ],
@@ -790,7 +837,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|3a:0p|LEFT,LEFT,RIGHT|bubble,bubble|none|none",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|4a:0p|LEFT,LEFT,RIGHT,free|bubble,bubble|none|none",
       "silentFrameTakeaway": "Fear of falling behind meets borrowed money.",
       "focalOccupancyTarget": 0.57,
       "noveltyFromPrevious": [
@@ -838,7 +885,7 @@
           "enterDelay": 0,
           "emphasize": {
             "animation": "shake",
-            "delay": 55,
+            "delay": 278,
             "duration": 24
           }
         },
@@ -859,6 +906,23 @@
           "enterDelay": 55,
           "clearPrevious": [
             "fresh-007-a"
+          ]
+        },
+        {
+          "assetId": "fresh-007-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 278,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-007-a",
+            "fresh-007-b"
           ]
         }
       ],
@@ -2120,7 +2184,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:shop_counter|2a:1p|counter_left,counter_left,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:shop_counter|2a:2p|counter_left,counter_left,free,free|none|none|none",
       "silentFrameTakeaway": "Miss the call and the shares are sold.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -2163,7 +2227,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 103,
             "duration": 24
           }
         },
@@ -2191,6 +2255,22 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-022-a"
+          ]
+        },
+        {
+          "assetId": "fresh-022-prop",
+          "src": "styles/d/generated-assets/icons/finance-expense.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 109,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-022-a",
+            "fresh-022-prop"
           ]
         }
       ],
@@ -2689,7 +2769,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|2a:2p|counter_left,counter_left,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|2a:3p|counter_left,counter_left,free,free,free|none|none|none",
       "silentFrameTakeaway": "Household debt is almost as large as GDP.",
       "focalOccupancyTarget": 0.55,
       "noveltyFromPrevious": [
@@ -2742,7 +2822,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 261,
             "duration": 24
           }
         },
@@ -2776,14 +2856,31 @@
           "assetId": "fresh-028-prop",
           "src": "styles/d/generated-assets/icons/finance-trending-up.png",
           "position": {
-            "x": 0.76,
-            "y": 0.59
+            "x": 0.5,
+            "y": 0.47
           },
-          "scale": 1.1,
+          "scale": 3.2,
           "motionPolicy": "fixed",
-          "enterDelay": 165,
+          "enterDelay": 75,
           "enterAnimation": "none",
           "clearPrevious": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-028-prop",
+          "src": "styles/d/generated-assets/icons/finance-debt.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 267,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-028-a",
             "fresh-028-prop"
           ]
         }
@@ -2990,7 +3087,7 @@
       ],
       "heroVisual": true,
       "focalType": "character_action",
-      "visualFingerprint": "DIALOGUE_QA|full_tableau|stage:dinner_table|2a:0p|seat_left,seat_right|bubble,bubble|none|none",
+      "visualFingerprint": "DIALOGUE_QA|full_tableau|stage:dinner_table|3a:0p|free,seat_left,seat_right|bubble,bubble|none|none",
       "silentFrameTakeaway": "A renter hands over a huge deposit.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -3038,9 +3135,9 @@
           "enterAnimation": "slideLeft",
           "enterDelay": 8,
           "emphasize": {
-            "animation": "pulse",
-            "delay": 0,
-            "duration": 22
+            "animation": "shake",
+            "delay": 88,
+            "duration": 24
           }
         },
         {
@@ -3050,6 +3147,23 @@
           "anchor": "seat_right",
           "enterAnimation": "slideRight",
           "enterDelay": 18
+        },
+        {
+          "assetId": "fresh-031-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 96,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ]
         }
       ],
       "texts": [],
@@ -3105,7 +3219,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:living_room|2a:1p|free,sofa_left,sofa_left|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:living_room|2a:2p|free,free,sofa_left,sofa_left|none|none|none",
       "silentFrameTakeaway": "The deposit can equal half a home.",
       "focalOccupancyTarget": 0.54,
       "noveltyFromPrevious": [
@@ -3146,7 +3260,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 114,
             "duration": 24
           }
         },
@@ -3174,6 +3288,22 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-032-a"
+          ]
+        },
+        {
+          "assetId": "fresh-032-prop",
+          "src": "styles/d/generated-assets/icons/finance-house.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 120,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-032-a",
+            "fresh-032-prop"
           ]
         }
       ],
@@ -3208,7 +3338,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:1p|LEFT,LEFT,RIGHT|none|none|none",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,free|none|none|none",
       "silentFrameTakeaway": "Renting needs a giant cash pile.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -3265,7 +3395,7 @@
           "enterDelay": 24,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 193,
             "duration": 24
           }
         },
@@ -3279,6 +3409,24 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-033-cat"
+          ]
+        },
+        {
+          "assetId": "fresh-033-prop",
+          "src": "styles/d/generated-assets/icons/finance-money.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Muốn thuê nhà phải có sẵn tiền lớn",
+          "enterDelay": 217,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-033-cat",
+            "fresh-033-prop"
           ]
         }
       ],
@@ -3550,7 +3698,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:1p|floor,floor,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:2p|floor,floor,free,free|none|none|none",
       "silentFrameTakeaway": "Young people start with fewer options.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -3598,7 +3746,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 139,
             "duration": 24
           }
         },
@@ -3626,6 +3774,22 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-036-a"
+          ]
+        },
+        {
+          "assetId": "fresh-036-prop",
+          "src": "styles/d/generated-assets/icons/finance-budget.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 145,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-036-a",
+            "fresh-036-prop"
           ]
         }
       ],
@@ -3657,12 +3821,13 @@
       "semanticAssetIds": [
         "backgrounds/home_study.png",
         "backgrounds/finance_desk.png",
-        "backgrounds/stock_chart.png"
+        "backgrounds/stock_chart.png",
+        "backgrounds/evidence-document-pexels-33175649.jpg"
       ],
       "heroVisual": true,
       "focalType": "evidence",
       "characterRequired": false,
-      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|graphic|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|document",
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|graphic|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|document",
       "silentFrameTakeaway": "Short contracts and part-time work hold income down.",
       "focalOccupancyTarget": 0.57,
       "noveltyFromPrevious": [
@@ -3754,6 +3919,18 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 214
+        },
+        {
+          "id": "fresh-037-cutaway",
+          "contentSrc": "backgrounds/evidence-document-pexels-33175649.jpg",
+          "caption": "Hợp đồng mong manh",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 99
         }
       ]
     },
@@ -3991,7 +4168,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|3a:1p|counter_left,counter_left,counter_left,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|4a:1p|counter_left,counter_left,counter_left,free,free|none|none|none",
       "silentFrameTakeaway": "The market looks like an escape route.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -4039,7 +4216,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 167,
+            "delay": 84,
             "duration": 24
           }
         },
@@ -4077,6 +4254,22 @@
           "enterDelay": 173,
           "clearPrevious": [
             "fresh-040-a"
+          ]
+        },
+        {
+          "assetId": "fresh-040-a",
+          "src": "styles/d/generated-assets/characters/cat_sunglasses.png",
+          "enterAnimation": "none",
+          "enterDelay": 90,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-040-a",
+            "fresh-040-prop"
           ]
         }
       ],
@@ -4319,18 +4512,19 @@
       },
       "visualRegister": "character_action",
       "visualGrammar": "SOLO",
-      "beatTimingSource": "source-range-proportional",
+      "beatTimingSource": "aligned-words",
       "semanticTakeaway": "The emotional driver has a clear name.",
       "semanticAction": "names",
       "semanticObject": "the fear of falling behind",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
         "characters/cat_sad",
-        "finance/expense"
+        "finance/expense",
+        "backgrounds/evidence-street-pexels-37319814.jpg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "SOLO|character_action|graphic|1a:0p|LEFT_MID|card:expense:2:1|none|none",
+      "visualFingerprint": "SOLO|character_action|graphic|1a:0p|LEFT_MID|card:expense:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "The fear is being left behind.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -4364,7 +4558,12 @@
           "src": "styles/d/generated-assets/characters/cat_sad.png",
           "slot": "LEFT_MID",
           "scale": 2.5,
-          "enterDelay": 0
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 131,
+            "duration": 24
+          }
         }
       ],
       "texts": [],
@@ -4381,6 +4580,20 @@
           "width": 1080,
           "height": 650,
           "delay": 12
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-043-cutaway",
+          "contentSrc": "backgrounds/evidence-street-pexels-37319814.jpg",
+          "caption": "Cảm giác bị bỏ lại",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 131
         }
       ]
     },
@@ -4408,12 +4621,13 @@
         "finance/house",
         "finance/chart_up",
         "finance/profit",
-        "backgrounds/urban_apartments.jpg"
+        "backgrounds/urban_apartments.jpg",
+        "backgrounds/evidence-street-pexels-37319834.jpg"
       ],
       "heroVisual": false,
       "focalType": "diagram",
       "characterRequired": false,
-      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:chart_up:2:1,card:house:1:1,card:profit:2:1,frame:2:1|none|none",
+      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:chart_up:2:1,card:house:1:1,card:profit:2:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Homes, assets and owners race ahead.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -4507,6 +4721,18 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 68
+        },
+        {
+          "id": "fresh-044-cutaway",
+          "contentSrc": "backgrounds/evidence-street-pexels-37319834.jpg",
+          "caption": "Đứng yên khi người khác giàu lên",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 201
         }
       ]
     },
@@ -4648,7 +4874,7 @@
       },
       "visualRegister": "character_action",
       "visualGrammar": "CHAR_PROP",
-      "beatTimingSource": "authored-beat",
+      "beatTimingSource": "aligned-words",
       "semanticTakeaway": "Pressure makes partial knowledge feel sufficient.",
       "semanticAction": "acts after",
       "semanticObject": "thin confidence",
@@ -4660,7 +4886,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:1p|LEFT,LEFT,RIGHT|none|none|none",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,free|none|none|none",
       "silentFrameTakeaway": "A little knowledge becomes a risky trade.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -4718,7 +4944,7 @@
           "enterDelay": 24,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 111,
             "duration": 24
           }
         },
@@ -4732,6 +4958,24 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-046-cat"
+          ]
+        },
+        {
+          "assetId": "fresh-046-prop",
+          "src": "styles/d/generated-assets/icons/props-book.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Đọc vài cuốn sách rồi lao vào",
+          "enterDelay": 135,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-046-cat",
+            "fresh-046-prop"
           ]
         }
       ],
@@ -4953,19 +5197,20 @@
       },
       "visualRegister": "photo_broll",
       "visualGrammar": "BEAT",
-      "beatTimingSource": "source-range-proportional",
+      "beatTimingSource": "aligned-words",
       "semanticTakeaway": "Individuals have unusual power over liquidity.",
       "semanticAction": "elevates",
       "semanticObject": "retail investors",
       "photoTreatment": "cutaway",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
+        "backgrounds/evidence-retail-pexels-4483608.jpg",
         "backgrounds/evidence-retail-pexels-17546505.jpg"
       ],
       "heroVisual": false,
       "focalType": "photo",
       "characterRequired": false,
-      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|none|none|cutaway",
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1|none|cutaway",
       "silentFrameTakeaway": "Retail investors dominate the Korean market.",
       "focalOccupancyTarget": 0.57,
       "noveltyFromPrevious": [
@@ -4993,7 +5238,21 @@
       "backgroundSrc": "backgrounds/evidence-retail-pexels-17546505.jpg",
       "clearPrevious": true,
       "entities": [],
-      "texts": []
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-049-cutaway",
+          "contentSrc": "backgrounds/evidence-retail-pexels-4483608.jpg",
+          "caption": "Cá nhân chi phối thanh khoản",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 102
+        }
+      ]
     },
     {
       "id": "fresh-050",
@@ -5230,7 +5489,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|2a:3p|counter_left,counter_left,free,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|2a:4p|counter_left,counter_left,free,free,free,free|none|none|none",
       "silentFrameTakeaway": "Retail once made two thirds of volume.",
       "focalOccupancyTarget": 0.54,
       "noveltyFromPrevious": [
@@ -5273,7 +5532,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 48,
+            "delay": 227,
             "duration": 24
           }
         },
@@ -5328,6 +5587,22 @@
           "scale": 3.2,
           "motionPolicy": "fixed",
           "enterDelay": 54,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-052-a",
+            "fresh-052-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-052-prop",
+          "src": "styles/d/generated-assets/icons/people-person.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 233,
           "enterAnimation": "none",
           "clearPrevious": [
             "fresh-052-a",
@@ -6057,7 +6332,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:classroom|2a:1p|board,board,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:classroom|2a:2p|board,board,free,free|none|none|none",
       "silentFrameTakeaway": "Crowd effects shape retail trading.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -6104,9 +6379,9 @@
           "enterAnimation": "fadeIn",
           "enterDelay": 6,
           "emphasize": {
-            "animation": "pulse",
-            "delay": 1,
-            "duration": 22
+            "animation": "shake",
+            "delay": 182,
+            "duration": 24
           }
         },
         {
@@ -6133,6 +6408,22 @@
           "enterDelay": 7,
           "clearPrevious": [
             "fresh-060-a"
+          ]
+        },
+        {
+          "assetId": "fresh-060-prop",
+          "src": "styles/d/generated-assets/icons/people-person.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 188,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-060-a",
+            "fresh-060-prop"
           ]
         }
       ],
@@ -6360,12 +6651,13 @@
       "semanticAssetIds": [
         "finance/profit",
         "finance/loss",
-        "backgrounds/evidence-market-pexels-28682356.jpg"
+        "backgrounds/evidence-market-pexels-28682356.jpg",
+        "backgrounds/evidence-device-pexels-34862486.jpg"
       ],
       "heroVisual": false,
       "focalType": "diagram",
       "characterRequired": false,
-      "visualFingerprint": "COMPARE|infographic|graphic|0a:0p|none|card:loss:2:1,card:profit:1:1,frame:2:1|none|none",
+      "visualFingerprint": "COMPARE|infographic|graphic|0a:0p|none|card:loss:2:1,card:profit:1:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Winners are sold; losers are held.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -6445,6 +6737,18 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 54
+        },
+        {
+          "id": "fresh-063-cutaway",
+          "contentSrc": "backgrounds/evidence-device-pexels-34862486.jpg",
+          "caption": "Chờ giá quay đầu",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 197
         }
       ]
     },
@@ -6584,7 +6888,7 @@
       ],
       "heroVisual": true,
       "focalType": "character_action",
-      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:1p|LEFT,LEFT,RIGHT|none|none|none",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,free|none|none|none",
       "silentFrameTakeaway": "Margin magnifies every behavioral mistake.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -6642,7 +6946,7 @@
           "enterDelay": 24,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 55,
             "duration": 24
           }
         },
@@ -6656,6 +6960,24 @@
           "enterDelay": 3,
           "clearPrevious": [
             "fresh-065-cat"
+          ]
+        },
+        {
+          "assetId": "fresh-065-prop",
+          "src": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Margin làm sai lầm cực đoan hơn",
+          "enterDelay": 79,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-065-cat",
+            "fresh-065-prop"
           ]
         }
       ],
@@ -6689,7 +7011,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:library|2a:1p|free,table_left,table_left|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:library|2a:2p|free,free,table_left,table_left|none|none|none",
       "silentFrameTakeaway": "A small margin cohort generates large turnover.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -6737,7 +7059,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 206,
             "duration": 24
           }
         },
@@ -6765,6 +7087,22 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-066-a"
+          ]
+        },
+        {
+          "assetId": "fresh-066-prop",
+          "src": "styles/d/generated-assets/icons/finance-exchange.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 212,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-066-a",
+            "fresh-066-prop"
           ]
         }
       ],
@@ -6796,12 +7134,13 @@
         "finance/exchange",
         "finance/trending_up",
         "finance/portfolio",
-        "backgrounds/trading_workstation.jpg"
+        "backgrounds/trading_workstation.jpg",
+        "backgrounds/office_trading.jpg"
       ],
       "heroVisual": false,
       "focalType": "diagram",
       "characterRequired": false,
-      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:exchange:1:1,card:portfolio:2:1,card:trending_up:2:1,frame:2:1|none|none",
+      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:exchange:1:1,card:portfolio:2:1,card:trending_up:2:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Margin users trade often, volatile and concentrated.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -6889,6 +7228,18 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 50
+        },
+        {
+          "id": "fresh-067-cutaway",
+          "contentSrc": "styles/d/generated-backgrounds/office_trading.jpg",
+          "caption": "Danh mục ngày càng tập trung",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 168
         }
       ]
     },
@@ -7737,7 +8088,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:2p|floor,floor,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:3p|floor,floor,free,free,free|none|none|none",
       "silentFrameTakeaway": "The home is out of reach.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -7790,7 +8141,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 144,
+            "delay": 155,
             "duration": 24
           }
         },
@@ -7832,6 +8183,22 @@
           "enterDelay": 150,
           "enterAnimation": "none",
           "clearPrevious": [
+            "fresh-077-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-077-prop",
+          "src": "styles/d/generated-assets/icons/finance-house.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 161,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-077-a",
             "fresh-077-prop"
           ]
         }
@@ -7935,18 +8302,19 @@
       },
       "visualRegister": "framebox",
       "visualGrammar": "FRAMEBOX",
-      "beatTimingSource": "source-range-proportional",
+      "beatTimingSource": "aligned-words",
       "semanticTakeaway": "Participation requires almost no physical barrier.",
       "semanticAction": "opens",
       "semanticObject": "a market trade",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
-        "finance/exchange"
+        "finance/exchange",
+        "finance/investment"
       ],
       "heroVisual": true,
       "focalType": "evidence",
       "characterRequired": false,
-      "visualFingerprint": "FRAMEBOX|framebox|graphic|0a:0p|none|frame:2:1|none|none",
+      "visualFingerprint": "FRAMEBOX|framebox|graphic|0a:0p|none|frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "A trade fits in a phone tap.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -7987,6 +8355,18 @@
           },
           "width": 1550,
           "delay": 0
+        },
+        {
+          "id": "fresh-079-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-investment.png",
+          "caption": "Một cú chạm vào thị trường",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 55
         }
       ]
     },
@@ -8477,7 +8857,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:office_desk|2a:1p|desk,desk,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:office_desk|2a:2p|desk,desk,free,free|none|none|none",
       "silentFrameTakeaway": "Governance concerns weigh on valuation.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -8519,7 +8899,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 163,
             "duration": 24
           }
         },
@@ -8547,6 +8927,22 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-086-a"
+          ]
+        },
+        {
+          "assetId": "fresh-086-prop",
+          "src": "styles/d/generated-assets/icons/finance-company.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 169,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-086-a",
+            "fresh-086-prop"
           ]
         }
       ],
@@ -9087,7 +9483,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "DIALOGUE_QA|character_action|stage:bank_interior|2a:0p|counter_left,counter_right|bubble,bubble|none|none",
+      "visualFingerprint": "DIALOGUE_QA|character_action|stage:bank_interior|3a:0p|counter_left,counter_right,free|bubble,bubble|none|none",
       "silentFrameTakeaway": "Retail sees an unfair game.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -9131,7 +9527,7 @@
           "enterDelay": 8,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 180,
             "duration": 24
           }
         },
@@ -9142,6 +9538,23 @@
           "anchor": "counter_right",
           "enterAnimation": "slideRight",
           "enterDelay": 18
+        },
+        {
+          "assetId": "fresh-093-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 188,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-093-a",
+            "fresh-093-b"
+          ]
         }
       ],
       "texts": [],
@@ -9264,11 +9677,12 @@
         "ui/arrow_right",
         "finance/budget",
         "finance/money",
-        "backgrounds/evidence-document-pexels-8296970.jpg"
+        "backgrounds/evidence-document-pexels-8296970.jpg",
+        "backgrounds/money_counting.jpg"
       ],
       "heroVisual": true,
       "focalType": "diagram",
-      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:budget:1:1,card:money:2:1,frame:2:1|none|none",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:budget:1:1,card:money:2:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Distrust makes investors seek fast money.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -9319,7 +9733,7 @@
           "enterDelay": 28,
           "emphasize": {
             "animation": "shake",
-            "delay": 36,
+            "delay": 165,
             "duration": 24
           }
         }
@@ -9365,6 +9779,18 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 64
+        },
+        {
+          "id": "fresh-095-cutaway",
+          "contentSrc": "styles/d/generated-backgrounds/money_counting.jpg",
+          "caption": "Kiếm tiền trước khi bị bỏ lại",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 193
         }
       ]
     },
@@ -9392,12 +9818,12 @@
         "characters/cat_explain",
         "finance/stock",
         "characters/cat_surprised",
-        "props/computer_desk",
+        "characters/cat_investor_phone",
         "assets/scenes/cafe.svg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|character_action|stage:cafe|2a:2p|counter_left,counter_left,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|character_action|stage:cafe|3a:1p|counter_left,counter_left,counter_left,free|none|none|none",
       "silentFrameTakeaway": "The final problem: trading is too easy.",
       "focalOccupancyTarget": 0.47,
       "noveltyFromPrevious": [
@@ -9445,7 +9871,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 81,
+            "delay": 140,
             "duration": 24
           }
         },
@@ -9476,18 +9902,13 @@
           ]
         },
         {
-          "assetId": "fresh-096-prop",
-          "src": "styles/d/generated-assets/icons/props-computer-desk.png",
-          "position": {
-            "x": 0.76,
-            "y": 0.59
-          },
-          "scale": 1.1,
-          "motionPolicy": "fixed",
-          "enterDelay": 87,
+          "assetId": "fresh-096-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "anchor": "counter_left",
           "enterAnimation": "none",
+          "enterDelay": 146,
           "clearPrevious": [
-            "fresh-096-prop"
+            "fresh-096-a"
           ]
         }
       ],
@@ -9833,7 +10254,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 154,
+            "delay": 86,
             "duration": 24
           }
         },
@@ -9867,14 +10288,15 @@
           "assetId": "fresh-100-prop",
           "src": "styles/d/generated-assets/icons/finance-chart-up.png",
           "position": {
-            "x": 0.76,
-            "y": 0.59
+            "x": 0.5,
+            "y": 0.47
           },
-          "scale": 1.1,
+          "scale": 3.2,
           "motionPolicy": "fixed",
-          "enterDelay": 160,
+          "enterDelay": 92,
           "enterAnimation": "none",
           "clearPrevious": [
+            "fresh-100-a",
             "fresh-100-prop"
           ]
         }
@@ -10683,7 +11105,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:3p|LEFT,LEFT,RIGHT,RIGHT,free|none|none|none",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:4p|LEFT,LEFT,RIGHT,RIGHT,RIGHT,free|none|none|none",
       "silentFrameTakeaway": "CFD appears as a new leverage door.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -10758,6 +11180,19 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-111-cat"
+          ]
+        },
+        {
+          "assetId": "fresh-111-prop",
+          "src": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "Một sản phẩm đáp ứng nhu cầu: CFD",
+          "enterDelay": 129,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-111-prop"
           ]
         },
         {
@@ -11035,7 +11470,7 @@
       ],
       "heroVisual": true,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:classroom|2a:2p|board,board,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:classroom|3a:2p|board,board,free,free,free|none|none|none",
       "silentFrameTakeaway": "The data hides retail participants.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -11088,7 +11523,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 224,
+            "delay": 142,
             "duration": 24
           }
         },
@@ -11130,6 +11565,22 @@
           "enterDelay": 230,
           "enterAnimation": "none",
           "clearPrevious": [
+            "fresh-114-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-114-a",
+          "src": "styles/d/generated-assets/characters/cat_police.png",
+          "enterAnimation": "none",
+          "enterDelay": 148,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-114-a",
             "fresh-114-prop"
           ]
         }
@@ -11716,11 +12167,11 @@
       "semanticAssetIds": [
         "characters/cat_investor_phone",
         "finance/portfolio",
-        "characters/cat_investor_panic"
+        "finance/crypto"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:1p|LEFT,LEFT,RIGHT|none|none|none",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|1a:2p|LEFT,RIGHT,RIGHT|none|none|none",
       "silentFrameTakeaway": "Risk moves into complex products.",
       "focalOccupancyTarget": 0.5,
       "noveltyFromPrevious": [
@@ -11778,20 +12229,21 @@
           "enterDelay": 24,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 66,
             "duration": 24
           }
         },
         {
-          "assetId": "fresh-120-cat",
-          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
-          "slot": "LEFT",
-          "scale": 2.8,
-          "circle": "#D7E8E6",
+          "assetId": "fresh-120-prop",
+          "src": "styles/d/generated-assets/icons/finance-crypto.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "Sản phẩm rủi ro cao, khó giám sát",
+          "enterDelay": 90,
           "enterAnimation": "none",
-          "enterDelay": 2,
           "clearPrevious": [
-            "fresh-120-cat"
+            "fresh-120-prop"
           ]
         }
       ],
@@ -11903,7 +12355,7 @@
           },
           "width": 1550,
           "objectFit": "cover",
-          "delay": 38
+          "delay": 133
         }
       ]
     },
@@ -12003,7 +12455,7 @@
           },
           "width": 1550,
           "objectFit": "cover",
-          "delay": 33
+          "delay": 152
         }
       ]
     },
@@ -12506,7 +12958,7 @@
           "enterDelay": 28,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 61,
             "duration": 24
           }
         }
@@ -12551,7 +13003,7 @@
           },
           "width": 1550,
           "objectFit": "cover",
-          "delay": 2
+          "delay": 89
         }
       ]
     },
@@ -12570,7 +13022,7 @@
       },
       "visualRegister": "full_tableau",
       "visualGrammar": "TABLEAU",
-      "beatTimingSource": "authored-beat",
+      "beatTimingSource": "aligned-words",
       "semanticTakeaway": "Standing outside the market is emotionally difficult.",
       "semanticAction": "faces",
       "semanticObject": "unaffordable adulthood",
@@ -12584,7 +13036,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:kitchen|2a:1p|counter_left,counter_left,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:kitchen|2a:1p|counter_left,free,free|none|none|none",
       "silentFrameTakeaway": "A 28-year-old faces unstable work and expensive homes.",
       "focalOccupancyTarget": 0.57,
       "noveltyFromPrevious": [
@@ -12627,7 +13079,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 200,
             "duration": 24
           }
         },
@@ -12650,11 +13102,17 @@
         {
           "assetId": "fresh-129-a",
           "src": "styles/d/generated-assets/characters/cat_sad.png",
-          "anchor": "counter_left",
           "enterAnimation": "none",
-          "enterDelay": 2,
+          "enterDelay": 206,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
           "clearPrevious": [
-            "fresh-129-a"
+            "fresh-129-a",
+            "fresh-129-prop"
           ]
         }
       ],
@@ -13407,7 +13865,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|2a:2p|counter_left,counter_left,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|2a:3p|counter_left,counter_left,free,free,free|none|none|none",
       "silentFrameTakeaway": "A rebound makes leverage feel right.",
       "focalOccupancyTarget": 0.54,
       "noveltyFromPrevious": [
@@ -13455,7 +13913,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 257,
+            "delay": 69,
             "duration": 24
           }
         },
@@ -13499,6 +13957,22 @@
           "clearPrevious": [
             "fresh-138-prop"
           ]
+        },
+        {
+          "assetId": "fresh-138-prop",
+          "src": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 75,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-138-a",
+            "fresh-138-prop"
+          ]
         }
       ],
       "texts": [],
@@ -13533,7 +14007,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|character_action|stage:rooftop_night|2a:1p|free,stand_left,stand_left|none|none|none",
+      "visualFingerprint": "TABLEAU|character_action|stage:rooftop_night|3a:1p|free,free,stand_left,stand_left|none|none|none",
       "silentFrameTakeaway": "A win becomes false mastery.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -13580,7 +14054,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 175,
             "duration": 24
           }
         },
@@ -13608,6 +14082,22 @@
           "enterDelay": 2,
           "clearPrevious": [
             "fresh-139-a"
+          ]
+        },
+        {
+          "assetId": "fresh-139-a",
+          "src": "styles/d/generated-assets/characters/cat_sunglasses.png",
+          "enterAnimation": "none",
+          "enterDelay": 181,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-139-a",
+            "fresh-139-prop"
           ]
         }
       ],
@@ -13970,6 +14460,7 @@
       "photoTreatment": "cutaway",
       "assetResolutionNotes": [],
       "semanticAssetIds": [
+        "backgrounds/evidence-document-pexels-33175657.jpg",
         "backgrounds/finance_desk.png"
       ],
       "heroVisual": false,
@@ -14012,15 +14503,15 @@
       "frameBoxes": [
         {
           "id": "fresh-143-cutaway",
-          "contentSrc": "styles/d/generated-backgrounds/finance_desk.png",
-          "caption": "Áp lực tích tụ",
+          "contentSrc": "backgrounds/evidence-document-pexels-33175657.jpg",
+          "caption": "Tiền rẻ kéo dài",
           "position": {
             "x": 0.5,
             "y": 0.4
           },
           "width": 1550,
           "objectFit": "cover",
-          "delay": 4
+          "delay": 68
         }
       ]
     },
@@ -14236,11 +14727,12 @@
       "assetResolutionNotes": [],
       "semanticAssetIds": [
         "characters/cat_think",
-        "backgrounds/market_monitor.jpg"
+        "backgrounds/market_monitor.jpg",
+        "backgrounds/evidence-device-pexels-8296993.jpg"
       ],
       "heroVisual": false,
       "focalType": "diagram",
-      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:none:1:1,card:none:1:1,frame:2:1|none|none",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:none:1:1,card:none:1:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Knowing danger does not end the game.",
       "focalOccupancyTarget": 0.55,
       "noveltyFromPrevious": [
@@ -14286,7 +14778,7 @@
           "enterDelay": 8,
           "emphasize": {
             "animation": "shake",
-            "delay": 36,
+            "delay": 238,
             "duration": 24
           }
         },
@@ -14342,6 +14834,18 @@
           "width": 1550,
           "objectFit": "cover",
           "delay": 44
+        },
+        {
+          "id": "fresh-146-cutaway",
+          "contentSrc": "backgrounds/evidence-device-pexels-8296993.jpg",
+          "caption": "Vẫn chưa có lối thoát",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 246
         }
       ]
     },
@@ -14456,14 +14960,15 @@
           "assetId": "fresh-147-prop",
           "src": "styles/d/generated-assets/icons/finance-money.png",
           "position": {
-            "x": 0.76,
-            "y": 0.59
+            "x": 0.5,
+            "y": 0.47
           },
-          "scale": 1.1,
+          "scale": 3.2,
           "motionPolicy": "fixed",
           "enterDelay": 236,
           "enterAnimation": "none",
           "clearPrevious": [
+            "fresh-147-a",
             "fresh-147-prop"
           ]
         }
@@ -14795,12 +15300,11 @@
         "characters/cat_explain",
         "finance/company",
         "characters/cat_surprised",
-        "backgrounds/evidence-factory-pexels-21405378.jpg",
         "assets/scenes/office_desk.svg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:office_desk|2a:1p|desk,desk,free|frame:2:1|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:office_desk|3a:2p|desk,desk,free,free,free|none|none|none",
       "silentFrameTakeaway": "Korea still has genuine long-term strengths.",
       "focalOccupancyTarget": 0.55,
       "noveltyFromPrevious": [
@@ -14853,7 +15357,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 226,
+            "delay": 301,
             "duration": 24
           }
         },
@@ -14882,25 +15386,43 @@
           "clearPrevious": [
             "fresh-152-a"
           ]
+        },
+        {
+          "assetId": "fresh-152-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "enterAnimation": "none",
+          "enterDelay": 176,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-152-a",
+            "fresh-152-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-152-prop",
+          "src": "styles/d/generated-assets/icons/finance-company.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 307,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-152-a",
+            "fresh-152-prop"
+          ]
         }
       ],
       "texts": [],
       "speechBubbles": [],
-      "cards": [],
-      "frameBoxes": [
-        {
-          "id": "fresh-152-cutaway",
-          "contentSrc": "backgrounds/evidence-factory-pexels-21405378.jpg",
-          "caption": "Năng lực bán dẫn và AI",
-          "position": {
-            "x": 0.5,
-            "y": 0.4
-          },
-          "width": 1550,
-          "objectFit": "cover",
-          "delay": 232
-        }
-      ]
+      "cards": []
     },
     {
       "id": "fresh-153",
@@ -15023,12 +15545,11 @@
       "semanticAssetIds": [
         "characters/cat_think",
         "finance/debt",
-        "characters/cat_sad",
         "assets/scenes/office_desk.svg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|character_action|stage:office_desk|2a:1p|desk,desk,free|none|none|none",
+      "visualFingerprint": "TABLEAU|character_action|stage:office_desk|2a:1p|desk,free,free|none|none|none",
       "silentFrameTakeaway": "High debt and leverage remain below the recovery case.",
       "focalOccupancyTarget": 0.56,
       "noveltyFromPrevious": [
@@ -15071,7 +15592,7 @@
           "enterDelay": 6,
           "emphasize": {
             "animation": "shake",
-            "delay": 0,
+            "delay": 158,
             "duration": 24
           }
         },
@@ -15093,12 +15614,18 @@
         },
         {
           "assetId": "fresh-154-a",
-          "src": "styles/d/generated-assets/characters/cat_sad.png",
-          "anchor": "desk",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
           "enterAnimation": "none",
-          "enterDelay": 2,
+          "enterDelay": 164,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
           "clearPrevious": [
-            "fresh-154-a"
+            "fresh-154-a",
+            "fresh-154-prop"
           ]
         }
       ],
@@ -15130,7 +15657,7 @@
         "ui/arrow_right",
         "finance/expense",
         "finance/warning",
-        "backgrounds/evidence-device-pexels-34862486.jpg"
+        "backgrounds/evidence-document-pexels-8296974.jpg"
       ],
       "heroVisual": false,
       "focalType": "diagram",
@@ -15185,7 +15712,7 @@
           "enterDelay": 28,
           "emphasize": {
             "animation": "shake",
-            "delay": 9,
+            "delay": 149,
             "duration": 24
           }
         }
@@ -15222,15 +15749,15 @@
       "frameBoxes": [
         {
           "id": "fresh-155-cutaway",
-          "contentSrc": "backgrounds/evidence-device-pexels-34862486.jpg",
-          "caption": "Hệ thống nhạy cảm",
+          "contentSrc": "backgrounds/evidence-document-pexels-8296974.jpg",
+          "caption": "Hệ thống đầy đòn bẩy",
           "position": {
             "x": 0.5,
             "y": 0.4
           },
           "width": 1550,
           "objectFit": "cover",
-          "delay": 37
+          "delay": 177
         }
       ]
     },
@@ -15257,12 +15784,11 @@
       "semanticAssetIds": [
         "finance/interest_rate",
         "finance/warning",
-        "finance/company",
-        "backgrounds/evidence-factory-pexels-21405378.jpg"
+        "finance/company"
       ],
       "heroVisual": true,
       "focalType": "diagram",
-      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:company:2:1,card:interest_rate:1:1,card:warning:2:1,frame:2:1|none|none",
+      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:company:2:1,card:interest_rate:1:1,card:warning:2:1|none|none",
       "silentFrameTakeaway": "Rates, geopolitics and chips can all trigger stress.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -15326,7 +15852,7 @@
           "label": "Địa chính trị",
           "width": 500,
           "height": 500,
-          "delay": 22
+          "delay": 213
         },
         {
           "id": "fresh-156-i2",
@@ -15340,20 +15866,6 @@
           "width": 500,
           "height": 500,
           "delay": 36
-        }
-      ],
-      "frameBoxes": [
-        {
-          "id": "fresh-156-cutaway",
-          "contentSrc": "backgrounds/evidence-factory-pexels-21405378.jpg",
-          "caption": "Cú sốc ngành chip",
-          "position": {
-            "x": 0.5,
-            "y": 0.4
-          },
-          "width": 1550,
-          "objectFit": "cover",
-          "delay": 22
         }
       ]
     },
@@ -15484,7 +15996,7 @@
       },
       "visualRegister": "character_action",
       "visualGrammar": "TABLEAU",
-      "beatTimingSource": "sentence-boundary",
+      "beatTimingSource": "aligned-words",
       "semanticTakeaway": "The investigation closes without a false certainty.",
       "semanticAction": "thanks",
       "semanticObject": "the audience",
@@ -15492,11 +16004,12 @@
       "semanticAssetIds": [
         "characters/cat_explain",
         "props/book",
+        "characters/cat_happy",
         "assets/scenes/library.svg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|character_action|stage:library|1a:1p|free,table|none|none|none",
+      "visualFingerprint": "TABLEAU|character_action|stage:library|2a:1p|free,table,table|none|none|none",
       "silentFrameTakeaway": "The host thanks the audience.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -15529,7 +16042,12 @@
           "src": "styles/d/generated-assets/characters/cat_explain.png",
           "anchor": "table",
           "enterAnimation": "fadeIn",
-          "enterDelay": 6
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 90,
+            "duration": 24
+          }
         },
         {
           "assetId": "fresh-158-prop",
@@ -15549,7 +16067,7 @@
         },
         {
           "assetId": "fresh-158-a",
-          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "src": "styles/d/generated-assets/characters/cat_happy.png",
           "anchor": "table",
           "enterAnimation": "none",
           "enterDelay": 96,
