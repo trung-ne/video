@@ -1,99 +1,132 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "reference": "refer/meo.mp4",
   "referenceSha256": "fd01a0b60b164433cd432205ea96f5530437cff33d73f0d26b19c1e7e23817c0",
+  "measurementSpecVersion": "visual-audit-multiphase-v2",
+  "measurementSpecHash": "4185e245a99b35face67f19d9af70bd86e267f5d2a310c3dc584e535692b09a5",
+  "measurementSpec": {
+    "schemaVersion": 1,
+    "metricVersion": "visual-audit-multiphase-v2",
+    "sampling": {
+      "intervalSeconds": 5.0,
+      "phaseOffsetsSeconds": [
+        0.0,
+        2.5
+      ],
+      "timestampRule": "offset + n*interval, with 0 <= timestamp < audited duration",
+      "timestampPrecisionDecimals": 9,
+      "maximumPhaseBatches": 8,
+      "frameSelection": "phase trim, zero-based PTS, fixed-rate nearest-frame sampling",
+      "pairing": "chronological adjacent samples across all phases"
+    },
+    "contentMask": {
+      "includedTopRatio": 0.76,
+      "excludedRegion": "subtitle band from includedTopRatio through frame bottom"
+    },
+    "frameMetrics": {
+      "analysisSize": [
+        160,
+        68
+      ],
+      "contactSize": [
+        320,
+        180
+      ],
+      "scalarOwnership": "core frames only for chunk scope; all frames for global scope"
+    },
+    "temporalMetrics": {
+      "thumbnailSize": [
+        32,
+        14
+      ],
+      "difference": "mean absolute normalized grayscale pixel difference",
+      "nearDuplicatePixelThreshold": 0.025,
+      "ratioNormalization": "mean duplicate incidence weighted by actual pair delta / nominal interval",
+      "pairDelta": "actual destination timestamp minus source timestamp",
+      "pairOwnership": "destination core scene for chunk scope",
+      "seamClassification": "source and destination scene ids differ",
+      "staticRunDuration": "sum actual edge deltas plus the initial sample span"
+    },
+    "scopeRules": {
+      "global": {
+        "distributionGates": true,
+        "localDetailAndTemporalGates": true
+      },
+      "chunk": {
+        "distributionGates": false,
+        "localDetailAndTemporalGates": true,
+        "seamPairsReportedAndGatedSeparately": true,
+        "lastCoreToNextHaloOwnedByNextChunk": true
+      }
+    },
+    "minimumEvidence": {
+      "scalarCoreFrames": 2,
+      "ownedTemporalPairs": 1,
+      "sameScenePairsWhenTimelinePresent": 1,
+      "seamPairsWhenExpected": 1
+    }
+  },
   "sampleSeconds": 5.0,
   "offsetsSeconds": [
     0.0,
-    1.7,
-    3.3
+    2.5
   ],
-  "legacyBaseline": {
-    "definition": "single offset at 0 seconds",
-    "flatFrameRatio": 0.4564,
-    "edgeDensity": 0.1938,
+  "expectedDurationSeconds": 1200.566633,
+  "durationSource": "probed-by-reference-audit",
+  "pooledBaseline": {
+    "definition": "one canonical chronological pooled multiphase measurement",
+    "flatFrameRatio": 0.4532,
+    "edgeDensity": 0.192,
     "nearDuplicateRatio": 0.2125,
-    "longestNearDuplicateRunSeconds": 15.0,
-    "saturation": 0.1832,
-    "nearWhiteMean": 0.4497,
-    "whiteDominantRatio": 0.4357
+    "longestNearDuplicateRunSeconds": 17.5,
+    "saturation": 0.1813,
+    "nearWhiteMean": 0.4464,
+    "whiteDominantRatio": 0.4304
   },
   "robustBaseline": {
-    "definition": "mean/variance/min/max across phase offsets",
-    "perOffset": [
-      {
-        "offsetSeconds": 0.0,
-        "flatFrameRatio": 0.4564,
-        "edgeDensity": 0.1938,
-        "nearDuplicateRatio": 0.2125,
-        "longestNearDuplicateRunSeconds": 15.0,
-        "saturation": 0.1832,
-        "nearWhiteMean": 0.4497,
-        "whiteDominantRatio": 0.4357
-      },
-      {
-        "offsetSeconds": 1.7,
-        "flatFrameRatio": 0.4583,
-        "edgeDensity": 0.1955,
-        "nearDuplicateRatio": 0.205,
-        "longestNearDuplicateRunSeconds": 15.0,
-        "saturation": 0.1832,
-        "nearWhiteMean": 0.4513,
-        "whiteDominantRatio": 0.4417
-      },
-      {
-        "offsetSeconds": 3.3,
-        "flatFrameRatio": 0.4583,
-        "edgeDensity": 0.1928,
-        "nearDuplicateRatio": 0.1757,
-        "longestNearDuplicateRunSeconds": 15.0,
-        "saturation": 0.177,
-        "nearWhiteMean": 0.4534,
-        "whiteDominantRatio": 0.4375
-      }
-    ],
+    "definition": "compatibility summary of one canonical pooled multiphase measurement",
     "metrics": {
       "flatFrameRatio": {
-        "mean": 0.4577,
-        "variance": 1e-06,
-        "min": 0.4564,
-        "max": 0.4583
+        "mean": 0.4532,
+        "variance": 0.0,
+        "min": 0.4532,
+        "max": 0.4532
       },
       "edgeDensity": {
-        "mean": 0.194,
-        "variance": 1e-06,
-        "min": 0.1928,
-        "max": 0.1955
+        "mean": 0.192,
+        "variance": 0.0,
+        "min": 0.192,
+        "max": 0.192
       },
       "nearDuplicateRatio": {
-        "mean": 0.1977,
-        "variance": 0.000252,
-        "min": 0.1757,
+        "mean": 0.2125,
+        "variance": 0.0,
+        "min": 0.2125,
         "max": 0.2125
       },
       "longestNearDuplicateRunSeconds": {
-        "mean": 15.0,
+        "mean": 17.5,
         "variance": 0.0,
-        "min": 15.0,
-        "max": 15.0
+        "min": 17.5,
+        "max": 17.5
       },
       "saturation": {
-        "mean": 0.1811,
-        "variance": 9e-06,
-        "min": 0.177,
-        "max": 0.1832
+        "mean": 0.1813,
+        "variance": 0.0,
+        "min": 0.1813,
+        "max": 0.1813
       },
       "nearWhiteMean": {
-        "mean": 0.4515,
-        "variance": 2e-06,
-        "min": 0.4497,
-        "max": 0.4534
+        "mean": 0.4464,
+        "variance": 0.0,
+        "min": 0.4464,
+        "max": 0.4464
       },
       "whiteDominantRatio": {
-        "mean": 0.4383,
-        "variance": 6e-06,
-        "min": 0.4357,
-        "max": 0.4417
+        "mean": 0.4304,
+        "variance": 0.0,
+        "min": 0.4304,
+        "max": 0.4304
       }
     }
   }

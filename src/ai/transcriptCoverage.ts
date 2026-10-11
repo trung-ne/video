@@ -25,9 +25,27 @@ export function checksumText(value: string): string {
   return createHash("sha256").update(value.normalize("NFC"), "utf8").digest("hex");
 }
 
-/** Stable digest for JSON artifacts. Formatting and line endings do not affect it. */
+function canonicalJson(value: unknown): string {
+  if (value === null) return "null";
+  if (typeof value === "string" || typeof value === "boolean") return JSON.stringify(value);
+  if (typeof value === "number") return Number.isFinite(value) ? JSON.stringify(value) : "null";
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => item === undefined ? "null" : canonicalJson(item)).join(",")}]`;
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const entries = Object.keys(record)
+      .filter((key) => record[key] !== undefined)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`);
+    return `{${entries.join(",")}}`;
+  }
+  return "null";
+}
+
+/** Stable digest for JSON artifacts. Formatting, line endings, and object key order do not affect it. */
 export function checksumJson(value: unknown): string {
-  return checksumText(JSON.stringify(value));
+  return checksumText(canonicalJson(value));
 }
 
 export function indexTranscript(transcript: string): IndexedWord[] {

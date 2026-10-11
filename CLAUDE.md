@@ -86,7 +86,7 @@ video/
 │   │   ├── AnimatedAsset.tsx     # SVG render + enter/exit/emphasize animations
 │   │   └── AnimatedText.tsx      # Text render + fade animation
 │   └── ai/
-│       ├── systemPrompt.ts       # buildSystemPrompt() + listAvailableAssets() + buildScriptFromIdea()
+│       ├── systemPrompt.ts       # asset vocabulary helpers + Route B fail-closed tombstones
 │       └── validateTimeline.ts   # validateTimeline() + printValidationResult()
 ├── scripts/
 │   ├── generate-timeline.ts      # Route B legacy — locked/fail-closed
@@ -156,6 +156,12 @@ npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.
   --out projects/<id>/timeline.json --durations projects/<id>/durations.json \
   --words projects/<id>/words.json --audio audio/<id>/voice.wav
 
+# Long video: build toàn bộ storyboard rồi checkpoint tuần tự từng chunk.
+# Không cắt SCENES trước build; chunk proof không bao giờ là artifact publish.
+npx ts-node scripts/plan-chunks.ts --project <id>
+npx ts-node scripts/process-storyboard-chunks.ts --project <id> --execute
+npx ts-node scripts/assemble-storyboard-chunks.ts --project <id> --execute
+
 # Render ra MP4 (→ output/<id>/video.mp4)
 npx ts-node scripts/render.ts --project <id>
 
@@ -197,6 +203,16 @@ Transcript ─→ projects/<id>/storyboard-data.ts   ← agent đọc transcript
 - Cả **preview** ([Root.tsx](src/Root.tsx)) lẫn **render** ([render.ts](scripts/render.ts)) đều đi qua `loadTimeline()` → xem đúng cái sẽ render.
 - **KHÔNG BAO GIỜ** lưu file `events[]` ra đĩa. Route A chỉ ghi authored
   `storyboard.json`; `timeline.json` vẫn là sản phẩm compile.
+
+**Chunk checkpoint cho video dài:** Sau full storyboard build và global authoring gate,
+`plan-chunks.ts` tạo `chunks/chunk-plan.json` từ `SECTIONS` nguyên vẹn. Mỗi chunk
+phải pass lần lượt **authoring → TTS → alignment → compile → visual proof** với
+attestation hash-bound trước khi chunk sau bắt đầu; halo một scene chỉ dùng để kiểm
+seam, không biến thành authored source. `assemble-storyboard-chunks.ts` chỉ chạy
+khi toàn bộ proof pass, tái tạo audio/words/durations/timeline chuẩn từ sample
+boundary và vẫn phải qua full global render/audit. `timeline.json` canonical có
+chunk plan thì render từ chối thiếu/drift assembly provenance. Không nối MP4 proof
+và không dùng proof để publish.
 
 **Hai tầng biến đổi (cố ý, đừng nhầm):**
 - **Authoring-time** (chạy lúc generate, GHI ĐÈ scenes trên đĩa): `autoFixBackgrounds` ([backgroundResolver.ts](src/ai/backgroundResolver.ts)) sửa nền lười → được *persist* trước khi compile. Không chạy post-hoc trên timeline có provenance.
@@ -281,7 +297,7 @@ Bộ rule V3 gốc + phân tích 241 frames video mẫu đã chuyển sang [docs
 - **Icon circles** — group 3 concept bằng icon trong vòng tròn màu + label dưới (V3 RULE 10).
 - **Camera gần như không zoom** — assets di chuyển thay vì viewport; tối đa 1 zoom nhẹ/video (V3 RULE 5).
 
-**SCENE LAYOUT PATTERNS A–K** (SOLO, DIALOGUE, DUAL_CONTRAST, SIZE_HIERARCHY, CHAR_PROP, ICON_TRIPLE, Q&A_REVEAL, LINEUP, STAT_DRAMA, CLOSE_UP, SCENE_BỐI_CẢNH): mô tả đầy đủ trong [src/ai/systemPrompt.ts](src/ai/systemPrompt.ts) (nguồn AI thực đọc khi gen) và [docs/rules_history.md](docs/rules_history.md).
+**SCENE LAYOUT PATTERNS A–K** (SOLO, DIALOGUE, DUAL_CONTRAST, SIZE_HIERARCHY, CHAR_PROP, ICON_TRIPLE, Q&A_REVEAL, LINEUP, STAT_DRAMA, CLOSE_UP, SCENE_BỐI_CẢNH): lịch sử mô tả nằm trong [docs/rules_history.md](docs/rules_history.md). Contract hiện hành nằm ở [src/types/storyboard.ts](src/types/storyboard.ts), [src/ai/directorPolicy.ts](src/ai/directorPolicy.ts), và các gate trong [src/ai/qualityCheck.ts](src/ai/qualityCheck.ts); không có prompt Route B nào là nguồn production.
 
 ## CHỐNG NHÀM CHÁN — Liveliness Engine (mới)
 
@@ -392,15 +408,11 @@ Gate liên quan (trong `qualityCheck`):
 
 ---
 
-## AI Integration
+## Session Authoring (Route A only)
 
-### Anthropic SDK
-- Model: `claude-sonnet-4-6`
-- Script generation: max_tokens 2000
-- Timeline generation: max_tokens 8000
+Route B/API authoring has no production implementation or provider dependency in this repository. `scripts/generate-timeline.ts` is an import-free exit-2 tombstone; `src/ai/systemPrompt.ts` exposes only manifest-derived asset-list helpers and fail-closed compatibility exports.
 
-### System Prompt Location
-`src/ai/systemPrompt.ts` — Chỉnh sửa file này để thay đổi behavior của AI khi tạo timeline.
+Storyboard behavior is governed by this file, the authored schema in [src/types/storyboard.ts](src/types/storyboard.ts), director policy in [src/ai/directorPolicy.ts](src/ai/directorPolicy.ts), and executable gates in [src/ai/qualityCheck.ts](src/ai/qualityCheck.ts). Change authored source or those contracts—not a legacy API prompt.
 
 ### Validation
 Trước khi render, luôn validate:
@@ -431,7 +443,7 @@ Dùng trong Claude Code:
 | Command | Tác dụng |
 |---------|---------|
 | `/new-video` | Full pipeline: ý tưởng → script → timeline → MP4 |
-| `/generate` | Chỉ generate timeline (3 modes) |
+| `/generate` | LOCKED — Route B tombstone, luôn thoát mã 2 |
 | `/render` | Render timeline.json hiện tại → MP4 |
 | `/preview` | Mở Remotion Studio |
 | `/validate` | Schema validate timeline.json (errors/warnings) |

@@ -1,4 +1,5 @@
 import { Beat } from "../types/storyboard";
+import { indexTranscript } from "../ai/transcriptCoverage";
 
 export const WORDS_PER_VISUAL_STATE = 28;
 export const MAX_VISUAL_HOLD_FRAMES = 300;
@@ -20,6 +21,18 @@ export function isPersistentBeat(beat: Beat): boolean {
   return Boolean(beat.action && beat.targetSlot && PERSISTENT_ACTIONS.has(beat.action));
 }
 
+/**
+ * Match authored beat text as a canonical token span, not a raw substring.
+ * This tolerates CRLF/NFC/punctuation differences but still rejects reordered or
+ * invented phrases that cannot be located on the measured narration axis.
+ */
+export function containsCanonicalPhrase(narration: string, phrase: string): boolean {
+  const haystack = indexTranscript(narration).map((word) => word.text.toLocaleLowerCase());
+  const needle = indexTranscript(phrase).map((word) => word.text.toLocaleLowerCase());
+  if (!needle.length || needle.length > haystack.length) return false;
+  return haystack.some((_, start) => needle.every((word, offset) => haystack[start + offset] === word));
+}
+
 export function authoredCadenceIssues(sceneId: string, narration: string, beats: Beat[] | undefined): string[] {
   const issues: string[] = [];
   const words = narrationWordCount(narration);
@@ -28,11 +41,14 @@ export function authoredCadenceIssues(sceneId: string, narration: string, beats:
   }
   const required = requiredAuthoredTransitions(narration);
   const authored = (beats ?? []).filter(isPersistentBeat);
-  if (authored.length < required) {
-    issues.push(`needs ${required} persistent authored beat(s) for ${narrationWordCount(narration)} words; found ${authored.length}. Split the scene or author semantic pose/prop/card/focus transitions`);
+  const authoredMoments = new Set(authored.map((beat) =>
+    indexTranscript(beat.text).map((word) => word.text.toLocaleLowerCase()).join(" "),
+  ));
+  if (authoredMoments.size < required) {
+    issues.push(`needs ${required} distinct persistent authored beat(s) for ${narrationWordCount(narration)} words; found ${authoredMoments.size}. Split the scene or author semantic pose/prop/card/focus transitions`);
   }
   for (const [index, beat] of (beats ?? []).entries()) {
-    if (!narration.includes(beat.text)) issues.push(`beat ${index + 1} text is not a verbatim narration substring`);
+    if (!containsCanonicalPhrase(narration, beat.text)) issues.push(`beat ${index + 1} text is not a verbatim narration token span`);
     if (!Number.isFinite(beat.importance) || beat.importance < 0 || beat.importance > 1) issues.push(`beat ${index + 1} importance must be within 0..1`);
     if (!beat.action || !beat.targetSlot) issues.push(`beat ${index + 1} must name action and targetSlot`);
     else if (!PERSISTENT_ACTIONS.has(beat.action)) issues.push(`beat ${index + 1} action ${beat.action} is temporary/unsupported; author a persistent state change`);

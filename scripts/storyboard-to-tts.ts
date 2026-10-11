@@ -13,6 +13,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as crypto from "crypto";
+import { isSafeLineageId } from "../src/types/chunk";
 
 const args = process.argv.slice(2);
 const getArg = (f: string) => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : undefined; };
@@ -29,6 +30,20 @@ const scenes = (sb.scenes ?? []).map((s: any) => ({
   ...scene,
   textSha256: crypto.createHash("sha256").update(scene.text, "utf8").digest("hex"),
 }));
+
+const unsafeIds = scenes.map((scene: any) => scene.id).filter((id: unknown) => !isSafeLineageId(id));
+if (unsafeIds.length) {
+  console.error(
+    `❌ Scene ids must be safe lowercase path segments before TTS creates per-scene files; got ${JSON.stringify(unsafeIds[0])}.`
+  );
+  process.exit(1);
+}
+const duplicateIds = scenes.map((scene: any) => scene.id)
+  .filter((id: string, index: number, all: string[]) => all.indexOf(id) !== index);
+if (duplicateIds.length) {
+  console.error(`❌ Duplicate scene id cannot be used for TTS artifacts: ${duplicateIds[0]}.`);
+  process.exit(1);
+}
 
 // Dropping a silent scene here would leave it absent from durations.json, which
 // surfaces much later as an unsatisfiable TIMING_ID_MISSING at compile time.

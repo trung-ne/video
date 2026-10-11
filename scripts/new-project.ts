@@ -18,6 +18,11 @@ const transcript = getArg("--transcript");
 const url = getArg("--url");
 const nameInput = getArg("--name");
 const auto = args.includes("--auto");
+if (auto) {
+  console.error("\n❌ --auto is locked because it invoked Route B.");
+  console.error("   Create the project without --auto, then author storyboard-data.ts through Route A.");
+  process.exit(2);
+}
 
 const projectsDir = path.join(process.cwd(), "projects");
 
@@ -173,9 +178,3 @@ console.log(`   4. Compile storyboard with durations.json + words.json`);
 console.log(`   5. npm run validate -- projects/${videoId}/timeline.json`);
 console.log(`   6. npm run quality -- projects/${videoId}/timeline.json`);
 console.log(`   7. npm run render -- --project ${videoId}`);
-
-if (auto) {
-  console.error(`\n❌ --auto is disabled because it used Route B.`);
-  console.error(`   Author ${projectPath}/storyboard-data.ts through Route A, then run build-storyboard.ts.`);
-  process.exitCode = 2;
-}

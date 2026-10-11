@@ -22,7 +22,8 @@ import { loadTimeline } from "../src/engine/loadTimeline";
 import { printLivelinessReport } from "../src/engine/liveliness";
 import { checkSpatialIntegrity, formatSpatialIntegrityReport } from "../src/engine/spatialIntegrity";
 import { validateTimeline, printValidationResult } from "../src/ai/validateTimeline";
-import { runQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
+import { runScopedQualityCheck, printQualityReport } from "../src/ai/qualityCheck";
+import { QualityScope, orderedSceneIdsForScope, parseQualityScope } from "../src/types/chunk";
 import { prepareTimelineAudio, writeAudioAudit, resolvePublicAudio, sha256File } from "../src/audio/prepareAudio";
 import { adjacentArtifactInputs, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
 import { acquireRenderLock } from "../src/engine/renderLock";
@@ -40,6 +41,25 @@ import {
 } from "../src/engine/timingIntegrity";
 import referenceQuality from "../config/reference-quality.json";
 import { assertTimelineAssetStyle } from "../src/engine/assetStyle";
+import { verifyChunkAssemblyProvenance } from "../src/engine/chunkProvenance";
+import {
+  assertCanonicalTimelinePath,
+  assertOutputProjectIdentity,
+  assertProjectCanonicalTimeline,
+  buildCanonicalTimelineIdentity,
+  sameResolvedPath,
+} from "../src/engine/publicationIntegrity";
+import {
+  assertChunkProofBindingUnchanged,
+  bindChunkProofToProject,
+  ChunkProofBinding,
+} from "../src/engine/chunkProofIntegrity";
+import {
+  assertVisualAuditReport,
+  assertVisualMeasurementConfiguration,
+  normalizeVisualAuditOffsets,
+  VisualMeasurementContract,
+} from "../src/engine/visualAuditIntegrity";
 import {
   ProcessRunError,
   runProcessWithDllInitRetry,
@@ -49,7 +69,7 @@ loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 
-const VALUE_FLAGS = new Set(["--project", "--timeline", "--out", "--composition", "--frames"]);
+const VALUE_FLAGS = new Set(["--project", "--timeline", "--out", "--composition", "--frames", "--quality-scope"]);
 const BOOLEAN_FLAGS = new Set([
   "--proxy",
   "--skip-validate",
@@ -58,6 +78,7 @@ const BOOLEAN_FLAGS = new Set([
   "--skip-visual-audit",
   "--skip-audio-audit",
   "--allow-unprovenanced-timing",
+  "--chunk-proof",
 ]);
 
 function parseCli(argv: string[]): Map<string, string | true> {
@@ -98,6 +119,8 @@ const projectPath = projectArg
       : path.join("projects", projectArg))
   : "";
 const timelinePath = valueOf("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "");
+let selectedProjectPath: string | null = projectPath ? path.resolve(projectPath) : null;
+let selectedProjectId: string | null = projectPath ? path.basename(path.resolve(projectPath)) : null;
 
 // Derive a project id for the default output folder: from --project, or from
 // the parent directory name when --timeline points inside projects/<id>/.
@@ -111,10 +134,75 @@ function defaultOutPath(): string {
   return id ? path.join("output", id, "video.mp4") : "output/video.mp4";
 }
 
+if (!selectedProjectId) {
+  const inferred = (() => {
+    const dir = path.dirname(timelinePath);
+    return dir && dir !== "." ? path.resolve(dir) : null;
+  })();
+  selectedProjectPath = inferred;
+  selectedProjectId = inferred ? path.basename(inferred) : null;
+}
+
 const outPath = valueOf("--out", defaultOutPath());
 const compositionId = valueOf("--composition", "CatExplainer");
 const isProxy = hasFlag("--proxy");
+const isChunkProof = hasFlag("--chunk-proof");
+const qualityScopePath = valueOf("--quality-scope");
+let qualityScope: QualityScope = { kind: "global" };
+if (qualityScopePath) {
+  if (!fs.existsSync(qualityScopePath)) {
+    console.error(`Quality scope file not found: ${qualityScopePath}`);
+    process.exit(1);
+  }
+  try {
+    const parsedScope = JSON.parse(fs.readFileSync(qualityScopePath, "utf8"));
+    qualityScope = parseQualityScope(parsedScope);
+  } catch (error) {
+    console.error(`Quality scope is invalid: ${qualityScopePath}: ${(error as Error).message}`);
+    process.exit(1);
+  }
+}
+if (qualityScopePath && !isChunkProof) {
+  console.error("--quality-scope is reserved for non-promotable --chunk-proof renders.");
+  process.exit(1);
+}
+if (isChunkProof) {
+  if (!qualityScopePath || qualityScope.kind !== "chunk") {
+    console.error("--chunk-proof requires a valid --quality-scope chunk file.");
+    process.exit(1);
+  }
+  if (!hasFlag("--timeline") || !hasFlag("--out") || /(^|[\\/])output([\\/]|$)/i.test(path.resolve(outPath))) {
+    console.error("--chunk-proof requires explicit --timeline and a non-output/ proof --out path.");
+    process.exit(1);
+  }
+  const unsafeFlags = ["--proxy", "--frames", "--skip-validate", "--skip-quality", "--skip-audio-prepare", "--skip-visual-audit", "--skip-audio-audit", "--allow-unprovenanced-timing"]
+    .filter(hasFlag);
+  if (unsafeFlags.length) {
+    console.error(`--chunk-proof rejects diagnostic bypasses: ${unsafeFlags.join(", ")}`);
+    process.exit(1);
+  }
+}
 const framesArg = valueOf("--frames");
+function parseFrameRange(value: string): { start: number; end: number } | null {
+  if (!value) return null;
+  const parts = value.split("-");
+  if (parts.length > 2 || parts.some((part) => part.trim() === "")) {
+    throw new Error(`Invalid --frames range: ${value}`);
+  }
+  const start = Number(parts[0]);
+  const end = parts.length === 2 ? Number(parts[1]) : start;
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start) {
+    throw new Error(`Invalid --frames range: ${value}`);
+  }
+  return { start, end };
+}
+let frameRange: { start: number; end: number } | null = null;
+try {
+  frameRange = parseFrameRange(framesArg);
+} catch (error) {
+  console.error((error as Error).message);
+  process.exit(1);
+}
 const diagnosticFlags = [
   "--proxy",
   "--frames",
@@ -126,6 +214,10 @@ const diagnosticFlags = [
   "--allow-unprovenanced-timing",
 ].filter(hasFlag);
 const diagnosticRun = diagnosticFlags.length > 0;
+const pipelineAbort = new AbortController();
+const abortPipeline = () => pipelineAbort.abort();
+process.once("SIGINT", abortPipeline);
+process.once("SIGTERM", abortPipeline);
 if (diagnosticRun && (!hasFlag("--out") || path.resolve(outPath) === path.resolve(defaultOutPath()))) {
   console.error(
     `Diagnostic options (${diagnosticFlags.join(", ")}) require an explicit noncanonical --out path. ` +
@@ -133,17 +225,23 @@ if (diagnosticRun && (!hasFlag("--out") || path.resolve(outPath) === path.resolv
   );
   process.exit(1);
 }
-const frameRangeStart = framesArg ? Number(framesArg.split("-")[0]) : 0;
-if (!Number.isFinite(frameRangeStart) || frameRangeStart < 0) {
-  console.error(`Invalid --frames start: ${framesArg}`);
-  process.exit(1);
-}
+const frameRangeStart = frameRange?.start ?? 0;
 const referenceBaselinePath = path.resolve("config/reference-visual-baseline.json");
 if (!fs.existsSync(referenceBaselinePath)) {
   console.error(`Reference baseline not found: ${referenceBaselinePath}`);
   process.exit(1);
 }
 const referenceBaseline = JSON.parse(fs.readFileSync(referenceBaselinePath, "utf8"));
+let visualMeasurementContract: VisualMeasurementContract;
+try {
+  visualMeasurementContract = assertVisualMeasurementConfiguration(
+    referenceQuality.visualAudit,
+    referenceBaseline,
+  );
+} catch (error) {
+  console.error(`Visual measurement configuration is invalid: ${(error as Error).message}`);
+  process.exit(1);
+}
 const referenceVideoPath = path.resolve(String(referenceBaseline.reference ?? ""));
 if (!fs.existsSync(referenceVideoPath)
     || sha256File(referenceVideoPath) !== referenceBaseline.referenceSha256) {
@@ -242,6 +340,7 @@ async function normalizeProductionBitrate(videoPath: string): Promise<void> {
       executable: ffmpegPath,
       args,
       cwd: process.cwd(),
+      signal: pipelineAbort.signal,
       retryDllInitFailure: true,
       beforeRetry: () => fs.rmSync(normalizedPath, { force: true }),
     });
@@ -254,13 +353,122 @@ async function normalizeProductionBitrate(videoPath: string): Promise<void> {
   fs.renameSync(normalizedPath, videoPath);
 }
 
+function derivedChunksProjectRoot(filePath: string): string | null {
+  const absolute = path.resolve(filePath);
+  let current = path.dirname(absolute);
+  while (true) {
+    if (path.basename(current).toLowerCase() === "chunks") {
+      const parts = path.relative(current, absolute).split(path.sep);
+      const looksDerived = parts.length === 2 && parts[1].toLowerCase() === "timeline.json"
+        || parts.length === 3 && parts[1].toLowerCase() === "proof" && parts[2].toLowerCase() === "timeline.json";
+      if (looksDerived) return path.dirname(current);
+    }
+    const parent = path.dirname(current);
+    if (parent === current) return null;
+    current = parent;
+  }
+}
+
 // Validate timeline file
 if (!fs.existsSync(timelinePath)) {
   console.error(`❌ Timeline file not found: ${timelinePath}`);
   process.exit(1);
 }
 
+let canonicalTimelineIdentity: ReturnType<typeof buildCanonicalTimelineIdentity>;
+try {
+  if (!isChunkProof) {
+    if (projectPath) {
+      selectedProjectPath = fs.realpathSync(path.resolve(projectPath));
+      selectedProjectId = path.basename(selectedProjectPath);
+      assertProjectCanonicalTimeline(selectedProjectPath, timelinePath);
+    }
+
+    const projectsRoot = path.resolve("projects");
+    const relativeToProjects = path.relative(projectsRoot, path.resolve(timelinePath));
+    const underProjects = relativeToProjects !== ""
+      && relativeToProjects !== ".."
+      && !relativeToProjects.startsWith(`..${path.sep}`)
+      && !path.isAbsolute(relativeToProjects);
+    if (underProjects) {
+      const parts = relativeToProjects.split(path.sep);
+      if (parts.length !== 2 || parts[1].toLowerCase() !== "timeline.json") {
+        throw new Error(`Project renders require projects/<id>/timeline.json; got ${path.resolve(timelinePath)}.`);
+      }
+      selectedProjectPath = fs.realpathSync(path.join(projectsRoot, parts[0]));
+      selectedProjectId = path.basename(selectedProjectPath);
+      assertProjectCanonicalTimeline(selectedProjectPath, timelinePath);
+    }
+    const inferredDerivedRoot = !projectPath && !underProjects
+      ? derivedChunksProjectRoot(timelinePath) ?? derivedChunksProjectRoot(fs.realpathSync(timelinePath))
+      : null;
+    assertCanonicalTimelinePath(
+      timelinePath,
+      inferredDerivedRoot ?? selectedProjectPath ?? path.dirname(path.resolve(timelinePath)),
+    );
+    assertOutputProjectIdentity(outPath, selectedProjectId);
+  }
+  canonicalTimelineIdentity = buildCanonicalTimelineIdentity({
+    timelinePath,
+    projectId: selectedProjectId,
+    projectPath: selectedProjectPath,
+  });
+} catch (error) {
+  console.error(`❌ Candidate lineage error: ${(error as Error).message}`);
+  process.exit(1);
+}
+
 const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+let chunkProofBinding: ChunkProofBinding | null = null;
+if (isChunkProof) {
+  if (raw.artifactRole !== "chunk-proof") {
+    console.error("❌ --chunk-proof requires a timeline explicitly marked artifactRole=chunk-proof.");
+    process.exit(1);
+  }
+  const scope = qualityScope as Extract<QualityScope, { kind: "chunk" }>;
+  const expectedIds = orderedSceneIdsForScope(scope);
+  const actualIds = Array.isArray(raw.scenes) ? raw.scenes.map((scene: any) => scene.id) : [];
+  if (actualIds.length !== expectedIds.length || actualIds.some((id: string, index: number) => id !== expectedIds[index])) {
+    console.error(`❌ Chunk proof timeline must contain exactly the declared halo/core scope in order. Expected ${expectedIds.join(", ")}; got ${actualIds.join(", ")}.`);
+    process.exit(1);
+  }
+  try {
+    chunkProofBinding = bindChunkProofToProject({
+      timelinePath,
+      scopePath: qualityScopePath,
+      outputPath: outPath,
+      scope,
+      qualityProfile: referenceQuality,
+    });
+    if (chunkProofBinding) {
+      selectedProjectId = chunkProofBinding.projectId;
+      selectedProjectPath = chunkProofBinding.projectPath;
+      canonicalTimelineIdentity = buildCanonicalTimelineIdentity({
+        timelinePath,
+        projectId: selectedProjectId,
+        projectPath: selectedProjectPath,
+      });
+    }
+  } catch (error) {
+    console.error(`❌ Chunk proof lineage error: ${(error as Error).message}`);
+    process.exit(1);
+  }
+} else if (raw.artifactRole === "chunk-proof" || raw.artifactRole === "chunk-core") {
+  console.error(`❌ ${raw.artifactRole} timelines are non-promotable derived artifacts and require the dedicated chunk pipeline.`);
+  process.exit(1);
+}
+let verifiedChunkLineage: { verified: true; provenance: unknown } | null = null;
+if (!isChunkProof) {
+  const chunkProjectDir = selectedProjectPath ?? path.dirname(path.resolve(timelinePath));
+  const chunkIssues = verifyChunkAssemblyProvenance(chunkProjectDir, raw);
+  if (chunkIssues.length) {
+    console.error(`\n❌ CHUNK ASSEMBLY PROVENANCE\n${chunkIssues.map((issue) => `   [${issue.code}] ${issue.message}`).join("\n")}\n`);
+    process.exit(1);
+  }
+  if (raw.chunkAssemblyProvenance) {
+    verifiedChunkLineage = { verified: true, provenance: raw.chunkAssemblyProvenance };
+  }
+}
 try {
   assertTimelineAssetStyle(raw.timingProvenance);
 } catch (error) {
@@ -284,7 +492,7 @@ if (!hasFlag("--skip-validate")) {
 // spend minutes rendering a timeline with blockers/majors unless the caller
 // explicitly opts out for debugging.
 if (!hasFlag("--skip-quality")) {
-  const quality = runQualityCheck(raw, timelinePath);
+  const quality = runScopedQualityCheck(raw, qualityScope, timelinePath);
   printQualityReport(quality);
   if (quality.blockers > 0 || quality.majors > 0 || !["A", "B"].includes(quality.grade)) {
     console.error(
@@ -382,7 +590,7 @@ if (fs.existsSync(generatedCharDir)) {
 // Single compile point — scenes → events + liveliness (shared with preview).
 const { timeline, liveliness } = loadTimeline(raw, availablePoses);
 printLivelinessReport(liveliness);
-const spatialReport = checkSpatialIntegrity(
+const measuredSpatialReport = checkSpatialIntegrity(
   timeline,
   Array.isArray(raw.scenes) ? raw.scenes.map((scene: any) => ({
     id: scene.id,
@@ -391,6 +599,13 @@ const spatialReport = checkSpatialIntegrity(
     narrationBeatFrames: (scene.subtitleCues ?? []).map((cue: any) => scene.startFrame + cue.startFrame),
   })) : undefined,
 );
+const spatialReport = isChunkProof && qualityScope.kind === "chunk"
+  ? (() => {
+      const core = new Set(qualityScope.coreSceneIds);
+      const issues = measuredSpatialReport.issues.filter((item) => !item.sceneId || core.has(item.sceneId));
+      return { ...measuredSpatialReport, passed: issues.length === 0, issues };
+    })()
+  : measuredSpatialReport;
 console.log(formatSpatialIntegrityReport(spatialReport));
 if (!spatialReport.passed) {
   console.error("\n❌ Spatial integrity gate failed — fix storyboard placement; do not render a colliding timeline.");
@@ -401,6 +616,11 @@ console.log(`✅ Timeline loaded: ${timelinePath}`);
 console.log(`   Duration: ${timeline.durationInFrames} frames @ ${timeline.fps}fps`);
 console.log(`   = ${(timeline.durationInFrames / timeline.fps).toFixed(1)} seconds`);
 console.log(`   Events: ${timeline.events.length}`);
+
+const plannedVisualAuditSeconds = frameRange
+  ? (frameRange.end - frameRange.start + 1) / timeline.fps
+  : timeline.durationInFrames / timeline.fps;
+let plannedVisualAuditOffsets: number[] | null = null;
 
 // Render into a per-run staging directory and promote only once every gate has
 // passed. Previously a blocked run left a fresh MP4 sitting beside the previous
@@ -454,6 +674,13 @@ let timingAudit: {
 
 async function runRenderPipeline(): Promise<void> {
 try {
+  plannedVisualAuditOffsets = hasFlag("--skip-visual-audit")
+    ? null
+    : normalizeVisualAuditOffsets(
+        visualMeasurementContract.sampleOffsets,
+        visualMeasurementContract.sampleSeconds,
+        plannedVisualAuditSeconds,
+      );
   if (isProxy) {
     getScaledDimensions(timeline.width, timeline.height, DEFAULT_PROXY_SCALE);
   }
@@ -490,6 +717,7 @@ try {
       executable: process.execPath,
       args: remotionArgs,
       cwd: process.cwd(),
+      signal: pipelineAbort.signal,
       retryDllInitFailure: true,
       beforeRetry: () => fs.rmSync(stagedOut, { force: true }),
     });
@@ -517,11 +745,8 @@ try {
   {
     const mp4Seconds = probeDurationSeconds(stagedOut);
     if (mp4Seconds === undefined) throw new Error(`Rendered file is unreadable: ${stagedOut}`);
-    const [from, to] = framesArg.includes("-")
-      ? framesArg.split("-").map(Number)
-      : [Number(framesArg), Number(framesArg)];
-    const expectedSeconds = framesArg
-      ? (to - from + 1) / timeline.fps
+    const expectedSeconds = frameRange
+      ? (frameRange.end - frameRange.start + 1) / timeline.fps
       : timeline.durationInFrames / timeline.fps;
     const issues = checkRenderMatchesTimeline(mp4Seconds, expectedSeconds, timeline.fps);
     timingAudit = {
@@ -549,6 +774,14 @@ try {
     }
     fs.rmSync(visualAuditPath, { force: true });
     fs.rmSync(contactSheetPath, { force: true });
+    const requestedAuditSeconds = timingAudit?.expectedSeconds;
+    if (!Number.isFinite(requestedAuditSeconds) || !(requestedAuditSeconds! > 0)) {
+      throw new Error("Visual audit requires the validated render timing duration.");
+    }
+    if (Math.abs(requestedAuditSeconds - plannedVisualAuditSeconds) > 1e-9 || !plannedVisualAuditOffsets) {
+      throw new Error("Visual audit timing plan drifted after rendering.");
+    }
+    const sampleOffsets = plannedVisualAuditOffsets;
     try {
       await runProcessWithDllInitRetry({
         phase: "visual-audit",
@@ -559,12 +792,19 @@ try {
           "--record-video-path", path.resolve(outPath),
           "--ffmpeg", ffmpegPath,
           "--timeline", path.resolve(timelinePath),
+          ...(isChunkProof ? ["--quality-scope", path.resolve(qualityScopePath)] : []),
           "--timeline-offset-seconds", String(frameRangeStart / timeline.fps),
+          "--expected-duration-seconds", String(requestedAuditSeconds),
+          "--sample-seconds", String(visualMeasurementContract.sampleSeconds),
+          "--sample-offsets", sampleOffsets.join(","),
+          "--subtitle-band-top", String(referenceQuality.visualAudit.subtitleBandTopRatio),
           "--config", path.resolve("config/reference-quality.json"),
           "--contact-sheet", path.resolve(contactSheetPath),
           "--record-contact-sheet", path.resolve(outPath.replace(/\.mp4$/i, ".contact.jpg")),
         ],
         cwd: process.cwd(),
+        signal: pipelineAbort.signal,
+        timeoutMs: Math.max(300_000, requestedAuditSeconds * 1_000),
         retryDllInitFailure: true,
         beforeRetry: () => {
           fs.rmSync(visualAuditPath, { force: true });
@@ -581,11 +821,25 @@ try {
       throw new Error(`Visual audit did not produce its required report: ${visualAuditPath}`);
     }
     visualAudit = JSON.parse(fs.readFileSync(visualAuditPath, "utf8"));
-    if (visualAudit.passed !== true) {
-      throw new Error("Visual audit report did not record passed=true.");
-    }
-    if (path.resolve(String(visualAudit.video ?? "")) !== path.resolve(outPath)) {
+    assertVisualAuditReport(visualAudit, {
+      contract: visualMeasurementContract,
+      expectedDurationSeconds: requestedAuditSeconds,
+      probedDurationSeconds: timingAudit!.mp4Seconds,
+      sampleOffsets,
+      frameRate: timeline.fps,
+      timelineOffsetSeconds: frameRangeStart / timeline.fps,
+      subtitleBandTopRatio: referenceQuality.visualAudit.subtitleBandTopRatio,
+      sceneIds: Array.isArray(raw.scenes) ? raw.scenes.map((scene: any) => scene.id) : [],
+      qualityScope,
+    });
+    if (typeof visualAudit.video !== "string"
+        || !sameResolvedPath(visualAudit.video, outPath)) {
       throw new Error("Visual audit report identifies a different candidate video.");
+    }
+    const publishedContactSheet = outPath.replace(/\.mp4$/i, ".contact.jpg");
+    if (typeof visualAudit.contactSheet !== "string"
+        || !sameResolvedPath(visualAudit.contactSheet, publishedContactSheet)) {
+      throw new Error("Visual audit report identifies a different candidate contact sheet.");
     }
     if (!diagnosticRun && !fs.existsSync(contactSheetPath)) {
       throw new Error(`Visual audit did not produce its required contact sheet: ${contactSheetPath}`);
@@ -601,7 +855,7 @@ try {
   const audioAudit = isProxy || framesArg || hasFlag("--skip-audio-audit")
     ? null
     : writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath));
-  const referenceComparison = visualAudit
+  const referenceComparison = visualAudit && qualityScope.kind === "global"
     ? buildReferenceComparison(visualAudit, referenceBaseline)
     : null;
   if (!isProxy && !framesArg && referenceComparison) {
@@ -626,29 +880,50 @@ try {
       }
     : null);
   const encodingAuditPath = stagedOut.replace(/\.mp4$/i, ".encoding-audit.json");
-  const promotionEligible = !diagnosticRun
+  const chunkLineageEligible = raw.chunkAssemblyProvenance === undefined
+    || verifiedChunkLineage?.verified === true;
+  const proofEligible = isChunkProof
     && Boolean(encodingAudit?.passed)
     && Boolean(audioAudit?.passed)
     && visualAudit?.passed === true
     && fs.existsSync(contactSheetPath);
-  if (!diagnosticRun && !promotionEligible) {
+  const promotionEligible = !isChunkProof
+    && !diagnosticRun
+    && chunkLineageEligible
+    && Boolean(encodingAudit?.passed)
+    && Boolean(audioAudit?.passed)
+    && visualAudit?.passed === true
+    && fs.existsSync(contactSheetPath);
+  if (isChunkProof && !proofEligible) {
+    throw new Error("Chunk proof is missing one or more mandatory passing audits.");
+  }
+  if (!diagnosticRun && !isChunkProof && !promotionEligible) {
     throw new Error("Production candidate is missing one or more mandatory passing audits.");
   }
+  if (chunkProofBinding) assertChunkProofBindingUnchanged(chunkProofBinding);
+  if (sha256File(canonicalTimelineIdentity.timelinePath) !== canonicalTimelineIdentity.timelineSha256) {
+    throw new Error("Canonical timeline changed while this render was running; refusing to mark the candidate ready.");
+  }
   const productionReport = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     // Rendering proves a technical candidate only. Publication is a separate,
     // hash-bound editorial decision made by publish.ts after manual review.
-    status: promotionEligible ? "candidate-ready" : "diagnostic",
-    video: path.resolve(promotionEligible ? outPath : stagedOut),
-    timeline: path.resolve(timelinePath),
+    status: promotionEligible ? "candidate-ready" : proofEligible ? "chunk-proof-ready" : "diagnostic",
+    video: path.resolve((promotionEligible || proofEligible) ? outPath : stagedOut),
+    projectId: canonicalTimelineIdentity.projectId,
+    projectPath: canonicalTimelineIdentity.projectPath,
+    timeline: canonicalTimelineIdentity.timelinePath,
+    timelineSha256: canonicalTimelineIdentity.timelineSha256,
     timingProvenance: raw.timingProvenance ?? null,
+    chunkLineage: verifiedChunkLineage,
+    chunkProofBinding,
     unprovenancedTimingAllowed: allowUnprovenanced || undefined,
     preparedAudio,
     encodingAudit,
     timingAudit,
     audioAudit,
     visualAudit: visualAudit
-      ? path.resolve(promotionEligible ? outPath.replace(/\.mp4$/i, ".visual-audit.json") : visualAuditPath)
+      ? path.resolve((promotionEligible || proofEligible) ? outPath.replace(/\.mp4$/i, ".visual-audit.json") : visualAuditPath)
       : null,
     referenceComparison,
     directionSummary: buildDirectionSummary(raw),
@@ -669,7 +944,14 @@ try {
   );
 
   if (fs.existsSync(propsTmpFile)) fs.unlinkSync(propsTmpFile);
-  if (promotionEligible) {
+  if (proofEligible) {
+    const previousProof = promoteArtifacts(stagingDir, finalDir, runId, {
+      requiredReportStatus: "chunk-proof-ready",
+    });
+    pruneRunHistory(finalDir, { preservePreviousMp4: false });
+    if (previousProof) console.log(`   Previous chunk proof evidence archived at: ${previousProof}`);
+    console.log(`\n✅ Chunk proof complete (non-promotable): ${outPath}`);
+  } else if (promotionEligible) {
     const previousBuild = promoteArtifacts(stagingDir, finalDir, runId);
     pruneRunHistory(finalDir);
     if (previousBuild) console.log(`   Previous successful build archived at: ${previousBuild}`);
@@ -686,7 +968,11 @@ try {
     schemaVersion: 2,
     status: "diagnostic",
     video: fs.existsSync(stagedOut) ? path.resolve(stagedOut) : null,
-    timeline: path.resolve(timelinePath),
+    projectId: canonicalTimelineIdentity.projectId,
+    projectPath: canonicalTimelineIdentity.projectPath,
+    timeline: canonicalTimelineIdentity.timelinePath,
+    timelineSha256: canonicalTimelineIdentity.timelineSha256,
+    chunkProofBinding,
     timingProvenance: raw.timingProvenance ?? null,
     timingAudit,
     stagingDir: path.resolve(stagingDir),
@@ -711,6 +997,8 @@ try {
     fs.unlinkSync(propsTmpFile);
   }
   renderLock.release();
+  process.removeListener("SIGINT", abortPipeline);
+  process.removeListener("SIGTERM", abortPipeline);
 }
 }
 

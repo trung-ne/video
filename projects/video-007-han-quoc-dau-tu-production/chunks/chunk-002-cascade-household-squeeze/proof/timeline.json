@@ -1,0 +1,3734 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 5637,
+  "audio": "audio/chunks/video-007-han-quoc-dau-tu-production/chunk-002-cascade-household-squeeze/proof/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "proportional",
+    "beatTimingSummary": {
+      "aligned-words": 20,
+      "source-range-proportional": 1
+    },
+    "measuredSceneCount": 21,
+    "audioSeconds": 187.912,
+    "audioSha256": "edc11f4fbd97aa32f1222575bbda104c5e33b9c057f6db7a1ee481526ae8ef8e",
+    "storyboardChecksum": "b8e4dcc3cf4cf0a0a4c783b54dba45fb0182cc565bff685a45b01536488df3c7",
+    "durationsChecksum": "5040f984265a28c2de811d956d26ff874943b27abedb98f59780b4d177a69a0a",
+    "wordsChecksum": "e9d965069ad029d5e1845d80540704775da4388ce14c67750d9916a74ad7bb34",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 732,
+      "matchedWordCount": 719,
+      "coverage": 1,
+      "matchedCoverage": 0.98224,
+      "interpolatedWordCount": 13,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.24,
+      "photo_broll": 0.145,
+      "character_action": 0.2,
+      "infographic": 0.23,
+      "evidence": 0.085,
+      "framebox": 0.05,
+      "visual_gag": 0.07
+    },
+    "characterFreeTarget": 0.36,
+    "heroConcepts": [
+      "KOSPI shock opens and closes the argument",
+      "borrowed buying power doubles both directions",
+      "housing debt turns a shortcut into necessity",
+      "the gaemi crowd moves as one leveraged force",
+      "CFD hides the person carrying the risk",
+      "speculation reroutes like water around a dam",
+      "a young worker needs a safer route to wealth"
+    ],
+    "visualMotifs": [
+      "a red margin threshold crossing the frame",
+      "an ant crowd gathering behind one order",
+      "a distant home receding from a young worker",
+      "water rerouting around a regulatory barrier",
+      "a phone tap turning into a debt contract"
+    ],
+    "forbiddenRepeats": [
+      "idle host beside an unrelated icon",
+      "dark statistic card as default",
+      "consecutive wallpaper photos",
+      "the same stage in adjacent tableaux",
+      "a repeated pose without a sentence-level emotional reason",
+      "generic two-column cards standing in for action"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "photo_broll",
+      "character_action",
+      "infographic",
+      "evidence",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "fresh-021",
+      "label": "Stage the broker's demand and the investor's lack of cash.",
+      "startFrame": 0,
+      "durationFrames": 208,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "Khi mà tài sản trong\r\ntài khoản giảm xuống dưới mức an toàn ấ\r\nthì công ty chứng khoán sẽ yêu cầu là\r\nbạn phải nộp thêm tiền",
+      "sourceRange": {
+        "startWord": 555,
+        "endWord": 582,
+        "quoteChecksum": "d362db61d69f45ad03218c055773c5d0b9c10a0bf0e083576ed0272d73b63d1c"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "dưới mức an toàn",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "frame": 61,
+          "renderedComponentIds": [
+            "fresh-021-a",
+            "fresh-021-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_investor_phone\",\"anchor\":\"counter_right\"}",
+          "toState": "{\"src\":\"characters/cat_investor_panic\",\"position\":{\"x\":0.64,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "bạn phải nộp thêm tiền",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "frame": 149,
+          "renderedComponentIds": [
+            "fresh-021-qa",
+            "fresh-021-qb"
+          ],
+          "fromState": "question:Nộp thêm tiền ngay.",
+          "toState": "answer:Không kịp thì cổ phiếu bị bán."
+        }
+      ],
+      "semanticTakeaway": "Failing the margin call authorizes a forced sale.",
+      "semanticAction": "demands",
+      "semanticObject": "new collateral",
+      "semanticSetting": "broker desk",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_business",
+        "characters/cat_investor_phone",
+        "characters/cat_investor_panic",
+        "assets/scenes/bank_interior.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|stage:bank_interior|3a:0p|counter_left,counter_right,free|bubble,bubble|none|none",
+      "silentFrameTakeaway": "No cash means forced stock sale.",
+      "focalOccupancyTarget": 0.6,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_business",
+        "asset:characters/cat_investor_phone",
+        "asset:assets/scenes/bank_interior.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Khi mà tài sản trong tài khoản giảm xuống",
+          "startFrame": 0,
+          "endFrame": 63
+        },
+        {
+          "text": "dưới mức an toàn ấ thì công ty chứng",
+          "startFrame": 63,
+          "endFrame": 119
+        },
+        {
+          "text": "khoán sẽ yêu cầu là bạn phải nộp thêm",
+          "startFrame": 119,
+          "endFrame": 176
+        },
+        {
+          "text": "tiền",
+          "startFrame": 176,
+          "endFrame": 208
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/bank-interior.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-021-a",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#D7E8E6",
+          "anchor": "counter_left",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 53,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-021-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#F1D8C5",
+          "anchor": "counter_right",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        },
+        {
+          "assetId": "fresh-021-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 61,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-021-a",
+            "fresh-021-b"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "fresh-021-qa",
+          "anchorAssetId": "fresh-021-a",
+          "text": "Nộp thêm tiền ngay.",
+          "direction": "right",
+          "delay": 12,
+          "duration": 131,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "fresh-021-qb",
+          "anchorAssetId": "fresh-021-b",
+          "text": "Không kịp thì cổ phiếu bị bán.",
+          "direction": "left",
+          "delay": 149,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ]
+    },
+    {
+      "id": "fresh-022",
+      "label": "Show the irreversible moment when the broker liquidates the account.",
+      "startFrame": 208,
+      "durationFrames": 240,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "và nếu mà bạn\r\nkhông nổ kịp ấy thì họ sẽ có quyền bán\r\ncổ phiếu để thu hồi khoản vay của bạn\r\nbất kể lúc đấy mà giá đang đẹp hay là\r\nxấu",
+      "sourceRange": {
+        "startWord": 583,
+        "endWord": 616,
+        "quoteChecksum": "3c0c3b3d396d3a17de1cd974015cbf9c352c988b5e2e34647928c6ce7638b228"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "và",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 5,
+          "renderedComponentIds": [
+            "fresh-022-a"
+          ],
+          "fromState": "characters/cat_investor_panic",
+          "toState": "characters/cat_sad"
+        },
+        {
+          "beatText": "họ sẽ có quyền bán",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 66,
+          "renderedComponentIds": [
+            "fresh-022-a",
+            "fresh-022-prop"
+          ],
+          "fromState": "{\"src\":\"finance/wallet\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/wallet\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "The broker can sell regardless of the price.",
+      "semanticAction": "liquidates",
+      "semanticObject": "the investor's shares",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_panic",
+        "finance/wallet",
+        "characters/cat_sad",
+        "assets/scenes/shop_counter.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:shop_counter|2a:2p|counter_left,counter_left,free,free|none|none|none",
+      "silentFrameTakeaway": "Miss the call and the shares are sold.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_investor_panic",
+        "asset:finance/wallet",
+        "asset:assets/scenes/shop_counter.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "và nếu mà bạn không nổ kịp ấy thì",
+          "startFrame": 0,
+          "endFrame": 60
+        },
+        {
+          "text": "họ sẽ có quyền bán cổ phiếu để thu",
+          "startFrame": 60,
+          "endFrame": 123
+        },
+        {
+          "text": "hồi khoản vay của bạn bất kể lúc đấy",
+          "startFrame": 123,
+          "endFrame": 190
+        },
+        {
+          "text": "mà giá đang đẹp hay là xấu",
+          "startFrame": 190,
+          "endFrame": 240
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/shop-counter.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-022-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 60,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-022-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-022-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 5,
+          "clearPrevious": [
+            "fresh-022-a"
+          ]
+        },
+        {
+          "assetId": "fresh-022-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 66,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-022-a",
+            "fresh-022-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "fresh-023",
+      "label": "Use a real market-screen photo to make the selloff loop concrete.",
+      "startFrame": 448,
+      "durationFrames": 429,
+      "layout": "CLOSE_UP",
+      "entranceStyle": "cut",
+      "narration": "Và vấn đề nó thường nằm ở đây này.\r\nTrong một thị trường mà lao dốc ấy thì\r\nhàng chục nghìn người có thể cùng nhận\r\nmarin care. Mọi người cùng bán thì giá\r\nlại càng giảm mạnh hơn mà giá càng giảm\r\nthì càng nhiều người lại bị marin khoe",
+      "sourceRange": {
+        "startWord": 617,
+        "endWord": 667,
+        "quoteChecksum": "5d2ca1a7d190adcb7664cedbc9692840e78cf59ba672b5b7e2ed409bbd3e9db6"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "BEAT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "vấn đề nó thường nằm ở đây",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 12,
+          "renderedComponentIds": [
+            "fresh-023-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-retail-pexels-10697106.jpg:Áp lực bán lan rộng"
+        },
+        {
+          "beatText": "thị trường mà lao dốc",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 99,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/stock_board.jpg:Thị trường lao dốc"
+        },
+        {
+          "beatText": "cùng nhận marin care",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 175,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/stock_board.jpg:Bảng giá đỏ dốc"
+        },
+        {
+          "beatText": "Mọi người cùng bán",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 242,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-retail-pexels-10697106.jpg:Bán đồng loạt"
+        },
+        {
+          "beatText": "giá càng giảm",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 323,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-5"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/stock_board.jpg:Giá giảm · margin call tăng"
+        }
+      ],
+      "semanticTakeaway": "The first forced sales cause the next forced sales.",
+      "semanticAction": "trigger",
+      "semanticObject": "a selling loop",
+      "photoTreatment": "screen",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "backgrounds/evidence-retail-pexels-10697106.jpg",
+        "backgrounds/stock_board.jpg",
+        "backgrounds/stock_chart.png"
+      ],
+      "heroVisual": true,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|screen",
+      "silentFrameTakeaway": "Margin calls become a downward loop.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:BEAT",
+        "register:photo_broll",
+        "asset:backgrounds/stock_chart.png"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Và vấn đề nó thường nằm ở đây này",
+          "startFrame": 0,
+          "endFrame": 63
+        },
+        {
+          "text": "Trong một thị trường mà lao dốc ấy thì",
+          "startFrame": 63,
+          "endFrame": 135
+        },
+        {
+          "text": "hàng chục nghìn người có thể cùng nhận marin",
+          "startFrame": 135,
+          "endFrame": 219
+        },
+        {
+          "text": "care Mọi người cùng bán thì giá lại càng",
+          "startFrame": 219,
+          "endFrame": 296
+        },
+        {
+          "text": "giảm mạnh hơn mà giá càng giảm thì càng",
+          "startFrame": 296,
+          "endFrame": 371
+        },
+        {
+          "text": "nhiều người lại bị marin khoe",
+          "startFrame": 371,
+          "endFrame": 429
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-backgrounds/stock_chart.png",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-023-cutaway",
+          "contentSrc": "backgrounds/evidence-retail-pexels-10697106.jpg",
+          "caption": "Áp lực bán lan rộng",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 12
+        },
+        {
+          "id": "fresh-023-cutaway-2",
+          "contentSrc": "backgrounds/stock_board.jpg",
+          "caption": "Thị trường lao dốc",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 99
+        },
+        {
+          "id": "fresh-023-cutaway-3",
+          "contentSrc": "backgrounds/stock_board.jpg",
+          "caption": "Bảng giá đỏ dốc",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 175
+        },
+        {
+          "id": "fresh-023-cutaway-4",
+          "contentSrc": "backgrounds/evidence-retail-pexels-10697106.jpg",
+          "caption": "Bán đồng loạt",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 242
+        },
+        {
+          "id": "fresh-023-cutaway-5",
+          "contentSrc": "backgrounds/stock_board.jpg",
+          "caption": "Giá giảm · margin call tăng",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 323
+        }
+      ]
+    },
+    {
+      "id": "fresh-024",
+      "label": "Use a real market screen to show forced selling creating the next wave.",
+      "startFrame": 877,
+      "durationFrames": 112,
+      "layout": "CLOSE_UP",
+      "entranceStyle": "cut",
+      "narration": "Rồi nó lại xuất hiện thêm những cái đợt\r\nbán tháo mới",
+      "sourceRange": {
+        "startWord": 668,
+        "endWord": 679,
+        "quoteChecksum": "765f52cda610471c4bcbdcf2da652b9caf7f73f703be36932dc856b0b4d9d3f5"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "BEAT",
+      "beatTimingSource": "source-range-proportional",
+      "authoredTransitionReceipts": [],
+      "semanticTakeaway": "Crowded leverage creates a cascade.",
+      "semanticAction": "topples",
+      "semanticObject": "the crowd behind",
+      "photoTreatment": "full_bleed",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "backgrounds/evidence-document-pexels-33175657.jpg"
+      ],
+      "heroVisual": false,
+      "focalType": "photo",
+      "characterRequired": false,
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|none|none|full_bleed",
+      "silentFrameTakeaway": "One fall knocks down the people behind.",
+      "focalOccupancyTarget": 0.54,
+      "noveltyFromPrevious": [
+        "asset:backgrounds/evidence-document-pexels-33175657.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Rồi nó lại xuất hiện thêm những cái đợt",
+          "startFrame": 0,
+          "endFrame": 75
+        },
+        {
+          "text": "bán tháo mới",
+          "startFrame": 75,
+          "endFrame": 112
+        }
+      ],
+      "backgroundSrc": "backgrounds/evidence-document-pexels-33175657.jpg",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": []
+    },
+    {
+      "id": "fresh-025",
+      "label": "Give the selloff cascade a human-scale staircase image.",
+      "startFrame": 989,
+      "durationFrames": 260,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "Nó giống như kiểu là một\r\nhàng người đang đứng trên cầu thang ấy.\r\nChỉ cần một người ngã thôi thì đằng sau\r\ncó rất là nhiều người sẽ ngã nữa",
+      "sourceRange": {
+        "startWord": 680,
+        "endWord": 710,
+        "quoteChecksum": "fff63f701609a7d0969b8152369378f453b0adb7282d65e1c35fa392f910f2bc"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "hàng người đang đứng trên cầu thang",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 44,
+          "renderedComponentIds": [
+            "fresh-025-a",
+            "fresh-025-prop"
+          ],
+          "fromState": "{\"src\":\"chart/down/01/flat/bold/color\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"chart/down/01/flat/bold/color\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "đằng sau có rất là nhiều người",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "frame": 170,
+          "renderedComponentIds": [
+            "fresh-025-a",
+            "fresh-025-prop"
+          ],
+          "fromState": "{\"src\":\"characters/cat_investor_panic\",\"anchor\":\"sidewalk_left\"}",
+          "toState": "{\"src\":\"characters/cat_sad\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        }
+      ],
+      "semanticTakeaway": "A forced sale can pull the crowd behind it.",
+      "semanticAction": "follow",
+      "semanticObject": "the first fall",
+      "semanticSetting": "street",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_panic",
+        "chart/down/01/flat/bold/color",
+        "characters/cat_sad",
+        "assets/scenes/street.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:street|2a:2p|free,free,free,sidewalk_left|none|none|none",
+      "silentFrameTakeaway": "One fall pulls the crowded line down.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_investor_panic",
+        "asset:chart/down/01/flat/bold/color",
+        "asset:assets/scenes/street.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Nó giống như kiểu là một hàng người đang",
+          "startFrame": 0,
+          "endFrame": 75
+        },
+        {
+          "text": "đứng trên cầu thang ấy Chỉ cần một người",
+          "startFrame": 75,
+          "endFrame": 150
+        },
+        {
+          "text": "ngã thôi thì đằng sau có rất là nhiều",
+          "startFrame": 150,
+          "endFrame": 220
+        },
+        {
+          "text": "người sẽ ngã nữa",
+          "startFrame": 220,
+          "endFrame": 260
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/street.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-025-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "anchor": "sidewalk_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 38,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-025-prop",
+          "src": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-025-prop",
+          "src": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 44,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-025-a",
+            "fresh-025-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-025-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "enterAnimation": "none",
+          "enterDelay": 170,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-025-a",
+            "fresh-025-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "fresh-026",
+      "label": "Hold the cascade as evidence before connecting it to generational pressure.",
+      "startFrame": 1249,
+      "durationFrames": 128,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "Và đó\r\nchính xác là những gì đã xảy ra tại Hàn\r\nQuốc trong năm nay",
+      "sourceRange": {
+        "startWord": 711,
+        "endWord": 726,
+        "quoteChecksum": "ec8db36e34836300bc5aa5362b9596ccc5c37dcd9a3ffbd1126cf40b0709f984"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "đã xảy ra tại Hàn Quốc",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 48,
+          "renderedComponentIds": [
+            "fresh-026-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending_down:Cú sập tại Hàn Quốc"
+        }
+      ],
+      "semanticTakeaway": "The crash is tied to a generational financial pressure.",
+      "semanticAction": "faces",
+      "semanticObject": "a selloff",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/trending_down"
+      ],
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "A pressured market becomes a crash.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Và đó chính xác là những gì đã xảy",
+          "startFrame": 0,
+          "endFrame": 69
+        },
+        {
+          "text": "ra tại Hàn Quốc trong năm nay",
+          "startFrame": 69,
+          "endFrame": 128
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "fresh-026-ev",
+          "variant": "survey",
+          "title": "CÚ SẬP LAN RỘNG",
+          "body": "Bán cưỡng bức biến áp lực đổi đời thành một cú rơi của cả thị trường.",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-026-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "caption": "Cú sập tại Hàn Quốc",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 48
+        }
+      ]
+    },
+    {
+      "id": "fresh-027",
+      "label": "Connect the crash to a generation's compressed path to wealth.",
+      "startFrame": 1377,
+      "durationFrames": 172,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "Và cú sập này thì\r\nbắt đầu từ cách mà cả một thế hệ nhìn\r\nnhận cái chuyện đầu tư và làm giàu",
+      "sourceRange": {
+        "startWord": 727,
+        "endWord": 749,
+        "quoteChecksum": "d2809e1bff32451bf75dcac068fcd4ce5896e5f2b58f012e2d7ed971a9d75eb3"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "cả một thế hệ",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 67,
+          "renderedComponentIds": [
+            "fresh-027-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/budget:Áp lực của cả một thế hệ"
+        }
+      ],
+      "semanticTakeaway": "The crash begins with pressure to get rich faster.",
+      "semanticAction": "feeds",
+      "semanticObject": "a market crash",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "finance/expense",
+        "finance/trending_down",
+        "finance/budget"
+      ],
+      "heroVisual": true,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:expense:1:1,card:trending_down:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Pressure to get rich faster feeds the crash.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:finance/expense",
+        "asset:finance/trending_down"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Và cú sập này thì bắt đầu từ cách",
+          "startFrame": 0,
+          "endFrame": 62
+        },
+        {
+          "text": "mà cả một thế hệ nhìn nhận cái chuyện",
+          "startFrame": 62,
+          "endFrame": 132
+        },
+        {
+          "text": "đầu tư và làm giàu",
+          "startFrame": 132,
+          "endFrame": 172
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-027-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 39,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "fresh-027-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-expense.png",
+          "label": "Áp lực phải đổi đời nhanh",
+          "width": 650,
+          "height": 540,
+          "delay": 0
+        },
+        {
+          "id": "fresh-027-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "label": "Cú sập lan rộng",
+          "width": 650,
+          "height": 540,
+          "delay": 38
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-027-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-budget.png",
+          "caption": "Áp lực của cả một thế hệ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 67
+        }
+      ]
+    },
+    {
+      "id": "fresh-028",
+      "label": "Pivot from trading mechanics to household balance sheets.",
+      "startFrame": 1549,
+      "durationFrames": 352,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "Hàn\r\nQuốc hiện nay là một trong những quốc\r\ngia có tỉ lệ nợ hộ gia đình cao nhất thế\r\ngiới. Trong 20 năm qua thì quy mô nợ\r\nliên tục tăng lên và hiện đã tương đương\r\ngần toàn bộ GDP của quốc gia này",
+      "sourceRange": {
+        "startWord": 750,
+        "endWord": 795,
+        "quoteChecksum": "ccaebfe918b90236e70a3885a9b2d012be9df5a97fb35bedeb17e1f179d0065e"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Trong 20 năm qua",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "frame": 152,
+          "renderedComponentIds": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ],
+          "fromState": "{\"src\":\"characters/cat_explain\",\"anchor\":\"counter_left\"}",
+          "toState": "{\"src\":\"characters/cat_surprised\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "quy mô nợ liên tục tăng lên",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 191,
+          "renderedComponentIds": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ],
+          "fromState": "{\"src\":\"finance/debt\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/trending_up\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "Hàn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "fresh-028-a"
+          ],
+          "fromState": "characters/cat_explain",
+          "toState": "characters/cat_surprised"
+        },
+        {
+          "beatText": "nợ hộ gia đình",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 74,
+          "renderedComponentIds": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ],
+          "fromState": "{\"src\":\"finance/debt\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/trending_up\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "gần toàn bộ GDP",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 266,
+          "renderedComponentIds": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ],
+          "fromState": "{\"src\":\"finance/debt\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/debt\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "The appetite for leverage sits on an already indebted society.",
+      "semanticAction": "approaches",
+      "semanticObject": "national GDP",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_explain",
+        "finance/debt",
+        "characters/cat_surprised",
+        "finance/trending_up",
+        "assets/scenes/bank_interior.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|3a:4p|counter_left,counter_left,free,free,free,free,free|card:debt:2:1|none|none",
+      "silentFrameTakeaway": "Household debt is almost as large as GDP.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_explain",
+        "asset:finance/debt",
+        "asset:assets/scenes/bank_interior.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Hàn Quốc hiện nay là một trong những quốc",
+          "startFrame": 0,
+          "endFrame": 71
+        },
+        {
+          "text": "gia có tỉ lệ nợ hộ gia đình cao",
+          "startFrame": 71,
+          "endFrame": 125
+        },
+        {
+          "text": "nhất thế giới Trong 20 năm qua thì quy",
+          "startFrame": 125,
+          "endFrame": 191
+        },
+        {
+          "text": "mô nợ liên tục tăng lên và hiện đã",
+          "startFrame": 191,
+          "endFrame": 250
+        },
+        {
+          "text": "tương đương gần toàn bộ GDP của quốc gia",
+          "startFrame": 250,
+          "endFrame": 319
+        },
+        {
+          "text": "này",
+          "startFrame": 319,
+          "endFrame": 352
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/bank-interior.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-028-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 260,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-028-prop",
+          "src": "styles/d/generated-assets/icons/finance-debt.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-028-a",
+          "src": "styles/d/generated-assets/characters/cat_surprised.png",
+          "enterAnimation": "none",
+          "enterDelay": 152,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-028-prop",
+          "src": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 191,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-028-a",
+          "src": "styles/d/generated-assets/characters/cat_surprised.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "fresh-028-a"
+          ]
+        },
+        {
+          "assetId": "fresh-028-prop",
+          "src": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 74,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-028-prop",
+          "src": "styles/d/generated-assets/icons/finance-debt.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 266,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-028-a",
+            "fresh-028-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [
+        {
+          "id": "fresh-028-label",
+          "position": {
+            "x": 0.74,
+            "y": 0.24
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-debt.png",
+          "label": "NỢ HỘ GIA ĐÌNH ≈ GDP",
+          "width": 560,
+          "height": 250,
+          "delay": 18
+        }
+      ]
+    },
+    {
+      "id": "fresh-029",
+      "label": "Land the stated debt figure as a major evidence beat.",
+      "startFrame": 1901,
+      "durationFrames": 239,
+      "layout": "STAT_DRAMA",
+      "entranceStyle": "softScale",
+      "narration": "Cuối\r\nnăm 2025 thì tổng nợ tín dụng hộ gia\r\nđình của Hàn Quốc đã tiến sát múc 2000\r\ntỷ, một con số rất là to",
+      "sourceRange": {
+        "startWord": 796,
+        "endWord": 821,
+        "quoteChecksum": "c5fe5f0da0358b2a94d0154fa3b6af25c751c0b894c72786e40170db7ac35b08"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "STAT_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "tổng nợ tín dụng hộ gia đình",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 61,
+          "renderedComponentIds": [
+            "fresh-029-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-document-pexels-8296970.jpg:Hồ sơ nợ 2.000 tỷ $"
+        }
+      ],
+      "semanticTakeaway": "This is not a small pocket of debt.",
+      "semanticAction": "nears",
+      "semanticObject": "two trillion dollars",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_surprised",
+        "finance/debt",
+        "backgrounds/evidence-document-pexels-8296970.jpg"
+      ],
+      "heroVisual": false,
+      "focalType": "chart",
+      "characterRequired": false,
+      "visualFingerprint": "STAT_REVEAL|evidence|graphic|1a:0p|RIGHT_BOTTOM|card:debt:1:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Household credit approaches $2 trillion.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:STAT_REVEAL",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Cuối năm 2025 thì tổng nợ tín dụng hộ",
+          "startFrame": 0,
+          "endFrame": 86
+        },
+        {
+          "text": "gia đình của Hàn Quốc đã tiến sát múc",
+          "startFrame": 86,
+          "endFrame": 172
+        },
+        {
+          "text": "2000 tỷ một con số rất là to",
+          "startFrame": 172,
+          "endFrame": 239
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-029-cat",
+          "src": "styles/d/generated-assets/characters/cat_surprised.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "enterDelay": 22,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 39,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [
+        {
+          "id": "fresh-029-stat",
+          "content": "2.000 TỶ $",
+          "style": "STAT",
+          "position": {
+            "x": 0.53,
+            "y": 0.45
+          },
+          "fontSize": 210,
+          "delay": 10,
+          "color": "#B3262E",
+          "hold": "scene-end"
+        }
+      ],
+      "cards": [
+        {
+          "id": "fresh-029-measure",
+          "position": {
+            "x": 0.2,
+            "y": 0.43
+          },
+          "background": "#547A80",
+          "iconSrc": "styles/d/generated-assets/icons/finance-debt.png",
+          "label": "Nợ tín dụng hộ gia đình cuối 2025",
+          "width": 560,
+          "height": 680,
+          "delay": 0
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-029-cutaway",
+          "contentSrc": "backgrounds/evidence-document-pexels-8296970.jpg",
+          "caption": "Hồ sơ nợ 2.000 tỷ $",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 61
+        }
+      ]
+    },
+    {
+      "id": "fresh-030",
+      "label": "Connect the debt pile to homes rather than abstract finance.",
+      "startFrame": 2140,
+      "durationFrames": 143,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "Và cái điều\r\nđangng nói là phần lớn số nợ đó thì liên\r\nquan đến nhà ở",
+      "sourceRange": {
+        "startWord": 822,
+        "endWord": 838,
+        "quoteChecksum": "a7c8daeafcf56fcceb98fc9e28d916bf0e8e4f2b85bc5fca97ae97fee5e16476"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "liên quan đến nhà ở",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 79,
+          "renderedComponentIds": [
+            "fresh-030-cat",
+            "fresh-030-prop"
+          ],
+          "fromState": "{\"src\":\"finance/house\",\"slot\":\"RIGHT\",\"scale\":2.2}",
+          "toState": "{\"src\":\"finance/house\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "Housing anchors most of the financial pressure.",
+      "semanticAction": "faces",
+      "semanticObject": "housing-linked debt",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_worker",
+        "finance/house"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|1a:2p|LEFT,RIGHT,free|none|none|none",
+      "silentFrameTakeaway": "A home is tied to debt.",
+      "focalOccupancyTarget": 0.5,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "register:character_action",
+        "asset:characters/cat_worker",
+        "asset:finance/house"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Và cái điều đangng nói là phần lớn số",
+          "startFrame": 0,
+          "endFrame": 80
+        },
+        {
+          "text": "nợ đó thì liên quan đến nhà ở",
+          "startFrame": 80,
+          "endFrame": 143
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-030-cat",
+          "src": "styles/d/generated-assets/characters/cat_worker.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "fresh-030-prop",
+          "src": "styles/d/generated-assets/icons/finance-house.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "Phần lớn nợ gắn với nhà ở",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 55,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-030-prop",
+          "src": "styles/d/generated-assets/icons/finance-house.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Phần lớn nợ gắn với nhà ở",
+          "enterDelay": 79,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-030-cat",
+            "fresh-030-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "fresh-031",
+      "label": "Introduce Jeonse as a two-sided deposit bargain.",
+      "startFrame": 2283,
+      "durationFrames": 312,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "Hàn Quốc có một mô hình\r\nthuê nhà khá đặc biệt mang tên là John\r\nSư. Tức là thay vì trả tiền nhà mỗi\r\ntháng thì người thuê sẽ đưa cho chủ nhà\r\nmột khoản tiền đặt cọc rất là lớn",
+      "sourceRange": {
+        "startWord": 839,
+        "endWord": 879,
+        "quoteChecksum": "a64b27f61eb66f2dc257cfb05d60b03fde368430a932d760867a1bf2556b931c"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "thay vì trả tiền nhà mỗi tháng",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "frame": 145,
+          "renderedComponentIds": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_business\",\"anchor\":\"seat_right\"}",
+          "toState": "{\"src\":\"characters/cat_business\",\"position\":{\"x\":0.64,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "người thuê sẽ đưa cho chủ nhà",
+          "action": "focus_actor",
+          "targetSlot": "asker",
+          "frame": 193,
+          "renderedComponentIds": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_homebuyer\",\"anchor\":\"seat_left\"}",
+          "toState": "{\"src\":\"characters/cat_homebuyer\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "Sư. Tức là thay vì trả tiền nhà mỗi",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "frame": 96,
+          "renderedComponentIds": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_business\",\"anchor\":\"seat_right\"}",
+          "toState": "{\"src\":\"characters/cat_business\",\"position\":{\"x\":0.64,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "một khoản tiền đặt cọc rất là lớn",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "frame": 233,
+          "renderedComponentIds": [
+            "fresh-031-qa",
+            "fresh-031-qb"
+          ],
+          "fromState": "question:Tôi trả tiền thuê mỗi tháng?",
+          "toState": "answer:Jeonse: đặt cọc lớn để ở vài năm."
+        }
+      ],
+      "semanticTakeaway": "Jeonse replaces monthly rent with an enormous upfront deposit.",
+      "semanticAction": "exchange",
+      "semanticObject": "a large deposit",
+      "semanticSetting": "living room",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "characters/cat_business",
+        "assets/scenes/dinner_table.svg"
+      ],
+      "heroVisual": true,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|full_tableau|stage:dinner_table|5a:0p|free,free,free,seat_left,seat_right|bubble,bubble|none|none",
+      "silentFrameTakeaway": "A renter hands over a huge deposit.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:full_tableau",
+        "asset:characters/cat_homebuyer",
+        "asset:characters/cat_business",
+        "asset:assets/scenes/dinner_table.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Hàn Quốc có một mô hình thuê nhà khá",
+          "startFrame": 0,
+          "endFrame": 66
+        },
+        {
+          "text": "đặc biệt mang tên là John Sư Tức là",
+          "startFrame": 66,
+          "endFrame": 130
+        },
+        {
+          "text": "thay vì trả tiền nhà mỗi tháng thì người",
+          "startFrame": 130,
+          "endFrame": 203
+        },
+        {
+          "text": "thuê sẽ đưa cho chủ nhà một khoản tiền",
+          "startFrame": 203,
+          "endFrame": 272
+        },
+        {
+          "text": "đặt cọc rất là lớn",
+          "startFrame": 272,
+          "endFrame": 312
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/dinner-table.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-031-a",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "circle": "#D7E8E6",
+          "anchor": "seat_left",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 88,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-031-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "anchor": "seat_right",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        },
+        {
+          "assetId": "fresh-031-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 145,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ]
+        },
+        {
+          "assetId": "fresh-031-a",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 193,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ]
+        },
+        {
+          "assetId": "fresh-031-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 96,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-031-a",
+            "fresh-031-b"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "fresh-031-qa",
+          "anchorAssetId": "fresh-031-a",
+          "text": "Tôi trả tiền thuê mỗi tháng?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 215,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "fresh-031-qb",
+          "anchorAssetId": "fresh-031-b",
+          "text": "Jeonse: đặt cọc lớn để ở vài năm.",
+          "direction": "left",
+          "delay": 233,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ]
+    },
+    {
+      "id": "fresh-032",
+      "label": "Quantify the unusual Jeonse burden.",
+      "startFrame": 2595,
+      "durationFrames": 216,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "Nhiều\r\ntrường hợp là lên tới một nửa giá trị\r\ncăn nhà đổi lại thì họ sẽ được ở trong\r\nvài năm mà không phải trả tiền thuê hàng\r\ntháng",
+      "sourceRange": {
+        "startWord": 880,
+        "endWord": 909,
+        "quoteChecksum": "6c6502c13fac5373400cfafb0c326c42cc03a33f6d03740bd0600baefc8183e0"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Nhiều",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "fresh-032-a"
+          ],
+          "fromState": "characters/cat_homebuyer",
+          "toState": "characters/cat_sad"
+        },
+        {
+          "beatText": "vài năm mà không phải",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 120,
+          "renderedComponentIds": [
+            "fresh-032-a",
+            "fresh-032-prop"
+          ],
+          "fromState": "{\"src\":\"finance/house\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/house\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "Renting can demand homeowner-scale cash.",
+      "semanticAction": "reaches",
+      "semanticObject": "half a home's value",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "finance/house",
+        "characters/cat_sad",
+        "assets/scenes/living_room.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:living_room|2a:2p|free,free,sofa_left,sofa_left|card:house:2:1|none|none",
+      "silentFrameTakeaway": "The deposit can equal half a home.",
+      "focalOccupancyTarget": 0.54,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "asset:finance/house",
+        "asset:assets/scenes/living_room.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Nhiều trường hợp là lên tới một nửa giá",
+          "startFrame": 0,
+          "endFrame": 64
+        },
+        {
+          "text": "trị căn nhà đổi lại thì họ sẽ được",
+          "startFrame": 64,
+          "endFrame": 119
+        },
+        {
+          "text": "ở trong vài năm mà không phải trả tiền",
+          "startFrame": 119,
+          "endFrame": 180
+        },
+        {
+          "text": "thuê hàng tháng",
+          "startFrame": 180,
+          "endFrame": 216
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-backgrounds/living-room.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-032-a",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "anchor": "sofa_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 114,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-032-prop",
+          "src": "styles/d/generated-assets/icons/finance-house.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-032-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "anchor": "sofa_left",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "fresh-032-a"
+          ]
+        },
+        {
+          "assetId": "fresh-032-prop",
+          "src": "styles/d/generated-assets/icons/finance-house.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 120,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-032-a",
+            "fresh-032-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [
+        {
+          "id": "fresh-032-label",
+          "position": {
+            "x": 0.74,
+            "y": 0.24
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-house.png",
+          "label": "TIỀN CỌC ≈ 1/2 GIÁ TRỊ CĂN NHÀ",
+          "width": 560,
+          "height": 250,
+          "delay": 18
+        }
+      ]
+    },
+    {
+      "id": "fresh-033",
+      "label": "Show the entry barrier before the mechanism seems benign.",
+      "startFrame": 2811,
+      "durationFrames": 290,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "Nghe hợp lý mà có mà có một cái\r\nvấn đề ấy là cái khoản tiền ban đầu nó\r\nvào rất là to ấy. Muốn thuê được nhà thì\r\nbạn phải có sẵn một khoản tiền lớn",
+      "sourceRange": {
+        "startWord": 910,
+        "endWord": 946,
+        "quoteChecksum": "690f52b7882cb28ee48e3b32d95a7ff63d9ef8b8b583424ae5f976aef9a651f0"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "khoản tiền ban đầu",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 85,
+          "renderedComponentIds": [
+            "fresh-033-cat",
+            "fresh-033-prop"
+          ],
+          "fromState": "{\"src\":\"finance/wallet\",\"slot\":\"RIGHT\",\"scale\":2.2}",
+          "toState": "{\"src\":\"finance/wallet\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "nó vào rất là to",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 111,
+          "renderedComponentIds": [
+            "fresh-033-cat",
+            "fresh-033-prop"
+          ],
+          "fromState": "{\"src\":\"finance/wallet\",\"slot\":\"RIGHT\",\"scale\":2.2}",
+          "toState": "{\"src\":\"finance/budget\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "Nghe",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "fresh-033-cat"
+          ],
+          "fromState": "characters/cat_homebuyer",
+          "toState": "characters/cat_sad"
+        },
+        {
+          "beatText": "phải có sẵn một khoản tiền lớn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 217,
+          "renderedComponentIds": [
+            "fresh-033-cat",
+            "fresh-033-prop"
+          ],
+          "fromState": "{\"src\":\"finance/wallet\",\"slot\":\"RIGHT\",\"scale\":2.2}",
+          "toState": "{\"src\":\"finance/wallet\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "The upfront hurdle is the catch.",
+      "semanticAction": "counts",
+      "semanticObject": "an insufficient cash pile",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "finance/wallet",
+        "finance/budget",
+        "characters/cat_sad"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:4p|LEFT,LEFT,RIGHT,free,free,free|none|none|none",
+      "silentFrameTakeaway": "Renting needs a giant cash pile.",
+      "focalOccupancyTarget": 0.5,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "register:character_action",
+        "asset:finance/wallet"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Nghe hợp lý mà có mà có một cái",
+          "startFrame": 0,
+          "endFrame": 58
+        },
+        {
+          "text": "vấn đề ấy là cái khoản tiền ban đầu",
+          "startFrame": 58,
+          "endFrame": 123
+        },
+        {
+          "text": "nó vào rất là to ấy Muốn thuê được",
+          "startFrame": 123,
+          "endFrame": 186
+        },
+        {
+          "text": "nhà thì bạn phải có sẵn một khoản tiền",
+          "startFrame": 186,
+          "endFrame": 256
+        },
+        {
+          "text": "lớn",
+          "startFrame": 256,
+          "endFrame": 290
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-033-cat",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "fresh-033-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "Muốn thuê nhà phải có sẵn tiền lớn",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 87,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-033-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Muốn thuê nhà phải có sẵn tiền lớn",
+          "enterDelay": 85,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-033-cat",
+            "fresh-033-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-033-prop",
+          "src": "styles/d/generated-assets/icons/finance-budget.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Muốn thuê nhà phải có sẵn tiền lớn",
+          "enterDelay": 111,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-033-cat",
+            "fresh-033-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-033-cat",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "fresh-033-cat"
+          ]
+        },
+        {
+          "assetId": "fresh-033-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "Muốn thuê nhà phải có sẵn tiền lớn",
+          "enterDelay": 217,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-033-cat",
+            "fresh-033-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "fresh-034",
+      "label": "Use housing photography to ground the cheap-money Jeonse condition.",
+      "startFrame": 3101,
+      "durationFrames": 379,
+      "layout": "CLOSE_UP",
+      "entranceStyle": "cut",
+      "narration": "Trong cái thời mà lãi suất thấp thì chỗ\r\nnày cũng ngon thôi, không vấn đề gì cả.\r\nTiền rẻ mà chủ nhà có thể đem tiền đặt\r\ncọc đi đầu tư. Người thuê thì không phải\r\ntrả từ nhà hàng tháng ai cũng vui",
+      "sourceRange": {
+        "startWord": 947,
+        "endWord": 991,
+        "quoteChecksum": "35ff83ced3a9660e67556f3fbcd86719316a7505906b7400f17b40dfc385f8ce"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "BEAT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "chỗ này cũng ngon thôi",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 50,
+          "renderedComponentIds": [
+            "fresh-034-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/korea_apartments.jpg:Căn hộ Seoul"
+        },
+        {
+          "beatText": "không vấn đề gì cả",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 92,
+          "renderedComponentIds": [
+            "fresh-034-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/money:Tiền rẻ · hệ thống chạy êm"
+        },
+        {
+          "beatText": "chủ nhà có thể đem tiền đặt cọc đi đầu tư",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 172,
+          "renderedComponentIds": [
+            "fresh-034-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/money:Chủ nhà đem tiền cọc đi đầu tư"
+        },
+        {
+          "beatText": "Người thuê thì không phải trả",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 263,
+          "renderedComponentIds": [
+            "fresh-034-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-housing-pexels-5505895.jpg:Không trả tiền thuê hàng tháng"
+        },
+        {
+          "beatText": "Tiền rẻ",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 149,
+          "renderedComponentIds": [
+            "fresh-034-cutaway-5"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-housing-pexels-5505895.jpg:Tiền rẻ nâng giá nhà"
+        },
+        {
+          "beatText": "ai cũng vui",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 330,
+          "renderedComponentIds": [
+            "fresh-034-cutaway-6"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/korea_apartments.jpg:Ai cũng tưởng là ổn"
+        }
+      ],
+      "semanticTakeaway": "Cheap money makes the system feel painless.",
+      "semanticAction": "support",
+      "semanticObject": "the Jeonse bargain",
+      "photoTreatment": "tv_frame",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "backgrounds/korea_apartments.jpg",
+        "finance/money",
+        "backgrounds/evidence-housing-pexels-5505895.jpg"
+      ],
+      "heroVisual": true,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|tv_frame",
+      "silentFrameTakeaway": "Low rates make Jeonse work.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:BEAT",
+        "register:photo_broll",
+        "asset:backgrounds/korea_apartments.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Trong cái thời mà lãi suất thấp thì chỗ",
+          "startFrame": 0,
+          "endFrame": 79
+        },
+        {
+          "text": "này cũng ngon thôi không vấn đề gì cả",
+          "startFrame": 79,
+          "endFrame": 154
+        },
+        {
+          "text": "Tiền rẻ mà chủ nhà có thể đem tiền",
+          "startFrame": 154,
+          "endFrame": 223
+        },
+        {
+          "text": "đặt cọc đi đầu tư Người thuê thì không",
+          "startFrame": 223,
+          "endFrame": 300
+        },
+        {
+          "text": "phải trả từ nhà hàng tháng ai cũng vui",
+          "startFrame": 300,
+          "endFrame": 379
+        }
+      ],
+      "backgroundSrc": "backgrounds/korea_apartments.jpg",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-034-cutaway",
+          "contentSrc": "backgrounds/korea_apartments.jpg",
+          "caption": "Căn hộ Seoul",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 50
+        },
+        {
+          "id": "fresh-034-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-money.png",
+          "caption": "Tiền rẻ · hệ thống chạy êm",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 92
+        },
+        {
+          "id": "fresh-034-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-money.png",
+          "caption": "Chủ nhà đem tiền cọc đi đầu tư",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 172
+        },
+        {
+          "id": "fresh-034-cutaway-4",
+          "contentSrc": "backgrounds/evidence-housing-pexels-5505895.jpg",
+          "caption": "Không trả tiền thuê hàng tháng",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 263
+        },
+        {
+          "id": "fresh-034-cutaway-5",
+          "contentSrc": "backgrounds/evidence-housing-pexels-5505895.jpg",
+          "caption": "Tiền rẻ nâng giá nhà",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 149
+        },
+        {
+          "id": "fresh-034-cutaway-6",
+          "contentSrc": "backgrounds/korea_apartments.jpg",
+          "caption": "Ai cũng tưởng là ổn",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 330
+        }
+      ]
+    },
+    {
+      "id": "fresh-035",
+      "label": "Make the rising-rate failure personal and legible.",
+      "startFrame": 3480,
+      "durationFrames": 294,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "nhưng\r\nmà khi lãi suất tăng ấy thì nhiều chủ\r\nnhà bắt đầu gặp khó khăn trong cái việc\r\nlà trả lại tiền cọc khi mà hợp đồng kết\r\nthúc và cái người chịu áp lực đầu tiên\r\nlại thường là người đi thuê",
+      "sourceRange": {
+        "startWord": 992,
+        "endWord": 1035,
+        "quoteChecksum": "cef0d00f6d9f12854754b189623d508481b6bec728e6a3a640368932b30db57c"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "khi lãi suất tăng",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 20,
+          "renderedComponentIds": [
+            "fresh-035-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/interest_rate:LÃI SUẤT TĂNG"
+        },
+        {
+          "beatText": "chủ nhà bắt đầu gặp khó khăn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 59,
+          "renderedComponentIds": [
+            "fresh-035-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:CHỦ NHÀ MẮC KẸT VỚI NỢ"
+        },
+        {
+          "beatText": "trả lại tiền cọc",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 123,
+          "renderedComponentIds": [
+            "fresh-035-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/savings:TIỀN CỌC CHƯA HOÀN TRẢ"
+        },
+        {
+          "beatText": "người đi thuê",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 247,
+          "renderedComponentIds": [
+            "fresh-035-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/budget:ÁP LỰC DỒN SANG NGƯỜI THUÊ"
+        }
+      ],
+      "semanticTakeaway": "Higher rates transfer immediate stress to the renter.",
+      "semanticAction": "cannot return",
+      "semanticObject": "tenant deposit",
+      "semanticSetting": "living room",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "characters/cat_business",
+        "finance/interest_rate",
+        "warning",
+        "finance/savings",
+        "finance/budget",
+        "assets/scenes/dinner_table.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|stage:dinner_table|2a:0p|seat_left,seat_right|bubble,bubble,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "The renter cannot get the deposit back.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_homebuyer",
+        "asset:characters/cat_business",
+        "asset:assets/scenes/dinner_table.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "nhưng mà khi lãi suất tăng ấy thì nhiều",
+          "startFrame": 0,
+          "endFrame": 61
+        },
+        {
+          "text": "chủ nhà bắt đầu gặp khó khăn trong cái",
+          "startFrame": 61,
+          "endFrame": 120
+        },
+        {
+          "text": "việc là trả lại tiền cọc khi mà hợp",
+          "startFrame": 120,
+          "endFrame": 175
+        },
+        {
+          "text": "đồng kết thúc và cái người chịu áp lực",
+          "startFrame": 175,
+          "endFrame": 234
+        },
+        {
+          "text": "đầu tiên lại thường là người đi thuê",
+          "startFrame": 234,
+          "endFrame": 294
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/dinner-table.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-035-a",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "circle": "#D7E8E6",
+          "anchor": "seat_left",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 51,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-035-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "anchor": "seat_right",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "fresh-035-qa",
+          "anchorAssetId": "fresh-035-a",
+          "text": "Tiền cọc của tôi đâu?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 48,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "fresh-035-qb",
+          "anchorAssetId": "fresh-035-b",
+          "text": "Lãi tăng, tôi chưa hoàn trả được.",
+          "direction": "left",
+          "delay": 72,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-035-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "caption": "LÃI SUẤT TĂNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 20
+        },
+        {
+          "id": "fresh-035-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "CHỦ NHÀ MẮC KẸT VỚI NỢ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 59
+        },
+        {
+          "id": "fresh-035-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-savings.png",
+          "caption": "TIỀN CỌC CHƯA HOÀN TRẢ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 123
+        },
+        {
+          "id": "fresh-035-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/finance-budget.png",
+          "caption": "ÁP LỰC DỒN SANG NGƯỜI THUÊ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 247
+        }
+      ]
+    },
+    {
+      "id": "fresh-036",
+      "label": "Tighten the lens from households to young adults.",
+      "startFrame": 3774,
+      "durationFrames": 309,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "và nếu bạn\r\nlà người trẻ thì câu chuyện nó còn khó\r\nkhăn hơn nữa. Tại vì tỉ lệ có việc làm\r\ncủa thanh niên thì lại thấp hơn đáng kể\r\nso với mặt bằng của nhiều nước phát\r\ntriển",
+      "sourceRange": {
+        "startWord": 1036,
+        "endWord": 1075,
+        "quoteChecksum": "1590da6f30f2e3ac2379a16b87433dde3e5ed87e19150b24599f310e8fedee89"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "người trẻ",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "frame": 29,
+          "renderedComponentIds": [
+            "fresh-036-a",
+            "fresh-036-prop"
+          ],
+          "fromState": "{\"src\":\"characters/cat_sad\",\"anchor\":\"floor\"}",
+          "toState": "{\"src\":\"characters/cat_sad\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "câu chuyện nó còn khó khăn hơn nữa",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 53,
+          "renderedComponentIds": [
+            "fresh-036-prop"
+          ],
+          "fromState": "finance/savings",
+          "toState": "finance/budget"
+        },
+        {
+          "beatText": "tỉ lệ có việc làm",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 145,
+          "renderedComponentIds": [
+            "fresh-036-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-construction-pexels-12454407.jpg:VIỆC LÀM THANH NIÊN"
+        },
+        {
+          "beatText": "thấp hơn đáng kể",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 200,
+          "renderedComponentIds": [
+            "fresh-036-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:chart/down/01/flat/bold/color:THẤP HƠN ĐÁNG KỂ"
+        }
+      ],
+      "semanticTakeaway": "The next generation starts from a worse base.",
+      "semanticAction": "faces",
+      "semanticObject": "a weaker job market",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "finance/savings",
+        "finance/budget",
+        "backgrounds/evidence-construction-pexels-12454407.jpg",
+        "chart/down/01/flat/bold/color",
+        "assets/scenes/bedroom.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:2p|floor,free,free,free|frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Young people start with fewer options.",
+      "focalOccupancyTarget": 0.48,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_sad",
+        "asset:finance/savings",
+        "asset:assets/scenes/bedroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "và nếu bạn là người trẻ thì câu chuyện",
+          "startFrame": 0,
+          "endFrame": 70
+        },
+        {
+          "text": "nó còn khó khăn hơn nữa Tại vì tỉ",
+          "startFrame": 70,
+          "endFrame": 131
+        },
+        {
+          "text": "lệ có việc làm của thanh niên thì lại",
+          "startFrame": 131,
+          "endFrame": 200
+        },
+        {
+          "text": "thấp hơn đáng kể so với mặt bằng của",
+          "startFrame": 200,
+          "endFrame": 267
+        },
+        {
+          "text": "nhiều nước phát triển",
+          "startFrame": 267,
+          "endFrame": 309
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/bedroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-036-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "anchor": "floor",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 139,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-036-prop",
+          "src": "styles/d/generated-assets/icons/finance-savings.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-036-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "enterAnimation": "none",
+          "enterDelay": 29,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-036-a",
+            "fresh-036-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-036-prop",
+          "src": "styles/d/generated-assets/icons/finance-budget.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 53,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-036-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-036-cutaway",
+          "contentSrc": "backgrounds/evidence-construction-pexels-12454407.jpg",
+          "caption": "VIỆC LÀM THANH NIÊN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 145
+        },
+        {
+          "id": "fresh-036-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "caption": "THẤP HƠN ĐÁNG KỂ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 200
+        }
+      ]
+    },
+    {
+      "id": "fresh-037",
+      "label": "Place a precarious worker beside the income that cannot catch rising living and asset costs.",
+      "startFrame": 4083,
+      "durationFrames": 387,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "Rất nhiều người phải làm việc\r\ntheo hợp đồng ngắn hạn, làm bán thời\r\ngian hoặc làm những công việc thiếu ổn\r\nđịnh. Vì thế nên là thu nhập của họ tăng\r\nrất là chậm trong khi chi phí sinh hoạt\r\nvà giá tài sản thì vẫn tiếp tục đi lên",
+      "sourceRange": {
+        "startWord": 1076,
+        "endWord": 1126,
+        "quoteChecksum": "c142f5eb9a1558fd390b40488845cf5a59b32a380bde5612136a8ec1fc803854"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Rất",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 5,
+          "renderedComponentIds": [
+            "fresh-037-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/home_study.png:Công việc mong manh"
+        },
+        {
+          "beatText": "hợp đồng ngắn hạn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 46,
+          "renderedComponentIds": [
+            "fresh-037-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-document-pexels-6694543.jpg:Hợp đồng ngắn hạn"
+        },
+        {
+          "beatText": "Vì thế",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 184,
+          "renderedComponentIds": [
+            "fresh-037-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/home_study.png:Thu nhập bị ghìm lại"
+        },
+        {
+          "beatText": "chi phí sinh hoạt và giá tài sản",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 272,
+          "renderedComponentIds": [
+            "fresh-037-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/house:Chi phí và giá tài sản tiếp tục tăng"
+        },
+        {
+          "beatText": "thu nhập của họ tăng",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 215,
+          "renderedComponentIds": [
+            "fresh-037-cutaway-5"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/stock_chart.png:Thu nhập chậm"
+        },
+        {
+          "beatText": "những công việc thiếu ổn định",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 124,
+          "renderedComponentIds": [
+            "fresh-037-cutaway-6"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-document-pexels-33175649.jpg:Hợp đồng mong manh"
+        },
+        {
+          "beatText": "vẫn tiếp tục đi lên",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 328,
+          "renderedComponentIds": [
+            "fresh-037-cutaway-7"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/house:Giá tài sản vẫn đi lên"
+        }
+      ],
+      "semanticTakeaway": "Income cannot catch assets when work itself is fragile.",
+      "semanticAction": "cycle through",
+      "semanticObject": "unstable jobs",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_worker",
+        "finance/revenue",
+        "backgrounds/home_study.png",
+        "backgrounds/evidence-document-pexels-6694543.jpg",
+        "finance/house",
+        "backgrounds/stock_chart.png",
+        "backgrounds/evidence-document-pexels-33175649.jpg",
+        "assets/scenes/street.svg"
+      ],
+      "heroVisual": true,
+      "focalType": "character_action",
+      "characterRequired": true,
+      "visualFingerprint": "TABLEAU|full_tableau|stage:street|1a:1p|free,sidewalk_left|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Short contracts and part-time work hold income down.",
+      "focalOccupancyTarget": 0.57,
+      "noveltyFromPrevious": [
+        "asset:characters/cat_worker",
+        "asset:finance/revenue",
+        "asset:assets/scenes/street.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Rất nhiều người phải làm việc theo hợp đồng",
+          "startFrame": 0,
+          "endFrame": 76
+        },
+        {
+          "text": "ngắn hạn làm bán thời gian hoặc làm những",
+          "startFrame": 76,
+          "endFrame": 148
+        },
+        {
+          "text": "công việc thiếu ổn định Vì thế nên là",
+          "startFrame": 148,
+          "endFrame": 213
+        },
+        {
+          "text": "thu nhập của họ tăng rất là chậm trong",
+          "startFrame": 213,
+          "endFrame": 280
+        },
+        {
+          "text": "khi chi phí sinh hoạt và giá tài sản",
+          "startFrame": 280,
+          "endFrame": 344
+        },
+        {
+          "text": "thì vẫn tiếp tục đi lên",
+          "startFrame": 344,
+          "endFrame": 387
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/street.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-037-a",
+          "src": "styles/d/generated-assets/characters/cat_worker.png",
+          "anchor": "sidewalk_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 118,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-037-prop",
+          "src": "styles/d/generated-assets/icons/finance-revenue.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-037-cutaway",
+          "contentSrc": "styles/d/generated-backgrounds/home_study.png",
+          "caption": "Công việc mong manh",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 5
+        },
+        {
+          "id": "fresh-037-cutaway-2",
+          "contentSrc": "backgrounds/evidence-document-pexels-6694543.jpg",
+          "caption": "Hợp đồng ngắn hạn",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 46
+        },
+        {
+          "id": "fresh-037-cutaway-3",
+          "contentSrc": "styles/d/generated-backgrounds/home_study.png",
+          "caption": "Thu nhập bị ghìm lại",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 184
+        },
+        {
+          "id": "fresh-037-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/finance-house.png",
+          "caption": "Chi phí và giá tài sản tiếp tục tăng",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 272
+        },
+        {
+          "id": "fresh-037-cutaway-5",
+          "contentSrc": "styles/d/generated-backgrounds/stock_chart.png",
+          "caption": "Thu nhập chậm",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 215
+        },
+        {
+          "id": "fresh-037-cutaway-6",
+          "contentSrc": "backgrounds/evidence-document-pexels-33175649.jpg",
+          "caption": "Hợp đồng mong manh",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 124
+        },
+        {
+          "id": "fresh-037-cutaway-7",
+          "contentSrc": "styles/d/generated-assets/icons/finance-house.png",
+          "caption": "Giá tài sản vẫn đi lên",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 328
+        }
+      ]
+    },
+    {
+      "id": "fresh-038",
+      "label": "Show a young person confronting the widening cost gap despite studying and working hard.",
+      "startFrame": 4470,
+      "durationFrames": 326,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "Và điều này tạo ra một cảm giác khá là\r\nphổ biến trong giới trẻ Hàn Quốc là dù\r\ncó học hành tử tế, làm việc chăm chỉ thì\r\ncuộc sống vẫn ngày càng xa khỏi những\r\ncái gì mà thế hệ cha mẹ đã từng đạt\r\nđược",
+      "sourceRange": {
+        "startWord": 1127,
+        "endWord": 1174,
+        "quoteChecksum": "683bebb256b448f0366aaffc0f74b7db681cbbfa9c35b416b3c56cb284a942b0"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Và",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 4,
+          "renderedComponentIds": [
+            "fresh-038-cat"
+          ],
+          "fromState": "characters/cat_sad",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "làm việc chăm chỉ",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 157,
+          "renderedComponentIds": [
+            "fresh-038-cat",
+            "fresh-038-prop"
+          ],
+          "fromState": "{\"src\":\"finance/expense\",\"slot\":\"RIGHT\",\"scale\":2.2}",
+          "toState": "{\"src\":\"finance/savings\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "thế hệ cha mẹ",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 254,
+          "renderedComponentIds": [
+            "fresh-038-cat",
+            "fresh-038-prop"
+          ],
+          "fromState": "{\"src\":\"finance/expense\",\"slot\":\"RIGHT\",\"scale\":2.2}",
+          "toState": "{\"src\":\"finance/expense\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "The old bargain no longer feels reliable.",
+      "semanticAction": "feels",
+      "semanticObject": "a widening gap",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "finance/expense",
+        "characters/cat_think",
+        "finance/savings"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:3p|LEFT,LEFT,RIGHT,free,free|none|none|none",
+      "silentFrameTakeaway": "Hard work no longer closes the gap.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "register:character_action",
+        "asset:characters/cat_sad",
+        "asset:finance/expense"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Và điều này tạo ra một cảm giác khá",
+          "startFrame": 0,
+          "endFrame": 57
+        },
+        {
+          "text": "là phổ biến trong giới trẻ Hàn Quốc là",
+          "startFrame": 57,
+          "endFrame": 119
+        },
+        {
+          "text": "dù có học hành tử tế làm việc chăm",
+          "startFrame": 119,
+          "endFrame": 175
+        },
+        {
+          "text": "chỉ thì cuộc sống vẫn ngày càng xa khỏi",
+          "startFrame": 175,
+          "endFrame": 239
+        },
+        {
+          "text": "những cái gì mà thế hệ cha mẹ đã",
+          "startFrame": 239,
+          "endFrame": 291
+        },
+        {
+          "text": "từng đạt được",
+          "startFrame": 291,
+          "endFrame": 326
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-038-cat",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "fresh-038-prop",
+          "src": "styles/d/generated-assets/icons/finance-expense.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "BỊ BỎ LẠI",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 230,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-038-cat",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 4,
+          "clearPrevious": [
+            "fresh-038-cat"
+          ]
+        },
+        {
+          "assetId": "fresh-038-prop",
+          "src": "styles/d/generated-assets/icons/finance-savings.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "BỊ BỎ LẠI",
+          "enterDelay": 157,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-038-cat",
+            "fresh-038-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-038-prop",
+          "src": "styles/d/generated-assets/icons/finance-expense.png",
+          "scale": 3.2,
+          "circle": "#F1D8C5",
+          "label": "BỊ BỎ LẠI",
+          "enterDelay": 254,
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "enterAnimation": "none",
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "fresh-038-cat",
+            "fresh-038-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "fresh-039",
+      "label": "Place a young renter in a home-study room facing the home-price barrier to long-term accumulation.",
+      "startFrame": 4796,
+      "durationFrames": 210,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "Mua nhà ngày càng khó, tích lũy\r\ntài sản ngày càng khó hơn và cái khoảng\r\ncách đó thì cứ lớn dần theo thời gian",
+      "sourceRange": {
+        "startWord": 1175,
+        "endWord": 1199,
+        "quoteChecksum": "221bf5cd5e27d7b5232e83924674bae866ed4718499d6901f2e480aa211f6cd1"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "tích lũy tài sản ngày càng khó hơn",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 54,
+          "renderedComponentIds": [
+            "fresh-039-a"
+          ],
+          "fromState": "characters/cat_worker",
+          "toState": "characters/cat_think"
+        }
+      ],
+      "semanticTakeaway": "Homes rise faster than wages, making saving alone feel too slow.",
+      "semanticAction": "struggles to build",
+      "semanticObject": "savings",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_worker",
+        "finance/savings",
+        "characters/cat_think",
+        "assets/scenes/bedroom.svg"
+      ],
+      "heroVisual": true,
+      "focalType": "character_action",
+      "characterRequired": true,
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:1p|floor,floor,free|none|none|none",
+      "silentFrameTakeaway": "Homes rise faster than wages.",
+      "focalOccupancyTarget": 0.57,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_worker",
+        "asset:finance/savings",
+        "asset:assets/scenes/bedroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Mua nhà ngày càng khó tích lũy tài sản",
+          "startFrame": 0,
+          "endFrame": 74
+        },
+        {
+          "text": "ngày càng khó hơn và cái khoảng cách đó",
+          "startFrame": 74,
+          "endFrame": 151
+        },
+        {
+          "text": "thì cứ lớn dần theo thời gian",
+          "startFrame": 151,
+          "endFrame": 210
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/bedroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-039-a",
+          "src": "styles/d/generated-assets/characters/cat_worker.png",
+          "anchor": "floor",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 48,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-039-prop",
+          "src": "styles/d/generated-assets/icons/finance-savings.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-039-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "floor",
+          "enterAnimation": "none",
+          "enterDelay": 54,
+          "clearPrevious": [
+            "fresh-039-a"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "fresh-040",
+      "label": "Show why markets begin to look like an exit.",
+      "startFrame": 5006,
+      "durationFrames": 340,
+      "layout": "TABLEAU",
+      "entranceStyle": "slide",
+      "narration": "Và trong bối cảnh như thế thì thị trường\r\ntài chính trông cũng rất là hấp dẫn.\r\nNgoài cái việc là muốn làm dầu nhanh ra\r\nthì còn là vì nhiều người cảm thấy là họ\r\ncũng không còn nhiều lựa chọn khác nữa",
+      "sourceRange": {
+        "startWord": 1200,
+        "endWord": 1243,
+        "quoteChecksum": "ea3cb61cb20ba12138df72e943ee99f80117e547b6ec8cfca9636cdca8a12365"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "thị trường tài chính",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 53,
+          "renderedComponentIds": [
+            "fresh-040-a"
+          ],
+          "fromState": "characters/cat_homebuyer",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "rất là hấp dẫn",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 90,
+          "renderedComponentIds": [
+            "fresh-040-a",
+            "fresh-040-prop"
+          ],
+          "fromState": "{\"src\":\"finance/investment\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/investment\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        },
+        {
+          "beatText": "không còn nhiều lựa chọn khác",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 266,
+          "renderedComponentIds": [
+            "fresh-040-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/expense:Không còn nhiều lựa chọn"
+        },
+        {
+          "beatText": "Và",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 3,
+          "renderedComponentIds": [
+            "fresh-040-a"
+          ],
+          "fromState": "characters/cat_homebuyer",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "làm dầu nhanh",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 174,
+          "renderedComponentIds": [
+            "fresh-040-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/money:Làm giàu nhanh"
+        },
+        {
+          "beatText": "thì còn là vì nhiều người",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 200,
+          "renderedComponentIds": [
+            "fresh-040-a",
+            "fresh-040-prop"
+          ],
+          "fromState": "{\"src\":\"finance/investment\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/investment\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "Investing appears attractive when ordinary accumulation fails.",
+      "semanticAction": "looks toward",
+      "semanticObject": "financial market",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "finance/investment",
+        "characters/cat_think",
+        "finance/expense",
+        "finance/money",
+        "assets/scenes/cafe.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|3a:3p|counter_left,counter_left,counter_left,free,free,free|frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "The market looks like an escape route.",
+      "focalOccupancyTarget": 0.5,
+      "noveltyFromPrevious": [
+        "asset:characters/cat_homebuyer",
+        "asset:finance/investment",
+        "asset:assets/scenes/cafe.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Và trong bối cảnh như thế thì thị trường",
+          "startFrame": 0,
+          "endFrame": 70
+        },
+        {
+          "text": "tài chính trông cũng rất là hấp dẫn Ngoài",
+          "startFrame": 70,
+          "endFrame": 142
+        },
+        {
+          "text": "cái việc là muốn làm dầu nhanh ra thì",
+          "startFrame": 142,
+          "endFrame": 207
+        },
+        {
+          "text": "còn là vì nhiều người cảm thấy là họ",
+          "startFrame": 207,
+          "endFrame": 271
+        },
+        {
+          "text": "cũng không còn nhiều lựa chọn khác nữa",
+          "startFrame": 271,
+          "endFrame": 340
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/cafe.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-040-a",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 194,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-040-prop",
+          "src": "styles/d/generated-assets/icons/finance-investment.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "fresh-040-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 53,
+          "clearPrevious": [
+            "fresh-040-a"
+          ]
+        },
+        {
+          "assetId": "fresh-040-prop",
+          "src": "styles/d/generated-assets/icons/finance-investment.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 90,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-040-a",
+            "fresh-040-prop"
+          ]
+        },
+        {
+          "assetId": "fresh-040-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 3,
+          "clearPrevious": [
+            "fresh-040-a"
+          ]
+        },
+        {
+          "assetId": "fresh-040-prop",
+          "src": "styles/d/generated-assets/icons/finance-investment.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 200,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "fresh-040-a",
+            "fresh-040-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-040-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-expense.png",
+          "caption": "Không còn nhiều lựa chọn",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 266
+        },
+        {
+          "id": "fresh-040-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-money.png",
+          "caption": "Làm giàu nhanh",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 174
+        }
+      ]
+    },
+    {
+      "id": "fresh-041",
+      "label": "Let the worker verbalize the false choice.",
+      "startFrame": 5346,
+      "durationFrames": 291,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "Nếu mà tiền lương mà tăng chậm hơn giá\r\ntài sản thì cái việc chăm chỉ đi làm nó\r\nkhông còn đủ nữa mà phải đi thêm những\r\ncon đường khác và chứng khoán nó bắt đầu\r\ntrông giống một con đường tắt",
+      "sourceRange": {
+        "startWord": 1244,
+        "endWord": 1286,
+        "quoteChecksum": "73b79d52ab35ca13e5f684173fe0dcc54f82e5bf59ceca9fc4c9bb362e3821d7"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "tăng chậm hơn giá tài sản",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 39,
+          "renderedComponentIds": [
+            "fresh-041-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:Giá tài sản chạy nhanh hơn lương"
+        },
+        {
+          "beatText": "chăm chỉ đi làm",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 92,
+          "renderedComponentIds": [
+            "fresh-041-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/budget:Làm chăm chỉ chưa đủ"
+        },
+        {
+          "beatText": "con đường khác",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 175,
+          "renderedComponentIds": [
+            "fresh-041-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/investment:Tìm một con đường khác"
+        }
+      ],
+      "semanticTakeaway": "Work alone no longer feels sufficient.",
+      "semanticAction": "compares",
+      "semanticObject": "wage and asset growth",
+      "semanticSetting": "office",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_think",
+        "characters/cat_worker",
+        "finance/chart_up",
+        "finance/budget",
+        "finance/investment",
+        "assets/scenes/street.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|stage:street|2a:0p|sidewalk_left,sidewalk_right|bubble,bubble,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Salary is losing to asset prices.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_explain",
+        "asset:characters/cat_worker",
+        "asset:assets/scenes/street.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Nếu mà tiền lương mà tăng chậm hơn giá",
+          "startFrame": 0,
+          "endFrame": 59
+        },
+        {
+          "text": "tài sản thì cái việc chăm chỉ đi làm",
+          "startFrame": 59,
+          "endFrame": 116
+        },
+        {
+          "text": "nó không còn đủ nữa mà phải đi thêm",
+          "startFrame": 116,
+          "endFrame": 171
+        },
+        {
+          "text": "những con đường khác và chứng khoán nó bắt",
+          "startFrame": 171,
+          "endFrame": 237
+        },
+        {
+          "text": "đầu trông giống một con đường tắt",
+          "startFrame": 237,
+          "endFrame": 291
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/street.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "fresh-041-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "circle": "#D7E8E6",
+          "anchor": "sidewalk_left",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 31,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "fresh-041-b",
+          "src": "styles/d/generated-assets/characters/cat_worker.png",
+          "circle": "#F1D8C5",
+          "anchor": "sidewalk_right",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "fresh-041-qa",
+          "anchorAssetId": "fresh-041-a",
+          "text": "Cứ làm chăm chỉ là đủ chứ?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 48,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "fresh-041-qb",
+          "anchorAssetId": "fresh-041-b",
+          "text": "Lương chậm hơn giá tài sản rồi.",
+          "direction": "left",
+          "delay": 72,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-041-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "Giá tài sản chạy nhanh hơn lương",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 39
+        },
+        {
+          "id": "fresh-041-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-budget.png",
+          "caption": "Làm chăm chỉ chưa đủ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 92
+        },
+        {
+          "id": "fresh-041-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-investment.png",
+          "caption": "Tìm một con đường khác",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 175
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-proof",
+  "projectOpeningSceneId": "fresh-001"
+}

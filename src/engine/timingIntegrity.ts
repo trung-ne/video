@@ -467,7 +467,7 @@ export function checkCanonicalSubtitleAlignment(
     return [{
       code: "SUBTITLE_ALIGNMENT_COVERAGE",
       severity: "BLOCKER",
-      message: `Canonical subtitle alignment has only ${(Number.isFinite(matchedCoverage) ? matchedCoverage * 100 : 0).toFixed(1)}% directly matched words; minimum is 85.0%.`,
+      message: `Canonical subtitle alignment has only ${(Number.isFinite(matchedCoverage) ? matchedCoverage * 100 : 0).toFixed(1)}% ASR-aligned tokens; minimum is 85.0%.`,
       hint: "Improve the alignment model/audio or inspect the TTS pronunciation before production.",
     }];
   }

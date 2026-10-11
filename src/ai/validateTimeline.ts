@@ -6,6 +6,7 @@ import { isCSSBackground, backgroundImageExists } from "./backgroundResolver";
 import { STAGE_ANCHORS, canonicalStagePath } from "../engine/stageAnchors";
 import { resolveAssetSrc } from "../engine/assetPaths";
 import { ASSET_STYLES, styleManifestHash } from "../engine/assetStyle";
+import { chunkAssemblyProvenanceShapeIssues } from "../engine/chunkProvenance";
 
 export interface ValidationResult {
   valid: boolean;
@@ -41,6 +42,18 @@ export function validateSceneTimeline(input: any): ValidationResult {
   }
   if (input.schemaVersion !== undefined && ![1, 2].includes(input.schemaVersion)) {
     errors.push(`Unsupported schemaVersion ${input.schemaVersion}`);
+  }
+
+  if (input.projectOpeningSceneId !== undefined && (typeof input.projectOpeningSceneId !== "string"
+    || !input.scenes.some((scene: any) => scene.id === input.projectOpeningSceneId))) {
+    // A seam proof may legitimately omit the real opening scene. Only require a
+    // stable string identity here; canonical timelines normally contain it.
+    if (typeof input.projectOpeningSceneId !== "string" || !input.artifactRole) {
+      errors.push("projectOpeningSceneId must identify a scene or belong to a derived chunk artifact");
+    }
+  }
+  if (input.artifactRole !== undefined && !["chunk-core", "chunk-proof"].includes(input.artifactRole)) {
+    errors.push(`artifactRole invalid: ${JSON.stringify(input.artifactRole)}`);
   }
 
   // timingProvenance is a checked field, not an ignored extra: a malformed or
@@ -80,6 +93,10 @@ export function validateSceneTimeline(input: any): ValidationResult {
       }
     }
   }
+  if (input.chunkAssemblyProvenance !== undefined) {
+    const provenanceIssues = chunkAssemblyProvenanceShapeIssues(input.chunkAssemblyProvenance);
+    errors.push(...provenanceIssues.map((message) => `chunkAssemblyProvenance: ${message}`));
+  }
 
   const validLayouts = [
     // V3 layouts
@@ -94,6 +111,9 @@ export function validateSceneTimeline(input: any): ValidationResult {
   const validTextStyles = ["TITLE", "STAT", "CALLOUT", "SECTION", "BODY", "CAPTION", "SUBTITLE"];
   const validCameraActions = ["ZOOM_IN", "ZOOM_OUT", "FOCUS_ON", "RESET", "PAN_LR"];
   const validTransitionStyles = ["flash", "wipe", "fadeBlack", "fadeWhite", "zoom"];
+  const validAuthoredTransitionActions = [
+    "advance", "reveal", "handoff", "swap_pose", "swap_asset", "focus_actor", "focus_asset",
+  ];
 
   const seenSceneIds = new Set<string>();
   const seenTextIds = new Set<string>();
@@ -140,6 +160,44 @@ export function validateSceneTimeline(input: any): ValidationResult {
     if (typeof scene.focalOccupancyTarget !== "number") errors.push(`${sp} requires focalOccupancyTarget`);
     if (!Array.isArray(scene.noveltyFromPrevious)) errors.push(`${sp} requires noveltyFromPrevious`);
     if ((scene.unresolvedAssets?.length ?? 0) > 0) errors.push(`${sp} has unresolvedAssets`);
+    if (scene.authoredTransitionReceipts !== undefined) {
+      if (!Array.isArray(scene.authoredTransitionReceipts)) {
+        errors.push(`${sp} authoredTransitionReceipts must be an array`);
+      } else {
+        for (const [ri, receipt] of scene.authoredTransitionReceipts.entries()) {
+          const rp = `${sp} authoredTransitionReceipt[${ri}]:`;
+          if (!receipt || typeof receipt !== "object") {
+            errors.push(`${rp} must be an object`);
+            continue;
+          }
+          if (typeof receipt.beatText !== "string" || !receipt.beatText.trim()) {
+            errors.push(`${rp} beatText must be a non-empty string`);
+          }
+          if (typeof receipt.action !== "string" || !receipt.action) {
+            errors.push(`${rp} action must be a non-empty string`);
+          } else if (!validAuthoredTransitionActions.includes(receipt.action)) {
+            errors.push(`${rp} unsupported action ${JSON.stringify(receipt.action)}`);
+          }
+          if (typeof receipt.targetSlot !== "string" || !receipt.targetSlot) {
+            errors.push(`${rp} targetSlot must be a non-empty string`);
+          }
+          if (!Number.isInteger(receipt.frame) || receipt.frame <= 0 || receipt.frame >= scene.durationFrames) {
+            errors.push(`${rp} frame must be an integer after scene start and before scene end`);
+          }
+          if (!Array.isArray(receipt.renderedComponentIds) || receipt.renderedComponentIds.length === 0
+            || receipt.renderedComponentIds.some((componentId: unknown) =>
+              typeof componentId !== "string" || !componentId.trim())) {
+            errors.push(`${rp} renderedComponentIds must be a non-empty string array`);
+          }
+          if (typeof receipt.fromState !== "string" || !receipt.fromState) {
+            errors.push(`${rp} fromState must be a non-empty string`);
+          }
+          if (typeof receipt.toState !== "string" || !receipt.toState) {
+            errors.push(`${rp} toState must be a non-empty string`);
+          }
+        }
+      }
+    }
 
     // Background sanity: track real images vs gradients, catch broken image paths
     if (scene.backgroundSrc) {

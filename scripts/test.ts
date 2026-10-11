@@ -2,7 +2,8 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { indexTranscript, makeSourceRange, validateStoryboardCoverage } from "../src/ai/transcriptCoverage";
+import { spawnSync } from "child_process";
+import { indexTranscript, makeSourceRange, validateStoryboardCoverage, checksumJson } from "../src/ai/transcriptCoverage";
 import { Storyboard } from "../src/types/storyboard";
 import { resolveAssetRequest, resolveAssetRequests } from "../src/engine/assetResolver";
 import { AssetManifest } from "../src/types/assets";
@@ -12,6 +13,8 @@ import {
   measureTeachingTextCoverage,
   runQualityCheck,
   runStoryboardCheck,
+  runScopedQualityCheck,
+  runScopedStoryboardCheck,
 } from "../src/ai/qualityCheck";
 import { stageMatchesSetting } from "../src/engine/stageRegistry";
 import { critiqueSceneBriefs } from "../src/ai/visualCritic";
@@ -27,16 +30,31 @@ import {
   hasBlocker,
 } from "../src/engine/timingIntegrity";
 import { canonicalJsonChecksum, verifyArtifactInputs } from "../src/engine/artifactIntegrity";
-import { promoteArtifacts, shouldPreserveFailedMp4 } from "../src/engine/promoteArtifacts";
+import { promoteArtifacts, pruneRunHistory, shouldPreserveFailedMp4 } from "../src/engine/promoteArtifacts";
 import { acquireRenderLock } from "../src/engine/renderLock";
+import {
+  acquireProjectChunkLock,
+  PROJECT_CHUNK_LOCK_STALE_MS,
+  ProjectChunkInterruptedError,
+  ProjectChunkLockOwner,
+  projectChunkLockPath,
+  runWithProjectChunkLock,
+} from "../src/engine/projectChunkLock";
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
+import {
+  assertVisualAuditReport,
+  assertVisualMeasurementConfiguration,
+  expectedVisualSampleSchedule,
+  normalizeVisualAuditOffsets,
+} from "../src/engine/visualAuditIntegrity";
 import { VISUAL_GRAMMARS } from "../src/engine/visualGrammars";
 import { compileScenes } from "../src/engine/sceneCompiler";
 import { injectLiveliness } from "../src/engine/liveliness";
 import { resolveAuthoredAssets } from "../src/engine/authoredAssets";
 import { approvedPhotoPaths, isApprovedNoFacePhoto } from "../src/engine/photoPolicy";
 import { fitTextToBox } from "../src/engine/textLayout";
-import { getPaletteSaturationScale } from "../src/engine/assetPaths";
+import { getPaletteSaturationScale, listManifestAssetPaths, listResolvableRefs } from "../src/engine/assetPaths";
+import { buildSystemPrompt, listAvailableAssets, listAvailableBackgrounds } from "../src/ai/systemPrompt";
 import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
 import { checkSpatialIntegrity, visibleAssetBox } from "../src/engine/spatialIntegrity";
 import { getEnterAnimation } from "../src/animations";
@@ -44,18 +62,111 @@ import { animationForEntranceStyle, normalizeEntranceAnimation, selectEntranceSt
 import {
   authoredCadenceIssues,
   authoredTransitionCapabilityIssues,
+  containsCanonicalPhrase,
   maximumVisualHold,
   requiredAuthoredTransitions,
 } from "../src/engine/visualCadence";
 import { estimateStablePaintedRatio } from "../src/engine/compositionDensity";
-import { planSemanticChunks, qualityScopeForChunk } from "../src/types/chunk";
-import { createStageAttestation, verifyStageAttestation, writeStageAttestation, readStageAttestation, checksumArtifact } from "../src/engine/chunkAttestations";
+import {
+  isLongVideoWordCount,
+  orderedSceneIdsForScope,
+  parseQualityScope,
+  planSemanticChunks,
+  qualityScopeForChunk,
+  verifyCanonicalChunkPlan,
+} from "../src/types/chunk";
+import {
+  CHUNK_ASSEMBLY_POLICY_VERSION,
+  CHUNK_POLICY_VERSION,
+  CHUNK_STAGES,
+  checksumArtifact,
+  chunkPipelinePaths,
+  chunkRunConfigPath,
+  computeExpectedChunkStageContract,
+  createChunkRunConfig,
+  createStageAttestation,
+  globalAuthoringReportPath,
+  productionToolchainFiles,
+  projectAudioIdentity,
+  stageAttestationPath,
+  validateChunkRunConfig,
+  verifyStageAttestation,
+  writeStageAttestation,
+  readStageAttestation,
+} from "../src/engine/chunkAttestations";
+import {
+  assembleChunkDurations,
+  projectStoryboardForChunk,
+  projectStoryboardForQualityScope,
+  promoteChunkAssemblyArtifacts,
+  verifyChunkAssembly,
+} from "../src/engine/chunkAssembly";
+import {
+  computeChunkAssemblyToolchainHashes,
+  verifyChunkAssemblyProvenance,
+} from "../src/engine/chunkProvenance";
+import referenceQuality from "../config/reference-quality.json";
+import { resolveStableSceneIds } from "../src/engine/sceneIdentity";
+import { ProcessRunError, runProcess, shouldRetryDllInitFailure, STATUS_DLL_INIT_FAILED } from "../src/engine/childProcessRunner";
+import { sha256File } from "../src/audio/prepareAudio";
+import {
+  assertChunkProofBindingUnchanged,
+  bindChunkProofToProject,
+} from "../src/engine/chunkProofIntegrity";
+import {
+  assertBoundTimelineIdentity,
+  assertCanonicalTimelinePath,
+  assertExactManualContactSheetReview,
+  assertOutputProjectIdentity,
+  buildCanonicalTimelineIdentity,
+} from "../src/engine/publicationIntegrity";
 
-type Test = { name: string; run: () => void };
+type Test = { name: string; run: () => void | Promise<void> };
 const tests: Test[] = [];
 function test(name: string, run: () => void): void {
   tests.push({ name, run });
 }
+
+function writeTestGlobalAuthoringReport(projectDir: string): string {
+  const reportPath = globalAuthoringReportPath(projectDir);
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, JSON.stringify({
+    schemaVersion: 1,
+    policyVersion: "route-a-global-authoring-v1",
+    passed: true,
+    testOnly: true,
+  }));
+  return reportPath;
+}
+
+test("Route B entry point is an import-free exit-2 tombstone", () => {
+  const source = fs.readFileSync(path.join(process.cwd(), "scripts", "generate-timeline.ts"), "utf8");
+  assert.doesNotMatch(source, /^\s*import\s/m);
+  const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
+  assert.ok(!packageJson.dependencies?.["@anthropic-ai/sdk"]);
+  assert.ok(!packageJson.dependencies?.["@google/genai"]);
+  assert.ok(!packageJson.dependencies?.["@google/generative-ai"]);
+  const run = spawnSync(process.execPath, [require.resolve("ts-node/dist/bin.js"), "scripts/generate-timeline.ts", "--idea", "ignored"], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    env: { ...process.env, ANTHROPIC_API_KEY: "must-not-be-read" },
+  });
+  assert.strictEqual(run.status, 2);
+  assert.match(`${run.stdout}\n${run.stderr}`, /Route B is locked/);
+
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-auto-tombstone-"));
+  try {
+    const auto = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), path.resolve("scripts", "new-project.ts"),
+      "--auto", "--name", "must-not-exist",
+    ], { cwd: temp, encoding: "utf8" });
+    assert.strictEqual(auto.status, 2);
+    assert.match(`${auto.stdout}\n${auto.stderr}`, /--auto is locked/);
+    assert.ok(!fs.existsSync(path.join(temp, "projects")), "--auto wrote project state before failing closed");
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
 
 test("chunk planning partitions authored semantic sections with seam halos", () => {
   const range = (startWord: number, endWord: number) => ({ startWord, endWord, quoteChecksum: `${startWord}-${endWord}` });
@@ -81,6 +192,1136 @@ test("chunk planning partitions authored semantic sections with seam halos", () 
   });
 });
 
+test("chunk planning and path helpers reject traversal identifiers", () => {
+  const range = { startWord: 0, endWord: 0, quoteChecksum: "range" };
+  const base: Storyboard = {
+    fps: 30,
+    width: 1920,
+    height: 1080,
+    sections: [{
+      id: "safe-section", sourceRange: range, thesis: "x", emotionalTurn: "x",
+      energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"],
+    }],
+    scenes: [{
+      id: "safe-scene", narration: "one", purpose: "x", emotion: "neutral", viewerFocus: "x",
+      visualGrammar: "EVIDENCE", sourceRange: range,
+    }],
+  };
+  for (const unsafe of ["../escape", "..\\escape", "a/b", "a\\b", ".", "a..b", "UPPER", "a\0b"]) {
+    const sectionResult = planSemanticChunks({
+      ...base,
+      sections: [{ ...base.sections![0], id: unsafe }],
+    }, { projectId: "fixture", storyboardChecksum: "storyboard" });
+    assert.ok(sectionResult.issues.some((issue) => issue.code === "SECTION_ID_UNSAFE"), unsafe);
+    assert.throws(() => chunkPipelinePaths(path.resolve("projects", "fixture"), unsafe), /must be lowercase alphanumeric/i);
+    assert.throws(() => stageAttestationPath(path.resolve("projects", "fixture"), unsafe, "compile"), /must be lowercase alphanumeric/i);
+  }
+  const unsafeScene = planSemanticChunks({
+    ...base,
+    scenes: [{ ...base.scenes[0], id: "..\\scene" }],
+  }, { projectId: "fixture", storyboardChecksum: "storyboard" });
+  assert.ok(unsafeScene.issues.some((issue) => issue.code === "SCENE_ID_UNSAFE"));
+  assert.throws(
+    () => stageAttestationPath(path.resolve("projects", "fixture"), "chunk-001-safe", "../compile" as any),
+    /Unsupported chunk stage/,
+  );
+
+  const paths = chunkPipelinePaths(path.resolve("projects", "fixture"), "chunk-001-safe");
+  const chunksRoot = path.resolve("projects", "fixture", "chunks");
+  assert.ok(!path.relative(chunksRoot, paths.chunkDir).startsWith(".."));
+  const publicChunkRoot = path.resolve("public", "audio", "chunks", "fixture");
+  assert.ok(!path.relative(publicChunkRoot, paths.audio).startsWith(".."));
+});
+
+test("storyboard-to-tts rejects unsafe and duplicate scene ids before artifact generation", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-tts-scene-id-"));
+  try {
+    const storyboardPath = path.join(temp, "storyboard.json");
+    const outPath = path.join(temp, "tts_scenes.json");
+    for (const scenes of [
+      [{ id: "..\\escape", narration: "unsafe" }],
+      [{ id: "safe-scene", narration: "first" }, { id: "safe-scene", narration: "second" }],
+    ]) {
+      fs.writeFileSync(storyboardPath, JSON.stringify({ scenes }));
+      fs.rmSync(outPath, { force: true });
+      const result = spawnSync(process.execPath, [
+        require.resolve("ts-node/dist/bin.js"), "scripts/storyboard-to-tts.ts",
+        "--storyboard", storyboardPath, "--out", outPath,
+      ], { cwd: process.cwd(), encoding: "utf8" });
+      assert.notStrictEqual(result.status, 0);
+      assert.ok(!fs.existsSync(outPath), "unsafe TTS scene ids produced an artifact");
+    }
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("external project audio identities cannot collide by basename", () => {
+  const firstRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cat-audio-key-a-"));
+  const secondRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cat-audio-key-b-"));
+  const first = path.join(firstRoot, "same-project");
+  const second = path.join(secondRoot, "same-project");
+  fs.mkdirSync(first);
+  fs.mkdirSync(second);
+  try {
+    assert.notStrictEqual(projectAudioIdentity(first), projectAudioIdentity(second));
+    assert.notStrictEqual(chunkPipelinePaths(first, "chunk-001-safe").audio, chunkPipelinePaths(second, "chunk-001-safe").audio);
+    assert.strictEqual(projectAudioIdentity(path.resolve("projects", "video-123-safe")), "video-123-safe");
+  } finally {
+    fs.rmSync(firstRoot, { recursive: true, force: true });
+    fs.rmSync(secondRoot, { recursive: true, force: true });
+  }
+});
+
+test("canonical chunk plans are re-derived including options, adjacency, and claims", () => {
+  const range = (value: number) => ({ startWord: value, endWord: value, quoteChecksum: String(value) });
+  const storyboard: Storyboard = {
+    fps: 30, width: 1920, height: 1080, transcriptChecksum: "transcript",
+    sections: [
+      { id: "first", sourceRange: range(0), thesis: "first", emotionalTurn: "build", energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+      { id: "second", sourceRange: range(1), thesis: "second", emotionalTurn: "release", energyCurve: "release", targetDurationSeconds: 10, treatmentSequence: ["infographic"] },
+    ],
+    claims: [{ id: "claim-one", text: "one", sourceRange: range(0), evidencePolicy: "data", sceneIds: ["scene-one"] }],
+    scenes: [
+      { id: "scene-one", narration: "one", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "EVIDENCE", sourceRange: range(0), claimIds: ["claim-one"] },
+      { id: "scene-two", narration: "two", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "EVIDENCE", sourceRange: range(1) },
+    ],
+  };
+  const plan = planSemanticChunks(storyboard, {
+    projectId: "fixture", storyboardChecksum: checksumJson(storyboard), targetChunkSeconds: 10, maximumChunkTargetSeconds: 10,
+  }).plan!;
+  assert.deepStrictEqual(verifyCanonicalChunkPlan(storyboard, plan, "fixture"), []);
+  for (const mutate of [
+    (value: any) => {
+      value.planningOptions.targetChunkSeconds = 20;
+      value.planningOptions.maximumChunkTargetSeconds = 20;
+    },
+    (value: any) => { value.chunks[0].nextChunkId = undefined; },
+    (value: any) => { value.chunks[0].claimIds = []; },
+    (value: any) => { value.chunks[1].previousChunkId = "chunk-999-forged"; },
+  ]) {
+    const edited = JSON.parse(JSON.stringify(plan));
+    mutate(edited);
+    assert.ok(verifyCanonicalChunkPlan(storyboard, edited, "fixture")
+      .some((issue) => issue.code === "PLAN_NONCANONICAL"));
+  }
+});
+
+test("cross-chunk claims follow actual scene references rather than optional claim metadata", () => {
+  const range = (value: number) => ({ startWord: value, endWord: value, quoteChecksum: String(value) });
+  const storyboard: Storyboard = {
+    fps: 30,
+    width: 1920,
+    height: 1080,
+    sections: [
+      { id: "first", sourceRange: range(0), thesis: "first", emotionalTurn: "build", energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+      { id: "second", sourceRange: range(1), thesis: "second", emotionalTurn: "release", energyCurve: "release", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+    ],
+    // Deliberately stale descriptive metadata: actual scene claimIds are authoritative.
+    claims: [{ id: "shared-claim", text: "shared", sourceRange: range(0), evidencePolicy: "data", sceneIds: ["scene-one"] }],
+    scenes: [
+      { id: "scene-one", narration: "one", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "EVIDENCE", sourceRange: range(0), claimIds: ["shared-claim"] },
+      { id: "scene-two", narration: "two", purpose: "x", emotion: "neutral", viewerFocus: "x", visualGrammar: "EVIDENCE", sourceRange: range(1), claimIds: ["shared-claim"] },
+    ],
+  };
+  const result = planSemanticChunks(storyboard, {
+    projectId: "fixture",
+    storyboardChecksum: checksumJson(storyboard),
+    targetChunkSeconds: 10,
+    maximumChunkTargetSeconds: 10,
+  });
+  assert.strictEqual(result.plan, undefined);
+  assert.ok(result.issues.some((issue) => issue.code === "CLAIM_CROSS_CHUNK"));
+});
+
+test("stage receipts bind the broad production snapshot and chunk orchestrator", () => {
+  const files = productionToolchainFiles();
+  assert.ok(files.includes("scripts/process-storyboard-chunks.ts"));
+  assert.ok(files.includes("scripts/assemble-storyboard-chunks.ts"));
+  assert.ok(files.includes("scripts/assemble-chunk-audio.py"));
+  assert.ok(files.includes("src/engine/chunkAttestations.ts"));
+  assert.ok(!files.some((file) => /(?:^|\/)test(?:[._-]|$)/i.test(file)));
+  assert.ok(!files.some((file) => file.includes("/chunks/")), "receipt snapshot included generated chunk artifacts");
+});
+
+test("storyboard builder fails density before TTS and records a passing authoring decision", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-storyboard-density-"));
+  const transcriptPath = path.join(temp, "transcript.txt");
+  const dataPath = path.join(temp, "storyboard-data.ts");
+  const outPath = path.join(temp, "storyboard.json");
+  const authoredScene = {
+    marker: "word0", grammar: "SOLO", emotion: "neutral", purpose: "explain",
+    viewerFocus: "keyword", slots: { who: "characters/cat", keyword: "Keyword" },
+    visualRegister: "character_action", focalType: "character_action",
+    semanticVisual: { subject: "cat", action: "points", takeaway: "the keyword matters" },
+    silentFrameTakeaway: "the keyword matters", focalOccupancyTarget: 0.3,
+  };
+  fs.writeFileSync(dataPath, `module.exports = ${JSON.stringify({ SCENES: [authoredScene] })};\n`);
+  const runBuilder = () => spawnSync(process.execPath, [
+    require.resolve("ts-node/dist/bin.js"), "scripts/build-storyboard.ts",
+    "--project", temp, "--transcript", transcriptPath, "--data", dataPath, "--out", outPath,
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  try {
+    fs.writeFileSync(transcriptPath, Array.from({ length: 81 }, (_, index) => `word${index}`).join(" "));
+    const failed = runBuilder();
+    assert.notStrictEqual(failed.status, 0);
+    assert.match(`${failed.stdout}\n${failed.stderr}`, /81 transcript words require at least 3 authored scenes.*found 1/s);
+    assert.ok(!fs.existsSync(outPath), "a density failure wrote a downstream storyboard artifact");
+
+    fs.writeFileSync(transcriptPath, "word0 word1 word2 word3 word4");
+    const passed = runBuilder();
+    assert.strictEqual(passed.status, 0, `${passed.stdout}\n${passed.stderr}`);
+    const storyboard = JSON.parse(fs.readFileSync(outPath, "utf8"));
+    assert.deepStrictEqual(storyboard.authoringDecision, {
+      policyVersion: "scene-density-v1", transcriptWords: 5, minimumScenes: 1,
+      authoredScenes: 1, longVideo: false, sectionsRequired: false, passed: true,
+    });
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("long-form storyboard builder requires semantic sections before chunk planning", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-storyboard-sections-"));
+  const transcriptPath = path.join(temp, "transcript.txt");
+  const dataPath = path.join(temp, "storyboard-data.ts");
+  const outPath = path.join(temp, "storyboard.json");
+  const words = Array.from({ length: 281 }, (_, index) => `word${index}`);
+  const scenes = Array.from({ length: 8 }, (_, index) => ({
+    marker: `word${index * 36}`, grammar: "SOLO", emotion: "neutral", purpose: `beat ${index}`,
+    viewerFocus: `keyword ${index}`, slots: { who: "characters/cat", keyword: `Keyword ${index}` },
+    visualRegister: "character_action", focalType: "character_action",
+    semanticVisual: { subject: "cat", action: "points", takeaway: `beat ${index}` },
+    silentFrameTakeaway: `beat ${index}`, focalOccupancyTarget: 0.3,
+  }));
+  fs.writeFileSync(transcriptPath, words.join(" "));
+  fs.writeFileSync(dataPath, `module.exports = ${JSON.stringify({ SCENES: scenes })};\n`);
+  try {
+    const result = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/build-storyboard.ts",
+      "--project", temp, "--transcript", transcriptPath, "--data", dataPath, "--out", outPath,
+    ], { cwd: process.cwd(), encoding: "utf8" });
+    assert.notStrictEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /long-form authoring.*requires ordered semantic SECTIONS/s);
+    assert.ok(!fs.existsSync(outPath));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("stable scene identity preserves only unambiguous source-range matches", () => {
+  const ranges = [
+    { startWord: 0, endWord: 1, quoteChecksum: "first" },
+    { startWord: 2, endWord: 3, quoteChecksum: "changed" },
+  ];
+  const result = resolveStableSceneIds([{}, {}], ranges, [
+    { id: "stable-hook", sourceRange: { quoteChecksum: "first" } },
+    { id: "unrelated", sourceRange: { quoteChecksum: "old" } },
+  ], "scene-");
+  assert.deepStrictEqual(result.issues, []);
+  assert.deepStrictEqual(result.ids, ["stable-hook", "scene-002"]);
+});
+
+test("explicit scene identity wins and all resolved duplicates fail", () => {
+  const ranges = [
+    { startWord: 0, endWord: 0, quoteChecksum: "one" },
+    { startWord: 1, endWord: 1, quoteChecksum: "two" },
+  ];
+  const result = resolveStableSceneIds([{ id: "prior-two" }, {}], ranges, [
+    { id: "prior-one", sourceRange: { quoteChecksum: "one" } },
+    { id: "prior-two", sourceRange: { quoteChecksum: "two" } },
+  ], "scene-");
+  assert.deepStrictEqual(result.ids, ["prior-two", "prior-two"]);
+  assert.ok(result.issues.some((issue) => issue.includes("duplicate scene id")));
+});
+
+test("repeated narration checksums never guess a prior scene identity", () => {
+  const ranges = [
+    { startWord: 0, endWord: 0, quoteChecksum: "same" },
+    { startWord: 4, endWord: 4, quoteChecksum: "same" },
+  ];
+  const result = resolveStableSceneIds([{}, {}], ranges, [
+    { id: "old-one", sourceRange: { quoteChecksum: "same" } },
+  ], "fresh-");
+  assert.deepStrictEqual(result.issues, []);
+  assert.deepStrictEqual(result.ids, ["fresh-001", "fresh-002"]);
+});
+
+test("Kokoro chunk run settings are accepted, hash-stable, and malformed providers fail closed", () => {
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-kokoro-run-config-"));
+  try {
+    const storyboard: Storyboard = {
+      schemaVersion: 2,
+      fps: 30,
+      width: 1920,
+      height: 1080,
+      transcriptChecksum: "fixture",
+      scenes: [],
+    };
+    const planPath = path.join(projectDir, "chunks", "chunk-plan.json");
+    fs.mkdirSync(path.dirname(planPath), { recursive: true });
+    fs.writeFileSync(planPath, JSON.stringify({ schemaVersion: 2, fixture: true }));
+    const reportPath = writeTestGlobalAuthoringReport(projectDir);
+    const create = (speed: number) => createChunkRunConfig({
+      projectDir,
+      planPath,
+      storyboard,
+      globalAuthoringReportPath: reportPath,
+      ttsEngine: "kokoro",
+      voice: "af_heart",
+      ttsLanguageCode: "a",
+      ttsSpeed: speed,
+      kokoroModelRevision: "fixture-revision",
+      kokoroModelDir: path.join(projectDir, "kokoro-model"),
+      alignModel: "base",
+      language: "en",
+      thresholdProfileHash: checksumJson(referenceQuality),
+    });
+    const config = create(1);
+    const expected = {
+      projectId: path.basename(projectDir),
+      policyVersion: CHUNK_POLICY_VERSION,
+      planChecksum: checksumArtifact(planPath),
+      storyboardChecksum: checksumJson(storyboard),
+    };
+    assert.deepStrictEqual(validateChunkRunConfig(config, expected), []);
+    assert.strictEqual(config.tts.engine, "kokoro");
+    if (config.tts.engine !== "kokoro") throw new Error("Expected Kokoro config.");
+    assert.deepStrictEqual({
+      voice: config.tts.voice,
+      languageCode: config.tts.languageCode,
+      speed: config.tts.speed,
+      repoId: config.tts.repoId,
+      modelRevision: config.tts.modelRevision,
+      modelDir: config.tts.modelDir,
+      device: config.tts.device,
+    }, {
+      voice: "af_heart",
+      languageCode: "a",
+      speed: 1,
+      repoId: "hexgrad/Kokoro-82M",
+      modelRevision: "fixture-revision",
+      modelDir: path.resolve(projectDir, "kokoro-model"),
+      device: "cpu",
+    });
+    assert.strictEqual(checksumJson(create(1)), checksumJson(config));
+    assert.notStrictEqual(checksumJson(create(1.1)), checksumJson(config), "A synthesis-affecting change did not invalidate immutable settings.");
+
+    const unsupported: any = JSON.parse(JSON.stringify(config));
+    unsupported.tts.engine = "unknown-provider";
+    assert.ok(validateChunkRunConfig(unsupported, expected).includes("Chunk run TTS engine is unsupported."));
+
+    const malformed: any = JSON.parse(JSON.stringify(config));
+    malformed.tts.speed = 0;
+    assert.ok(validateChunkRunConfig(malformed, expected).includes("Chunk run Kokoro TTS configuration is malformed."));
+    malformed.tts.speed = 1;
+    malformed.tts.unexpected = true;
+    assert.ok(validateChunkRunConfig(malformed, expected).includes("Chunk run Kokoro TTS configuration is malformed."));
+  } finally {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  }
+});
+
+test("canonical chunk provenance independently re-hashes every input and output", () => {
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-provenance-"));
+  const projectId = path.basename(projectDir);
+  const audioIdentity = projectAudioIdentity(projectDir);
+  const canonicalAudioDir = path.resolve("public", "audio", audioIdentity);
+  const chunkAudioRoot = path.resolve("public", "audio", "chunks", audioIdentity);
+  try {
+    const range = { startWord: 0, endWord: 0, quoteChecksum: "range" };
+    const completeStoryboard: Storyboard = {
+      schemaVersion: 2,
+      fps: 30,
+      width: 1920,
+      height: 1080,
+      transcriptChecksum: "transcript",
+      sections: [{
+        id: "hook", sourceRange: range, thesis: "Hook", emotionalTurn: "alarm",
+        energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"],
+      }],
+      scenes: [{
+        id: "s1", narration: "one", purpose: "one", emotion: "neutral", viewerFocus: "one",
+        visualGrammar: "EVIDENCE", sourceRange: range, sectionId: "hook",
+      }],
+    };
+    const storyboardPath = path.join(projectDir, "storyboard.json");
+    fs.writeFileSync(storyboardPath, JSON.stringify(completeStoryboard));
+    const plan = planSemanticChunks(completeStoryboard, {
+      projectId,
+      storyboardChecksum: checksumJson(completeStoryboard),
+      targetChunkSeconds: 10,
+      maximumChunkTargetSeconds: 10,
+    }).plan!;
+    const chunkId = plan.chunks[0].id;
+    const planPath = path.join(projectDir, "chunks", "chunk-plan.json");
+    fs.mkdirSync(path.dirname(planPath), { recursive: true });
+    fs.writeFileSync(planPath, JSON.stringify(plan));
+    const config = createChunkRunConfig({
+      projectDir,
+      planPath,
+      storyboard: completeStoryboard,
+      globalAuthoringReportPath: writeTestGlobalAuthoringReport(projectDir),
+      voice: "en-US-AvaNeural",
+      alignModel: "base",
+      thresholdProfileHash: checksumJson(referenceQuality),
+    });
+    const configPath = chunkRunConfigPath(projectDir);
+    fs.writeFileSync(configPath, JSON.stringify(config));
+    const context = { projectDir, storyboardPath, planPath, runConfigPath: configPath, storyboard: completeStoryboard, plan, runConfig: config };
+    const paths = chunkPipelinePaths(projectDir, chunkId);
+    const writeArtifact = (filePath: string, content?: string) => {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      const body = content ?? (path.extname(filePath) === ".json" ? JSON.stringify({ scenes: [] }) : "artifact");
+      fs.writeFileSync(filePath, body);
+    };
+    for (const stage of CHUNK_STAGES) {
+      const contract = computeExpectedChunkStageContract(context, chunkId, stage);
+      for (const filePath of Object.values(contract.outputPaths)) writeArtifact(filePath);
+      const finalContract = computeExpectedChunkStageContract(context, chunkId, stage);
+      assert.deepStrictEqual(finalContract.missingInputs, []);
+      writeStageAttestation(stageAttestationPath(projectDir, chunkId, stage), createStageAttestation({
+        chunkId,
+        stage,
+        inputHashes: finalContract.inputHashes,
+        outputHashes: Object.fromEntries(Object.entries(finalContract.outputPaths).map(([key, filePath]) => [key, checksumArtifact(filePath)])),
+        policyVersion: CHUNK_POLICY_VERSION,
+        thresholdProfileHash: checksumJson(referenceQuality),
+        passed: true,
+        blockerCount: 0,
+        majorCount: 0,
+      }));
+    }
+
+    fs.mkdirSync(canonicalAudioDir, { recursive: true });
+    const canonical = {
+      ttsScenes: path.join(projectDir, "tts_scenes.json"),
+      audio: path.join(canonicalAudioDir, "voice.wav"),
+      durations: path.join(projectDir, "durations.json"),
+      words: path.join(projectDir, "words.json"),
+      alignment: path.join(projectDir, "alignment.json"),
+    };
+    Object.values(canonical).forEach((filePath) => writeArtifact(filePath));
+    const timeline: any = { audio: `audio/${audioIdentity}/voice.wav`, scenes: [], durationInFrames: 1 };
+    const provenance = {
+      schemaVersion: 3,
+      projectId,
+      storyboardChecksum: checksumJson(completeStoryboard),
+      planChecksum: checksumArtifact(planPath),
+      runConfigChecksum: checksumArtifact(configPath),
+      chunkOrder: [chunkId],
+      chunkTimelineChecksums: { [chunkId]: checksumArtifact(paths.timeline) },
+      chunkAudioChecksums: { [chunkId]: checksumArtifact(paths.audio) },
+      chunkAttestationChecksums: {
+        [chunkId]: Object.fromEntries(CHUNK_STAGES.map((stage) => [stage, checksumArtifact(stageAttestationPath(projectDir, chunkId, stage))])),
+      },
+      assemblyToolchainHashes: computeChunkAssemblyToolchainHashes(),
+      canonicalOutputHashes: {
+        ttsScenes: checksumArtifact(canonical.ttsScenes),
+        audio: checksumArtifact(canonical.audio),
+        durations: checksumArtifact(canonical.durations),
+        words: checksumArtifact(canonical.words),
+        alignment: checksumArtifact(canonical.alignment),
+        timelineBody: checksumJson(timeline),
+      },
+      assemblyPolicyVersion: CHUNK_ASSEMBLY_POLICY_VERSION,
+    };
+    fs.writeFileSync(path.join(projectDir, "chunk-assembly-provenance.json"), JSON.stringify(provenance));
+    timeline.chunkAssemblyProvenance = provenance;
+    assert.deepStrictEqual(verifyChunkAssemblyProvenance(projectDir, timeline), []);
+
+    const globalReportPath = globalAuthoringReportPath(projectDir);
+    const globalReportBytes = fs.readFileSync(globalReportPath);
+    fs.writeFileSync(globalReportPath, JSON.stringify({ passed: false, drifted: true }));
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline).some((entry) =>
+      entry.code === "CHUNK_ATTESTATION_DRIFT" || entry.code === "CHUNK_ATTESTATION_INVALID"));
+    fs.writeFileSync(globalReportPath, globalReportBytes);
+    assert.deepStrictEqual(verifyChunkAssemblyProvenance(projectDir, timeline), []);
+
+    const proofPcmReceiptPath = paths.proofCorePcmVerification;
+    const proofPcmReceiptBytes = fs.readFileSync(proofPcmReceiptPath);
+    fs.rmSync(proofPcmReceiptPath);
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline).some((entry) =>
+      entry.code === "CHUNK_ATTESTATION_INVALID"));
+    fs.writeFileSync(proofPcmReceiptPath, proofPcmReceiptBytes);
+    assert.deepStrictEqual(verifyChunkAssemblyProvenance(projectDir, timeline), []);
+
+    const editedPlan = JSON.parse(JSON.stringify(plan));
+    editedPlan.chunks[0].nextChunkId = "chunk-999-forged";
+    fs.writeFileSync(planPath, JSON.stringify(editedPlan));
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline)
+      .some((entry) => entry.code === "CHUNK_PLAN_NONCANONICAL"));
+    fs.writeFileSync(planPath, JSON.stringify(plan));
+
+    const assertMalformedProvenance = (mutate: (value: any) => void) => {
+      const malformed = JSON.parse(JSON.stringify(provenance));
+      mutate(malformed);
+      fs.writeFileSync(path.join(projectDir, "chunk-assembly-provenance.json"), JSON.stringify(malformed));
+      timeline.chunkAssemblyProvenance = malformed;
+      assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline)
+        .some((entry) => entry.code === "CHUNK_PROVENANCE_MALFORMED"));
+    };
+    assertMalformedProvenance((value) => { value.unexpected = true; });
+    assertMalformedProvenance((value) => { value.planChecksum = "not-a-sha256"; });
+    assertMalformedProvenance((value) => { value.canonicalOutputHashes.extra = "0".repeat(64); });
+    assertMalformedProvenance((value) => { delete value.assemblyToolchainHashes.audioAssembler; });
+    assertMalformedProvenance((value) => { value.assemblyToolchainHashes.extra = "0".repeat(64); });
+    assertMalformedProvenance((value) => { delete value.chunkAttestationChecksums[chunkId].compile; });
+    assertMalformedProvenance((value) => { value.chunkAudioChecksums = null; });
+    fs.writeFileSync(path.join(projectDir, "chunk-assembly-provenance.json"), JSON.stringify(provenance));
+    timeline.chunkAssemblyProvenance = provenance;
+
+    const staleToolchain = JSON.parse(JSON.stringify(provenance));
+    staleToolchain.assemblyToolchainHashes.audioAssembler = "0".repeat(64);
+    fs.writeFileSync(path.join(projectDir, "chunk-assembly-provenance.json"), JSON.stringify(staleToolchain));
+    timeline.chunkAssemblyProvenance = staleToolchain;
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline)
+      .some((entry) => entry.code === "CHUNK_ASSEMBLY_TOOLCHAIN_DRIFT"));
+    fs.writeFileSync(path.join(projectDir, "chunk-assembly-provenance.json"), JSON.stringify(provenance));
+    timeline.chunkAssemblyProvenance = provenance;
+
+    fs.writeFileSync(paths.proofVideo.replace(/\.mp4$/i, ".contact.jpg"), "edited proof");
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline).some((entry) =>
+      entry.code === "CHUNK_ATTESTATION_DRIFT" || entry.code === "CHUNK_ATTESTATION_INVALID"));
+    fs.writeFileSync(paths.proofVideo.replace(/\.mp4$/i, ".contact.jpg"), "artifact");
+    const compileReceipt = readStageAttestation(stageAttestationPath(projectDir, chunkId, "compile"))!;
+    compileReceipt.inputHashes = {};
+    writeStageAttestation(stageAttestationPath(projectDir, chunkId, "compile"), compileReceipt);
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline).some((entry) => entry.code === "CHUNK_ATTESTATION_DRIFT"));
+
+    fs.writeFileSync(storyboardPath, JSON.stringify({ ...completeStoryboard, scenes: [] }));
+    assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline).some((entry) => entry.code === "CHUNK_PROVENANCE_SOURCE_DRIFT"));
+  } finally {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+    fs.rmSync(chunkAudioRoot, { recursive: true, force: true });
+    fs.rmSync(canonicalAudioDir, { recursive: true, force: true });
+  }
+});
+test("chunk proof mode rejects diagnostic bypasses before rendering", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-proof-cli-"));
+  try {
+    const scope = path.join(temp, "scope.json");
+    fs.writeFileSync(scope, JSON.stringify({ kind: "chunk", chunkId: "chunk-001", coreSceneIds: ["s1"], haloBeforeSceneIds: [], haloAfterSceneIds: [] }));
+    const run = spawnSync(process.execPath, [require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+      "--timeline", path.join(temp, "timeline.json"), "--out", path.join(temp, "proof.mp4"),
+      "--quality-scope", scope, "--chunk-proof", "--skip-quality"], { encoding: "utf8", cwd: process.cwd() });
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /--chunk-proof rejects diagnostic bypasses/);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+test("chunk proof CLI rejects a core-only timeline when the declared halo is absent", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-proof-scope-"));
+  try {
+    const scope = path.join(temp, "scope.json");
+    const timeline = path.join(temp, "timeline.json");
+    fs.writeFileSync(scope, JSON.stringify({ kind: "chunk", chunkId: "chunk-002", coreSceneIds: ["core"], haloBeforeSceneIds: ["prior"], haloAfterSceneIds: [] }));
+    fs.writeFileSync(timeline, JSON.stringify({ artifactRole: "chunk-proof", scenes: [{ id: "core" }] }));
+    const run = spawnSync(process.execPath, [require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+      "--timeline", timeline, "--out", path.join(temp, "proof", "video.mp4"),
+      "--quality-scope", scope, "--chunk-proof"], { encoding: "utf8", cwd: process.cwd() });
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /must contain exactly the declared halo\/core scope/i);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("quality scope parser rejects missing, malformed, duplicate, and extraneous fields", () => {
+  const valid = parseQualityScope({
+    kind: "chunk",
+    chunkId: "chunk-001",
+    coreSceneIds: ["core"],
+    haloBeforeSceneIds: ["before"],
+    haloAfterSceneIds: ["after"],
+  });
+  assert.strictEqual(valid.kind, "chunk");
+  if (valid.kind === "chunk") {
+    assert.deepStrictEqual(orderedSceneIdsForScope(valid), ["before", "core", "after"]);
+  }
+  const invalid: unknown[] = [
+    null,
+    [],
+    { kind: "chunk" },
+    { kind: "chunk", chunkId: "chunk-001", coreSceneIds: ["core"], haloBeforeSceneIds: [] },
+    { kind: "chunk", chunkId: "chunk-001", coreSceneIds: "core", haloBeforeSceneIds: [], haloAfterSceneIds: [] },
+    { kind: "chunk", chunkId: "chunk-001", coreSceneIds: [1], haloBeforeSceneIds: [], haloAfterSceneIds: [] },
+    { kind: "chunk", chunkId: "chunk-001", coreSceneIds: [], haloBeforeSceneIds: [], haloAfterSceneIds: [] },
+    { kind: "chunk", chunkId: "chunk-001", coreSceneIds: ["same"], haloBeforeSceneIds: ["same"], haloAfterSceneIds: [] },
+    { kind: "chunk", chunkId: "chunk-001", coreSceneIds: ["core"], haloBeforeSceneIds: [], haloAfterSceneIds: [], unexpected: true },
+    { kind: "global", extra: true },
+  ];
+  for (const value of invalid) assert.throws(() => parseQualityScope(value));
+});
+
+test("compile storyboard accepts scoped quality only for a canonical plan-bound chunk proof", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-scoped-compile-"));
+  const projectDir = path.join(temp, "scoped-compile-project");
+  const runCompile = (cliArgs: string[]) => spawnSync(process.execPath, [
+    require.resolve("ts-node/dist/bin.js"),
+    "scripts/compile-storyboard.ts",
+    ...cliArgs,
+  ], { cwd: process.cwd(), encoding: "utf8", timeout: 120_000 });
+  const outputOf = (result: ReturnType<typeof spawnSync>) => `${result.stdout}\n${result.stderr}`;
+  try {
+    const range = (word: number) => ({ startWord: word, endWord: word, quoteChecksum: `word-${word}` });
+    const evidenceScene = (id: string, sectionId: string, word: number): Storyboard["scenes"][number] => ({
+      id,
+      narration: `Evidence ${word + 1}.`,
+      purpose: `Show evidence ${word + 1}.`,
+      emotion: "neutral",
+      viewerFocus: `Evidence card ${word + 1}`,
+      visualGrammar: "EVIDENCE",
+      sectionId,
+      sourceRange: range(word),
+      visualRegister: "evidence",
+      semanticVisual: {
+        subject: `evidence card ${word + 1}`,
+        action: "shows the stated evidence",
+        takeaway: `Evidence ${word + 1} is visible.`,
+      },
+      focalType: "evidence",
+      characterRequired: false,
+      visualFingerprint: `fixture:evidence-${word + 1}`,
+      silentFrameTakeaway: `Evidence ${word + 1} is visible.`,
+      focalOccupancyTarget: 0.8,
+      noveltyFromPrevious: word === 0 ? ["opening evidence"] : ["new evidence"],
+      unresolvedAssetRequests: [],
+      slots: { body: `Evidence ${word + 1}.` },
+    });
+    const storyboard: Storyboard = {
+      schemaVersion: 2,
+      fps: 30,
+      width: 1920,
+      height: 1080,
+      transcriptChecksum: "fixture-transcript",
+      sections: [
+        {
+          id: "first-section",
+          sourceRange: range(0),
+          thesis: "First evidence",
+          emotionalTurn: "recognition",
+          energyCurve: "build",
+          targetDurationSeconds: 1,
+          treatmentSequence: ["evidence"],
+        },
+        {
+          id: "second-section",
+          sourceRange: range(1),
+          thesis: "Second evidence",
+          emotionalTurn: "resolution",
+          energyCurve: "release",
+          targetDurationSeconds: 1,
+          treatmentSequence: ["evidence"],
+        },
+      ],
+      claims: [],
+      scenes: [
+        evidenceScene("scene-first", "first-section", 0),
+        evidenceScene("scene-second", "second-section", 1),
+      ],
+    };
+    fs.mkdirSync(path.join(projectDir, "chunks"), { recursive: true });
+    const storyboardPath = path.join(projectDir, "storyboard.json");
+    fs.writeFileSync(storyboardPath, JSON.stringify(storyboard));
+    const plan = planSemanticChunks(storyboard, {
+      projectId: path.basename(projectDir),
+      storyboardChecksum: checksumJson(storyboard),
+      targetChunkSeconds: 1,
+      maximumChunkTargetSeconds: 1,
+    }).plan!;
+    assert.ok(plan);
+    const planPath = path.join(projectDir, "chunks", "chunk-plan.json");
+    fs.writeFileSync(planPath, JSON.stringify(plan));
+    const runConfig = createChunkRunConfig({
+      projectDir,
+      planPath,
+      storyboard,
+      globalAuthoringReportPath: writeTestGlobalAuthoringReport(projectDir),
+      voice: "fixture-voice",
+      alignModel: "fixture-model",
+      thresholdProfileHash: checksumJson(referenceQuality),
+    });
+    fs.writeFileSync(chunkRunConfigPath(projectDir), JSON.stringify(runConfig));
+
+    const chunk = plan.chunks[1];
+    const scope = qualityScopeForChunk(plan, chunk.id);
+    const paths = chunkPipelinePaths(projectDir, chunk.id);
+    fs.mkdirSync(paths.proofDir, { recursive: true });
+    fs.writeFileSync(paths.scope, JSON.stringify(scope));
+    fs.writeFileSync(paths.proofStoryboard, JSON.stringify(projectStoryboardForQualityScope(storyboard, scope)));
+
+    const malformedScopePath = path.join(temp, "malformed-scope.json");
+    fs.writeFileSync(malformedScopePath, JSON.stringify({ ...scope, unexpected: true }));
+    const malformed = runCompile([
+      "--storyboard", storyboardPath,
+      "--out", path.join(projectDir, "timeline.json"),
+      "--quality-scope", malformedScopePath,
+    ]);
+    assert.notStrictEqual(malformed.status, 0);
+    assert.match(outputOf(malformed), /--quality-scope is invalid:.*unexpected/i);
+
+    for (const forgedScope of [
+      { ...scope, haloBeforeSceneIds: [] },
+      { ...scope, haloAfterSceneIds: ["scene-invented"] },
+    ]) {
+      fs.writeFileSync(paths.scope, JSON.stringify(forgedScope));
+      const forged = runCompile([
+        "--storyboard", paths.proofStoryboard,
+        "--out", paths.proofTimeline,
+        "--quality-scope", paths.scope,
+      ]);
+      assert.notStrictEqual(forged.status, 0);
+      assert.match(outputOf(forged), /Scoped chunk compile rejected:.*differs from the scope derived/i);
+    }
+    fs.writeFileSync(paths.scope, JSON.stringify(scope));
+
+    const global = runCompile([
+      "--storyboard", storyboardPath,
+      "--out", path.join(projectDir, "timeline.json"),
+    ]);
+    const globalOutput = outputOf(global);
+    assert.notStrictEqual(global.status, 0, "The preflight-only fixture must still fail measured timing.");
+    assert.match(globalOutput, /TIMING INTEGRITY/);
+    assert.doesNotMatch(globalOutput, /Scoped chunk compile rejected|--quality-scope is invalid/);
+
+    const canonical = runCompile([
+      "--storyboard", storyboardPath,
+      "--out", path.join(projectDir, "timeline.json"),
+      "--quality-scope", paths.scope,
+    ]);
+    assert.notStrictEqual(canonical.status, 0);
+    assert.match(outputOf(canonical), /Scoped chunk compile rejected:.*reserved.*chunks/i);
+    assert.ok(!fs.existsSync(path.join(projectDir, "timeline.json")));
+
+    const proof = runCompile([
+      "--storyboard", paths.proofStoryboard,
+      "--out", paths.proofTimeline,
+      "--quality-scope", paths.scope,
+    ]);
+    const proofOutput = outputOf(proof);
+    assert.notStrictEqual(proof.status, 0, "The preflight-only fixture must still fail measured timing.");
+    assert.match(proofOutput, /TIMING INTEGRITY/);
+    assert.doesNotMatch(proofOutput, /Scoped chunk compile rejected|--quality-scope is invalid/);
+    assert.ok(!fs.existsSync(paths.proofTimeline));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("chunk proof binding derives the complete halo scope from canonical plan and run config", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-proof-binding-"));
+  const projectDir = path.join(temp, "proof-project");
+  try {
+    const range = (startWord: number, endWord: number) => ({ startWord, endWord, quoteChecksum: `${startWord}-${endWord}` });
+    const storyboard: Storyboard = {
+      fps: 30,
+      width: 1920,
+      height: 1080,
+      transcriptChecksum: "transcript",
+      sections: [
+        { id: "first", sourceRange: range(0, 4), thesis: "first", emotionalTurn: "build", energyCurve: "build", targetDurationSeconds: 60, treatmentSequence: ["full_tableau"] },
+        { id: "second", sourceRange: range(5, 9), thesis: "second", emotionalTurn: "release", energyCurve: "release", targetDurationSeconds: 60, treatmentSequence: ["infographic"] },
+      ],
+      scenes: [
+        { id: "scene-first", narration: "first", purpose: "first", emotion: "neutral", viewerFocus: "first", visualGrammar: "TABLEAU", sourceRange: range(0, 4) },
+        { id: "scene-second", narration: "second", purpose: "second", emotion: "neutral", viewerFocus: "second", visualGrammar: "TABLEAU", sourceRange: range(5, 9) },
+      ],
+    };
+    fs.mkdirSync(path.join(projectDir, "chunks"), { recursive: true });
+    const storyboardPath = path.join(projectDir, "storyboard.json");
+    fs.writeFileSync(storyboardPath, JSON.stringify(storyboard));
+    const planned = planSemanticChunks(storyboard, {
+      projectId: path.basename(projectDir),
+      storyboardChecksum: checksumJson(storyboard),
+      targetChunkSeconds: 60,
+      maximumChunkTargetSeconds: 180,
+    });
+    assert.ok(planned.plan);
+    const plan = planned.plan!;
+    const planPath = path.join(projectDir, "chunks", "chunk-plan.json");
+    fs.writeFileSync(planPath, JSON.stringify(plan));
+    const runConfig = createChunkRunConfig({
+      projectDir,
+      planPath,
+      storyboard,
+      globalAuthoringReportPath: writeTestGlobalAuthoringReport(projectDir),
+      voice: "fixture-voice",
+      alignModel: "fixture-model",
+      thresholdProfileHash: checksumJson(referenceQuality),
+    });
+    fs.writeFileSync(chunkRunConfigPath(projectDir), JSON.stringify(runConfig));
+
+    const chunk = plan.chunks[1];
+    const scope = qualityScopeForChunk(plan, chunk.id);
+    const paths = chunkPipelinePaths(projectDir, chunk.id);
+    fs.mkdirSync(paths.proofDir, { recursive: true });
+    fs.writeFileSync(paths.scope, JSON.stringify(scope));
+    fs.writeFileSync(paths.proofTimeline, JSON.stringify({ artifactRole: "chunk-proof", scenes: orderedSceneIdsForScope(scope).map((id) => ({ id })) }));
+
+    const binding = bindChunkProofToProject({
+      timelinePath: paths.proofTimeline,
+      scopePath: paths.scope,
+      outputPath: paths.proofVideo,
+      scope,
+      qualityProfile: referenceQuality,
+    });
+    assert.ok(binding);
+    assert.strictEqual(binding?.projectId, path.basename(projectDir));
+    assert.doesNotThrow(() => assertChunkProofBindingUnchanged(binding!));
+
+    const reduced = { ...scope, haloBeforeSceneIds: [] };
+    assert.throws(() => bindChunkProofToProject({
+      timelinePath: paths.proofTimeline,
+      scopePath: paths.scope,
+      outputPath: paths.proofVideo,
+      scope: reduced,
+      qualityProfile: referenceQuality,
+    }), /differs from the scope derived/i);
+
+    fs.writeFileSync(paths.scope, JSON.stringify(reduced));
+    assert.throws(() => assertChunkProofBindingUnchanged(binding!), /quality scope changed/i);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("render reports malformed chunk scope cleanly before dereferencing arrays", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-scope-shape-"));
+  try {
+    const scope = path.join(temp, "scope.json");
+    fs.writeFileSync(scope, JSON.stringify({ kind: "chunk" }));
+    const run = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+      "--timeline", path.join(temp, "timeline.json"),
+      "--out", path.join(temp, "proof.mp4"),
+      "--quality-scope", scope,
+      "--chunk-proof",
+    ], { encoding: "utf8", cwd: process.cwd() });
+    const output = `${run.stdout}\n${run.stderr}`;
+    assert.notStrictEqual(run.status, 0);
+    assert.match(output, /Quality scope is invalid/);
+    assert.doesNotMatch(output, /is not iterable|Cannot read propert|TypeError/);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("canonical publication identity binds path, project, and exact timeline bytes", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-publication-lineage-"));
+  try {
+    const projectA = path.join(temp, "project-a");
+    const projectB = path.join(temp, "project-b");
+    fs.mkdirSync(projectA, { recursive: true });
+    fs.mkdirSync(projectB, { recursive: true });
+    const timelineA = path.join(projectA, "timeline.json");
+    const timelineB = path.join(projectB, "timeline.json");
+    fs.writeFileSync(timelineA, JSON.stringify({ scenes: [{ id: "a" }] }));
+    fs.writeFileSync(timelineB, JSON.stringify({ scenes: [{ id: "b" }] }));
+    const identityA = buildCanonicalTimelineIdentity({ timelinePath: timelineA, projectId: "project-a", projectPath: projectA });
+    const identityB = buildCanonicalTimelineIdentity({ timelinePath: timelineB, projectId: "project-b", projectPath: projectB });
+    const candidateA = {
+      projectId: identityA.projectId,
+      projectPath: identityA.projectPath,
+      timeline: identityA.timelinePath,
+      timelineSha256: identityA.timelineSha256,
+    };
+    assert.doesNotThrow(() => assertBoundTimelineIdentity(candidateA, identityA, "Candidate"));
+    assert.throws(() => assertBoundTimelineIdentity(candidateA, identityB, "Candidate"), /timeline|project/i);
+
+    fs.writeFileSync(timelineA, JSON.stringify({ scenes: [{ id: "a-edited" }] }));
+    const editedIdentityA = buildCanonicalTimelineIdentity({ timelinePath: timelineA, projectId: "project-a", projectPath: projectA });
+    assert.throws(() => assertBoundTimelineIdentity(candidateA, editedIdentityA, "Candidate"), /hash/i);
+
+    const derived = path.join(projectA, "chunks", "chunk-001", "timeline.json");
+    fs.mkdirSync(path.dirname(derived), { recursive: true });
+    fs.writeFileSync(derived, JSON.stringify({ scenes: [{ id: "a" }] }));
+    assert.throws(() => assertCanonicalTimelinePath(derived, projectA), /chunks.*non-promotable/i);
+    const derivedAlias = path.join(projectA, "derived-alias");
+    try {
+      fs.symlinkSync(path.dirname(derived), derivedAlias, process.platform === "win32" ? "junction" : "dir");
+      assert.throws(
+        () => assertCanonicalTimelinePath(path.join(derivedAlias, "timeline.json"), projectA),
+        /chunks.*non-promotable/i,
+      );
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== "EPERM" && code !== "EACCES" && code !== "ENOTSUP") throw error;
+    }
+
+    const checkoutBelowChunks = path.join(temp, "chunks", "repo", "projects", "project-c");
+    fs.mkdirSync(checkoutBelowChunks, { recursive: true });
+    const genuineTimeline = path.join(checkoutBelowChunks, "timeline.json");
+    fs.writeFileSync(genuineTimeline, JSON.stringify({ scenes: [{ id: "c" }] }));
+    assert.doesNotThrow(() => assertCanonicalTimelinePath(genuineTimeline, checkoutBelowChunks));
+    assert.throws(
+      () => assertOutputProjectIdentity(path.resolve("output", "project-b", "video.mp4"), "project-a"),
+      /identity mismatch/i,
+    );
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("standard render rejects metadata-stripped timelines under chunks and borrowed output ids", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-render-lineage-cli-"));
+  const projectId = `integrity-${path.basename(temp).toLowerCase().replace(/[^a-z0-9-]/g, "")}`;
+  const borrowedOutput = path.resolve("output", `${projectId}-other`, "video.mp4");
+  try {
+    const chunkTimeline = path.join(temp, "chunks", "chunk-001", "timeline.json");
+    fs.mkdirSync(path.dirname(chunkTimeline), { recursive: true });
+    fs.writeFileSync(chunkTimeline, JSON.stringify({ scenes: [{ id: "core" }] }));
+    const chunkRun = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+      "--timeline", chunkTimeline,
+      "--out", path.join(temp, "candidate.mp4"),
+    ], { encoding: "utf8", cwd: process.cwd() });
+    assert.notStrictEqual(chunkRun.status, 0);
+    assert.match(`${chunkRun.stdout}\n${chunkRun.stderr}`, /chunks.*non-promotable/i);
+
+    const project = path.join(temp, projectId);
+    fs.mkdirSync(project, { recursive: true });
+    fs.writeFileSync(path.join(project, "timeline.json"), JSON.stringify({ scenes: [] }));
+    const outputRun = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+      "--project", project,
+      "--out", borrowedOutput,
+    ], { encoding: "utf8", cwd: process.cwd() });
+    assert.notStrictEqual(outputRun.status, 0);
+    assert.match(`${outputRun.stdout}\n${outputRun.stderr}`, /Output project identity mismatch/i);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+    fs.rmSync(path.dirname(borrowedOutput), { recursive: true, force: true });
+  }
+});
+
+test("manual contact-sheet review requires exactly the five boolean true decisions", () => {
+  const valid = {
+    noRecognizableHumanFaces: true,
+    noTextClipping: true,
+    noBubbleOverlap: true,
+    noEmptyScenes: true,
+    noCameraCrop: true,
+  };
+  assert.doesNotThrow(() => assertExactManualContactSheetReview(valid));
+  for (const value of [
+    undefined,
+    {},
+    { ...valid, noTextClipping: false },
+    { ...valid, noTextClipping: "true" },
+    { ...valid, extraDecision: true },
+    Object.fromEntries(Object.entries(valid).filter(([key]) => key !== "noCameraCrop")),
+  ]) {
+    assert.throws(() => assertExactManualContactSheetReview(value));
+  }
+});
+
+test("accept-render binds acceptance to exact project timeline and candidate bytes", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-accept-integrity-"));
+  const projectId = `accept-${path.basename(temp).toLowerCase().replace(/[^a-z0-9-]/g, "")}`;
+  const project = path.join(temp, projectId);
+  const outputDir = path.resolve("output", projectId);
+  try {
+    fs.mkdirSync(project, { recursive: true });
+    fs.mkdirSync(outputDir, { recursive: true });
+    const timeline = path.join(project, "timeline.json");
+    fs.writeFileSync(timeline, JSON.stringify({ scenes: [{ id: "scene-1" }] }));
+    const identity = buildCanonicalTimelineIdentity({ timelinePath: timeline, projectId, projectPath: project });
+    const video = path.join(outputDir, "video.mp4");
+    const contact = path.join(outputDir, "video.contact.jpg");
+    const visual = path.join(outputDir, "video.visual-audit.json");
+    const report = path.join(outputDir, "video.production-report.json");
+    fs.writeFileSync(video, "candidate video");
+    fs.writeFileSync(contact, "candidate contact sheet");
+    fs.writeFileSync(visual, JSON.stringify({ passed: true }));
+    const candidate = {
+      schemaVersion: 2,
+      status: "candidate-ready",
+      video: path.resolve(video),
+      projectId: identity.projectId,
+      projectPath: identity.projectPath,
+      timeline: identity.timelinePath,
+      timelineSha256: identity.timelineSha256,
+      timingAudit: { expectedSeconds: 1, scope: "full timeline" },
+      artifacts: {
+        videoSha256: sha256File(video),
+        contactSheetSha256: sha256File(contact),
+        visualAuditSha256: sha256File(visual),
+      },
+    };
+    const runAccept = () => spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/accept-render.ts",
+      "--project", project,
+      "--confirm-manual-review",
+    ], { cwd: process.cwd(), encoding: "utf8" });
+    fs.writeFileSync(report, JSON.stringify(candidate));
+    const accepted = runAccept();
+    assert.strictEqual(accepted.status, 0, `${accepted.stdout}\n${accepted.stderr}`);
+    const acceptance = JSON.parse(fs.readFileSync(path.join(project, "acceptance.json"), "utf8"));
+    assert.strictEqual(acceptance.schemaVersion, 3);
+    assert.strictEqual(acceptance.projectId, projectId);
+    assert.strictEqual(acceptance.timelineSha256, identity.timelineSha256);
+    assert.strictEqual(acceptance.artifactSha256, sha256File(video));
+    assertExactManualContactSheetReview(acceptance.manualContactSheetReview);
+
+    const borrowedTimeline = path.join(temp, "borrowed-timeline.json");
+    fs.copyFileSync(timeline, borrowedTimeline);
+    fs.writeFileSync(report, JSON.stringify({ ...candidate, timeline: borrowedTimeline }));
+    const borrowed = runAccept();
+    assert.notStrictEqual(borrowed.status, 0);
+    assert.match(`${borrowed.stdout}\n${borrowed.stderr}`, /different canonical timeline path/i);
+
+    fs.writeFileSync(report, JSON.stringify(candidate));
+    fs.writeFileSync(timeline, JSON.stringify({ scenes: [{ id: "scene-1-edited" }] }));
+    const stale = runAccept();
+    assert.notStrictEqual(stale.status, 0);
+    assert.match(`${stale.stdout}\n${stale.stderr}`, /hash does not match/i);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+});
+
+test("publish CLI rejects empty review, stale timeline hash, and a candidate from another project", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-publish-integrity-"));
+  try {
+    const projectA = path.join(temp, "project-a");
+    const projectB = path.join(temp, "project-b");
+    const artifactDir = path.join(temp, "artifacts");
+    fs.mkdirSync(projectA, { recursive: true });
+    fs.mkdirSync(projectB, { recursive: true });
+    fs.mkdirSync(artifactDir, { recursive: true });
+    const timelineA = path.join(projectA, "timeline.json");
+    const timelineB = path.join(projectB, "timeline.json");
+    fs.writeFileSync(timelineA, JSON.stringify({ scenes: [{ id: "a" }] }));
+    fs.writeFileSync(timelineB, JSON.stringify({ scenes: [{ id: "b" }] }));
+    const video = path.join(artifactDir, "video.mp4");
+    const contact = path.join(artifactDir, "video.contact.jpg");
+    const visual = path.join(artifactDir, "video.visual-audit.json");
+    const report = path.join(artifactDir, "video.production-report.json");
+    fs.writeFileSync(video, "video");
+    fs.writeFileSync(contact, "contact");
+    fs.writeFileSync(visual, JSON.stringify({ passed: true }));
+
+    const identityA = buildCanonicalTimelineIdentity({ timelinePath: timelineA, projectId: "project-a", projectPath: projectA });
+    const identityB = buildCanonicalTimelineIdentity({ timelinePath: timelineB, projectId: "project-b", projectPath: projectB });
+    const manualReview = {
+      noRecognizableHumanFaces: true,
+      noTextClipping: true,
+      noBubbleOverlap: true,
+      noEmptyScenes: true,
+      noCameraCrop: true,
+    };
+    const writeCandidate = (identity: ReturnType<typeof buildCanonicalTimelineIdentity>) => {
+      fs.writeFileSync(report, JSON.stringify({
+        schemaVersion: 2,
+        status: "candidate-ready",
+        video: path.resolve(video),
+        projectId: identity.projectId,
+        projectPath: identity.projectPath,
+        timeline: identity.timelinePath,
+        timelineSha256: identity.timelineSha256,
+        timingAudit: { scope: "full timeline" },
+        visualAudit: path.resolve(visual),
+        audioAudit: { passed: true },
+        encodingAudit: { passed: true },
+        artifacts: {
+          videoSha256: sha256File(video),
+          contactSheetSha256: sha256File(contact),
+          visualAuditSha256: sha256File(visual),
+        },
+      }));
+    };
+    const writeAcceptance = (identity: ReturnType<typeof buildCanonicalTimelineIdentity>, review: unknown) => {
+      fs.writeFileSync(path.join(projectB, "acceptance.json"), JSON.stringify({
+        schemaVersion: 3,
+        result: "pass",
+        artifact: path.resolve(video),
+        artifactSha256: sha256File(video),
+        contactSheetSha256: sha256File(contact),
+        visualAuditSha256: sha256File(visual),
+        productionReportSha256: sha256File(report),
+        projectId: identity.projectId,
+        projectPath: identity.projectPath,
+        timeline: identity.timelinePath,
+        timelineSha256: identity.timelineSha256,
+        manualContactSheetReview: review,
+      }));
+    };
+    const runPublish = () => spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/publish.ts",
+      "--project", projectB,
+      "--out", video,
+    ], { cwd: process.cwd(), encoding: "utf8" });
+
+    writeCandidate(identityB);
+    writeAcceptance(identityB, {});
+    let run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /Manual contact-sheet review/i);
+
+    writeAcceptance(identityB, manualReview);
+    fs.writeFileSync(timelineB, JSON.stringify({ scenes: [{ id: "b-edited" }] }));
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /timeline hash/i);
+
+    fs.writeFileSync(timelineB, JSON.stringify({ scenes: [{ id: "b" }] }));
+    writeCandidate(identityB);
+    writeAcceptance(identityB, manualReview);
+    run = runPublish();
+    assert.strictEqual(run.status, 0, `${run.stdout}\n${run.stderr}`);
+    assert.strictEqual(
+      JSON.parse(fs.readFileSync(path.join(artifactDir, "video.publish-report.json"), "utf8")).timelineSha256,
+      identityB.timelineSha256,
+    );
+
+    writeCandidate(identityA);
+    writeAcceptance(identityA, manualReview);
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /different canonical timeline|project/i);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+
+test("process runner refuses a pre-aborted stage without spawning it", async () => {
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(
+    runProcess({ phase: "pre-aborted", executable: process.execPath, args: ["-e", "process.exit(0)"], signal: controller.signal }),
+    (error: unknown) => error instanceof ProcessRunError && error.result.terminationReason === "aborted",
+  );
+});
+
+test("DLL initialization retry is bounded and never retries cancellation", () => {
+  const failure: any = { windowsStatus: STATUS_DLL_INIT_FAILED, terminationReason: null };
+  assert.strictEqual(shouldRetryDllInitFailure(failure, 1, true), true);
+  assert.strictEqual(shouldRetryDllInitFailure(failure, 2, true), false);
+  assert.strictEqual(shouldRetryDllInitFailure(failure, 1, false), false);
+  assert.strictEqual(shouldRetryDllInitFailure({ ...failure, terminationReason: "aborted" }, 1, true), false);
+});
+
+test("process timeout terminates the complete descendant tree", async () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-process-tree-"));
+  const orphanMarker = path.join(temp, "orphan.txt");
+  try {
+    const childCode = `setTimeout(() => require('fs').writeFileSync(${JSON.stringify(orphanMarker)}, 'orphan'), 700)`;
+    const parentCode = `require('child_process').spawn(process.execPath, ['-e', ${JSON.stringify(childCode)}], {stdio:'ignore'}); setTimeout(() => {}, 5000)`;
+    await assert.rejects(
+      runProcess({ phase: "tree-timeout", executable: process.execPath, args: ["-e", parentCode], timeoutMs: 200 }),
+      (error: unknown) => error instanceof ProcessRunError && error.result.terminationReason === "timeout",
+    );
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    assert.ok(!fs.existsSync(orphanMarker), "a descendant survived the timed-out process tree");
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
 test("chunk planning refuses an oversized section rather than mechanically splitting it", () => {
   const range = { startWord: 0, endWord: 4, quoteChecksum: "x" };
   const result = planSemanticChunks({
@@ -94,25 +1335,323 @@ test("chunk attestations fail closed when a checked output changes", () => {
   try {
     const output = path.join(temp, "timeline.json");
     fs.writeFileSync(output, JSON.stringify({ scene: "first" }));
+    const inputHash = checksumJson("source");
+    const profileHash = checksumJson("profile");
     const attestation = createStageAttestation({
-      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: "source" },
-      outputHashes: { timeline: checksumArtifact(output) }, policyVersion: "v1", thresholdProfileHash: "profile",
+      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: inputHash },
+      outputHashes: { timeline: checksumArtifact(output) }, policyVersion: "v1", thresholdProfileHash: profileHash,
       passed: true, blockerCount: 0, majorCount: 0,
     });
     const record = path.join(temp, "attestation.json");
     writeStageAttestation(record, attestation);
     assert.deepStrictEqual(verifyStageAttestation(readStageAttestation(record), {
-      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: "source" },
-      outputPaths: { timeline: output }, policyVersion: "v1", thresholdProfileHash: "profile",
+      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: inputHash },
+      outputPaths: { timeline: output }, policyVersion: "v1", thresholdProfileHash: profileHash,
     }), []);
     fs.writeFileSync(output, JSON.stringify({ scene: "edited" }));
     assert.ok(verifyStageAttestation(readStageAttestation(record), {
-      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: "source" },
-      outputPaths: { timeline: output }, policyVersion: "v1", thresholdProfileHash: "profile",
+      chunkId: "chunk-001-hook", stage: "compile", inputHashes: { storyboard: inputHash },
+      outputPaths: { timeline: output }, policyVersion: "v1", thresholdProfileHash: profileHash,
     }).some((issue) => issue.code === "ATTESTATION_OUTPUT_DRIFT"));
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
+});
+
+test("chunk assembly preserves order and rejects a changed required proof", () => {
+  const range = { startWord: 0, endWord: 0, quoteChecksum: "one" };
+  const storyboard: Storyboard = {
+    fps: 30, width: 1920, height: 1080,
+    sections: [
+      { id: "a", sourceRange: range, thesis: "a", emotionalTurn: "a", energyCurve: "build", targetDurationSeconds: 60, treatmentSequence: ["full_tableau"] },
+      { id: "b", sourceRange: { ...range, startWord: 1, endWord: 1, quoteChecksum: "two" }, thesis: "b", emotionalTurn: "b", energyCurve: "release", targetDurationSeconds: 60, treatmentSequence: ["infographic"] },
+    ],
+    scenes: [
+      { id: "s1", narration: "one", purpose: "a", emotion: "neutral", viewerFocus: "a", visualGrammar: "TABLEAU", sourceRange: range },
+      { id: "s2", narration: "two", purpose: "b", emotion: "neutral", viewerFocus: "b", visualGrammar: "TABLEAU", sourceRange: { ...range, startWord: 1, endWord: 1, quoteChecksum: "two" } },
+    ],
+  };
+  const planned = planSemanticChunks(storyboard, { projectId: "fixture", storyboardChecksum: "storyboard", targetChunkSeconds: 60 }).plan!;
+  assert.deepStrictEqual(projectStoryboardForChunk(storyboard, planned.chunks[0]).scenes.map((scene) => scene.id), ["s1"]);
+  assert.deepStrictEqual(assembleChunkDurations([
+    { chunkId: planned.chunks[0].id, durations: [{ id: "s1", startFrame: 0, frames: 30 }] },
+    { chunkId: planned.chunks[1].id, durations: [{ id: "s2", startFrame: 0, frames: 45 }] },
+  ]), [{ id: "s1", startFrame: 0, frames: 30 }, { id: "s2", startFrame: 30, frames: 45 }]);
+  const inputHash = checksumJson("storyboard");
+  const profileHash = checksumJson("profile");
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-assembly-"));
+  try {
+    const artifacts = planned.chunks.map((chunk, index) => {
+      const timeline = path.join(temp, `${chunk.id}.json`);
+      fs.writeFileSync(timeline, JSON.stringify({ id: chunk.id }));
+      const record = path.join(temp, `${chunk.id}-compile.json`);
+      writeStageAttestation(record, createStageAttestation({
+        chunkId: chunk.id, stage: "compile", inputHashes: { storyboard: inputHash },
+        outputHashes: { timeline: checksumArtifact(timeline) }, policyVersion: "policy", thresholdProfileHash: profileHash,
+        passed: true, blockerCount: 0, majorCount: 0,
+      }));
+      return {
+        chunkId: chunk.id,
+        durations: [{ id: `s${index + 1}`, startFrame: 0, frames: 30 }], words: [],
+        hashes: { storyboard: inputHash }, attestationPaths: { compile: record }, outputs: { timeline },
+        timeline,
+      };
+    });
+    const requirement = [{
+      stage: "compile" as const, policyVersion: "policy", thresholdProfileHash: profileHash,
+      inputHashes: (artifact: { hashes: Record<string, string> }) => artifact.hashes,
+      outputPaths: (artifact) => ({ timeline: artifact.outputs.timeline }),
+    }];
+    assert.deepStrictEqual(verifyChunkAssembly(planned, storyboard, artifacts, requirement), []);
+    fs.writeFileSync(artifacts[1].timeline, "edited");
+    assert.ok(verifyChunkAssembly(planned, storyboard, artifacts, requirement).some((issue) => issue.code === "ASSEMBLY_ATTESTATION"));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("chunk scopes materialize exactly one adjacent scene without contaminating core projection", () => {
+  const range = (value: number) => ({ startWord: value, endWord: value, quoteChecksum: String(value) });
+  const storyboard: Storyboard = {
+    fps: 30, width: 1920, height: 1080,
+    sections: [
+      { id: "a", sourceRange: { startWord: 0, endWord: 1, quoteChecksum: "a" }, thesis: "a", emotionalTurn: "a", energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+      { id: "b", sourceRange: { startWord: 2, endWord: 3, quoteChecksum: "b" }, thesis: "b", emotionalTurn: "b", energyCurve: "sustain", targetDurationSeconds: 10, treatmentSequence: ["infographic"] },
+      { id: "c", sourceRange: { startWord: 4, endWord: 5, quoteChecksum: "c" }, thesis: "c", emotionalTurn: "c", energyCurve: "release", targetDurationSeconds: 10, treatmentSequence: ["photo_broll"] },
+    ],
+    scenes: Array.from({ length: 6 }, (_, index) => ({
+      id: `s${index}`, narration: `word${index}`, purpose: "x", emotion: "neutral" as const,
+      viewerFocus: "x", visualGrammar: "EVIDENCE" as const, sourceRange: range(index),
+      sectionId: ["a", "a", "b", "b", "c", "c"][index],
+    })),
+  };
+  const plan = planSemanticChunks(storyboard, {
+    projectId: "fixture", storyboardChecksum: checksumJson(storyboard), targetChunkSeconds: 10, maximumChunkTargetSeconds: 10,
+  }).plan!;
+  const scope = qualityScopeForChunk(plan, plan.chunks[1].id);
+  assert.deepStrictEqual(scope.haloBeforeSceneIds, ["s1"]);
+  assert.deepStrictEqual(scope.coreSceneIds, ["s2", "s3"]);
+  assert.deepStrictEqual(scope.haloAfterSceneIds, ["s4"]);
+  assert.deepStrictEqual(projectStoryboardForChunk(storyboard, plan.chunks[1]).scenes.map((scene) => scene.id), ["s2", "s3"]);
+  assert.deepStrictEqual(projectStoryboardForQualityScope(storyboard, scope).scenes.map((scene) => scene.id), ["s1", "s2", "s3", "s4"]);
+});
+
+test("scoped timeline quality fails closed when a declared halo is absent", () => {
+  const report = runScopedQualityCheck({ scenes: [{ id: "core" }] }, {
+    kind: "chunk", chunkId: "chunk-002", coreSceneIds: ["core"], haloBeforeSceneIds: ["prior"], haloAfterSceneIds: [],
+  }, "fixture");
+  assert.ok(report.blockers > 0);
+  assert.ok(report.checks.flatMap((check) => check.issues).some((entry) => entry.rule === "CHUNK_SCOPE_MISSING"));
+});
+
+test("chunk-local scene zero receives no project-opening rewrite when the true opening is outside its proof", () => {
+  const base: any = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 30,
+    scenes: [{ id: "halo", startFrame: 0, durationFrames: 30, backgroundSrc: "#050505", layout: "SOLO", entities: [], texts: [] }],
+  };
+  const inferred = compileScenes(base);
+  const scoped = compileScenes({ ...base, artifactRole: "chunk-proof", projectOpeningSceneId: "actual-opening" });
+  assert.strictEqual((inferred.events.find((event) => event.type === "background") as any).src, "#FAFAF8");
+  assert.strictEqual((scoped.events.find((event) => event.type === "background") as any).src, "#050505");
+});
+
+test("strict attestation validation rejects malformed maps and unexpected keys without throwing", () => {
+  const digest = checksumJson("digest");
+  const base: any = createStageAttestation({
+    chunkId: "chunk", stage: "compile", inputHashes: { source: digest }, outputHashes: {},
+    policyVersion: "policy", thresholdProfileHash: digest, passed: true, blockerCount: 0, majorCount: 0,
+  });
+  for (const malformed of [
+    { ...base, inputHashes: null },
+    { ...base, outputHashes: [] },
+    { ...base, inputHashes: { source: "not-a-hash" } },
+    { ...base, blockerCount: -1 },
+    { ...base, completedAt: "not-a-date" },
+    { ...base, extra: true },
+  ]) {
+    assert.doesNotThrow(() => verifyStageAttestation(malformed, {
+      chunkId: "chunk", stage: "compile", inputHashes: { source: digest }, outputPaths: {},
+      policyVersion: "policy", thresholdProfileHash: digest,
+    }));
+    assert.ok(verifyStageAttestation(malformed, {
+      chunkId: "chunk", stage: "compile", inputHashes: { source: digest }, outputPaths: {},
+      policyVersion: "policy", thresholdProfileHash: digest,
+    }).some((entry) => entry.code === "ATTESTATION_MALFORMED"));
+  }
+  const unexpectedInput = { ...base, inputHashes: { source: digest, forged: digest } };
+  assert.ok(verifyStageAttestation(unexpectedInput, {
+    chunkId: "chunk", stage: "compile", inputHashes: { source: digest }, outputPaths: {},
+    policyVersion: "policy", thresholdProfileHash: digest,
+  }).some((entry) => entry.code === "ATTESTATION_INPUT_DRIFT"));
+});
+
+test("stage contracts bind predecessor proof, alignment receipt, and quality scope independently", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-stage-contract-"));
+  const projectId = path.basename(temp);
+  const audioRoot = path.resolve("public", "audio", "chunks", projectAudioIdentity(temp));
+  try {
+    const range = (value: number) => ({ startWord: value, endWord: value, quoteChecksum: String(value) });
+    const storyboard: Storyboard = {
+      fps: 30, width: 1920, height: 1080, transcriptChecksum: "x",
+      sections: [
+        { id: "a", sourceRange: range(0), thesis: "a", emotionalTurn: "a", energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+        { id: "b", sourceRange: range(1), thesis: "b", emotionalTurn: "b", energyCurve: "release", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+      ],
+      scenes: [0, 1].map((index) => ({ id: `s${index}`, narration: `w${index}`, purpose: "x", emotion: "neutral" as const, viewerFocus: "x", visualGrammar: "EVIDENCE" as const, sourceRange: range(index), sectionId: index ? "b" : "a" })),
+    };
+    const storyboardPath = path.join(temp, "storyboard.json");
+    fs.writeFileSync(storyboardPath, JSON.stringify(storyboard));
+    const plan = planSemanticChunks(storyboard, { projectId, storyboardChecksum: checksumJson(storyboard), targetChunkSeconds: 10, maximumChunkTargetSeconds: 10 }).plan!;
+    const planPath = path.join(temp, "chunks", "chunk-plan.json");
+    fs.mkdirSync(path.dirname(planPath), { recursive: true });
+    fs.writeFileSync(planPath, JSON.stringify(plan));
+    const config = createChunkRunConfig({
+      projectDir: temp,
+      planPath,
+      storyboard,
+      globalAuthoringReportPath: writeTestGlobalAuthoringReport(temp),
+      voice: "voice",
+      alignModel: "base",
+      thresholdProfileHash: checksumJson(referenceQuality),
+    });
+    const configPath = chunkRunConfigPath(temp);
+    fs.writeFileSync(configPath, JSON.stringify(config));
+    const previousReceipt = stageAttestationPath(temp, plan.chunks[0].id, "visual-proof");
+    fs.mkdirSync(path.dirname(previousReceipt), { recursive: true });
+    fs.writeFileSync(previousReceipt, JSON.stringify({ version: 1 }));
+    const context = { projectDir: temp, storyboardPath, planPath, runConfigPath: configPath, storyboard, plan, runConfig: config };
+    const first = computeExpectedChunkStageContract(context, plan.chunks[1].id, "authoring").inputHashes.previousVisualProof;
+    fs.writeFileSync(previousReceipt, JSON.stringify({ version: 2 }));
+    const second = computeExpectedChunkStageContract(context, plan.chunks[1].id, "authoring").inputHashes.previousVisualProof;
+    assert.notStrictEqual(first, second);
+    const paths = chunkPipelinePaths(temp, plan.chunks[1].id);
+    [paths.projection, paths.audio, paths.durations, paths.words, paths.alignment, paths.scope, paths.coreScope].forEach((filePath) => {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, path.extname(filePath) === ".json" ? "{}" : "audio");
+    });
+    const alignmentReceipt = stageAttestationPath(temp, plan.chunks[1].id, "alignment");
+    fs.mkdirSync(path.dirname(alignmentReceipt), { recursive: true });
+    fs.writeFileSync(alignmentReceipt, "{}");
+    const compile = computeExpectedChunkStageContract(context, plan.chunks[1].id, "compile");
+    assert.ok(compile.inputHashes.alignmentAttestation);
+    assert.ok(compile.inputHashes.coreScope);
+    fs.mkdirSync(path.dirname(paths.proofTimeline), { recursive: true });
+    fs.writeFileSync(paths.proofTimeline, JSON.stringify({ scenes: [{ backgroundSrc: "rgba(12, 34, 56, 0.5)", entities: [] }] }));
+    const proof = computeExpectedChunkStageContract(context, plan.chunks[1].id, "visual-proof");
+    assert.ok(proof.inputHashes.scope);
+    assert.ok(!proof.missingInputs.some((entry) => entry.includes("rgba")), "CSS rgb/rgba background was treated as an asset path");
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+    fs.rmSync(audioRoot, { recursive: true, force: true });
+  }
+});
+
+test("a deleted chunk plan cannot disable an existing provenance gate", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-plan-deletion-"));
+  try {
+    assert.ok(verifyChunkAssemblyProvenance(temp, { chunkAssemblyProvenance: {} })
+      .some((entry) => entry.code === "CHUNK_PLAN_MISSING"));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("stripped lineage cannot downgrade a 4600-word storyboard", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-long-lineage-deletion-"));
+  try {
+    const narration = Array.from({ length: 4600 }, (_, index) => `word${index}`).join(" ");
+    const storyboard: Storyboard = {
+      fps: 30,
+      width: 1920,
+      height: 1080,
+      scenes: [{
+        id: "long-scene", narration, purpose: "long", emotion: "neutral", viewerFocus: "long",
+        visualGrammar: "EVIDENCE",
+      }],
+    };
+    fs.writeFileSync(path.join(temp, "storyboard.json"), JSON.stringify(storyboard));
+    assert.strictEqual(isLongVideoWordCount(4600), true);
+    assert.ok(verifyChunkAssemblyProvenance(temp, { scenes: [] })
+      .some((entry) => entry.code === "CHUNK_PLAN_MISSING"));
+
+    storyboard.scenes[0].narration = "short narration";
+    storyboard.sections = [{
+      id: "long-section",
+      sourceRange: { startWord: 0, endWord: 4599, quoteChecksum: "range" },
+      thesis: "long", emotionalTurn: "long", energyCurve: "build",
+      targetDurationSeconds: 100, treatmentSequence: ["evidence"],
+    }];
+    fs.writeFileSync(path.join(temp, "storyboard.json"), JSON.stringify(storyboard));
+    assert.ok(verifyChunkAssemblyProvenance(temp, { scenes: [] })
+      .some((entry) => entry.code === "CHUNK_PLAN_MISSING"));
+
+    delete storyboard.sections;
+    fs.writeFileSync(path.join(temp, "storyboard.json"), JSON.stringify(storyboard));
+    assert.deepStrictEqual(verifyChunkAssemblyProvenance(temp, { scenes: [] }), []);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("scoped storyboard quality attributes seam context only to core scenes", () => {
+  const report = runScopedStoryboardCheck({
+    scenes: [
+      { id: "halo", visualGrammar: "NOT_A_GRAMMAR" },
+      { id: "core", visualGrammar: "NOT_A_GRAMMAR" },
+    ],
+  }, { kind: "chunk", chunkId: "chunk-002", coreSceneIds: ["core"], haloBeforeSceneIds: ["halo"], haloAfterSceneIds: [] });
+  const issues = report.checks.flatMap((check) => check.issues);
+  assert.ok(issues.some((issue) => issue.scene === "core"));
+  assert.ok(!issues.some((issue) => issue.scene === "halo"));
+  assert.ok(!issues.some((issue) => !issue.scene));
+});
+
+test("scoped storyboard quality attributes scene-less claim failures to core ownership", () => {
+  const makeBrief = (id: string, claimId?: string) => ({
+    id, narration: "A documented claim.", purpose: "show evidence", emotion: "neutral" as const,
+    viewerFocus: "the evidence", visualGrammar: "EVIDENCE" as const,
+    sourceRange: { startWord: 0, endWord: 2, quoteChecksum: id },
+    visualRegister: "evidence" as const,
+    semanticVisual: { subject: "claim", action: "appears", takeaway: "the claim is documented" },
+    focalType: "evidence" as const, silentFrameTakeaway: "the claim is documented",
+    focalOccupancyTarget: 0.4, noveltyFromPrevious: ["evidence"],
+    visualFingerprint: `${id}|evidence`, slots: { body: "A documented claim." },
+    claimIds: claimId ? [claimId] : [],
+  });
+  const report = runScopedStoryboardCheck({
+    fps: 30, width: 1920, height: 1080,
+    visualTreatmentPlan: { registerTargets: { evidence: 0 } },
+    scenes: [
+      makeBrief("halo"),
+      makeBrief("core", "claim-core"),
+      makeBrief("outside", "claim-outside"),
+    ],
+    claims: [{
+      id: "claim-core", text: "Core claim", sourceRange: { startWord: 0, endWord: 2, quoteChecksum: "core" },
+      evidencePolicy: "data", sceneIds: ["core"],
+    }, {
+      id: "claim-outside", text: "Outside claim", sourceRange: { startWord: 3, endWord: 5, quoteChecksum: "outside" },
+      evidencePolicy: "data", sceneIds: ["outside"],
+    }],
+  }, {
+    kind: "chunk", chunkId: "chunk-002", coreSceneIds: ["core"],
+    haloBeforeSceneIds: ["halo"], haloAfterSceneIds: [],
+  });
+  const issues = report.checks.flatMap((check) => check.issues);
+  const metadataIssue = issues.find((issue) => issue.rule === "CLAIM_SOURCE_METADATA_MISSING");
+  assert.strictEqual(metadataIssue?.claimId, "claim-core");
+  assert.strictEqual(metadataIssue?.scene, "core");
+  assert.ok(!issues.some((issue) => issue.message.includes("claim-outside")));
+  assert.ok(!issues.some((issue) => issue.rule === "REGISTER_TARGET_DRIFT"),
+    "global-only distribution findings must stay out of chunk authoring proofs");
+});
+
+test("canonical beat matching tolerates CRLF and punctuation but rejects reordered phrases", () => {
+  assert.strictEqual(containsCanonicalPhrase("Một câu\r\nquan trọng, ở đây.", "câu quan trọng ở đây"), true);
+  assert.strictEqual(containsCanonicalPhrase("Một câu quan trọng ở đây.", "quan trọng câu"), false);
+  assert.deepStrictEqual(authoredCadenceIssues("s", "Một câu\r\nquan trọng, ở đây.", [{
+    text: "câu quan trọng ở đây", importance: 0.8, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_think",
+  }]), []);
 });
 
 test("authoring cadence rejects long narration without persistent semantic beats", () => {
@@ -124,6 +1663,16 @@ test("authoring cadence rejects long narration without persistent semantic beats
     { text: "word45", importance: 0.8, kind: "turn", action: "focus_asset", targetSlot: "prop" },
   ];
   assert.deepStrictEqual(authoredCadenceIssues("scene-x", narration, beats), []);
+});
+
+test("authoring cadence rejects duplicate beat phrases as one visual moment", () => {
+  const narration = Array.from({ length: 57 }, (_, index) => `word${index}`).join(" ");
+  const duplicateMoment: any[] = [
+    { text: "word20", importance: 0.7, kind: "turn", action: "swap_pose", targetSlot: "who", targetAssetId: "characters/cat_think" },
+    { text: "word20", importance: 0.8, kind: "turn", action: "focus_asset", targetSlot: "prop" },
+  ];
+  const issues = authoredCadenceIssues("scene-x", narration, duplicateMoment);
+  assert.ok(issues.some((issue) => issue.includes("needs 2 distinct") && issue.includes("found 1")));
 });
 
 test("authoring rejects oversized scenes and beats the grammar cannot render", () => {
@@ -233,6 +1782,8 @@ test("canonical JSON checksums ignore formatting but detect semantic changes", (
     const expected = canonicalJsonChecksum(artifact);
     fs.writeFileSync(artifact, '{"a":1,"b":[2,3]}');
     assert.strictEqual(canonicalJsonChecksum(artifact), expected);
+    fs.writeFileSync(artifact, '{"b":[2,3],"a":1}');
+    assert.strictEqual(canonicalJsonChecksum(artifact), expected);
     fs.writeFileSync(artifact, '{"a":2,"b":[2,3]}');
     const issues = verifyArtifactInputs([{ kind: "storyboard", filePath: artifact, expected }]);
     assert.strictEqual(issues[0]?.code, "TIMING_STORYBOARD_HASH_MISMATCH");
@@ -275,6 +1826,77 @@ test("artifact promotion archives the previous canonical set and publishes repor
       fs.readFileSync(path.join(archive!, "video.visual-audit.json"), "utf8"),
       "stale-audit"
     );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("chunk proof promotion is transactional, report-last, and removes successful staging copies", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-proof-promotion-test-"));
+  const finalDir = path.join(dir, "proof");
+  const stagingDir = path.join(finalDir, ".runs", "run-proof");
+  fs.mkdirSync(stagingDir, { recursive: true });
+  fs.writeFileSync(path.join(finalDir, "video.mp4"), "old-proof");
+  fs.writeFileSync(path.join(finalDir, "video.production-report.json"), JSON.stringify({ status: "chunk-proof-ready" }));
+  fs.writeFileSync(path.join(stagingDir, "video.mp4"), "new-proof");
+  fs.writeFileSync(path.join(stagingDir, "video.contact.jpg"), "contact");
+  for (const name of ["video.encoding-audit.json", "video.audio-audit.json", "video.visual-audit.json"]) {
+    fs.writeFileSync(path.join(stagingDir, name), JSON.stringify({ passed: true }));
+  }
+  fs.writeFileSync(
+    path.join(stagingDir, "video.production-report.json"),
+    JSON.stringify({ status: "chunk-proof-ready" }),
+  );
+  try {
+    const archive = promoteArtifacts(stagingDir, finalDir, "run-proof", {
+      requiredReportStatus: "chunk-proof-ready",
+    });
+    assert.ok(archive);
+    assert.strictEqual(fs.readFileSync(path.join(finalDir, "video.mp4"), "utf8"), "new-proof");
+    assert.strictEqual(
+      JSON.parse(fs.readFileSync(path.join(finalDir, "video.production-report.json"), "utf8")).status,
+      "chunk-proof-ready",
+    );
+    assert.ok(!fs.existsSync(stagingDir), "successful proof staging directory was retained");
+    pruneRunHistory(finalDir, { preservePreviousMp4: false });
+    assert.ok(!fs.existsSync(path.join(archive!, "video.mp4")), "previous successful proof MP4 was duplicated in history");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("canonical chunk assembly promotion rolls back the complete prior set", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-assembly-promotion-"));
+  try {
+    const staging = path.join(dir, "staging");
+    fs.mkdirSync(staging);
+    const firstFinal = path.join(dir, "durations.json");
+    const secondFinal = path.join(dir, "timeline.json");
+    const firstCandidate = path.join(staging, "durations.json");
+    const secondCandidate = path.join(staging, "timeline.json");
+    fs.writeFileSync(firstFinal, "old-durations");
+    fs.writeFileSync(secondFinal, "old-timeline");
+    fs.writeFileSync(firstCandidate, "new-durations");
+    fs.writeFileSync(secondCandidate, "new-timeline");
+    let injected = false;
+    assert.throws(() => promoteChunkAssemblyArtifacts([
+      { name: "durations", candidatePath: firstCandidate, finalPath: firstFinal },
+      { name: "timeline", candidatePath: secondCandidate, finalPath: secondFinal },
+    ], {
+      transactionId: "rollback-test",
+      renameFile: (source, destination) => {
+        if (!injected && path.resolve(source) === path.resolve(secondCandidate)) {
+          injected = true;
+          throw new Error("injected promotion failure");
+        }
+        fs.renameSync(source, destination);
+      },
+    }), /injected promotion failure/);
+    assert.strictEqual(fs.readFileSync(firstFinal, "utf8"), "old-durations");
+    assert.strictEqual(fs.readFileSync(secondFinal, "utf8"), "old-timeline");
+    assert.strictEqual(fs.readFileSync(firstCandidate, "utf8"), "new-durations");
+    assert.strictEqual(fs.readFileSync(secondCandidate, "utf8"), "new-timeline");
+    assert.ok(!fs.readdirSync(dir).some((name) => name.includes("assembly-backup")));
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -360,39 +1982,504 @@ test("render lock refuses a concurrent writer and names the absolute lock", () =
   }
 });
 
-test("reference comparison names the robust baseline and emits signed deltas", () => {
-  const result = buildReferenceComparison(
-    {
-      flatFrameRatio: 0.6,
-      edgeDensity: { mean: 0.14 },
-      nearDuplicateRatio: 0.3,
-      longestNearDuplicateRunSeconds: 15,
-      saturation: { mean: 0.2 },
-      nearWhiteMean: 0.2,
-      whiteDominantRatio: 0.1,
-    },
-    {
-      reference: "refer/meo.mp4",
-      referenceSha256: "abc",
-      offsetsSeconds: [0, 1.7, 3.3],
-      robustBaseline: {
-        metrics: {
-          flatFrameRatio: { mean: 0.45 },
-          edgeDensity: { mean: 0.19 },
-          nearDuplicateRatio: { mean: 0.18 },
-          longestNearDuplicateRunSeconds: { mean: 10 },
-          saturation: { mean: 0.18 },
-          nearWhiteMean: { mean: 0.44 },
-          whiteDominantRatio: { mean: 0.43 },
-        },
-      },
+test("chunk processor and assembler share one project writer lock with useful owner metadata", () => {
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-project-chunk-lock-"));
+  const lock = acquireProjectChunkLock(projectDir, {
+    operation: "process-storyboard-chunks",
+    mode: "execute",
+    requestedChunk: "chunk-002",
+    runId: "processor-owner",
+  });
+  try {
+    const lockPath = projectChunkLockPath(projectDir);
+    const owner = JSON.parse(fs.readFileSync(path.join(lockPath, "owner.json"), "utf8"));
+    assert.deepStrictEqual({
+      operation: owner.operation,
+      mode: owner.mode,
+      requestedChunk: owner.requestedChunk,
+      projectId: owner.projectId,
+      projectDir: owner.projectDir,
+      runId: owner.runId,
+      pid: owner.pid,
+      host: owner.host,
+    }, {
+      operation: "process-storyboard-chunks",
+      mode: "execute",
+      requestedChunk: "chunk-002",
+      projectId: path.basename(projectDir),
+      projectDir: path.resolve(projectDir),
+      runId: "processor-owner",
+      pid: process.pid,
+      host: os.hostname(),
+    });
+
+    assert.throws(
+      () => acquireProjectChunkLock(projectDir, { operation: "process-storyboard-chunks", mode: "check" }),
+      (error: Error) => error.message.includes(lockPath)
+        && error.message.includes("operation=process-storyboard-chunks")
+        && /already in progress/.test(error.message),
+    );
+    assert.throws(
+      () => acquireProjectChunkLock(projectDir, { operation: "assemble-storyboard-chunks", mode: "execute" }),
+      /already in progress/,
+    );
+    assert.throws(
+      () => acquireProjectChunkLock(projectDir, { operation: "compile-storyboard", mode: "execute" }),
+      /already in progress/,
+    );
+
+    const canonicalStoryboardPath = path.join(projectDir, "storyboard.json");
+    const canonicalTimelinePath = path.join(projectDir, "timeline.json");
+    fs.writeFileSync(canonicalStoryboardPath, "{}\n", "utf8");
+    fs.writeFileSync(path.join(projectDir, "chunks", "chunk-plan.json"), "{}\n", "utf8");
+    const compiler = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"),
+      "scripts/compile-storyboard.ts",
+      "--storyboard", canonicalStoryboardPath,
+      "--out", canonicalTimelinePath,
+    ], { cwd: process.cwd(), encoding: "utf8" });
+    assert.notStrictEqual(compiler.status, 0);
+    assert.match(`${compiler.stdout}\n${compiler.stderr}`, /Canonical long-project compile rejected.*already in progress/s);
+    assert.ok(!fs.existsSync(canonicalTimelinePath), "blocked canonical compile wrote a timeline");
+
+    const processor = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"),
+      "scripts/process-storyboard-chunks.ts",
+      "--project", projectDir,
+    ], { cwd: process.cwd(), encoding: "utf8" });
+    assert.notStrictEqual(processor.status, 0);
+    assert.match(`${processor.stdout}\n${processor.stderr}`, /Chunk project mutation already in progress/);
+
+    const assembler = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"),
+      "scripts/assemble-storyboard-chunks.ts",
+      "--project", projectDir,
+      "--execute",
+    ], { cwd: process.cwd(), encoding: "utf8" });
+    assert.notStrictEqual(assembler.status, 0);
+    assert.match(`${assembler.stdout}\n${assembler.stderr}`, /Chunk project mutation already in progress/);
+  } finally {
+    lock.release();
+  }
+
+  try {
+    assert.ok(!fs.existsSync(projectChunkLockPath(projectDir)), "release left the project writer lock behind");
+    const replacement = acquireProjectChunkLock(projectDir, {
+      operation: "assemble-storyboard-chunks",
+      mode: "execute",
+      runId: "assembly-owner",
+    });
+    replacement.release();
+  } finally {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  }
+});
+
+test("chunk project lock uses process identity and stale foreign-heartbeat liveness policy", () => {
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-project-chunk-liveness-"));
+  const lockPath = projectChunkLockPath(projectDir);
+  const ownerFile = path.join(lockPath, "owner.json");
+  const writeOwner = (owner: ProjectChunkLockOwner, ageMs = 0) => {
+    fs.mkdirSync(lockPath, { recursive: true });
+    fs.writeFileSync(ownerFile, `${JSON.stringify(owner, null, 2)}\n`, "utf8");
+    if (ageMs > 0) {
+      const staleTime = new Date(Date.now() - ageMs);
+      fs.utimesSync(ownerFile, staleTime, staleTime);
     }
+  };
+
+  const live = acquireProjectChunkLock(projectDir, {
+    operation: "process-storyboard-chunks",
+    mode: "execute",
+    runId: "live-local",
+  });
+  const ownerTemplate = live.owner;
+  try {
+    const staleTime = new Date(Date.now() - PROJECT_CHUNK_LOCK_STALE_MS - 10_000);
+    fs.utimesSync(ownerFile, staleTime, staleTime);
+    assert.throws(
+      () => acquireProjectChunkLock(projectDir, { operation: "process-storyboard-chunks", mode: "check" }),
+      /local owner pid=.*is alive/i,
+    );
+  } finally {
+    live.release();
+  }
+
+  try {
+    writeOwner({
+      ...ownerTemplate,
+      token: "recycled-local-owner",
+      procStart: ownerTemplate.procStart - 60_000,
+      runId: "recycled-local",
+      acquiredAt: new Date().toISOString(),
+    });
+    const afterRecycledOwner = acquireProjectChunkLock(projectDir, {
+      operation: "compile-storyboard",
+      mode: "execute",
+      runId: "after-recycled-local",
+    });
+    assert.strictEqual(afterRecycledOwner.owner.runId, "after-recycled-local");
+    afterRecycledOwner.release();
+
+    writeOwner({
+      ...ownerTemplate,
+      token: "dead-local-owner",
+      pid: 2_147_483_647,
+      runId: "dead-local",
+      acquiredAt: new Date().toISOString(),
+    });
+    const afterDeadOwner = acquireProjectChunkLock(projectDir, {
+      operation: "process-storyboard-chunks",
+      mode: "check",
+      runId: "after-dead-local",
+    });
+    assert.strictEqual(afterDeadOwner.owner.runId, "after-dead-local");
+    afterDeadOwner.release();
+
+    writeOwner({
+      ...ownerTemplate,
+      token: "fresh-foreign-owner",
+      host: "another-host.invalid",
+      runId: "fresh-foreign",
+      acquiredAt: new Date().toISOString(),
+    });
+    assert.throws(
+      () => acquireProjectChunkLock(projectDir, { operation: "assemble-storyboard-chunks", mode: "execute" }),
+      /foreign-host heartbeat is only/i,
+    );
+    const oldTime = new Date(Date.now() - PROJECT_CHUNK_LOCK_STALE_MS - 10_000);
+    fs.utimesSync(ownerFile, oldTime, oldTime);
+    const afterForeignOwner = acquireProjectChunkLock(projectDir, {
+      operation: "assemble-storyboard-chunks",
+      mode: "execute",
+      runId: "after-stale-foreign",
+    });
+    assert.strictEqual(afterForeignOwner.owner.runId, "after-stale-foreign");
+    afterForeignOwner.release();
+  } finally {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  }
+});
+
+test("chunk project lock leaves malformed stale metadata intact", () => {
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-project-chunk-malformed-"));
+  const lockPath = projectChunkLockPath(projectDir);
+  const ownerFile = path.join(lockPath, "owner.json");
+  fs.mkdirSync(lockPath, { recursive: true });
+  fs.writeFileSync(ownerFile, "{not-json", "utf8");
+  const staleTime = new Date(Date.now() - PROJECT_CHUNK_LOCK_STALE_MS - 10_000);
+  fs.utimesSync(ownerFile, staleTime, staleTime);
+  try {
+    assert.throws(
+      () => acquireProjectChunkLock(projectDir, { operation: "process-storyboard-chunks", mode: "execute" }),
+      /cannot be recovered safely.*left intact/s,
+    );
+    assert.strictEqual(fs.readFileSync(ownerFile, "utf8"), "{not-json");
+  } finally {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  }
+});
+
+test("chunk project lock releases in exception and signal-controlled finally paths", async () => {
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "cat-project-chunk-finally-"));
+  const lockPath = projectChunkLockPath(projectDir);
+  try {
+    await assert.rejects(
+      runWithProjectChunkLock(projectDir, {
+        operation: "process-storyboard-chunks",
+        mode: "check",
+      }, async () => {
+        throw new Error("fixture failure");
+      }),
+      /fixture failure/,
+    );
+    assert.ok(!fs.existsSync(lockPath), "exception path left the project writer lock behind");
+
+    const baselineSigtermListeners = new Set(process.listeners("SIGTERM"));
+    let observedAbort = false;
+    await assert.rejects(
+      runWithProjectChunkLock(projectDir, {
+        operation: "assemble-storyboard-chunks",
+        mode: "execute",
+      }, async (signal) => {
+        const installed = process.listeners("SIGTERM").filter((listener) => !baselineSigtermListeners.has(listener));
+        assert.strictEqual(installed.length, 1, "signal lifecycle did not install exactly one SIGTERM listener");
+        (installed[0] as () => void)();
+        observedAbort = signal.aborted;
+      }),
+      (error: unknown) => error instanceof ProjectChunkInterruptedError
+        && error.signalName === "SIGTERM"
+        && error.exitCode === 143,
+    );
+    assert.strictEqual(observedAbort, true);
+    assert.ok(!fs.existsSync(lockPath), "signal path left the project writer lock behind");
+    assert.deepStrictEqual(new Set(process.listeners("SIGTERM")), baselineSigtermListeners);
+  } finally {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  }
+});
+
+test("visual measurement configuration rejects stale hashes and invalid phase sets", () => {
+  const baseline = JSON.parse(fs.readFileSync(
+    path.join(process.cwd(), "config", "reference-visual-baseline.json"),
+    "utf8",
+  ));
+  const contract = assertVisualMeasurementConfiguration(referenceQuality.visualAudit, baseline);
+  assert.strictEqual(contract.hash, referenceQuality.visualAudit.measurementSpecHash);
+  assert.deepStrictEqual(contract.sampleOffsets, [0, 2.5]);
+  assert.deepStrictEqual(expectedVisualSampleSchedule(contract.sampleOffsets, 5, 10), [0, 2.5, 5, 7.5]);
+  assert.throws(
+    () => assertVisualMeasurementConfiguration(
+      { ...referenceQuality.visualAudit, measurementSpecHash: "0".repeat(64) },
+      baseline,
+    ),
+    /different measurement specifications/i,
   );
-  assert.strictEqual(result.baseline, "robustBaseline");
-  assert.strictEqual(result.deltaCandidateMinusReference.flatFrameRatio, 0.15);
-  assert.strictEqual(result.deltaCandidateMinusReference.edgeDensity, -0.05);
-  assert.strictEqual(result.deltaCandidateMinusReference.nearWhiteMean, -0.24);
-  assert.strictEqual(result.deltaCandidateMinusReference.longestNearDuplicateRunSeconds, 5);
+  for (const offsets of [[], [0, 0], [-1], [5], [0, Number.NaN]]) {
+    assert.throws(() => normalizeVisualAuditOffsets(offsets, 5));
+  }
+  assert.throws(() => normalizeVisualAuditOffsets([2.5], 5, 2), /requested duration/i);
+});
+
+test("visual audit readiness requires complete global and chunk evidence", () => {
+  const baseline = JSON.parse(fs.readFileSync(
+    path.join(process.cwd(), "config", "reference-visual-baseline.json"),
+    "utf8",
+  ));
+  const contract = assertVisualMeasurementConfiguration(referenceQuality.visualAudit, baseline);
+  const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
+  const applicability = (distribution: boolean, seam: boolean) => ({
+    saturation: { applies: distribution, category: "distribution" },
+    nearWhiteMean: { applies: distribution, category: "distribution" },
+    whiteDominantRatio: { applies: distribution, category: "distribution" },
+    flatFrameRatio: { applies: distribution, category: "distribution" },
+    nearDuplicateRatio: { applies: distribution, category: "distribution" },
+    edgeDensity: { applies: true, category: "local-frame-detail" },
+    focalOccupancy: { applies: true, category: "local-frame-detail" },
+    withinSceneNearDuplicateRatio: { applies: true, category: "within-scene-temporal" },
+    longestStaticRun: { applies: true, category: "within-scene-temporal" },
+    seamNearDuplicateRatio: { applies: seam, category: "seam-temporal" },
+    minimumEvidence: { applies: true, category: "evidence-integrity" },
+  });
+  const row = (scheduledSeconds: number, sceneId: string, sampleRole: string, seconds = scheduledSeconds) => ({
+    seconds,
+    scheduledSeconds,
+    sceneId,
+    sampleRole,
+    white: 0.4,
+    saturation: 0.18,
+    edges: 0.2,
+    dominantColor: 0.3,
+    flat: false,
+    focalOccupancy: 0.4,
+    focalOccupancyTarget: null,
+    focalOccupancyDelta: null,
+  });
+  const pair = (left: any, right: any) => ({
+    fromSceneId: left.sceneId,
+    toSceneId: right.sceneId,
+    fromSeconds: left.seconds,
+    toSeconds: right.seconds,
+    deltaSeconds: right.seconds - left.seconds,
+    pairKind: left.sceneId === right.sceneId ? "within-scene" : "seam",
+    difference: 0.04,
+    nearDuplicate: false,
+  });
+  const reportFor = (kind: "global" | "chunk") => {
+    const samples = kind === "global"
+      ? [0, 2.5, 5, 7.5].map((seconds) => row(seconds, "only", "global"))
+      : [
+          row(0, "before", "halo-before"),
+          row(2.5, "core", "core"),
+          row(5, "core", "core"),
+          row(7.5, "after", "halo-after"),
+        ];
+    const temporalPairs = samples.slice(1).map((right, index) => pair(samples[index], right))
+      .filter((_item, index) => kind === "global" || [0, 1].includes(index));
+    const chunk = kind === "chunk";
+    return {
+      schemaVersion: 2,
+      measurementSpecVersion: contract.version,
+      measurementSpecHash: contract.hash,
+      measurementSpec: contract.specification,
+      video: "candidate.mp4",
+      contactSheet: "candidate.contact.jpg",
+      auditScope: {
+        kind,
+        chunkId: chunk ? "chunk-001" : null,
+        coreSceneIds: chunk ? ["core"] : null,
+        scalarOwnership: chunk ? "core-only" : "all-samples",
+        temporalOwnership: chunk ? "destination-core" : "all-destinations",
+        seamExpected: chunk,
+      },
+      sampleSeconds: 5,
+      sampleOffsets: [0, 2.5],
+      sampleOffsetSeconds: null,
+      expectedDurationSeconds: 10,
+      probedDurationSeconds: 10,
+      durationSource: "caller-expected-and-probe-verified",
+      durationToleranceSeconds: 1 / 30 + 1024 / 48_000 + 0.005,
+      expectedSampleCount: 4,
+      timelineOffsetSeconds: 0,
+      subtitleBandMaskedFrom: 0.76,
+      sampledFrames: 4,
+      gatingSampledFrames: chunk ? 2 : 4,
+      gatingCoreSceneIds: chunk ? ["core"] : null,
+      nearWhiteMean: 0.4,
+      whiteDominantRatio: 0,
+      flatFrameRatio: 0,
+      saturation: { mean: 0.18, p10: 0.18, p50: 0.18 },
+      edgeDensity: { mean: 0.2, p10: 0.2, p50: 0.2 },
+      nearDuplicateRatio: 0,
+      edgeNearDuplicateRatio: 0,
+      withinSceneNearDuplicateRatio: 0,
+      withinSceneEdgeNearDuplicateRatio: 0,
+      seamNearDuplicateRatio: chunk ? 0 : null,
+      seamEdgeNearDuplicateRatio: chunk ? 0 : null,
+      crossSceneNearDuplicateRatio: chunk ? 0 : null,
+      ownedPairCount: temporalPairs.length,
+      withinScenePairCount: chunk ? 1 : 3,
+      withinSceneDuplicateCount: 0,
+      withinScenePairCountsByScene: chunk ? { core: 1 } : { only: 3 },
+      seamPairCount: chunk ? 1 : 0,
+      seamDuplicateCount: 0,
+      crossScenePairCount: chunk ? 1 : 0,
+      crossSceneDuplicateCount: 0,
+      longestNearDuplicateRunSeconds: 0,
+      longestWithinSceneNearDuplicateRunSeconds: 0,
+      structuralChangeMean: 0.04,
+      focalOccupancy: {
+        mean: 0.4,
+        p10: 0.4,
+        declaredTargetSamples: 0,
+        belowDeclaredTargetRatio: null,
+      },
+      samples,
+      temporalPairs,
+      gateApplicability: applicability(!chunk, chunk),
+      minimumEvidence: {
+        ...contract.specification.minimumEvidence,
+        observedScalarFrames: chunk ? 2 : 4,
+        observedOwnedTemporalPairs: temporalPairs.length,
+        observedWithinScenePairs: chunk ? 1 : 3,
+        observedSeamPairs: chunk ? 1 : 0,
+        sufficient: true,
+      },
+      failures: [],
+      passed: true,
+    };
+  };
+  const globalExpectation = {
+    contract,
+    expectedDurationSeconds: 10,
+    probedDurationSeconds: 10,
+    sampleOffsets: [0, 2.5],
+    frameRate: 30,
+    timelineOffsetSeconds: 0,
+    subtitleBandTopRatio: 0.76,
+    sceneIds: ["only"],
+    qualityScope: { kind: "global" as const },
+  };
+  const globalReport = reportFor("global");
+  assert.doesNotThrow(() => assertVisualAuditReport(globalReport, globalExpectation));
+  const decodedPtsReport = clone(globalReport);
+  decodedPtsReport.samples.forEach((sample: any) => { sample.seconds += 0.4; });
+  decodedPtsReport.temporalPairs.forEach((pair: any) => {
+    pair.fromSeconds += 0.4;
+    pair.toSeconds += 0.4;
+  });
+  assert.doesNotThrow(() => assertVisualAuditReport(decodedPtsReport, globalExpectation));
+  assert.throws(() => assertVisualAuditReport({ passed: true }, globalExpectation), /schemaVersion 2/i);
+  for (const mutate of [
+    (value: any) => { value.schemaVersion = 1; },
+    (value: any) => { value.measurementSpecHash = "0".repeat(64); },
+    (value: any) => { value.sampleOffsets = [0]; },
+    (value: any) => { value.expectedDurationSeconds = 9.9; },
+    (value: any) => { value.durationToleranceSeconds = 1; },
+    (value: any) => { value.expectedSampleCount = 3; },
+    (value: any) => { value.samples[1].scheduledSeconds = 2.4; },
+    (value: any) => { value.samples[1].seconds = 2.4; },
+    (value: any) => { value.samples[1].sceneId = "borrowed"; },
+    (value: any) => { value.saturation.mean = Number.NaN; },
+    (value: any) => { value.structuralChangeMean = 0.9; },
+    (value: any) => { value.temporalPairs.pop(); },
+    (value: any) => { value.gateApplicability.flatFrameRatio.applies = false; },
+  ]) {
+    const malformed = clone(globalReport);
+    mutate(malformed);
+    assert.throws(() => assertVisualAuditReport(malformed, globalExpectation));
+  }
+
+  const chunkReport = reportFor("chunk");
+  const chunkExpectation = {
+    ...globalExpectation,
+    sceneIds: ["before", "core", "after"],
+    qualityScope: {
+      kind: "chunk" as const,
+      chunkId: "chunk-001",
+      haloBeforeSceneIds: ["before"],
+      coreSceneIds: ["core"],
+      haloAfterSceneIds: ["after"],
+    },
+  };
+  assert.doesNotThrow(() => assertVisualAuditReport(chunkReport, chunkExpectation));
+  const wrongChunkRole = clone(chunkReport);
+  wrongChunkRole.samples[1].sampleRole = "halo-before";
+  assert.throws(() => assertVisualAuditReport(wrongChunkRole, chunkExpectation), /wrong ownership role/i);
+  const wrongChunkCore = clone(chunkReport);
+  wrongChunkCore.auditScope.coreSceneIds = ["after"];
+  assert.throws(() => assertVisualAuditReport(wrongChunkCore, chunkExpectation), /core scope/i);
+});
+
+test("reference comparison requires compatible pooled multiphase measurements and finite metrics", () => {
+  const baseline = JSON.parse(fs.readFileSync(
+    path.join(process.cwd(), "config", "reference-visual-baseline.json"),
+    "utf8",
+  ));
+  const candidate = {
+    schemaVersion: 2,
+    measurementSpecVersion: baseline.measurementSpecVersion,
+    measurementSpecHash: baseline.measurementSpecHash,
+    measurementSpec: baseline.measurementSpec,
+    sampleSeconds: baseline.sampleSeconds,
+    sampleOffsets: baseline.offsetsSeconds,
+    flatFrameRatio: 0.6,
+    edgeDensity: { mean: 0.14 },
+    nearDuplicateRatio: 0.3,
+    longestNearDuplicateRunSeconds: 15,
+    saturation: { mean: 0.2 },
+    nearWhiteMean: 0.2,
+    whiteDominantRatio: 0.1,
+    temporalPairs: [{ deltaSeconds: 2.5 }, { deltaSeconds: 2.5 }],
+    structuralChangeMean: 0.04,
+    ownedPairCount: 2,
+  };
+  const result = buildReferenceComparison(candidate, baseline);
+  assert.strictEqual(result.baseline, "pooledBaseline");
+  assert.strictEqual(result.measurementSpecHash, referenceQuality.visualAudit.measurementSpecHash);
+  assert.deepStrictEqual(result.structuralChange.actualPairDeltaSeconds, [2.5]);
+  assert.strictEqual(result.structuralChange.candidateMean, 0.04);
+  assert.strictEqual(result.deltaCandidateMinusReference.flatFrameRatio, 0.1468);
+  assert.strictEqual(result.deltaCandidateMinusReference.edgeDensity, -0.052);
+  assert.strictEqual(result.deltaCandidateMinusReference.nearWhiteMean, -0.2464);
+  assert.strictEqual(result.deltaCandidateMinusReference.longestNearDuplicateRunSeconds, -2.5);
+
+  assert.throws(
+    () => buildReferenceComparison({ ...candidate, measurementSpecHash: "0".repeat(64) }, baseline),
+    /not comparable/i,
+  );
+  assert.throws(
+    () => buildReferenceComparison({ ...candidate, sampleOffsets: [0] }, baseline),
+    /different sampling phases/i,
+  );
+  assert.throws(
+    () => buildReferenceComparison({ ...candidate, saturation: { mean: Number.NaN } }, baseline),
+    /finite number/i,
+  );
+  assert.throws(
+    () => buildReferenceComparison(candidate, { ...baseline, pooledBaseline: { ...baseline.pooledBaseline, edgeDensity: Infinity } }),
+    /finite number/i,
+  );
 });
 
 test("video-004 representative acceptance stays inside reference deltas", () => {
@@ -552,6 +2639,15 @@ test("multi-card scenes advance only on an authored narration phrase", () => {
   // storyboard phrase, never a component-level or compiler-level timer.
   assert.strictEqual(timeline.scenes[0].cards?.[0].delay, 0);
   assert.strictEqual(timeline.scenes[0].cards?.[1].delay, 120);
+  assert.deepStrictEqual(transitionReceipt(timeline.scenes[0], "advance", "next"), {
+    beatText: "three",
+    action: "advance",
+    targetSlot: "next",
+    frame: 120,
+    renderedComponentIds: ["scene-001-effect"],
+    fromState: "visible-at:38",
+    toState: "visible-at:120",
+  });
   assert.deepStrictEqual(timeline.timingProvenance?.beatTimingSummary, {
     "aligned-words": 1,
   });
@@ -717,6 +2813,15 @@ test("photo policy exposes reviewed no-face images and rejects unreviewed files"
   assert.ok(approvedPhotoPaths().length >= 40);
 });
 
+test("systemPrompt compatibility lists assets and approved backgrounds from the manifest", () => {
+  assert.deepStrictEqual(listAvailableAssets(), listResolvableRefs());
+  assert.deepStrictEqual(
+    listAvailableBackgrounds(),
+    listManifestAssetPaths({ styleFamily: "photo" }).filter(isApprovedNoFacePhoto),
+  );
+  assert.throws(() => buildSystemPrompt([], 60), /Route B\/API prompt generation is locked/);
+});
+
 test("quality gate blocks unreviewed photos and repeated photo wallpaper", () => {
   const makeScene = (id: string, startFrame: number, backgroundSrc: string) => ({
     id, label: id, startFrame, durationFrames: 150, layout: "BEAT",
@@ -749,6 +2854,45 @@ test("quality gate blocks unreviewed photos and repeated photo wallpaper", () =>
   assert.ok(rules.includes("PHOTO_REPEAT"));
   assert.ok(faceIssue?.message.includes("backgrounds/kitchen.jpg"));
   assert.ok(!faceIssue?.message.includes("assets/scenes/cafe.svg"));
+});
+
+test("storyboard photo reuse follows manifest identity across authored carriers", () => {
+  const makeBrief = (id: string, fields: Record<string, unknown>) => ({
+    id, narration: "A deliberate visual beat.", purpose: "show the visual",
+    emotion: "neutral" as const, viewerFocus: "the visual", visualGrammar: "FREEFORM" as const,
+    ...fields,
+  });
+  const photo = "backgrounds/office_trading.jpg";
+  const aliasOfSamePhoto = "backgrounds/stock_chart.jpg";
+  const repeated = runStoryboardCheck({
+    fps: 30, width: 1920, height: 1080,
+    scenes: [
+      makeBrief("photo-background", {
+        slots: { background: photo },
+        resolvedAssets: { background: photo },
+      }),
+      makeBrief("photo-request", {
+        assetRequests: [{ preferredAssetId: photo, lockedAssetId: aliasOfSamePhoto }],
+      }),
+      makeBrief("photo-freeform", {
+        freeform: { backgroundSrc: aliasOfSamePhoto },
+      }),
+    ],
+  });
+  const repeatedIssues = repeated.checks.flatMap((check) => check.issues);
+  assert.ok(repeatedIssues.some((issue) =>
+    issue.rule === "PHOTO_REPEAT" && issue.message.includes(photo) && issue.message.includes("3")));
+
+  const nonPhotos = runStoryboardCheck({
+    fps: 30, width: 1920, height: 1080,
+    scenes: ["one", "two", "three"].map((id) => makeBrief(id, {
+      slots: { stage: "assets/scenes/cafe.svg", background: "linear-gradient(#FFFFFF, #FAFAF8)" },
+      freeform: { backgroundSrc: "#FFFFFF" },
+    })),
+  });
+  assert.ok(!nonPhotos.checks.flatMap((check) => check.issues)
+    .some((issue) => issue.rule === "PHOTO_REPEAT"),
+  "CSS fills and manifest stage art must not be classified as photos");
 });
 
 test("liveliness never invents motion beyond storyboard-authored beats", () => {
@@ -1299,15 +3443,25 @@ function timingFixture(ids: string[]): Storyboard {
   } as Storyboard;
 }
 
-test("strict asset resolution keeps sentence-aligned pose swaps enabled", () => {
+function transitionReceipt(scene: any, action: string, targetSlot: string): any {
+  const receipt = scene.authoredTransitionReceipts?.find(
+    (candidate: any) => candidate.action === action && candidate.targetSlot === targetSlot,
+  );
+  assert.ok(receipt, `missing ${action}:${targetSlot} transition receipt`);
+  assert.ok(Number.isInteger(receipt.frame));
+  assert.ok(receipt.renderedComponentIds.length > 0);
+  assert.notStrictEqual(receipt.fromState, receipt.toState);
+  return receipt;
+}
+
+test("compiler never invents sentence-aligned pose swaps", () => {
   const storyboard = timingFixture(["scene-001"]);
   storyboard.scenes[0].narration = "The cat explains the risk. Then the cat reacts to the result.";
   const timeline = compileStoryboard(storyboard, {
     durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
   });
   const cats = timeline.scenes[0].entities.filter((entity) => entity.assetId === "scene-001-cat");
-  assert.ok(cats.length >= 2, "expected the focal cat plus a sentence-aligned pose swap");
-  assert.ok(new Set(cats.map((entity) => entity.src)).size >= 2);
+  assert.strictEqual(cats.length, 1, "pose changes must come from authored semantic beats");
 });
 
 test("compiler refuses estimated timing by default (the v5-codex signature)", () => {
@@ -1354,6 +3508,15 @@ test("authored reveal and dialogue handoff beats create held semantic states", (
   const caption = tableauTimeline.scenes[0].texts.find((text) => text.id === "scene-001-cap");
   assert.strictEqual(caption?.delay, 120);
   assert.strictEqual(caption?.hold, "scene-end");
+  assert.deepStrictEqual(transitionReceipt(tableauTimeline.scenes[0], "reveal", "caption"), {
+    beatText: "key takeaway",
+    action: "reveal",
+    targetSlot: "caption",
+    frame: 120,
+    renderedComponentIds: ["scene-001-cap"],
+    fromState: "visible-at:12:scene-end",
+    toState: "visible-at:120:scene-end",
+  });
 
   const dialogue = timingFixture(["scene-002"]);
   dialogue.scenes[0] = {
@@ -1389,6 +3552,15 @@ test("authored reveal and dialogue handoff beats create held semantic states", (
   assert.deepStrictEqual(answererStates[1].position, answererStates[0].position);
   assert.strictEqual(answererStates[1].scale, answererStates[0].scale);
   assert.strictEqual(dialogueTimeline.scenes[0].beatTimingSource, "aligned-words");
+  assert.deepStrictEqual(transitionReceipt(dialogueTimeline.scenes[0], "handoff", "answerer"), {
+    beatText: "Because",
+    action: "handoff",
+    targetSlot: "answerer",
+    frame: 120,
+    renderedComponentIds: ["scene-002-qa", "scene-002-qb", "scene-002-b"],
+    fromState: "question:Why is this difficult?:characters/cat_think",
+    toState: "answer:Because the cost keeps rising.:characters/cat_explain",
+  });
 });
 
 test("an authored beat cannot silently target a component its grammar did not create", () => {
@@ -1422,10 +3594,47 @@ test("an authored cutaway is phrase-aligned, persistent and fully specified", ()
   assert.strictEqual(cutaway?.caption, "Market evidence");
   assert.strictEqual(cutaway?.delay, 120);
   assert.strictEqual(cutaway?.duration, undefined);
+  assert.deepStrictEqual(transitionReceipt(timeline.scenes[0], "reveal", "cutaway"), {
+    beatText: "three",
+    action: "reveal",
+    targetSlot: "cutaway",
+    frame: 120,
+    renderedComponentIds: ["scene-001-cutaway"],
+    fromState: "absent",
+    toState: "cutaway:backgrounds/stock_chart.jpg:Market evidence",
+  });
+
+  // Multiple reveals in one scene must remain distinct persisted states rather
+  // than collide under one frame-box ID.
+  storyboard.scenes[0].beats = [
+    { text: "two", importance: 0.85, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/stock_chart.jpg", targetLabel: "First state", holdState: "first" },
+    { text: "three", importance: 0.85, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/market_monitor.jpg", targetLabel: "Second state", holdState: "second" },
+  ];
+  const multiCutawayTimeline = compileStoryboard(storyboard, {
+    durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+    words: [
+      { scene: "scene-001", word: "two", startSec: 2, endSec: 2.2 },
+      { scene: "scene-001", word: "three", startSec: 4, endSec: 4.2 },
+    ],
+  });
+  assert.deepStrictEqual(
+    multiCutawayTimeline.scenes[0].frameBoxes?.map((frame) => frame.id),
+    ["scene-001-cutaway", "scene-001-cutaway-2"],
+  );
+  assert.deepStrictEqual(
+    (multiCutawayTimeline.scenes[0] as any).authoredTransitionReceipts
+      ?.filter((receipt: any) => receipt.action === "reveal")
+      .map((receipt: any) => receipt.renderedComponentIds),
+    [["scene-001-cutaway"], ["scene-001-cutaway-2"]],
+  );
 
   // Cutaways may use a logical production asset alias, not only a raw photo
   // filename. The renderer resolves this to its generated PNG at load time.
-  storyboard.scenes[0].beats![0].targetAssetId = "finance/investment";
+  storyboard.scenes[0].beats = [{
+    text: "three", importance: 0.85, kind: "turn", action: "reveal",
+    targetSlot: "cutaway", targetAssetId: "finance/investment",
+    targetLabel: "Market evidence", holdState: "evidence-cutaway",
+  }];
   const logicalAssetTimeline = compileStoryboard(storyboard, {
     durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
     words: [{ scene: "scene-001", word: "three", startSec: 4, endSec: 4.2 }],
@@ -1468,6 +3677,11 @@ test("authored focus cuts change shot geometry without camera motion", () => {
   assert.strictEqual(answererStates[1].scale, 2.75);
   assert.deepStrictEqual([...(answererStates[1].clearPrevious ?? [])].sort(), ["scene-001-a", "scene-001-b"]);
   assert.strictEqual(dialogueTimeline.scenes[0].camera, undefined);
+  const actorFocusReceipt = transitionReceipt(dialogueTimeline.scenes[0], "focus_actor", "answerer");
+  assert.strictEqual(actorFocusReceipt.frame, 180);
+  assert.deepStrictEqual([...actorFocusReceipt.renderedComponentIds].sort(), ["scene-001-a", "scene-001-b"]);
+  assert.strictEqual(JSON.parse(actorFocusReceipt.toState).src, "characters/cat_surprised");
+  assert.deepStrictEqual(JSON.parse(actorFocusReceipt.toState).position, { x: 0.64, y: 0.58 });
 
   const charProp = timingFixture(["scene-002"]);
   charProp.scenes[0].narration = "The risk finally becomes visible.";
@@ -1489,6 +3703,11 @@ test("authored focus cuts change shot geometry without camera motion", () => {
   assert.strictEqual(propStates[1].scale, 3.2);
   assert.deepStrictEqual([...(propStates[1].clearPrevious ?? [])].sort(), ["scene-002-cat", "scene-002-prop"]);
   assert.strictEqual(propTimeline.scenes[0].camera, undefined);
+  const assetFocusReceipt = transitionReceipt(propTimeline.scenes[0], "focus_asset", "prop");
+  assert.strictEqual(assetFocusReceipt.frame, 150);
+  assert.deepStrictEqual([...assetFocusReceipt.renderedComponentIds].sort(), ["scene-002-cat", "scene-002-prop"]);
+  assert.strictEqual(JSON.parse(assetFocusReceipt.toState).src, "finance/trending_down");
+  assert.deepStrictEqual(JSON.parse(assetFocusReceipt.toState).position, { x: 0.5, y: 0.47 });
 
   charProp.scenes[0].beats![0].targetAssetId = "finance/loss";
   const sameAssetFocus = compileStoryboard(charProp, {
@@ -1533,6 +3752,81 @@ test("an authored pose beat swaps only its declared rendered actor and holds the
   assert.deepStrictEqual(props[1].position, props[0].position);
   assert.strictEqual(props[1].scale, props[0].scale);
   assert.deepStrictEqual(props[1].clearPrevious, ["scene-001-prop"]);
+  assert.deepStrictEqual(transitionReceipt(timeline.scenes[0], "swap_pose", "who"), {
+    beatText: "three",
+    action: "swap_pose",
+    targetSlot: "who",
+    frame: 120,
+    renderedComponentIds: ["scene-001-cat"],
+    fromState: "characters/cat_homebuyer",
+    toState: "characters/cat_sad",
+  });
+  assert.deepStrictEqual(transitionReceipt(timeline.scenes[0], "swap_asset", "prop"), {
+    beatText: "three",
+    action: "swap_asset",
+    targetSlot: "prop",
+    frame: 120,
+    renderedComponentIds: ["scene-001-prop"],
+    fromState: "finance/house",
+    toState: "finance/loss",
+  });
+});
+
+test("compiler rejects authored transitions that preserve rendered state", () => {
+  const charProp = timingFixture(["scene-001"]);
+  charProp.scenes[0].visualGrammar = "CHAR_PROP";
+  charProp.scenes[0].slots = { who: "characters/cat_homebuyer", prop: "finance/house" };
+
+  charProp.scenes[0].beats = [{
+    text: "three", importance: 0.8, kind: "turn", action: "swap_pose",
+    targetSlot: "who", targetAssetId: "characters/cat_homebuyer",
+  }];
+  assert.throws(
+    () => compileStoryboard(charProp, { durations: [{ id: "scene-001", startFrame: 0, frames: 300 }] }),
+    /keeps the same rendered pose/,
+  );
+
+  charProp.scenes[0].beats = [{
+    text: "three", importance: 0.8, kind: "turn", action: "swap_asset",
+    targetSlot: "prop", targetAssetId: "finance/house",
+  }];
+  assert.throws(
+    () => compileStoryboard(charProp, { durations: [{ id: "scene-001", startFrame: 0, frames: 300 }] }),
+    /keeps the same rendered prop/,
+  );
+
+  const advance = timingFixture(["scene-002"]);
+  advance.scenes[0].visualGrammar = "CAUSE_EFFECT";
+  advance.scenes[0].slots = {
+    cause: "Debt", effect: "Stress", causeIcon: "finance/debt", effectIcon: "props/brain",
+  };
+  advance.scenes[0].beats = [{
+    text: "three", importance: 0.8, kind: "turn", action: "advance", targetSlot: "next",
+  }];
+  assert.throws(
+    () => compileStoryboard(advance, {
+      durations: [{ id: "scene-002", startFrame: 0, frames: 300 }],
+      words: [{ scene: "scene-002", word: "three", startSec: 38 / 30, endSec: 1.4 }],
+    }),
+    /keeps teaching layer .* existing reveal frame 38/,
+  );
+
+  const dialogue = timingFixture(["scene-003"]);
+  dialogue.scenes[0].visualGrammar = "DIALOGUE_QA";
+  dialogue.scenes[0].slots = {
+    asker: "characters/cat_talk", answerer: "characters/cat_think",
+    askerText: "Why?", answererText: "Because.",
+  };
+  dialogue.scenes[0].beats = [{
+    text: "three", importance: 0.8, kind: "turn", action: "handoff", targetSlot: "answerer",
+  }];
+  assert.throws(
+    () => compileStoryboard(dialogue, {
+      durations: [{ id: "scene-003", startFrame: 0, frames: 300 }],
+      words: [{ scene: "scene-003", word: "three", startSec: 72 / 30, endSec: 2.6 }],
+    }),
+    /keeps the answer at its existing reveal frame 72/,
+  );
 });
 
 test("compiler rejects a prop swap when the grammar has no authored prop state", () => {
@@ -1632,6 +3926,92 @@ test("schema validation treats provenance as a checked field, not an extra", () 
   });
   assert.ok(!bad.valid);
   assert.ok(bad.errors.some((e) => /measured.*estimated/.test(e)));
+
+  const badReceipt = validateTimeline({
+    ...base,
+    scenes: [{
+      ...base.scenes[0],
+      authoredTransitionReceipts: [{
+        beatText: "n", action: "invented_transition", targetSlot: "who", frame: 12.5,
+        renderedComponentIds: [42], fromState: "same", toState: "same",
+      }],
+    }],
+  });
+  assert.ok(badReceipt.errors.some((error) => error.includes("unsupported action")));
+  assert.ok(badReceipt.errors.some((error) => error.includes("integer after scene start")));
+  assert.ok(badReceipt.errors.some((error) => error.includes("renderedComponentIds must be a non-empty string array")));
+  assert.ok(!badReceipt.errors.some((error) => error.includes("non-rendered component")));
+  assert.ok(!badReceipt.errors.some((error) => error.includes("non-no-op state change")));
+
+  const semanticReceiptTimeline = {
+    ...base,
+    scenes: [{
+      ...base.scenes[0],
+      texts: [{ id: "receipt-target", content: "Visible", style: "BODY", delay: 4 }],
+      authoredTransitionReceipts: [{
+        beatText: "n", action: "reveal", targetSlot: "caption", frame: 5,
+        renderedComponentIds: ["receipt-target"], fromState: "hidden", toState: "visible",
+      }, {
+        beatText: "n", action: "reveal", targetSlot: "caption", frame: 4,
+        renderedComponentIds: ["receipt-target"], fromState: "visible", toState: "visible",
+      }],
+    }],
+  };
+  assert.ok(validateTimeline(semanticReceiptTimeline).valid,
+    "schema validation must not make directorial transition-realization judgments");
+  const semanticReceiptRules = runQualityCheck(semanticReceiptTimeline)
+    .checks.flatMap((check) => check.issues)
+    .map((issue) => issue.rule);
+  assert.ok(semanticReceiptRules.includes("AUTHORED_TRANSITION_REALIZATION"));
+  assert.ok(semanticReceiptRules.includes("AUTHORED_TRANSITION_NOOP"));
+
+  const hash = "0".repeat(64);
+  const chunkId = "chunk-001";
+  const provenance = {
+    schemaVersion: 3,
+    projectId: "schema-fixture",
+    storyboardChecksum: hash,
+    planChecksum: hash,
+    runConfigChecksum: hash,
+    chunkOrder: [chunkId],
+    chunkTimelineChecksums: { [chunkId]: hash },
+    chunkAudioChecksums: { [chunkId]: hash },
+    chunkAttestationChecksums: {
+      [chunkId]: Object.fromEntries(CHUNK_STAGES.map((stage) => [stage, hash])),
+    },
+    assemblyToolchainHashes: {
+      productionCodeSnapshot: hash,
+      assemblyOrchestrator: hash,
+      audioAssembler: hash,
+      ttsSceneBuilder: hash,
+      timelineCompiler: hash,
+    },
+    canonicalOutputHashes: {
+      ttsScenes: hash,
+      audio: hash,
+      durations: hash,
+      words: hash,
+      alignment: hash,
+      timelineBody: hash,
+    },
+    assemblyPolicyVersion: CHUNK_ASSEMBLY_POLICY_VERSION,
+  };
+  assert.ok(validateTimeline({ ...base, chunkAssemblyProvenance: provenance }).valid);
+  const assertMalformedChunkProvenance = (mutate: (value: any) => void) => {
+    const malformed = JSON.parse(JSON.stringify(provenance));
+    mutate(malformed);
+    const result = validateTimeline({ ...base, chunkAssemblyProvenance: malformed });
+    assert.ok(!result.valid);
+    assert.ok(result.errors.some((error) => error.startsWith("chunkAssemblyProvenance:")));
+  };
+  assertMalformedChunkProvenance((value) => { value.unexpected = true; });
+  assertMalformedChunkProvenance((value) => { value.planChecksum = "not-a-sha256"; });
+  assertMalformedChunkProvenance((value) => { value.canonicalOutputHashes.extra = hash; });
+  assertMalformedChunkProvenance((value) => { delete value.canonicalOutputHashes.audio; });
+  assertMalformedChunkProvenance((value) => { delete value.assemblyToolchainHashes.audioAssembler; });
+  assertMalformedChunkProvenance((value) => { value.assemblyToolchainHashes.extra = hash; });
+  assertMalformedChunkProvenance((value) => { delete value.chunkAttestationChecksums[chunkId].compile; });
+  assertMalformedChunkProvenance((value) => { value.chunkAudioChecksums = null; });
 });
 
 test("compiler derives durationInFrames from max end, not array order", () => {
@@ -1672,16 +4052,20 @@ test("asset style defaults to f and rejects unknown environment values", () => {
   else process.env.ASSET_STYLE = saved;
 });
 
-let failures = 0;
-for (const item of tests) {
-  try {
-    item.run();
-    console.log(`PASS ${item.name}`);
-  } catch (error) {
-    failures++;
-    console.error(`FAIL ${item.name}`);
-    console.error(error);
+async function runTests(): Promise<void> {
+  let failures = 0;
+  for (const item of tests) {
+    try {
+      await item.run();
+      console.log(`PASS ${item.name}`);
+    } catch (error) {
+      failures++;
+      console.error(`FAIL ${item.name}`);
+      console.error(error);
+    }
   }
+  if (failures > 0) process.exitCode = 1;
+  else console.log(`\n${tests.length} tests passed.`);
 }
-if (failures > 0) process.exit(1);
-console.log(`\n${tests.length} tests passed.`);
+
+void runTests();

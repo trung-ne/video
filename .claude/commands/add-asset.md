@@ -44,12 +44,12 @@ npm run list-assets -- <topic>                    # xác nhận đã index
 npm run quality -- projects/<id>/timeline.json    # LEGACY_ASSET phải hết
 ```
 
-Không cần sửa prompt hay code: `listAvailableAssets()` đọc thẳng alias-map, nên
-asset mới tự vào vốn từ authoring ngay sau `build-assets`.
+Không cần hardcode alias trong prompt/code: `listAvailableAssets()` đọc thẳng
+alias-map, nên asset mới vào vocabulary Route A ngay sau `build-assets`.
 
-## Khi asset thiếu lúc generate (route API)
+## Khi asset thiếu lúc authoring Route A
 
-`generate-timeline.ts` ghi các request không resolve được vào
-`projects/<id>/asset-requests.json`; [asset-status.ts](scripts/asset-status.ts)
-chặn build và liệt kê chúng. Xử lý: thêm asset theo hướng dẫn trên → `build-assets`
-→ chạy lại generate/repair. Không hạ ngưỡng gate để đi tiếp.
+`build-storyboard.ts` ghi semantic request không resolve được vào
+`projects/<id>/asset-needs.json` và dừng trước TTS. Xử lý: thêm/chọn lại asset theo
+hướng dẫn trên → `build-assets` → sửa scene-local trong `storyboard-data.ts` → build
+lại. Không dùng Route B generate/repair và không hạ ngưỡng gate.

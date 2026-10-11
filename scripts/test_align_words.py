@@ -1,6 +1,10 @@
 import unittest
 
-from scripts.align_words import attach_transcript_indices, attach_canonical_scene_indices
+from scripts.align_words import (
+    attach_transcript_indices,
+    attach_canonical_scene_indices,
+    constrain_words_to_measured_scenes,
+)
 
 
 class AlignmentIndexTests(unittest.TestCase):
@@ -34,6 +38,26 @@ class AlignmentIndexTests(unittest.TestCase):
         ])
         self.assertEqual(provenance["source"], "canonical-tts-scenes")
         self.assertEqual(provenance["coverage"], 1.0)
+
+    def test_cross_scene_match_is_downgraded_and_retimed(self):
+        words = [{
+            "word": "next", "startSec": 0.98, "endSec": 1.08,
+            "scene": "scene-002", "sceneWordIndex": 0,
+            "canonicalWordIndex": 0, "confidence": 1.0,
+            "whisperConfidence": 0.9, "interpolated": False,
+        }, {
+            "word": "word", "startSec": 1.2, "endSec": 1.3,
+            "scene": "scene-002", "sceneWordIndex": 1,
+            "canonicalWordIndex": 1, "confidence": 1.0,
+            "whisperConfidence": 0.9, "interpolated": False,
+        }]
+        result = constrain_words_to_measured_scenes(words, {
+            "sampleRate": 1000,
+            "scenes": [{"id": "scene-002", "startSample": 1000, "samples": 1000}],
+        })
+        self.assertTrue(result[0]["interpolated"])
+        self.assertGreaterEqual(result[0]["startSec"], 1.0)
+        self.assertLessEqual(result[0]["endSec"], result[1]["startSec"])
 
 
 if __name__ == "__main__":

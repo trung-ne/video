@@ -9,6 +9,17 @@
 import * as fs from "fs";
 import * as path from "path";
 import { sha256File } from "../src/audio/prepareAudio";
+import { verifyChunkAssemblyProvenance } from "../src/engine/chunkProvenance";
+import { checksumJson } from "../src/ai/transcriptCoverage";
+import {
+  assertBoundTimelineIdentity,
+  assertCanonicalTimelinePath,
+  assertExactManualContactSheetReview,
+  assertOutputProjectIdentity,
+  assertProjectCanonicalTimeline,
+  buildCanonicalTimelineIdentity,
+  sameResolvedPath,
+} from "../src/engine/publicationIntegrity";
 
 const args = process.argv.slice(2);
 function getArg(flag: string, fallback = ""): string {
@@ -21,8 +32,11 @@ const projectPath = projectArg
   ? (fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
       ? projectArg : path.join("projects", projectArg))
   : "";
-const timelinePath = getArg("--timeline", projectPath ? path.join(projectPath, "timeline.json") : "");
-const projectId = projectPath ? path.basename(path.resolve(projectPath)) : "";
+const resolvedProjectPath = projectPath
+  ? (fs.existsSync(projectPath) ? fs.realpathSync(path.resolve(projectPath)) : path.resolve(projectPath))
+  : "";
+const projectId = resolvedProjectPath ? path.basename(resolvedProjectPath) : "";
+const timelinePath = getArg("--timeline", resolvedProjectPath ? path.join(resolvedProjectPath, "timeline.json") : "");
 const output = getArg("--out", projectId ? path.join("output", projectId, "video.mp4") : "");
 if (!projectPath || !timelinePath || !output) {
   console.error("Usage: npm run publish -- --project <id> [--out output/<id>/video.mp4]");
@@ -33,7 +47,7 @@ const resolvedOutput = path.resolve(output);
 const reportPath = resolvedOutput.replace(/\.mp4$/i, ".production-report.json");
 const visualAuditPath = resolvedOutput.replace(/\.mp4$/i, ".visual-audit.json");
 const contactSheetPath = resolvedOutput.replace(/\.mp4$/i, ".contact.jpg");
-const acceptancePath = path.resolve(projectPath, "acceptance.json");
+const acceptancePath = path.join(resolvedProjectPath, "acceptance.json");
 const publishReportPath = resolvedOutput.replace(/\.mp4$/i, ".publish-report.json");
 
 function mustReadJson(file: string, label: string): any {
@@ -51,9 +65,22 @@ function requireHash(actualPath: string, expected: unknown, label: string) {
 }
 
 try {
+  assertCanonicalTimelinePath(timelinePath, resolvedProjectPath);
+  assertProjectCanonicalTimeline(resolvedProjectPath, timelinePath);
+  assertOutputProjectIdentity(resolvedOutput, projectId);
+  const canonicalTimelineIdentity = buildCanonicalTimelineIdentity({
+    timelinePath,
+    projectId,
+    projectPath: resolvedProjectPath,
+  });
+
   const candidate = mustReadJson(reportPath, "candidate production report");
   if (candidate.status !== "candidate-ready") {
     throw new Error(`Candidate status is ${JSON.stringify(candidate.status)}; render a full candidate before publishing.`);
+  }
+  assertBoundTimelineIdentity(candidate, canonicalTimelineIdentity, "Candidate report");
+  if (typeof candidate.video !== "string" || !sameResolvedPath(candidate.video, resolvedOutput)) {
+    throw new Error("Candidate report identifies a different output artifact.");
   }
   if (!candidate.timingAudit || candidate.timingAudit.scope !== "full timeline") {
     throw new Error("Candidate lacks a full-timeline timing audit.");
@@ -61,9 +88,23 @@ try {
   if (!candidate.visualAudit || !candidate.audioAudit || !candidate.encodingAudit) {
     throw new Error("Candidate is missing visual, audio, or encoding audit evidence.");
   }
+  const timeline = mustReadJson(canonicalTimelineIdentity.timelinePath, "canonical timeline");
+  const chunkIssues = verifyChunkAssemblyProvenance(resolvedProjectPath, timeline);
+  if (chunkIssues.length) {
+    throw new Error(`Chunk assembly lineage is invalid: ${chunkIssues.map((issue) => `[${issue.code}] ${issue.message}`).join(" ")}`);
+  }
+  if (timeline.chunkAssemblyProvenance) {
+    if (candidate.chunkLineage?.verified !== true
+      || checksumJson(candidate.chunkLineage.provenance) !== checksumJson(timeline.chunkAssemblyProvenance)) {
+      throw new Error("Candidate report lacks the verified chunk lineage of the canonical timeline.");
+    }
+  } else if (candidate.chunkLineage) {
+    throw new Error("Candidate report claims chunk lineage but the canonical timeline does not.");
+  }
   const acceptance = mustReadJson(acceptancePath, "acceptance");
   if (acceptance.result !== "pass") throw new Error("Acceptance result is not pass.");
-  if (path.resolve(acceptance.artifact ?? "") !== resolvedOutput) {
+  assertBoundTimelineIdentity(acceptance, canonicalTimelineIdentity, "Acceptance");
+  if (typeof acceptance.artifact !== "string" || !sameResolvedPath(acceptance.artifact, resolvedOutput)) {
     throw new Error("Acceptance artifact points at a different MP4.");
   }
   const videoSha256 = requireHash(resolvedOutput, acceptance.artifactSha256, "MP4");
@@ -76,16 +117,21 @@ try {
       || declared.visualAuditSha256 !== visualAuditSha256) {
     throw new Error("Candidate report artifact hashes do not match the reviewed files.");
   }
-  if (!Object.values(acceptance.manualContactSheetReview ?? {}).every(Boolean)) {
-    throw new Error("Manual contact-sheet review is incomplete.");
+  assertExactManualContactSheetReview(acceptance.manualContactSheetReview);
+  if (sha256File(canonicalTimelineIdentity.timelinePath) !== canonicalTimelineIdentity.timelineSha256) {
+    throw new Error("Canonical timeline changed during publication checks.");
   }
   const publishReport = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     status: "production-ready",
     publishedAt: new Date().toISOString(),
-    timeline: path.resolve(timelinePath),
+    projectId: canonicalTimelineIdentity.projectId,
+    projectPath: canonicalTimelineIdentity.projectPath,
+    timeline: canonicalTimelineIdentity.timelinePath,
+    timelineSha256: canonicalTimelineIdentity.timelineSha256,
     output: resolvedOutput,
     acceptance: acceptancePath,
+    chunkLineage: candidate.chunkLineage ?? null,
     artifacts: { videoSha256, contactSheetSha256, visualAuditSha256, candidateReportSha256 },
   };
   fs.writeFileSync(publishReportPath, `${JSON.stringify(publishReport, null, 2)}\n`, "utf8");

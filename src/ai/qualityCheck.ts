@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
-import { resolveAssetSrcStrict } from "../engine/assetPaths";
+import { getManifestAssetEntry, resolveAssetSrcStrict } from "../engine/assetPaths";
 import { STAGE_ANCHORS } from "../engine/stageAnchors";
 import { isApprovedNoFacePhoto } from "../engine/photoPolicy";
 import {
@@ -12,7 +12,7 @@ import {
 } from "../engine/grammarRegistry";
 import { stageMatchesSetting } from "../engine/stageRegistry";
 import referenceQuality from "../../config/reference-quality.json";
-import { MAX_VISUAL_HOLD_FRAMES, maximumVisualHold } from "../engine/visualCadence";
+import { MAX_VISUAL_HOLD_FRAMES, maximumVisualHold, containsCanonicalPhrase } from "../engine/visualCadence";
 import { estimateStablePaintedRatio } from "../engine/compositionDensity";
 import { QualityScope } from "../types/chunk";
 
@@ -42,6 +42,7 @@ export interface QualityIssue {
   severity: IssueSeverity;
   rule: string; // short rule name, e.g. "BACKGROUND_REAL"
   scene?: string; // scene id if scene-specific
+  claimId?: string; // storyboard claim ownership for safe scoped attribution
   message: string;
   suggestion?: string;
 }
@@ -148,6 +149,85 @@ function isProductionStageBackground(source: unknown): boolean {
       value,
     )
   );
+}
+
+function addManifestPhotoRefs(value: unknown, photos: Set<string>): void {
+  if (typeof value === "string") {
+    const candidates = [value, ...value.split("|")]
+      .map((candidate) => candidate.trim())
+      .filter(Boolean);
+    for (const candidate of candidates) {
+      if (isCSSBackground(candidate)) continue;
+      const entry = getManifestAssetEntry(candidate);
+      if (entry?.styleFamily === "photo") photos.add(entry.path);
+    }
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) addManifestPhotoRefs(item, photos);
+    return;
+  }
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value)) addManifestPhotoRefs(item, photos);
+  }
+}
+
+/**
+ * Gather photos from every authored visual carrier without counting duplicated
+ * metadata for the same scene as another use. Manifest identity distinguishes
+ * actual photos from CSS fills and generated stage art, and also folds aliases
+ * of byte-identical photos into one canonical path.
+ */
+function scenePhotoRefs(scene: any): Set<string> {
+  const photos = new Set<string>();
+  const visualSources = [
+    scene?.backgroundSrc,
+    scene?.photoSrc,
+    scene?.slots,
+    scene?.resolvedAssets,
+    scene?.semanticAssetIds,
+    (scene?.assetRequests ?? []).flatMap((request: any) => [
+      request?.preferredAssetId,
+      request?.lockedAssetId,
+    ]),
+    (scene?.beats ?? []).map((beat: any) => beat?.targetAssetId),
+    (scene?.entities ?? []).map((entity: any) => entity?.src),
+    (scene?.cards ?? []).map((card: any) => card?.iconSrc),
+    (scene?.frameBoxes ?? []).map((box: any) => box?.contentSrc),
+    scene?.freeform,
+  ];
+  for (const source of visualSources) addManifestPhotoRefs(source, photos);
+  return photos;
+}
+
+function photoUsesByCanonicalPath(
+  scenes: any[],
+): Map<string, { count: number; sceneIds: string[] }> {
+  const uses = new Map<string, { count: number; sceneIds: string[] }>();
+  for (const scene of scenes) {
+    for (const photo of scenePhotoRefs(scene)) {
+      const current = uses.get(photo) ?? { count: 0, sceneIds: [] };
+      current.count += 1;
+      if (typeof scene?.id === "string") current.sceneIds.push(scene.id);
+      uses.set(photo, current);
+    }
+  }
+  return uses;
+}
+
+function photoRepeatIssues(scenes: any[]): QualityIssue[] {
+  const issues: QualityIssue[] = [];
+  for (const [photo, usage] of photoUsesByCanonicalPath(scenes)) {
+    if (usage.count <= 2) continue;
+    issues.push({
+      severity: "MAJOR",
+      rule: "PHOTO_REPEAT",
+      message: `${photo} được dùng ${usage.count} lần; tối đa 2 lần để ảnh thật vẫn là visual punch.`,
+      suggestion:
+        "Chọn ảnh khác cùng chủ đề từ allowlist, không lặp một ảnh làm wallpaper.",
+    });
+  }
+  return issues;
 }
 
 // Are texts in the same band active at the same time within a scene?
@@ -300,56 +380,28 @@ function checkBackgroundReal(scenes: any[]): CheckResult {
 // videos need more than 2-4 frames. Keep them bounded by the shared profile.
 function checkBackgroundVariety(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
-  const isPhoto = (b: any) =>
-    b && backgroundImageExists(b) && !STAGE_ANCHORS_KEYS.has(b);
-  const isPhotoRef = (b: any) =>
-    typeof b === "string" && b.startsWith("backgrounds/") && isPhoto(b);
-  // A PHOTO_EVIDENCE can deliberately place the image inside a screen,
-  // document, map, or headline treatment. It remains a photo scene even when
-  // its outer background is white.
-  const photoRef = (scene: any): string | undefined => {
-    const background = String(scene.backgroundSrc ?? "");
-    if (isPhotoRef(background)) return background;
-    const embedded = String(scene.photoSrc ?? scene.slots?.photo ?? "");
-    if (isPhotoRef(embedded)) return embedded;
-    return (scene.semanticAssetIds ?? []).map(String).find(isPhotoRef);
-  };
   const photoSceneList = scenes
-    .map((scene) => ({ scene, photo: photoRef(scene) }))
-    .filter((item): item is { scene: any; photo: string } =>
-      Boolean(item.photo),
-    );
-  const distinctImages = new Set(photoSceneList.map((item) => item.photo));
+    .map((scene) => ({ scene, photos: [...scenePhotoRefs(scene)] }))
+    .filter((item) => item.photos.length > 0);
+  const distinctImages = new Set(photoSceneList.flatMap((item) => item.photos));
   const photoScenes = photoSceneList.length;
 
-  for (const { scene, photo } of photoSceneList) {
-    if (photo.startsWith("backgrounds/") && !isApprovedNoFacePhoto(photo)) {
-      issues.push({
-        severity: "BLOCKER",
-        rule: "PHOTO_FACE_POLICY",
-        scene: scene.id,
-        message: `${photo} chưa được duyệt theo policy không có khuôn mặt người nhận diện được.`,
-        suggestion:
-          "Chỉ dùng ảnh có approved=true trong config/photo-backgrounds.json sau khi xem ảnh và ghi nguồn/license.",
-      });
+  for (const { scene, photos } of photoSceneList) {
+    for (const photo of photos) {
+      if (!isApprovedNoFacePhoto(photo)) {
+        issues.push({
+          severity: "BLOCKER",
+          rule: "PHOTO_FACE_POLICY",
+          scene: scene.id,
+          message: `${photo} chưa được duyệt theo policy không có khuôn mặt người nhận diện được.`,
+          suggestion:
+            "Chỉ dùng ảnh có approved=true trong config/photo-backgrounds.json sau khi xem ảnh và ghi nguồn/license.",
+        });
+      }
     }
   }
 
-  const useCounts = new Map<string, number>();
-  for (const { photo } of photoSceneList) {
-    useCounts.set(photo, (useCounts.get(photo) ?? 0) + 1);
-  }
-  for (const [photo, count] of useCounts) {
-    if (count > 2) {
-      issues.push({
-        severity: "MAJOR",
-        rule: "PHOTO_REPEAT",
-        message: `${photo} được dùng ${count} lần; tối đa 2 lần để ảnh thật vẫn là visual punch.`,
-        suggestion:
-          "Chọn ảnh khác cùng chủ đề từ allowlist, không lặp một ảnh làm wallpaper.",
-      });
-    }
-  }
+  issues.push(...photoRepeatIssues(scenes));
 
   if (scenes.length >= 5 && distinctImages.size === 0) {
     issues.push({
@@ -747,6 +799,15 @@ function checkV5Registers(scenes: any[]): CheckResult {
 // Intent lives in the storyboard; once compiled to scenes[] the grammar/beat
 // info is baked away. So these two gates operate on the Storyboard object.
 
+function checkAuthoredPhotoReuse(briefs: any[]): CheckResult {
+  const issues = photoRepeatIssues(briefs);
+  return {
+    name: "Storyboard: mỗi ảnh thật xuất hiện tối đa hai scene",
+    passed: issues.length === 0,
+    issues,
+  };
+}
+
 // Required slots live in exactly one place: GRAMMAR_REGISTRY. A second, looser
 // copy used to live here, so a scene could satisfy this table and still be
 // missing what the compiler needed (and vice versa). Alias groups such as
@@ -974,6 +1035,7 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
       semanticIssues.push({
         severity: "MAJOR",
         rule: "CLAIM_WITHOUT_SCENE",
+        claimId: claim.id,
         message: `Claim ${claim.id} has evidencePolicy=${claim.evidencePolicy} but no supporting scene.`,
       });
       continue;
@@ -987,6 +1049,7 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         severity: "MAJOR",
         rule: "CLAIM_WITHOUT_EVIDENCE",
         scene: supporting[0].id,
+        claimId: claim.id,
         message: `Claim ${claim.id} is not rendered as evidence, framebox, or stat reveal.`,
       });
     }
@@ -998,6 +1061,7 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         severity: "MAJOR",
         rule: "EVIDENCE_SOURCE_MISSING",
         scene: supporting[0].id,
+        claimId: claim.id,
         message: `Claim ${claim.id} requires a source card but no source is supplied.`,
       });
     }
@@ -1014,6 +1078,7 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         semanticIssues.push({
           severity: "MAJOR",
           rule: "CLAIM_SOURCE_METADATA_MISSING",
+          claimId: claim.id,
           message: `Claim ${claim.id} is missing source metadata: ${missing.join(", ")}.`,
         });
       }
@@ -1025,6 +1090,7 @@ function checkSemanticStoryboard(storyboard: any): CheckResult[] {
         semanticIssues.push({
           severity: "MAJOR",
           rule: "GENERIC_EVIDENCE_SOURCE",
+          claimId: claim.id,
           message: `Claim ${claim.id} uses the forbidden generic source label “Narration evidence”.`,
         });
       }
@@ -1136,9 +1202,7 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
     // BEAT_UNANCHORED — a strong beat that can't land an emphasis.
     for (const beat of b.beats ?? []) {
       if ((beat.importance ?? 0) < 0.8) continue;
-      const inNarration = (b.narration ?? "")
-        .toLowerCase()
-        .includes((beat.text ?? "").toLowerCase().trim());
+      const inNarration = containsCanonicalPhrase(b.narration ?? "", beat.text ?? "");
       if (!inNarration) {
         beatIssues.push({
           severity: "MAJOR",
@@ -1161,6 +1225,7 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
   }
 
   const checks: CheckResult[] = [
+    checkAuthoredPhotoReuse(briefs),
     ...checkSemanticStoryboard(storyboard),
     {
       name: "Storyboard: intent realized (grammar + slots hợp lệ)",
@@ -1174,6 +1239,64 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
     },
   ];
   return assembleReport(checks, "(storyboard)");
+}
+
+/**
+ * A chunk may prove scene-local authoring facts and seam facts supplied by its
+ * halo, but it must never receive a prorated pass for video-level quotas.
+ */
+export function runScopedStoryboardCheck(
+  storyboard: any,
+  scope: QualityScope = { kind: "global" },
+): QualityReport {
+  if (scope.kind === "global") return runStoryboardCheck(storyboard);
+  const allScenes: any[] = Array.isArray(storyboard?.scenes) ? storyboard.scenes : [];
+  const expectedIds = [...scope.haloBeforeSceneIds, ...scope.coreSceneIds, ...scope.haloAfterSceneIds];
+  const counts = new Map<string, number>();
+  for (const scene of allScenes) counts.set(scene.id, (counts.get(scene.id) ?? 0) + 1);
+  const missing = expectedIds.filter((id) => !counts.has(id));
+  const duplicated = expectedIds.filter((id) => (counts.get(id) ?? 0) > 1);
+  const byId = new Map(allScenes.map((scene) => [scene.id, scene]));
+  const scenes = expectedIds.map((id) => byId.get(id)).filter(Boolean);
+  const scoped = runStoryboardCheck({ ...storyboard, scenes });
+  const core = new Set(scope.coreSceneIds);
+  const availableSceneIds = new Set(allScenes.map((scene) => scene.id));
+  const claimOwners = new Map<string, Set<string>>();
+  const addClaimOwner = (claimId: unknown, sceneId: unknown) => {
+    if (typeof claimId !== "string" || typeof sceneId !== "string" || !availableSceneIds.has(sceneId)) return;
+    const owners = claimOwners.get(claimId) ?? new Set<string>();
+    owners.add(sceneId);
+    claimOwners.set(claimId, owners);
+  };
+  for (const scene of allScenes) {
+    for (const claimId of scene.claimIds ?? []) addClaimOwner(claimId, scene.id);
+  }
+  for (const claim of storyboard?.claims ?? []) {
+    for (const sceneId of claim?.sceneIds ?? []) addClaimOwner(claim?.id, sceneId);
+  }
+  const checks = scoped.checks.map((check) => {
+    const issues = check.issues.flatMap((candidate) => {
+      if (candidate.scene) return core.has(candidate.scene) ? [candidate] : [];
+      if (!candidate.claimId) return [];
+      const coreOwner = [...(claimOwners.get(candidate.claimId) ?? [])]
+        .find((sceneId) => core.has(sceneId));
+      return coreOwner ? [{ ...candidate, scene: coreOwner }] : [];
+    });
+    return { ...check, passed: issues.length === 0, issues };
+  });
+  const scopeIssues: QualityIssue[] = [];
+  if (missing.length) scopeIssues.push({
+    severity: "BLOCKER",
+    rule: "CHUNK_SCOPE_MISSING",
+    message: `Declared storyboard proof context is missing scene(s): ${missing.join(", ")}.`,
+  });
+  if (duplicated.length) scopeIssues.push({
+    severity: "BLOCKER",
+    rule: "CHUNK_SCOPE_DUPLICATE",
+    message: `Declared storyboard proof context is not unique: ${duplicated.join(", ")}.`,
+  });
+  checks.unshift({ name: "Chunk scope: exact declared storyboard context", passed: scopeIssues.length === 0, issues: scopeIssues });
+  return assembleReport(checks, `(storyboard:${scope.chunkId})`);
 }
 
 // CHECK 4: Scene duration
@@ -1936,6 +2059,85 @@ function checkAssetScale(scenes: any[]): CheckResult {
 
   return {
     name: "Asset scale: nhân vật chính đủ lớn theo layout",
+    passed: issues.length === 0,
+    issues,
+  };
+}
+
+function checkAuthoredTransitionRealization(scenes: any[]): CheckResult {
+  const issues: QualityIssue[] = [];
+
+  for (const scene of scenes) {
+    if (!Array.isArray(scene.authoredTransitionReceipts)) continue;
+    const renderedComponents: Array<{ id: string; frame: number }> = [
+      ...(Array.isArray(scene.entities) ? scene.entities.map((entity: any) => ({
+        id: entity?.assetId,
+        frame: Number(entity?.enterDelay ?? entity?.delay ?? 0),
+      })) : []),
+      ...(["texts", "cards", "paperCards", "frameBoxes", "speechBubbles"] as const).flatMap((field) =>
+        Array.isArray(scene[field])
+          ? scene[field].map((component: any) => ({
+              id: component?.id,
+              frame: Number(component?.delay ?? 0),
+            }))
+          : [],
+      ),
+    ].filter((component): component is { id: string; frame: number } =>
+      typeof component.id === "string" && component.id.length > 0 && Number.isFinite(component.frame),
+    );
+    const renderedIds = new Set(renderedComponents.map((component) => component.id));
+
+    for (const receipt of scene.authoredTransitionReceipts) {
+      if (!receipt || typeof receipt !== "object") continue;
+      const componentIds = Array.isArray(receipt.renderedComponentIds)
+        ? receipt.renderedComponentIds.filter((id: unknown): id is string => typeof id === "string")
+        : [];
+      const missingIds = componentIds.filter((id: string) => !renderedIds.has(id));
+      if (missingIds.length > 0) {
+        issues.push({
+          severity: "BLOCKER",
+          rule: "AUTHORED_TRANSITION_REALIZATION",
+          scene: scene.id,
+          message: `${sceneLabel(scene)} transition ${receipt.action ?? "?"}:${receipt.targetSlot ?? "?"} references component(s) that are not rendered: ${missingIds.join(", ")}.`,
+          suggestion:
+            "Recompile from the authored storyboard so every transition receipt points to a persistent rendered component.",
+        });
+      }
+      if (
+        Number.isInteger(receipt.frame) &&
+        componentIds.length > 0 &&
+        !renderedComponents.some(
+          (component) => componentIds.includes(component.id) && component.frame === receipt.frame,
+        )
+      ) {
+        issues.push({
+          severity: "BLOCKER",
+          rule: "AUTHORED_TRANSITION_REALIZATION",
+          scene: scene.id,
+          message: `${sceneLabel(scene)} transition ${receipt.action ?? "?"}:${receipt.targetSlot ?? "?"} claims frame ${receipt.frame}, but no referenced component changes then.`,
+          suggestion:
+            "Compile the authored beat into a component reveal/swap at the receipt frame; metadata alone is not a visual transition.",
+        });
+      }
+      if (
+        typeof receipt.fromState === "string" &&
+        typeof receipt.toState === "string" &&
+        receipt.fromState === receipt.toState
+      ) {
+        issues.push({
+          severity: "BLOCKER",
+          rule: "AUTHORED_TRANSITION_NOOP",
+          scene: scene.id,
+          message: `${sceneLabel(scene)} transition ${receipt.action ?? "?"}:${receipt.targetSlot ?? "?"} is a no-op (${receipt.fromState}).`,
+          suggestion:
+            "Author a different persistent pose, prop, focal shot, or teaching layer instead of recording an unchanged state.",
+        });
+      }
+    }
+  }
+
+  return {
+    name: "Authored transitions: receipts correspond to rendered non-no-op changes",
     passed: issues.length === 0,
     issues,
   };
@@ -3296,14 +3498,30 @@ function runChunkQualityCheck(
 ): QualityReport {
   const allScenes: any[] = Array.isArray(timeline?.scenes) ? timeline.scenes : [];
   const core = new Set(scope.coreSceneIds);
-  const contextIds = new Set([
+  const expectedIds = [
     ...scope.haloBeforeSceneIds,
     ...scope.coreSceneIds,
     ...scope.haloAfterSceneIds,
-  ]);
-  const scenes = allScenes.filter((scene) => contextIds.has(scene.id));
+  ];
+  const counts = new Map<string, number>();
+  for (const scene of allScenes) counts.set(scene.id, (counts.get(scene.id) ?? 0) + 1);
+  const missing = expectedIds.filter((id) => !counts.has(id));
+  const duplicated = expectedIds.filter((id) => (counts.get(id) ?? 0) > 1);
+  const byId = new Map(allScenes.map((scene) => [scene.id, scene]));
+  const scenes = expectedIds.map((id) => byId.get(id)).filter(Boolean);
   const localTimeline = { ...timeline, scenes };
-  const checks: CheckResult[] = [
+  const scopeIssues: QualityIssue[] = [];
+  if (missing.length) scopeIssues.push({
+    severity: "BLOCKER",
+    rule: "CHUNK_SCOPE_MISSING",
+    message: `Declared timeline proof context is missing scene(s): ${missing.join(", ")}.`,
+  });
+  if (duplicated.length) scopeIssues.push({
+    severity: "BLOCKER",
+    rule: "CHUNK_SCOPE_DUPLICATE",
+    message: `Declared timeline proof context is not unique: ${duplicated.join(", ")}.`,
+  });
+  const localChecks: CheckResult[] = [
     checkAssetPaths(scenes),
     checkUniqueIds(scenes),
     checkBackgroundReal(scenes),
@@ -3316,6 +3534,7 @@ function runChunkQualityCheck(
     checkCatPoseDiversity(scenes),
     checkAssetScale(scenes),
     checkStableCompositionDensity(localTimeline, scenes),
+    checkAuthoredTransitionRealization(scenes),
     checkVisualRhythm(scenes),
     checkCameraUsage(scenes),
     checkIconTriple(scenes),
@@ -3333,10 +3552,14 @@ function runChunkQualityCheck(
     // These read adjacent states. Their global-ratio diagnostics have no scene
     // and are intentionally dropped below; seam-specific findings are retained.
     checkClearPrevious(scenes),
-  ].map((check) => ({
-    ...check,
-    issues: check.issues.filter((issue) => issue.scene && core.has(issue.scene)),
-  }));
+  ];
+  const checks: CheckResult[] = [
+    { name: "Chunk scope: exact declared timeline context", passed: scopeIssues.length === 0, issues: scopeIssues },
+    ...localChecks.map((check) => {
+      const issues = check.issues.filter((candidate) => candidate.scene && core.has(candidate.scene));
+      return { ...check, passed: issues.length === 0, issues };
+    }),
+  ];
   return assembleReport(checks, `${timelinePath} [chunk ${scope.chunkId}]`);
 }
 
@@ -3378,6 +3601,7 @@ export function runQualityCheck(
     checkCatPoseDiversity(scenes),
     checkAssetScale(scenes),
     checkStableCompositionDensity(timeline, scenes),
+    checkAuthoredTransitionRealization(scenes),
     checkVisualRhythm(scenes),
     checkCameraUsage(scenes),
     checkClearPrevious(scenes),

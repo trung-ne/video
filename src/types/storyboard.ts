@@ -207,6 +207,16 @@ export interface Storyboard {
   sections?: StorySection[];
   claims?: StoryClaim[];
   visualTreatmentPlan?: VisualTreatmentPlan;
+  /** Mechanical evidence that the complete transcript met the authoring-density gate. */
+  authoringDecision?: {
+    policyVersion: "scene-density-v1";
+    transcriptWords: number;
+    minimumScenes: number;
+    authoredScenes: number;
+    longVideo: boolean;
+    sectionsRequired: boolean;
+    passed: boolean;
+  };
   generation?: {
     provider?: string;
     model?: string;
@@ -222,6 +232,8 @@ export interface Storyboard {
  * interface that can drift from build-storyboard.ts.
  */
 export interface AuthoredScene {
+  /** Stable foreign key across TTS, alignment, chunking, and compiled timing. */
+  id?: string;
   marker: string;
   narrationOverride?: string;
   grammar: VisualGrammar;

@@ -29,6 +29,8 @@ import { resolveAssetRequest } from "../src/engine/assetResolver";
 import referenceQuality from "../config/reference-quality.json";
 import { ENTRANCE_STYLES } from "../src/engine/entrancePolicy";
 import { authoredCadenceIssues, authoredTransitionCapabilityIssues } from "../src/engine/visualCadence";
+import { resolveStableSceneIds } from "../src/engine/sceneIdentity";
+import { isLongVideoWordCount, minimumAuthoredScenesForWordCount } from "../src/types/chunk";
 
 const args = process.argv.slice(2);
 function getArg(flag: string, defaultVal?: string): string | undefined {
@@ -99,9 +101,23 @@ function defaultIdPrefix(): string {
   return m ? `${m[1]}-` : "scene-";
 }
 const idPrefix = getArg("--id-prefix", defaultIdPrefix())!;
+// Existing generated storyboard IDs are stable measured-timing foreign keys.
+// Preserve them during rebuilds until scenes explicitly opt into a new authored
+// `id`; a CLI prefix is only a first-build migration fallback, never identity.
+const priorScenes = (() => {
+  if (!fs.existsSync(outPath)) return [] as Array<{ id?: string; sourceRange?: { quoteChecksum?: string } }>;
+  try {
+    const prior = JSON.parse(fs.readFileSync(outPath, "utf8"));
+    return Array.isArray(prior.scenes) ? prior.scenes : [];
+  } catch {
+    return [] as Array<{ id?: string; sourceRange?: { quoteChecksum?: string } }>;
+  }
+})();
 
 const transcript = fs.readFileSync(transcriptPath, "utf8").normalize("NFC");
 const words = indexTranscript(transcript);
+const minimumScenes = minimumAuthoredScenesForWordCount(words.length);
+const longVideo = isLongVideoWordCount(words.length);
 
 function tokenize(s: string): string[] {
   const matches = s.normalize("NFC").match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) ?? [];
@@ -138,6 +154,13 @@ for (let i = 0; i < ranges.length; i++) {
     throw new Error(`Scene ${i} (${SCENES[i].marker}) has empty/invalid range ${ranges[i].startWord}-${ranges[i].endWord}`);
   }
 }
+const resolvedSourceRanges = ranges.map((range) => makeSourceRange(words, range.startWord, range.endWord));
+const sceneIdentity = resolveStableSceneIds(SCENES, resolvedSourceRanges, priorScenes, idPrefix);
+if (sceneIdentity.issues.length) {
+  console.error(`❌ Scene identity errors in ${dataPath}:`);
+  for (const issue of sceneIdentity.issues) console.error(`   ${issue}`);
+  process.exit(1);
+}
 
 // A stable dedup key for "have we already shown this exact frame recipe?".
 // Derived from decisions the author already made — deriving it does not invent
@@ -156,6 +179,17 @@ function fingerprintOf(scene: any, assets: Record<string, string>): string {
 }
 
 const authorErrors: string[] = [];
+if (SCENES.length < minimumScenes) {
+  authorErrors.push(
+    `video: ${words.length} transcript words require at least ${minimumScenes} authored scenes ` +
+    `(ceil(words/40)); found ${SCENES.length}. Split narration at semantic turns before build/TTS.`,
+  );
+}
+if (longVideo && SECTIONS.length === 0) {
+  authorErrors.push(
+    `video: long-form authoring (${words.length} words; minimumScenes=${minimumScenes}) requires ordered semantic SECTIONS before chunk planning.`,
+  );
+}
 const assetNeeds: Array<{ sceneId: string; slot: string; query: string; reason: string }> = [];
 const manifestPath = path.join(process.cwd(), "public", "assets.manifest.json");
 const assetManifest: AssetManifest | undefined = fs.existsSync(manifestPath)
@@ -182,8 +216,8 @@ if (SCENES.length >= 8) {
 }
 
 const scenes = SCENES.map((s, i) => {
-  const id = `${idPrefix}${String(i + 1).padStart(3, "0")}`;
-  const range = makeSourceRange(words, ranges[i].startWord, ranges[i].endWord);
+  const range = resolvedSourceRanges[i];
+  const id = sceneIdentity.ids[i];
   const narration = s.narrationOverride ?? sourceExcerpt(transcript, words, range);
   const slots = { ...(s.slots ?? {}) };
   const fail = (msg: string) => authorErrors.push(`${id}: ${msg}`);
@@ -340,8 +374,19 @@ if (authorErrors.length) {
 // slice SCENES and re-run marker resolution on a partial transcript.
 const resolvedSections = SECTIONS.length
   ? (() => {
-      const starts = SECTIONS.map((section, index) =>
-        index === 0 ? 0 : findMarker(String(section.sourceMarker ?? ""), 0));
+      const starts: number[] = [];
+      let searchFrom = 0;
+      for (const [index, section] of SECTIONS.entries()) {
+        if (index === 0) {
+          starts.push(0);
+          continue;
+        }
+        const marker = String(section.sourceMarker ?? "").trim();
+        if (!marker) throw new Error(`Section ${section.id ?? index} needs sourceMarker for full-transcript chunk planning.`);
+        const start = findMarker(marker, searchFrom);
+        starts.push(start);
+        searchFrom = start + 1;
+      }
       return SECTIONS.map((section, index) => ({
         ...section,
         sourceRange: makeSourceRange(words, starts[index],
@@ -366,10 +411,23 @@ const storyboard = {
     return { ...claim, sourceRange: makeSourceRange(words, start, start + length - 1) };
   }),
   visualTreatmentPlan: VISUAL_TREATMENT_PLAN,
+  authoringDecision: {
+    policyVersion: "scene-density-v1" as const,
+    transcriptWords: words.length,
+    minimumScenes,
+    authoredScenes: scenes.length,
+    longVideo,
+    sectionsRequired: longVideo,
+    passed: true,
+  },
   scenes: withNovelty,
 };
 
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, `${JSON.stringify(storyboard, null, 2)}\n`, "utf8");
 console.log(`Wrote ${outPath}`);
+console.log(
+  `Authoring density: ${scenes.length}/${minimumScenes} scenes for ${words.length} words ` +
+  `(policy scene-density-v1${longVideo ? "; long-video sections required" : ""})`,
+);
 console.log(`Scenes: ${scenes.length} | Transcript words: ${words.length} | Coverage: words 0-${words.length - 1}`);

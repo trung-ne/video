@@ -1,7 +1,7 @@
 {
   "name": "cat-explainer-video",
   "version": "1.0.0",
-  "description": "AI-powered 2D explainer video system",
+  "description": "Route A 2D explainer video production pipeline",
   "scripts": {
     "start": "remotion studio src/index.ts",
     "preview": "remotion studio src/index.ts",
@@ -13,6 +13,9 @@
     "build-storyboard": "npx ts-node scripts/build-storyboard.ts",
     "storyboard-to-tts": "npx ts-node scripts/storyboard-to-tts.ts",
     "compile-storyboard": "npx ts-node scripts/compile-storyboard.ts",
+    "plan-chunks": "npx ts-node scripts/plan-chunks.ts",
+    "process-chunks": "npx ts-node scripts/process-storyboard-chunks.ts",
+    "assemble-chunks": "npx ts-node scripts/assemble-storyboard-chunks.ts",
     "validate": "npx ts-node scripts/validate.ts",
     "quality": "npx ts-node scripts/quality-check.ts",
     "visual-audit": "python scripts/visual-audit.py",
@@ -24,12 +27,9 @@
     "check-style-assets": "npx ts-node scripts/check-style-assets.ts",
     "typecheck": "npx tsc --noEmit",
     "test": "npx ts-node scripts/test.ts",
-    "check": "npm run typecheck && npm test && python -m unittest scripts/test_align_words.py scripts/test_visual_audit.py"
+    "check": "npm run typecheck && npm test && npx ts-node scripts/test_chunk_pipeline_integration.ts && python -m unittest scripts/test_align_words.py scripts/test_visual_audit.py scripts/test_chunk_audio.py scripts/test_chunk_audio_validation.py scripts/test_verify_proof_core_pcm.py scripts/test_tts_scene_cache.py scripts/test_tts_edge_cache.py scripts/test_tts_kokoro_cache.py"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.56.0",
-    "@google/genai": "^2.10.0",
-    "@google/generative-ai": "^0.24.1",
     "@remotion/cli": "^4.0.248",
     "@remotion/player": "^4.0.248",
     "react": "18.3.1",

@@ -9,7 +9,7 @@ function readJson(filePath: string): any {
   }
 }
 
-function assertPromotionSet(stagingDir: string, names: string[]): string {
+function assertPromotionSet(stagingDir: string, names: string[], requiredReportStatus: string): string {
   const videos = names.filter((name) => name.toLowerCase().endsWith(".mp4"));
   if (videos.length !== 1) {
     throw new Error(`Promotion requires exactly one staged MP4; found ${videos.length}.`);
@@ -30,22 +30,33 @@ function assertPromotionSet(stagingDir: string, names: string[]): string {
   const encoding = readJson(path.join(stagingDir, `${stem}.encoding-audit.json`));
   const audio = readJson(path.join(stagingDir, `${stem}.audio-audit.json`));
   const visual = readJson(path.join(stagingDir, `${stem}.visual-audit.json`));
-  if (report.status !== "candidate-ready") throw new Error("Only candidate-ready reports may be promoted.");
+  if (report.status !== requiredReportStatus) {
+    throw new Error(`Only ${requiredReportStatus} reports may be promoted.`);
+  }
   if (encoding.passed !== true || audio.passed !== true || visual.passed !== true) {
     throw new Error("Promotion requires passing encoding, audio, and visual audit reports.");
   }
   return stem;
 }
 
+export interface PromotionOptions {
+  requiredReportStatus?: "candidate-ready" | "chunk-proof-ready";
+}
+
 /**
- * Transactionally replaces the canonical artifact set. Existing files are first
+ * Transactionally replaces a complete artifact set. Existing files are first
  * archived; if any move fails, both the old set and staged set are restored.
  * The production report moves last so it can never claim a partial promotion.
  */
-export function promoteArtifacts(stagingDir: string, finalDir: string, runId: string): string | undefined {
+export function promoteArtifacts(
+  stagingDir: string,
+  finalDir: string,
+  runId: string,
+  options: PromotionOptions = {},
+): string | undefined {
   fs.mkdirSync(finalDir, { recursive: true });
   const names = fs.readdirSync(stagingDir).filter((name) => name !== "_props.json");
-  const stem = assertPromotionSet(stagingDir, names);
+  const stem = assertPromotionSet(stagingDir, names, options.requiredReportStatus ?? "candidate-ready");
   const canonicalSuffixes = [
     ".mp4",
     ".encoding-audit.json",
@@ -61,6 +72,10 @@ export function promoteArtifacts(stagingDir: string, finalDir: string, runId: st
     : [];
   const namesToArchive = [...new Set([...canonicalNames, ...names])];
   const reportName = names.find((name) => name.endsWith(".production-report.json"));
+  const archiveOrdered = [
+    ...namesToArchive.filter((name) => name.endsWith(".production-report.json")),
+    ...namesToArchive.filter((name) => !name.endsWith(".production-report.json")),
+  ];
   const ordered = [
     ...names.filter((name) => name !== reportName),
     ...(reportName ? [reportName] : []),
@@ -69,7 +84,7 @@ export function promoteArtifacts(stagingDir: string, finalDir: string, runId: st
   const archived: string[] = [];
   const promoted: string[] = [];
   try {
-    for (const name of namesToArchive) {
+    for (const name of archiveOrdered) {
       const current = path.join(finalDir, name);
       if (!fs.existsSync(current)) continue;
       fs.mkdirSync(archiveDir, { recursive: true });
@@ -115,8 +130,11 @@ export function shouldPreserveFailedMp4(error: string): boolean {
   return /timing|encoding|unreadable|visual[- ]audit/i.test(error);
 }
 
-/** Keep one previous MP4, ten successful evidence sets, and two small failed runs. */
-export function pruneRunHistory(finalDir: string): void {
+/** Keep ten successful evidence sets, optionally one previous MP4, and two small failed runs. */
+export function pruneRunHistory(
+  finalDir: string,
+  options: { preservePreviousMp4?: boolean } = {},
+): void {
   const runsDir = path.join(finalDir, ".runs");
   if (!fs.existsSync(runsDir)) return;
   const directories = fs.readdirSync(runsDir)
@@ -127,7 +145,7 @@ export function pruneRunHistory(finalDir: string): void {
   const previous = newestFirst(directories.filter((dir) => path.basename(dir).startsWith("previous-")));
   previous.forEach((dir, index) => {
     if (index >= 10) fs.rmSync(dir, { recursive: true, force: true });
-    else removeLargeArtifacts(dir, index === 0);
+    else removeLargeArtifacts(dir, (options.preservePreviousMp4 ?? true) && index === 0);
   });
 
   const diagnostics = newestFirst(directories.filter((dir) => path.basename(dir).startsWith("run-")));

@@ -2,6 +2,14 @@
 import * as fs from "fs";
 import * as path from "path";
 import { sha256File } from "../src/audio/prepareAudio";
+import {
+  assertBoundTimelineIdentity,
+  assertCanonicalTimelinePath,
+  assertOutputProjectIdentity,
+  assertProjectCanonicalTimeline,
+  buildCanonicalTimelineIdentity,
+  sameResolvedPath,
+} from "../src/engine/publicationIntegrity";
 
 const args = process.argv.slice(2);
 const value = (flag: string) => {
@@ -19,8 +27,18 @@ if (!args.includes("--confirm-manual-review")) {
 }
 const projectPath = fs.existsSync(projectArg) || projectArg.includes("/") || projectArg.includes("\\")
   ? projectArg : path.join("projects", projectArg);
-const id = path.basename(path.resolve(projectPath));
+const resolvedProjectPath = fs.realpathSync(path.resolve(projectPath));
+const id = path.basename(resolvedProjectPath);
+const timeline = path.join(resolvedProjectPath, "timeline.json");
+assertCanonicalTimelinePath(timeline, resolvedProjectPath);
+assertProjectCanonicalTimeline(resolvedProjectPath, timeline);
+const canonicalTimelineIdentity = buildCanonicalTimelineIdentity({
+  timelinePath: timeline,
+  projectId: id,
+  projectPath: resolvedProjectPath,
+});
 const video = path.resolve("output", id, "video.mp4");
+assertOutputProjectIdentity(video, id);
 const contact = video.replace(/\.mp4$/i, ".contact.jpg");
 const visual = video.replace(/\.mp4$/i, ".visual-audit.json");
 const report = video.replace(/\.mp4$/i, ".production-report.json");
@@ -29,18 +47,42 @@ for (const file of [video, contact, visual, report]) {
 }
 const candidate = JSON.parse(fs.readFileSync(report, "utf8"));
 if (candidate.status !== "candidate-ready") throw new Error("Only a full candidate-ready render can be accepted.");
+assertBoundTimelineIdentity(candidate, canonicalTimelineIdentity, "Candidate report");
+if (typeof candidate.video !== "string" || !sameResolvedPath(candidate.video, video)) {
+  throw new Error("Candidate report identifies a different output artifact.");
+}
 const visualAudit = JSON.parse(fs.readFileSync(visual, "utf8"));
-if (!visualAudit.passed) throw new Error("Visual audit is not passing.");
-const current = fs.existsSync(path.join(projectPath, "acceptance.json"))
-  ? JSON.parse(fs.readFileSync(path.join(projectPath, "acceptance.json"), "utf8")) : {};
+if (visualAudit.passed !== true) throw new Error("Visual audit is not passing.");
+const declaredArtifacts = candidate.artifacts ?? {};
+const artifactHashes = {
+  video: sha256File(video),
+  contact: sha256File(contact),
+  visual: sha256File(visual),
+  report: sha256File(report),
+};
+if (declaredArtifacts.videoSha256 !== artifactHashes.video
+    || declaredArtifacts.contactSheetSha256 !== artifactHashes.contact
+    || declaredArtifacts.visualAuditSha256 !== artifactHashes.visual) {
+  throw new Error("Candidate report artifact hashes do not match the files being accepted.");
+}
+const acceptancePath = path.join(resolvedProjectPath, "acceptance.json");
+const current = fs.existsSync(acceptancePath)
+  ? JSON.parse(fs.readFileSync(acceptancePath, "utf8")) : {};
+if (sha256File(timeline) !== canonicalTimelineIdentity.timelineSha256) {
+  throw new Error("Canonical timeline changed while acceptance was being recorded.");
+}
 const acceptance = {
   ...current,
-  schemaVersion: 2,
+  schemaVersion: 3,
+  projectId: canonicalTimelineIdentity.projectId,
+  projectPath: canonicalTimelineIdentity.projectPath,
+  timeline: canonicalTimelineIdentity.timelinePath,
+  timelineSha256: canonicalTimelineIdentity.timelineSha256,
   artifact: path.relative(process.cwd(), video).replace(/\\/g, "/"),
-  artifactSha256: sha256File(video),
-  contactSheetSha256: sha256File(contact),
-  visualAuditSha256: sha256File(visual),
-  productionReportSha256: sha256File(report),
+  artifactSha256: artifactHashes.video,
+  contactSheetSha256: artifactHashes.contact,
+  visualAuditSha256: artifactHashes.visual,
+  productionReportSha256: artifactHashes.report,
   frameRange: [0, Number(candidate.timingAudit?.expectedSeconds ?? 0) * 30],
   metrics: {
     ...(current.metrics ?? {}),
@@ -63,5 +105,5 @@ const acceptance = {
   result: "pass",
   acceptedAt: new Date().toISOString(),
 };
-fs.writeFileSync(path.join(projectPath, "acceptance.json"), `${JSON.stringify(acceptance, null, 2)}\n`, "utf8");
+fs.writeFileSync(acceptancePath, `${JSON.stringify(acceptance, null, 2)}\n`, "utf8");
 console.log(`Accepted exact candidate: ${video}`);

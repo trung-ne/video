@@ -11,7 +11,7 @@
 // Browser-safe: no fs / Date / random.
 // ============================================================
 
-import { Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, TimingProvenance } from "../types/scene";
+import { AuthoredTransitionReceipt, Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, TimingProvenance } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext, GrammarResult } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
@@ -135,29 +135,53 @@ function resolveBeatOffset(
   fps: number,
   words: AlignedWord[] | undefined
 ): { offset: number; source: SceneBeatTimingSource } {
-  const firstWord = canonicalNarrationTokens(beatText)[0]?.toLowerCase();
-  if (words && firstWord) {
-    // Search only canonical words spoken by this scene when that identity is
-    // available. Source transcript ranges may differ from narrationOverride.
+  const beatTokens = canonicalNarrationTokens(beatText).map((token) => token.toLocaleLowerCase());
+  if (words && beatTokens.length) {
+    // Match the complete canonical phrase in the scene's measured word stream.
+    // First-word matching made repeated Vietnamese connective words cue the wrong
+    // beat and CRLF/raw substring matching made otherwise valid phrases fail.
     const startSec = sceneStartFrame / fps;
     const endSec = (sceneStartFrame + sceneFrames) / fps;
-    for (const w of words) {
-      if (w.scene && w.scene !== sceneId) continue;
-      if (w.startSec < startSec - 0.05 || w.startSec > endSec) continue;
-      if (w.word.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "") === firstWord) {
-        return {
-          offset: Math.max(0, Math.round(w.startSec * fps) - sceneStartFrame),
-          source: "aligned-words",
-        };
-      }
+    const candidates = words.filter((word) =>
+      (!word.scene || word.scene === sceneId)
+      && word.startSec >= startSec - 0.05
+      && word.startSec <= endSec,
+    );
+    for (let index = 0; index + beatTokens.length <= candidates.length; index += 1) {
+      if (!beatTokens.every((token, offset) =>
+        candidates[index + offset].word.toLocaleLowerCase().replace(/[^\p{L}\p{N}]/gu, "") === token,
+      )) continue;
+      return {
+        offset: Math.max(0, Math.round(candidates[index].startSec * fps) - sceneStartFrame),
+        source: "aligned-words",
+      };
+    }
+    // Legacy/diagnostic partial alignment may contain only the phrase's first
+    // token. Production canonical alignment supplies every token, so this never
+    // weakens the full-span contract in a measured Route A build.
+    if (candidates.length < beatTokens.length) {
+      const first = candidates.find((word) =>
+        word.word.toLocaleLowerCase().replace(/[^\p{L}\p{N}]/gu, "") === beatTokens[0],
+      );
+      if (first) return {
+        offset: Math.max(0, Math.round(first.startSec * fps) - sceneStartFrame),
+        source: "aligned-words",
+      };
     }
   }
-  // Fallback: proportional by character position in the narration.
-  const idx = narration.toLowerCase().indexOf(beatText.trim().toLowerCase());
-  const frac = idx >= 0 && narration.length > 0 ? idx / narration.length : 0.4;
+  // Fallback follows a canonical token span, never raw character layout.
+  const narrationTokens = canonicalNarrationTokens(narration).map((token) => token.toLocaleLowerCase());
+  let tokenIndex = -1;
+  for (let index = 0; index + beatTokens.length <= narrationTokens.length; index += 1) {
+    if (beatTokens.every((token, offset) => narrationTokens[index + offset] === token)) {
+      tokenIndex = index;
+      break;
+    }
+  }
+  const frac = tokenIndex >= 0 && narrationTokens.length > 0 ? tokenIndex / narrationTokens.length : 0.4;
   return {
     offset: Math.round(frac * sceneFrames),
-    source: idx >= 0 ? "authored-beat" : "source-range-proportional",
+    source: tokenIndex >= 0 ? "authored-beat" : "source-range-proportional",
   };
 }
 
@@ -167,20 +191,6 @@ function resolveBeatOffset(
 function canonicalNarrationTokens(value: string): string[] {
   return value.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) ?? [];
 }
-
-// Per-emotion pose cycle for sentence-level re-posing. Only registers with ≥2
-// poses swap; sad/surprise/urgent keep a single pose to preserve the emotion.
-const POSE_CYCLE: Record<string, string[]> = {
-  neutral:   ["characters/cat_explain", "characters/cat_point_left"],
-  curious:   ["characters/cat_think", "characters/cat_shrug"],
-  sarcastic: ["characters/cat_sunglasses", "characters/cat_explain"],
-  happy:     ["characters/cat_happy", "characters/cat_explain"],
-  hopeful:   ["characters/cat_happy", "characters/cat_explain"],
-  concern:   ["characters/cat_think", "characters/cat_sad"],
-  sad:       [],
-  surprise:  [],
-  urgent:    [],
-};
 
 const DEFAULT_FOCAL_OCCUPANCY: Record<string, number> = {
   // The audit measures the largest connected focal component, not the union
@@ -322,19 +332,40 @@ function applyAuthoredBeatTransitions(
   timing: SceneTiming,
   fps: number,
   words: AlignedWord[] | undefined,
-): SceneBeatTimingSource | undefined {
-  if (!brief.beats?.length) return undefined;
+): { timingSource: SceneBeatTimingSource | undefined; receipts: AuthoredTransitionReceipt[] } {
+  if (!brief.beats?.length) return { timingSource: undefined, receipts: [] };
 
   // The narration phrase is authored; the grammar owns component IDs/layout.
   // This makes staging semantic instead of moving every card on a global clock.
-  const advanceCandidates = [
+  const teachingLayers = [
     ...(result.cards ?? []),
     ...(result.paperCards ?? []),
     ...(result.frameBoxes ?? []),
-  ]
-    .filter((layer) => (layer.delay ?? 0) > 0)
+  ];
+  // The earliest layer establishes the grammar's initial teaching state. An
+  // authored `advance:next` must reveal a subsequent layer, never merely
+  // postpone that base state and leave the intended answer/effect unchanged.
+  const initialTeachingDelay = Math.min(...teachingLayers.map((layer) => layer.delay ?? 0));
+  const advanceCandidates = teachingLayers
+    .filter((layer) => (layer.delay ?? 0) > initialTeachingDelay)
     .sort((a, b) => (a.delay ?? 0) - (b.delay ?? 0));
   let advanceIndex = 0;
+  let cutawayIndex = 0;
+  const receipts: AuthoredTransitionReceipt[] = [];
+  const recordTransition = (
+    beatText: string,
+    action: string,
+    targetSlot: string,
+    frame: number,
+    renderedComponentIds: string[],
+    fromState: string,
+    toState: string,
+  ) => {
+    if (fromState === toState) {
+      throw new Error(`${brief.id} authored ${action}:${targetSlot} is a no-op (${fromState}).`);
+    }
+    receipts.push({ beatText, action, targetSlot, frame, renderedComponentIds, fromState, toState });
+  };
 
   const appendPoseSwap = (targetSlot: string, targetAssetId: string | undefined, delay: number) => {
     if (!targetAssetId?.startsWith("characters/")) {
@@ -357,6 +388,9 @@ function applyAuthoredBeatTransitions(
         `${brief.id} marks a pose swap for ${targetSlot}, but ${brief.visualGrammar} does not render that actor.`,
       );
     }
+    if (actor.src === targetAssetId) {
+      throw new Error(`${brief.id} authored swap_pose:${targetSlot} keeps the same rendered pose ${targetAssetId}.`);
+    }
     result.entities.push({
       ...actor,
       src: targetAssetId,
@@ -364,6 +398,7 @@ function applyAuthoredBeatTransitions(
       enterDelay: delay,
       clearPrevious: [actor.assetId],
     });
+    return { componentIds: [actor.assetId], fromState: actor.src, toState: targetAssetId };
   };
 
   const appendAssetSwap = (targetSlot: string, targetAssetId: string | undefined, delay: number) => {
@@ -383,6 +418,9 @@ function applyAuthoredBeatTransitions(
         `${brief.id} marks a prop swap, but its grammar did not render an authored prop.`,
       );
     }
+    if (prop.src === targetAssetId) {
+      throw new Error(`${brief.id} authored swap_asset:${targetSlot} keeps the same rendered prop ${targetAssetId}.`);
+    }
     result.entities.push({
       ...prop,
       src: targetAssetId,
@@ -391,6 +429,7 @@ function applyAuthoredBeatTransitions(
       emphasize: undefined,
       clearPrevious: [prop.assetId],
     });
+    return { componentIds: [prop.assetId], fromState: prop.src, toState: targetAssetId };
   };
 
   const appendFocusCut = (
@@ -418,16 +457,24 @@ function applyAuthoredBeatTransitions(
     if (targetAssetId && actorTarget !== targetAssetId.startsWith("characters/")) {
       throw new Error(`${brief.id} ${action} target asset has the wrong semantic kind.`);
     }
+    const position = actorTarget
+      ? { x: targetSlot === "answerer" || targetSlot === "seatB" ? 0.64 : 0.36, y: 0.58 }
+      : { x: 0.5, y: 0.47 };
+    const scale = actorTarget ? 2.75 : 3.2;
+    const source = targetAssetId ?? target.src;
+    const fromState = JSON.stringify({ src: target.src, anchor: target.anchor, slot: target.slot, position: target.position, scale: target.scale });
+    const toState = JSON.stringify({ src: source, position, scale });
+    if (fromState === toState) {
+      throw new Error(`${brief.id} authored ${action}:${targetSlot} does not change the rendered shot.`);
+    }
     const visibleIds = [...new Set(result.entities.map((entity) => entity.assetId))];
     result.entities.push({
       ...target,
-      src: targetAssetId ?? target.src,
+      src: source,
       anchor: undefined,
       slot: undefined,
-      position: actorTarget
-        ? { x: targetSlot === "answerer" || targetSlot === "seatB" ? 0.64 : 0.36, y: 0.58 }
-        : { x: 0.5, y: 0.47 },
-      scale: actorTarget ? 2.75 : 3.2,
+      position,
+      scale,
       enterAnimation: "none",
       enterDelay: delay,
       emphasize: undefined,
@@ -435,6 +482,7 @@ function applyAuthoredBeatTransitions(
       allowOverlapWith: undefined,
       clearPrevious: visibleIds,
     });
+    return { componentIds: visibleIds, fromState, toState };
   };
 
   const sources: SceneBeatTimingSource[] = [];
@@ -453,7 +501,15 @@ function applyAuthoredBeatTransitions(
           `${brief.id} marks advance:next, but ${brief.visualGrammar} has no unrevealed teaching layer. Split the scene or author a pose/prop/focus transition.`,
         );
       }
+      const previousDelay = layer.delay ?? 0;
+      if (previousDelay === delay) {
+        throw new Error(
+          `${brief.id} authored advance:${beat.targetSlot} keeps teaching layer ${layer.id} at its existing reveal frame ${delay}.`,
+        );
+      }
       layer.delay = delay;
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay, [layer.id],
+        `visible-at:${previousDelay}`, `visible-at:${delay}`);
       continue;
     }
 
@@ -469,8 +525,12 @@ function applyAuthoredBeatTransitions(
         );
       }
       result.frameBoxes = result.frameBoxes ?? [];
+      // Each authored reveal is a distinct persistent teaching state. Reusing the
+      // base ID made later cutaways collide in the timeline and silently erased
+      // their visual change.
+      const cutawayId = `${brief.id}-cutaway${cutawayIndex++ ? `-${cutawayIndex}` : ""}`;
       result.frameBoxes.push({
-        id: `${brief.id}-cutaway`,
+        id: cutawayId,
         contentSrc: beat.targetAssetId,
         caption: beat.targetLabel.trim(),
         position: { x: 0.5, y: 0.40 },
@@ -478,6 +538,8 @@ function applyAuthoredBeatTransitions(
         objectFit: "cover",
         delay,
       });
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay,
+        [cutawayId], "absent", `cutaway:${beat.targetAssetId}:${beat.targetLabel.trim()}`);
       continue;
     }
 
@@ -488,8 +550,12 @@ function applyAuthoredBeatTransitions(
           `${brief.id} marks a caption reveal beat but does not author a chapter-pill caption.`,
         );
       }
+      const previousDelay = caption.delay ?? 0;
+      const previousHold = caption.hold ?? "default";
       caption.delay = delay;
       caption.hold = "scene-end";
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay, [caption.id],
+        `visible-at:${previousDelay}:${previousHold}`, `visible-at:${delay}:scene-end`);
       continue;
     }
 
@@ -503,27 +569,53 @@ function applyAuthoredBeatTransitions(
       }
       // The question exits before the answer enters.  The answer then remains
       // visible as the scene's conclusion instead of disappearing after 2s.
-      question.duration = Math.max(18, delay - (question.delay ?? 0) - 6);
+      const questionDelay = question.delay ?? 0;
+      const previousAnswerDelay = answer.delay ?? 0;
+      if (delay - questionDelay < 18) {
+        throw new Error(`${brief.id} answer handoff occurs before the question has a visible hold state.`);
+      }
+      if (previousAnswerDelay === delay && answer.duration === undefined) {
+        throw new Error(
+          `${brief.id} authored handoff:${beat.targetSlot} keeps the answer at its existing reveal frame ${delay}.`,
+        );
+      }
+      question.duration = delay - questionDelay - 6;
       answer.delay = delay;
       answer.duration = undefined;
+      let fromPoseState = "";
+      let toPoseState = "";
+      let poseComponentIds: string[] = [];
       if (beat.targetAssetId) {
-        appendPoseSwap(beat.targetSlot, beat.targetAssetId, delay);
+        const swap = appendPoseSwap(beat.targetSlot, beat.targetAssetId, delay);
+        fromPoseState = `:${swap.fromState}`;
+        toPoseState = `:${swap.toState}`;
+        poseComponentIds = swap.componentIds;
       }
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay,
+        [question.id, answer.id, ...poseComponentIds],
+        `question:${question.text}${fromPoseState}`,
+        `answer:${answer.text}${toPoseState}`);
       continue;
     }
 
     if (beat.action === "swap_pose") {
-      appendPoseSwap(beat.targetSlot, beat.targetAssetId, delay);
+      const swap = appendPoseSwap(beat.targetSlot, beat.targetAssetId, delay);
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay,
+        swap.componentIds, swap.fromState, swap.toState);
       continue;
     }
 
     if (beat.action === "swap_asset") {
-      appendAssetSwap(beat.targetSlot, beat.targetAssetId, delay);
+      const swap = appendAssetSwap(beat.targetSlot, beat.targetAssetId, delay);
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay,
+        swap.componentIds, swap.fromState, swap.toState);
       continue;
     }
 
     if (beat.action === "focus_actor" || beat.action === "focus_asset") {
-      appendFocusCut(beat.action, beat.targetSlot, beat.targetAssetId, delay);
+      const focus = appendFocusCut(beat.action, beat.targetSlot, beat.targetAssetId, delay);
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay,
+        focus.componentIds, focus.fromState, focus.toState);
       continue;
     }
 
@@ -532,10 +624,10 @@ function applyAuthoredBeatTransitions(
     );
   }
 
-  if (!sources.length) return undefined;
-  return sources.every((source) => source === "aligned-words")
+  const timingSource = !sources.length ? undefined : sources.every((source) => source === "aligned-words")
     ? "aligned-words"
     : sources[0];
+  return { timingSource, receipts };
 }
 
 function compileBrief(
@@ -563,11 +655,11 @@ function compileBrief(
   const result = grammarFn(brief, ctx);
   applyShot(result, brief.shot);
   ensureImmediateFocal(result);
-  const authoredTransitionTiming = applyAuthoredBeatTransitions(brief, result, timing, fps, words);
+  const authoredTransitions = applyAuthoredBeatTransitions(brief, result, timing, fps, words);
   // Layer beat-emphasis onto the focal entity at the aligned frame.
   const entities: SceneEntity[] = result.entities.map((e) => ({ ...e }));
   const focal = entities.find((e) => e.assetId === result.focusAssetId);
-  let beatTimingSource: SceneBeatTimingSource = authoredTransitionTiming ?? (/[.!?]/.test(brief.narration)
+  let beatTimingSource: SceneBeatTimingSource = authoredTransitions.timingSource ?? (/[.!?]/.test(brief.narration)
     ? "sentence-boundary"
     : "source-range-proportional");
   if (focal && brief.beats && brief.beats.length) {
@@ -579,34 +671,6 @@ function compileBrief(
     const enterDelay = focal.enterDelay ?? 0;
     const emph = importanceToEmphasis(beat.importance);
     focal.emphasize = { animation: emph.animation, delay: Math.max(0, offset - enterDelay), duration: emph.duration };
-  }
-
-  // Per-sentence pose swaps (V4.3) — the narrator cat should re-pose on each
-  // sentence instead of freezing. Only for a single-character narrator scene;
-  // poses stay inside the scene's EMOTION register so a sad cat never suddenly
-  // grins. Each swap re-enters the same assetId (sceneCompiler treats a repeat
-  // assetId as an in-place pose change).
-  const charEntities = entities.filter((e) => e.src.startsWith("characters/"));
-  if (focal && charEntities.length === 1 && focal === charEntities[0]) {
-    const cycle = POSE_CYCLE[brief.emotion ?? "neutral"] ?? [];
-    if (cycle.length >= 2) {
-      const sentences = brief.narration.split(/(?<=[.?!])\s+/).map((s) => s.trim()).filter((s) => s.length > 8);
-      const swaps: SceneEntity[] = [];
-      for (let si = 1; si < sentences.length; si++) {
-        const offset = resolveBeatOffset(
-          sentences[si], brief.narration, brief.id, timing.startFrame, timing.frames, fps, words
-        ).offset;
-        if (offset < 20 || offset > timing.frames - 20) continue;
-        swaps.push({
-          assetId: focal.assetId,
-          src: cycle[si % cycle.length],
-          slot: focal.slot, position: focal.position, anchor: focal.anchor, scale: focal.scale,
-          badge: focal.badge, enterAnimation: "none", enterDelay: offset,
-          clearPrevious: [focal.assetId],
-        });
-      }
-      entities.push(...swaps);
-    }
   }
 
   return {
@@ -627,6 +691,7 @@ function compileBrief(
     visualRegister: brief.visualRegister,
     visualGrammar: brief.visualGrammar,
     beatTimingSource,
+    authoredTransitionReceipts: authoredTransitions.receipts,
     semanticTakeaway: brief.semanticVisual?.takeaway,
     semanticAction: brief.semanticVisual?.action,
     semanticObject: brief.semanticVisual?.object,

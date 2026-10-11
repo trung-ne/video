@@ -242,6 +242,8 @@ export interface Scene {
   /** Authored storyboard grammar, preserved for rendered per-grammar audits. */
   visualGrammar?: string;
   beatTimingSource?: SceneBeatTimingSource;
+  /** Compiler receipt proving each authored beat changed a rendered persistent state. */
+  authoredTransitionReceipts?: AuthoredTransitionReceipt[];
   semanticTakeaway?: string;
   semanticAction?: string;
   semanticObject?: string;
@@ -281,6 +283,16 @@ export interface Scene {
   // Assets to clear when this scene starts
   // true = clear everything; string[] = clear specific assetIds
   clearPrevious?: boolean | string[];
+}
+
+export interface AuthoredTransitionReceipt {
+  beatText: string;
+  action: string;
+  targetSlot: string;
+  frame: number;
+  renderedComponentIds: string[];
+  fromState: string;
+  toState: string;
 }
 
 // ─── Top-level SceneTimeline (what AI produces) ──────────────
@@ -343,6 +355,12 @@ export interface SceneTimeline {
    * those rather than assuming they are fine.
    */
   timingProvenance?: TimingProvenance;
+  /** Full-project opening identity, retained when a proof timeline starts on a halo. */
+  projectOpeningSceneId?: string;
+  /** Derived chunk artifacts are non-promotable; canonical timelines omit this field. */
+  artifactRole?: "chunk-core" | "chunk-proof";
+  /** Hash-bound lineage for a final timeline reconstructed from chunk proofs. */
+  chunkAssemblyProvenance?: import("./chunk").ChunkAssemblyProvenance;
   visualTreatmentPlan?: VisualTreatmentPlan;
   scenes: Scene[];
 }

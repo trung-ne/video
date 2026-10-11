@@ -57,6 +57,75 @@ def attach_transcript_indices(aligned, transcript):
     return aligned
 
 
+def alignment_key(value):
+    """Fold Vietnamese diacritics for ASR-tolerant token comparison.
+
+    Whisper often preserves the syllable timing of Vietnamese Edge TTS but misses
+    one accent or consonant (for example ``nhắc`` → ``nạc``). Keeping the
+    original token for subtitles while matching this folded representation lets
+    the measured ASR timestamp remain an anchor rather than discarding it.
+    """
+    value = unicodedata.normalize("NFD", value or "").lower()
+    value = "".join(ch for ch in value if unicodedata.category(ch) != "Mn")
+    return value.replace("đ", "d").replace("Đ", "d")
+
+
+def token_similarity(expected, observed):
+    """Return a conservative 0..1 spelling similarity for one ASR token."""
+    expected_key = alignment_key(expected)
+    observed_key = alignment_key(observed)
+    if not expected_key or not observed_key:
+        return 0.0
+    return SequenceMatcher(None, expected_key, observed_key, autojunk=False).ratio()
+
+
+def fuzzy_monotonic_matches(expected, aligned):
+    """Align ordered canonical tokens to ASR tokens without inventing times.
+
+    This is a global sequence alignment: every returned pair uses an actual
+    Whisper word timestamp, gaps are left for interpolation, and low-similarity
+    pairs are rejected. It is intentionally stricter than merely pairing words
+    by index, while tolerating Vietnamese ASR's common one-letter near misses.
+    """
+    rows, cols = len(expected), len(aligned)
+    gap_penalty = -0.45
+    minimum_similarity = 0.40
+    scores = [[0.0] * (cols + 1) for _ in range(rows + 1)]
+    steps = [[None] * (cols + 1) for _ in range(rows + 1)]
+    for row in range(1, rows + 1):
+        scores[row][0] = scores[row - 1][0] + gap_penalty
+        steps[row][0] = "up"
+    for col in range(1, cols + 1):
+        scores[0][col] = scores[0][col - 1] + gap_penalty
+        steps[0][col] = "left"
+    similarities = {}
+    for row in range(1, rows + 1):
+        for col in range(1, cols + 1):
+            similarity = token_similarity(expected[row - 1]["word"], aligned[col - 1]["word"])
+            similarities[(row, col)] = similarity
+            diagonal = scores[row - 1][col - 1] + (similarity * 2.0 - 1.0)
+            up = scores[row - 1][col] + gap_penalty
+            left = scores[row][col - 1] + gap_penalty
+            best = max(diagonal, up, left)
+            scores[row][col] = best
+            steps[row][col] = "diag" if best == diagonal else ("up" if best == up else "left")
+    matches = {}
+    row, col = rows, cols
+    while row and col:
+        step = steps[row][col]
+        if step == "diag":
+            similarity = similarities[(row, col)]
+            if similarity >= minimum_similarity:
+                matches[row - 1] = (col - 1, similarity)
+            row -= 1
+            col -= 1
+        elif step == "up":
+            row -= 1
+        else:
+            col -= 1
+    return matches
+
+
 def canonical_tts_tokens(scenes):
     """Return the exact tokens spoken by TTS, retaining scene-local identity."""
     tokens = []
@@ -74,6 +143,50 @@ def canonical_tts_tokens(scenes):
     return tokens
 
 
+def constrain_words_to_measured_scenes(words, durations):
+    """Reject ASR matches assigned across sample-exact TTS scene boundaries.
+
+    Whisper timestamps are quantized and fuzzy matching can attach a repeated token
+    from the preceding scene. Such timestamps are not measured evidence for the
+    canonical scene, so replace them with explicitly synthetic in-scene timing.
+    """
+    sample_rate = durations.get("sampleRate")
+    scene_rows = durations.get("scenes")
+    if not isinstance(sample_rate, int) or sample_rate <= 0 or not isinstance(scene_rows, list):
+        raise ValueError("durations must contain sample-exact scene ranges")
+    ranges = {
+        scene["id"]: (
+            scene["startSample"] / sample_rate,
+            (scene["startSample"] + scene["samples"]) / sample_rate,
+        )
+        for scene in scene_rows
+    }
+    for scene_id in dict.fromkeys(word["scene"] for word in words):
+        if scene_id not in ranges:
+            raise ValueError(f"durations has no scene range for {scene_id}")
+        scene_start, scene_end = ranges[scene_id]
+        indices = [index for index, word in enumerate(words) if word["scene"] == scene_id]
+        invalid = [index for index in indices if words[index]["startSec"] < scene_start or words[index]["endSec"] > scene_end]
+        for index in invalid:
+            local = indices.index(index)
+            previous = next((words[candidate] for candidate in reversed(indices[:local]) if candidate not in invalid), None)
+            following = next((words[candidate] for candidate in indices[local + 1:] if candidate not in invalid), None)
+            left = max(scene_start, previous["endSec"] if previous else scene_start)
+            right = min(scene_end, following["startSec"] if following else scene_end)
+            if right <= left:
+                raise ValueError(f"cannot interpolate {scene_id} word inside its measured scene range")
+            rank = invalid.index(index) + 1
+            center = left + (right - left) * rank / (len(invalid) + 1)
+            half_width = min(0.05, (right - left) / (2 * (len(invalid) + 1)))
+            words[index].update({
+                "startSec": round(center - half_width, 6),
+                "endSec": round(center + half_width, 6),
+                "confidence": 0.5,
+                "interpolated": True,
+            })
+    return words
+
+
 def attach_canonical_scene_indices(aligned, scenes):
     """Map Whisper words to the exact scene narration read by TTS.
 
@@ -82,16 +195,10 @@ def attach_canonical_scene_indices(aligned, scenes):
     it has to follow the words the voice actually spoke.
     """
     expected = canonical_tts_tokens(scenes)
-    expected_norm = [normalize_word(item["word"]) for item in expected]
-    aligned_norm = [normalize_word(item["word"]) for item in aligned]
-    matcher = SequenceMatcher(None, expected_norm, aligned_norm, autojunk=False)
-    index_map = {}
-    for block in matcher.get_matching_blocks():
-        for offset in range(block.size):
-            index_map[block.b + offset] = block.a + offset
-
-    canonical_matches = {canonical_index: aligned[aligned_index]
-                         for aligned_index, canonical_index in index_map.items()}
+    canonical_matches = {
+        canonical_index: (aligned[aligned_index], similarity)
+        for canonical_index, (aligned_index, similarity) in fuzzy_monotonic_matches(expected, aligned).items()
+    }
     matched = len(canonical_matches)
 
     # Whisper is an ASR model, not a Vietnamese forced aligner. It can omit a
@@ -102,12 +209,13 @@ def attach_canonical_scene_indices(aligned, scenes):
     result = []
     anchor_indices = sorted(canonical_matches)
     for canonical_index, token in enumerate(expected):
-        observed = canonical_matches.get(canonical_index)
-        if observed is not None:
+        observed_match = canonical_matches.get(canonical_index)
+        if observed_match is not None:
+            observed, similarity = observed_match
             result.append({
                 "word": token["word"],
                 "startSec": observed["startSec"], "endSec": observed["endSec"],
-                "confidence": 1.0, "whisperConfidence": observed.get("confidence"),
+                "confidence": round(similarity, 3), "whisperConfidence": observed.get("confidence"),
                 "scene": token["scene"], "sceneWordIndex": token["sceneWordIndex"],
                 "canonicalWordIndex": canonical_index, "interpolated": False,
             })
@@ -115,15 +223,15 @@ def attach_canonical_scene_indices(aligned, scenes):
         previous = max((idx for idx in anchor_indices if idx < canonical_index), default=None)
         following = min((idx for idx in anchor_indices if idx > canonical_index), default=None)
         if previous is not None and following is not None:
-            left = canonical_matches[previous]
-            right = canonical_matches[following]
+            left, _ = canonical_matches[previous]
+            right, _ = canonical_matches[following]
             fraction = (canonical_index - previous) / (following - previous)
             center = float(left["endSec"]) + (float(right["startSec"]) - float(left["endSec"])) * fraction
         elif previous is not None:
-            left = canonical_matches[previous]
+            left, _ = canonical_matches[previous]
             center = float(left["endSec"]) + 0.16 * (canonical_index - previous)
         elif following is not None:
-            right = canonical_matches[following]
+            right, _ = canonical_matches[following]
             center = max(0.0, float(right["startSec"]) - 0.16 * (following - canonical_index))
         else:
             center = canonical_index * 0.16
@@ -159,6 +267,7 @@ def main() -> int:
     ap.add_argument("--lang", default=None, help="language code hint, e.g. en / vi (auto if omitted)")
     ap.add_argument("--transcript", default=None, help="verbatim transcript for stable wordIndex mapping")
     ap.add_argument("--scenes", default=None, help="canonical tts_scenes.json; required for production subtitle timing")
+    ap.add_argument("--durations", default=None, help="sample-exact durations.json used to bind words to TTS scenes")
     ap.add_argument("--input-words", default=None, help="reuse raw Whisper words after canonical mapping was interrupted")
     args = ap.parse_args()
 
@@ -206,6 +315,14 @@ def main() -> int:
             print("[align_words] --scenes must be a non-empty tts_scenes.json array", file=sys.stderr)
             return 1
         words, provenance = attach_canonical_scene_indices(words, scenes)
+        if args.durations:
+            with open(args.durations, "r", encoding="utf-8-sig") as f:
+                durations = json.load(f)
+            words = constrain_words_to_measured_scenes(words, durations)
+            matched = sum(1 for word in words if not word["interpolated"])
+            provenance["matchedWordCount"] = matched
+            provenance["interpolatedWordCount"] = len(words) - matched
+            provenance["matchedCoverage"] = round(matched / len(words), 6) if words else 0.0
         provenance["language"] = detected_language
     elif args.transcript:
         with open(args.transcript, "r", encoding="utf-8-sig") as f:

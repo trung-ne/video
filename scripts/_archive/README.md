@@ -8,4 +8,6 @@ Script một lần / thử nghiệm, **không nằm trong pipeline** (không ski
 | `generate-cat-poses.cjs` | Sinh pose mèo một lần. |
 | `patch-timeline-v2.cjs` | Patch timeline một lần cho lần migrate cũ. |
 
-Pipeline hiện hành chỉ dùng: `generate-timeline.ts`, `render.ts`, `quality-check.ts`, `list-assets.ts`, `new-project.ts`, `tts_edge.py` / `tts_kokoro.py`.
+Pipeline production hiện hành là Route A: `build-storyboard.ts`, measured TTS/alignment,
+`compile-storyboard.ts`, semantic chunk checkpoints cho video dài, rồi `render.ts`.
+`generate-timeline.ts` chỉ là fail-closed Route B tombstone.

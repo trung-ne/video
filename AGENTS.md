@@ -92,14 +92,20 @@ py -3.11 scripts/align_words.py --wav public/audio/<id>/voice.wav --outdir proje
     --model small --lang vi --scenes projects/<id>/tts_scenes.json
 npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.json \
     --out projects/<id>/timeline.json --durations projects/<id>/durations.json \
-    --words projects/<id>/words.json --audio audio/<id>/voice.wav
+    --words projects/<id>/words.json --alignment projects/<id>/alignment.json \
+    --audio audio/<id>/voice.wav
 npx ts-node scripts/render.ts --project <id>                    # → output/<id>/video.mp4
 ```
 
-**Route B — API: ĐÃ KHÓA.** `generate-timeline.ts` được giữ trong repo làm mã
-tham khảo nhưng fail-closed trước khi đọc API key hoặc ghi artifact.
+**Route B — API: ĐÃ KHÓA.** `generate-timeline.ts` chỉ còn là tombstone không import,
+luôn thoát mã 2 trước khi tải provider, đọc API key hoặc ghi artifact. Các provider
+SDK và prompt generation cũ không còn là dependency/production source.
 
-Route A tạo `storyboard.json`, rồi đi tiếp qua phần đuôi compile/render.
+Với video dài có `SECTIONS`, build toàn bộ storyboard trước rồi chạy
+`plan-chunks.ts` → `process-storyboard-chunks.ts --execute` →
+`assemble-storyboard-chunks.ts --execute`. Mỗi semantic chunk phải pass tuần tự
+5 checkpoint và proof halo trước khi chunk sau chạy; final canonical render vẫn
+phải pass toàn bộ global gate.
 
 ---
 

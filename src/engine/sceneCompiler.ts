@@ -38,8 +38,9 @@ import { isCharacterAssetSrc, isUiAssetSrc } from "./assetPaths";
 export function compileScenes(input: SceneTimeline): Timeline {
   const events: TimelineEvent[] = [];
 
+  const projectOpeningSceneId = input.projectOpeningSceneId ?? input.scenes[0]?.id;
   for (let i = 0; i < input.scenes.length; i++) {
-    compileScene(input.scenes[i], events, input.durationInFrames, i === 0);
+    compileScene(input.scenes[i], events, input.durationInFrames, input.scenes[i].id === projectOpeningSceneId);
   }
 
   // Sort all events by frame

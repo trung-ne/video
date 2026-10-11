@@ -1,27 +1,13 @@
-import { renderDirectorPolicy } from "../directorPolicy";
-
-export function buildRepairPrompt(input: {
+export interface RepairPromptInput {
   failedScenes: unknown[];
   issues: unknown[];
   neighbors: unknown[];
   assetCandidates: unknown[];
-}): string {
-  return `Repair only the failed storyboard scenes. Preserve IDs and source ranges.
-Do not regenerate valid scenes.
+}
 
-${renderDirectorPolicy()}
-
-FAILED SCENES:
-${JSON.stringify(input.failedScenes)}
-
-VALIDATION ISSUES:
-${JSON.stringify(input.issues)}
-
-NEIGHBOR CONTEXT:
-${JSON.stringify(input.neighbors)}
-
-ASSET CANDIDATES:
-${JSON.stringify(input.assetCandidates)}
-
-Return JSON only: {"scenes":[...]}.`;
+/** @deprecated Route B/API repair is locked. */
+export function buildRepairPrompt(_input: RepairPromptInput): never {
+  throw new Error(
+    "Route B storyboard repair is locked. Patch the failing Route A scene in storyboard-data.ts.",
+  );
 }
