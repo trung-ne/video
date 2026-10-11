@@ -31,6 +31,36 @@ import { ENTRANCE_STYLES } from "../src/engine/entrancePolicy";
 import { authoredCadenceIssues, authoredTransitionCapabilityIssues } from "../src/engine/visualCadence";
 import { resolveStableSceneIds } from "../src/engine/sceneIdentity";
 import { isLongVideoWordCount, minimumAuthoredScenesForWordCount } from "../src/types/chunk";
+import { VISUAL_REGISTER_IDS, VISUAL_TREATMENT_MAXIMA } from "../src/ai/visualTreatmentPolicy";
+
+const VISUAL_REGISTERS = new Set<string>(VISUAL_REGISTER_IDS);
+
+function invalidVisualTreatmentPlan(plan: VisualTreatmentPlan | undefined): string | undefined {
+  if (!plan || !plan.registerTargets || Object.keys(plan.registerTargets).length < 3 ||
+      typeof plan.characterFreeTarget !== "number" ||
+      !Array.isArray(plan.heroConcepts) || plan.heroConcepts.length === 0 ||
+      !Array.isArray(plan.visualMotifs) || plan.visualMotifs.length === 0 ||
+      !Array.isArray(plan.forbiddenRepeats) || plan.forbiddenRepeats.length === 0 ||
+      !plan.usageBudgets || !Array.isArray(plan.requiredVisualModes) || plan.requiredVisualModes.length < 6 ||
+      !(plan.heroCadenceSeconds > 0 && plan.heroCadenceSeconds <= 45) ||
+      plan.paletteProfile !== "editorial-muted-v2") return "missing required fields";
+
+  const modes = plan.requiredVisualModes;
+  if (new Set(modes).size !== modes.length || modes.some((mode) => !VISUAL_REGISTERS.has(mode))) {
+    return "requiredVisualModes must be six or more distinct visual registers, not photo treatments";
+  }
+  const budgets = plan.usageBudgets as unknown as Record<string, unknown>;
+  for (const [key, ceiling] of Object.entries(VISUAL_TREATMENT_MAXIMA)) {
+    const numericValue = Number(budgets[key]);
+    if (!Number.isFinite(numericValue) || numericValue <= 0 || numericValue > ceiling) {
+      return `usageBudgets.${key} must be a positive number no greater than ${ceiling}`;
+    }
+  }
+  if (!(plan.characterFreeTarget >= 0 && plan.characterFreeTarget <= 1)) {
+    return "characterFreeTarget must be between 0 and 1";
+  }
+  return undefined;
+}
 
 const args = process.argv.slice(2);
 function getArg(flag: string, defaultVal?: string): string | undefined {
@@ -197,20 +227,12 @@ const assetManifest: AssetManifest | undefined = fs.existsSync(manifestPath)
 const assetUsage = new Map<string, number>();
 
 if (SCENES.length >= 8) {
-  const plan = VISUAL_TREATMENT_PLAN;
-  if (!plan ||
-      !plan.registerTargets || Object.keys(plan.registerTargets).length < 3 ||
-      typeof plan.characterFreeTarget !== "number" ||
-      !Array.isArray(plan.heroConcepts) || plan.heroConcepts.length === 0 ||
-      !Array.isArray(plan.visualMotifs) || plan.visualMotifs.length === 0 ||
-      !Array.isArray(plan.forbiddenRepeats) || plan.forbiddenRepeats.length === 0 ||
-      !plan.usageBudgets || !Array.isArray(plan.requiredVisualModes) || plan.requiredVisualModes.length < 6 ||
-      !(plan.heroCadenceSeconds > 0 && plan.heroCadenceSeconds <= 45) ||
-      plan.paletteProfile !== "editorial-muted-v2") {
+  const planError = invalidVisualTreatmentPlan(VISUAL_TREATMENT_PLAN);
+  if (planError) {
     authorErrors.push(
-      "video: export VISUAL_TREATMENT_PLAN with >=3 registerTargets, " +
-      "characterFreeTarget, heroConcepts, visualMotifs, forbiddenRepeats, usageBudgets, " +
-      ">=6 requiredVisualModes, heroCadenceSeconds<=45 and paletteProfile=editorial-muted-v2",
+      "video: export a valid VISUAL_TREATMENT_PLAN with >=3 registerTargets, " +
+      "valid usage budgets, >=6 distinct register modes, heroCadenceSeconds<=45 and paletteProfile=editorial-muted-v2 " +
+      `(${planError})`,
     );
   }
 }

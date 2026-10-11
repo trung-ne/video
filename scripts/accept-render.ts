@@ -41,8 +41,10 @@ const video = path.resolve("output", id, "video.mp4");
 assertOutputProjectIdentity(video, id);
 const contact = video.replace(/\.mp4$/i, ".contact.jpg");
 const visual = video.replace(/\.mp4$/i, ".visual-audit.json");
+const audioAuditPath = video.replace(/\.mp4$/i, ".audio-audit.json");
+const encodingAuditPath = video.replace(/\.mp4$/i, ".encoding-audit.json");
 const report = video.replace(/\.mp4$/i, ".production-report.json");
-for (const file of [video, contact, visual, report]) {
+for (const file of [video, contact, visual, audioAuditPath, encodingAuditPath, report]) {
   if (!fs.existsSync(file)) throw new Error(`Candidate artifact missing: ${file}`);
 }
 const candidate = JSON.parse(fs.readFileSync(report, "utf8"));
@@ -52,18 +54,40 @@ if (typeof candidate.video !== "string" || !sameResolvedPath(candidate.video, vi
   throw new Error("Candidate report identifies a different output artifact.");
 }
 const visualAudit = JSON.parse(fs.readFileSync(visual, "utf8"));
+const audioAudit = JSON.parse(fs.readFileSync(audioAuditPath, "utf8"));
+const encodingAudit = JSON.parse(fs.readFileSync(encodingAuditPath, "utf8"));
 if (visualAudit.passed !== true) throw new Error("Visual audit is not passing.");
+if (candidate.audioAudit?.passed !== true) {
+  throw new Error("Candidate audio audit is not passing.");
+}
+if (candidate.encodingAudit?.passed !== true) {
+  throw new Error("Candidate encoding audit is not passing.");
+}
 const declaredArtifacts = candidate.artifacts ?? {};
 const artifactHashes = {
   video: sha256File(video),
   contact: sha256File(contact),
   visual: sha256File(visual),
+  audioAudit: sha256File(audioAuditPath),
+  encodingAudit: sha256File(encodingAuditPath),
   report: sha256File(report),
 };
 if (declaredArtifacts.videoSha256 !== artifactHashes.video
     || declaredArtifacts.contactSheetSha256 !== artifactHashes.contact
     || declaredArtifacts.visualAuditSha256 !== artifactHashes.visual) {
   throw new Error("Candidate report artifact hashes do not match the files being accepted.");
+}
+if (declaredArtifacts.audioAuditSha256 !== artifactHashes.audioAudit) {
+  throw new Error("Audio audit hash does not match the hash-bound candidate.");
+}
+if (declaredArtifacts.encodingAuditSha256 !== artifactHashes.encodingAudit) {
+  throw new Error("Encoding audit hash does not match the hash-bound candidate.");
+}
+if (audioAudit.passed !== true) {
+  throw new Error("Audio audit is not passing for the hash-bound candidate.");
+}
+if (encodingAudit.passed !== true) {
+  throw new Error("Encoding audit is not passing for the hash-bound candidate.");
 }
 const acceptancePath = path.join(resolvedProjectPath, "acceptance.json");
 const current = fs.existsSync(acceptancePath)
@@ -82,6 +106,8 @@ const acceptance = {
   artifactSha256: artifactHashes.video,
   contactSheetSha256: artifactHashes.contact,
   visualAuditSha256: artifactHashes.visual,
+  audioAuditSha256: artifactHashes.audioAudit,
+  encodingAuditSha256: artifactHashes.encodingAudit,
   productionReportSha256: artifactHashes.report,
   frameRange: [0, Number(candidate.timingAudit?.expectedSeconds ?? 0) * 30],
   metrics: {

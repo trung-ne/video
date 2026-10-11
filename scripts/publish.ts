@@ -46,6 +46,8 @@ if (!projectPath || !timelinePath || !output) {
 const resolvedOutput = path.resolve(output);
 const reportPath = resolvedOutput.replace(/\.mp4$/i, ".production-report.json");
 const visualAuditPath = resolvedOutput.replace(/\.mp4$/i, ".visual-audit.json");
+const audioAuditPath = resolvedOutput.replace(/\.mp4$/i, ".audio-audit.json");
+const encodingAuditPath = resolvedOutput.replace(/\.mp4$/i, ".encoding-audit.json");
 const contactSheetPath = resolvedOutput.replace(/\.mp4$/i, ".contact.jpg");
 const acceptancePath = path.join(resolvedProjectPath, "acceptance.json");
 const publishReportPath = resolvedOutput.replace(/\.mp4$/i, ".publish-report.json");
@@ -88,6 +90,18 @@ try {
   if (!candidate.visualAudit || !candidate.audioAudit || !candidate.encodingAudit) {
     throw new Error("Candidate is missing visual, audio, or encoding audit evidence.");
   }
+  if (candidate.audioAudit.passed !== true) {
+    throw new Error("Candidate audio audit is not passing.");
+  }
+  if (candidate.encodingAudit.passed !== true) {
+    throw new Error("Candidate encoding audit is not passing.");
+  }
+  const visualAudit = mustReadJson(visualAuditPath, "visual audit");
+  const audioAudit = mustReadJson(audioAuditPath, "audio audit");
+  const encodingAudit = mustReadJson(encodingAuditPath, "encoding audit");
+  if (visualAudit.passed !== true) throw new Error("Visual audit is not passing.");
+  if (audioAudit.passed !== true) throw new Error("Audio audit is not passing.");
+  if (encodingAudit.passed !== true) throw new Error("Encoding audit is not passing.");
   const timeline = mustReadJson(canonicalTimelineIdentity.timelinePath, "canonical timeline");
   const chunkIssues = verifyChunkAssemblyProvenance(resolvedProjectPath, timeline);
   if (chunkIssues.length) {
@@ -110,11 +124,15 @@ try {
   const videoSha256 = requireHash(resolvedOutput, acceptance.artifactSha256, "MP4");
   const contactSheetSha256 = requireHash(contactSheetPath, acceptance.contactSheetSha256, "Contact sheet");
   const visualAuditSha256 = requireHash(visualAuditPath, acceptance.visualAuditSha256, "Visual audit");
+  const audioAuditSha256 = requireHash(audioAuditPath, acceptance.audioAuditSha256, "Audio audit");
+  const encodingAuditSha256 = requireHash(encodingAuditPath, acceptance.encodingAuditSha256, "Encoding audit");
   const candidateReportSha256 = requireHash(reportPath, acceptance.productionReportSha256, "Production report");
 
   const declared = candidate.artifacts ?? {};
   if (declared.videoSha256 !== videoSha256 || declared.contactSheetSha256 !== contactSheetSha256
-      || declared.visualAuditSha256 !== visualAuditSha256) {
+      || declared.visualAuditSha256 !== visualAuditSha256
+      || declared.audioAuditSha256 !== audioAuditSha256
+      || declared.encodingAuditSha256 !== encodingAuditSha256) {
     throw new Error("Candidate report artifact hashes do not match the reviewed files.");
   }
   assertExactManualContactSheetReview(acceptance.manualContactSheetReview);
@@ -132,7 +150,14 @@ try {
     output: resolvedOutput,
     acceptance: acceptancePath,
     chunkLineage: candidate.chunkLineage ?? null,
-    artifacts: { videoSha256, contactSheetSha256, visualAuditSha256, candidateReportSha256 },
+    artifacts: {
+      videoSha256,
+      contactSheetSha256,
+      visualAuditSha256,
+      audioAuditSha256,
+      encodingAuditSha256,
+      candidateReportSha256,
+    },
   };
   fs.writeFileSync(publishReportPath, `${JSON.stringify(publishReport, null, 2)}\n`, "utf8");
   console.log(`Production-ready: ${resolvedOutput}`);

@@ -243,8 +243,12 @@ try {
   process.exit(1);
 }
 const referenceVideoPath = path.resolve(String(referenceBaseline.reference ?? ""));
-if (!fs.existsSync(referenceVideoPath)
-    || sha256File(referenceVideoPath) !== referenceBaseline.referenceSha256) {
+const requiresReferenceComparison = !diagnosticRun && !isProxy && !framesArg && !isChunkProof;
+// A diagnostic/proxy render still needs the measurement contract, but it does
+// not compare against the reference MP4. Keep a missing reference from blocking
+// schema and storyboard debugging; full promotable candidates verify it below.
+if (requiresReferenceComparison && (!fs.existsSync(referenceVideoPath)
+    || sha256File(referenceVideoPath) !== referenceBaseline.referenceSha256)) {
   console.error(
     `Reference baseline hash mismatch for ${referenceVideoPath}. ` +
     "Run npm run reference-audit only after confirming the intended reference file."
@@ -528,7 +532,15 @@ if (raw.audio && sourceAudioSeconds === undefined) {
   const issues = verifyArtifactInputs(
     adjacentArtifactInputs(timelinePath, raw.timingProvenance, {
       audioPath: sourceAudioPath,
-      includeWords: false,
+      // Word alignment sets subtitle and beat timing, so it is a render input
+      // just as much as durations and voice audio are.
+      includeWords: true,
+      // Chunk proof keeps alignment beside its scoped audio rather than beside
+      // timeline.json; canonical projects continue to use <project>/words.json.
+      wordsPath: isChunkProof
+        ? path.join(path.dirname(path.resolve(timelinePath)), "alignment", "words.json")
+        : undefined,
+      requireComplete: raw.timingProvenance?.mode === "measured",
     })
   );
   if (issues.length) {

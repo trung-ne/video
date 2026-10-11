@@ -1131,10 +1131,14 @@ test("accept-render binds acceptance to exact project timeline and candidate byt
     const video = path.join(outputDir, "video.mp4");
     const contact = path.join(outputDir, "video.contact.jpg");
     const visual = path.join(outputDir, "video.visual-audit.json");
+    const audio = path.join(outputDir, "video.audio-audit.json");
+    const encoding = path.join(outputDir, "video.encoding-audit.json");
     const report = path.join(outputDir, "video.production-report.json");
     fs.writeFileSync(video, "candidate video");
     fs.writeFileSync(contact, "candidate contact sheet");
     fs.writeFileSync(visual, JSON.stringify({ passed: true }));
+    fs.writeFileSync(audio, JSON.stringify({ passed: true }));
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true }));
     const candidate = {
       schemaVersion: 2,
       status: "candidate-ready",
@@ -1144,10 +1148,14 @@ test("accept-render binds acceptance to exact project timeline and candidate byt
       timeline: identity.timelinePath,
       timelineSha256: identity.timelineSha256,
       timingAudit: { expectedSeconds: 1, scope: "full timeline" },
+      audioAudit: { passed: true },
+      encodingAudit: { passed: true },
       artifacts: {
         videoSha256: sha256File(video),
         contactSheetSha256: sha256File(contact),
         visualAuditSha256: sha256File(visual),
+        audioAuditSha256: sha256File(audio),
+        encodingAuditSha256: sha256File(encoding),
       },
     };
     const runAccept = () => spawnSync(process.execPath, [
@@ -1163,7 +1171,52 @@ test("accept-render binds acceptance to exact project timeline and candidate byt
     assert.strictEqual(acceptance.projectId, projectId);
     assert.strictEqual(acceptance.timelineSha256, identity.timelineSha256);
     assert.strictEqual(acceptance.artifactSha256, sha256File(video));
+    assert.strictEqual(acceptance.audioAuditSha256, sha256File(audio));
+    assert.strictEqual(acceptance.encodingAuditSha256, sha256File(encoding));
     assertExactManualContactSheetReview(acceptance.manualContactSheetReview);
+
+    fs.writeFileSync(audio, JSON.stringify({ passed: false }));
+    fs.writeFileSync(report, JSON.stringify({
+      ...candidate,
+      artifacts: { ...candidate.artifacts, audioAuditSha256: sha256File(audio) },
+    }));
+    const failedAudioFile = runAccept();
+    assert.notStrictEqual(failedAudioFile.status, 0);
+    assert.match(`${failedAudioFile.stdout}\n${failedAudioFile.stderr}`, /audio audit.*passing/i);
+    fs.writeFileSync(audio, JSON.stringify({ passed: true }));
+
+    fs.writeFileSync(encoding, JSON.stringify({ passed: false }));
+    fs.writeFileSync(report, JSON.stringify({
+      ...candidate,
+      artifacts: { ...candidate.artifacts, encodingAuditSha256: sha256File(encoding) },
+    }));
+    const failedEncodingFile = runAccept();
+    assert.notStrictEqual(failedEncodingFile.status, 0);
+    assert.match(`${failedEncodingFile.stdout}\n${failedEncodingFile.stderr}`, /encoding audit.*passing/i);
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true }));
+
+    fs.writeFileSync(report, JSON.stringify({ ...candidate, audioAudit: { passed: false } }));
+    const failedAudio = runAccept();
+    assert.notStrictEqual(failedAudio.status, 0);
+    assert.match(`${failedAudio.stdout}\n${failedAudio.stderr}`, /audio audit.*passing/i);
+
+    fs.writeFileSync(report, JSON.stringify({ ...candidate, encodingAudit: { passed: false } }));
+    const failedEncoding = runAccept();
+    assert.notStrictEqual(failedEncoding.status, 0);
+    assert.match(`${failedEncoding.stdout}\n${failedEncoding.stderr}`, /encoding audit.*passing/i);
+
+    fs.writeFileSync(report, JSON.stringify(candidate));
+    fs.writeFileSync(audio, JSON.stringify({ passed: false, tampered: true }));
+    const driftedAudio = runAccept();
+    assert.notStrictEqual(driftedAudio.status, 0);
+    assert.match(`${driftedAudio.stdout}\n${driftedAudio.stderr}`, /audio audit.*hash/i);
+    fs.writeFileSync(audio, JSON.stringify({ passed: true }));
+
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true, tampered: true }));
+    const driftedEncoding = runAccept();
+    assert.notStrictEqual(driftedEncoding.status, 0);
+    assert.match(`${driftedEncoding.stdout}\n${driftedEncoding.stderr}`, /encoding audit.*hash/i);
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true }));
 
     const borrowedTimeline = path.join(temp, "borrowed-timeline.json");
     fs.copyFileSync(timeline, borrowedTimeline);
@@ -1199,10 +1252,14 @@ test("publish CLI rejects empty review, stale timeline hash, and a candidate fro
     const video = path.join(artifactDir, "video.mp4");
     const contact = path.join(artifactDir, "video.contact.jpg");
     const visual = path.join(artifactDir, "video.visual-audit.json");
+    const audio = path.join(artifactDir, "video.audio-audit.json");
+    const encoding = path.join(artifactDir, "video.encoding-audit.json");
     const report = path.join(artifactDir, "video.production-report.json");
     fs.writeFileSync(video, "video");
     fs.writeFileSync(contact, "contact");
     fs.writeFileSync(visual, JSON.stringify({ passed: true }));
+    fs.writeFileSync(audio, JSON.stringify({ passed: true }));
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true }));
 
     const identityA = buildCanonicalTimelineIdentity({ timelinePath: timelineA, projectId: "project-a", projectPath: projectA });
     const identityB = buildCanonicalTimelineIdentity({ timelinePath: timelineB, projectId: "project-b", projectPath: projectB });
@@ -1230,6 +1287,8 @@ test("publish CLI rejects empty review, stale timeline hash, and a candidate fro
           videoSha256: sha256File(video),
           contactSheetSha256: sha256File(contact),
           visualAuditSha256: sha256File(visual),
+          audioAuditSha256: sha256File(audio),
+          encodingAuditSha256: sha256File(encoding),
         },
       }));
     };
@@ -1241,6 +1300,8 @@ test("publish CLI rejects empty review, stale timeline hash, and a candidate fro
         artifactSha256: sha256File(video),
         contactSheetSha256: sha256File(contact),
         visualAuditSha256: sha256File(visual),
+        audioAuditSha256: sha256File(audio),
+        encodingAuditSha256: sha256File(encoding),
         productionReportSha256: sha256File(report),
         projectId: identity.projectId,
         projectPath: identity.projectPath,
@@ -1268,14 +1329,65 @@ test("publish CLI rejects empty review, stale timeline hash, and a candidate fro
     assert.match(`${run.stdout}\n${run.stderr}`, /timeline hash/i);
 
     fs.writeFileSync(timelineB, JSON.stringify({ scenes: [{ id: "b" }] }));
+
+    fs.writeFileSync(audio, JSON.stringify({ passed: false }));
+    writeCandidate(identityB);
+    writeAcceptance(identityB, manualReview);
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /audio audit.*passing/i);
+    fs.writeFileSync(audio, JSON.stringify({ passed: true }));
+
+    fs.writeFileSync(encoding, JSON.stringify({ passed: false }));
+    writeCandidate(identityB);
+    writeAcceptance(identityB, manualReview);
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /encoding audit.*passing/i);
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true }));
+
+    writeCandidate(identityB);
+    const failedAudioCandidate = JSON.parse(fs.readFileSync(report, "utf8"));
+    failedAudioCandidate.audioAudit = { passed: false };
+    fs.writeFileSync(report, JSON.stringify(failedAudioCandidate));
+    writeAcceptance(identityB, manualReview);
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /audio audit.*passing/i);
+
+    writeCandidate(identityB);
+    const failedEncodingCandidate = JSON.parse(fs.readFileSync(report, "utf8"));
+    failedEncodingCandidate.encodingAudit = { passed: false };
+    fs.writeFileSync(report, JSON.stringify(failedEncodingCandidate));
+    writeAcceptance(identityB, manualReview);
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /encoding audit.*passing/i);
+
+    writeCandidate(identityB);
+    writeAcceptance(identityB, manualReview);
+    fs.writeFileSync(audio, JSON.stringify({ passed: true, tampered: true }));
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /audio audit.*hash/i);
+    fs.writeFileSync(audio, JSON.stringify({ passed: true }));
+
+    writeCandidate(identityB);
+    writeAcceptance(identityB, manualReview);
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true, tampered: true }));
+    run = runPublish();
+    assert.notStrictEqual(run.status, 0);
+    assert.match(`${run.stdout}\n${run.stderr}`, /encoding audit.*hash/i);
+    fs.writeFileSync(encoding, JSON.stringify({ passed: true }));
+
     writeCandidate(identityB);
     writeAcceptance(identityB, manualReview);
     run = runPublish();
     assert.strictEqual(run.status, 0, `${run.stdout}\n${run.stderr}`);
-    assert.strictEqual(
-      JSON.parse(fs.readFileSync(path.join(artifactDir, "video.publish-report.json"), "utf8")).timelineSha256,
-      identityB.timelineSha256,
-    );
+    const publishReport = JSON.parse(fs.readFileSync(path.join(artifactDir, "video.publish-report.json"), "utf8"));
+    assert.strictEqual(publishReport.timelineSha256, identityB.timelineSha256);
+    assert.strictEqual(publishReport.artifacts.audioAuditSha256, sha256File(audio));
+    assert.strictEqual(publishReport.artifacts.encodingAuditSha256, sha256File(encoding));
 
     writeCandidate(identityA);
     writeAcceptance(identityA, manualReview);
@@ -1787,6 +1899,8 @@ test("canonical JSON checksums ignore formatting but detect semantic changes", (
     fs.writeFileSync(artifact, '{"a":2,"b":[2,3]}');
     const issues = verifyArtifactInputs([{ kind: "storyboard", filePath: artifact, expected }]);
     assert.strictEqual(issues[0]?.code, "TIMING_STORYBOARD_HASH_MISMATCH");
+    const incomplete = verifyArtifactInputs([{ kind: "words", filePath: artifact, required: true }]);
+    assert.strictEqual(incomplete[0]?.code, "TIMING_WORDS_CHECKSUM_MISSING");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -3187,7 +3301,9 @@ test("schema v2 timeline gate rejects flat generic character pairs", () => {
   const semantic = report.checks.find((check) => check.name.includes("Semantic production"));
   const rules = semantic?.issues.map((issue) => issue.rule) ?? [];
   assert.ok(rules.includes("GENERIC_CHARACTER_PAIR"));
-  assert.ok(rules.includes("SOLID_BACKGROUND_RATIO"));
+  // White editorial scenes are valid when they carry a subject; only blank
+  // fields are rejected by the V4-aligned flat-scene policy.
+  assert.ok(!rules.includes("BLANK_FLAT_SCENE_RATIO"));
   assert.ok(rules.includes("REGISTER_DIVERSITY"));
 });
 

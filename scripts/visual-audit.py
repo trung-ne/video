@@ -846,6 +846,37 @@ def main() -> int:
             for pair in duplicate_stats["duplicatePairs"]
             if pair["duplicate"]
         ][:50]
+        # Make temporal failures directly repairable at the authored layer. The
+        # aggregate ratio remains the gate; this list names the affected scene
+        # and beat interval rather than asking an author to inspect thousands
+        # of sampled rows or lower the threshold.
+        duplicate_diagnostics = {}
+        for pair in duplicate_stats["duplicatePairs"]:
+            if not pair["duplicate"] or pair["kind"] != "within-scene":
+                continue
+            scene_id = pair["destinationSceneId"] or "unknown"
+            bucket = duplicate_diagnostics.setdefault(
+                scene_id, {"sceneId": scene_id, "duplicatePairs": 0, "intervals": []}
+            )
+            bucket["duplicatePairs"] += 1
+            if len(bucket["intervals"]) < 5:
+                bucket["intervals"].append({
+                    "fromSeconds": round(pair["left"]["seconds"], 3),
+                    "toSeconds": round(pair["right"]["seconds"], 3),
+                })
+        metrics["withinSceneDuplicateDiagnostics"] = [
+            {
+                **entry,
+                "suggestion": (
+                    "Author a persistent pose, prop, focus, cutaway, or dialogue handoff "
+                    "beat in this interval; do not lower the similarity threshold."
+                ),
+            }
+            for entry in sorted(
+                duplicate_diagnostics.values(),
+                key=lambda entry: (-entry["duplicatePairs"], entry["sceneId"]),
+            )
+        ]
 
         if args.contact_sheet and contact_frames:
             from PIL import ImageDraw

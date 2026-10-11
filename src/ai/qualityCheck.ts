@@ -15,6 +15,7 @@ import referenceQuality from "../../config/reference-quality.json";
 import { MAX_VISUAL_HOLD_FRAMES, maximumVisualHold, containsCanonicalPhrase } from "../engine/visualCadence";
 import { estimateStablePaintedRatio } from "../engine/compositionDensity";
 import { QualityScope } from "../types/chunk";
+import { VISUAL_TREATMENT_MAXIMA } from "./visualTreatmentPolicy";
 
 const STAGE_ANCHORS_KEYS = new Set(Object.keys(STAGE_ANCHORS));
 
@@ -2873,10 +2874,11 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
     });
   }
 
-  // This source proxy targets genuinely sparse flat frames. White editorial
-  // document/map/screen treatments are intentionally structured and are
-  // assessed by the rendered pixel audit, not rejected by their CSS shell.
-  const flatScenes = scenes.filter((scene) => {
+  // V4 deliberately uses white editorial fields for most of a video. A CSS
+  // background is not a defect by itself; only scenes with no painted subject
+  // or structured component are blank. Rendered pixel density remains the
+  // authoritative check for compositions that deliberately stay minimal.
+  const blankFlatScenes = scenes.filter((scene) => {
     const background = String(scene.backgroundSrc ?? "");
     const cssBackground =
       !background || /^#|^rgba?\(|gradient\(/i.test(background);
@@ -2889,25 +2891,15 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
       (scene.frameBoxes?.length ?? 0) +
       (scene.cards?.length ?? 0) +
       (scene.speechBubbles?.length ?? 0);
-    const embeddedPhoto =
-      scene.visualGrammar === "PHOTO_EVIDENCE" || Boolean(scene.photoTreatment);
-    const genericCharacterPair =
-      nonUiEntities.length >= 2 &&
-      nonUiEntities.every((entity: any) =>
-        isCharacter(String(entity.src ?? "")),
-      );
-    return (
-      !embeddedPhoto &&
-      components === 0 &&
-      (nonUiEntities.length < 2 || genericCharacterPair)
-    );
+    return nonUiEntities.length === 0 && components === 0;
   });
-  if (flatScenes.length / scenes.length > 0.5) {
+  const maximumBlankRatio = 0.15;
+  if (blankFlatScenes.length / scenes.length > maximumBlankRatio) {
     issues.push({
       severity: "MAJOR",
-      rule: "SOLID_BACKGROUND_RATIO",
-      scene: flatScenes[0]?.id,
-      message: `${flatScenes.length}/${scenes.length} scenes use a flat CSS background; maximum is 50%.`,
+      rule: "BLANK_FLAT_SCENE_RATIO",
+      scene: blankFlatScenes[0]?.id,
+      message: `${blankFlatScenes.length}/${scenes.length} scenes have no painted subject or structured component on a flat background; maximum is ${Math.round(maximumBlankRatio * 100)}%.`,
     });
   }
 
@@ -3040,6 +3032,16 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   const cfg = referenceQuality.composition;
   const plan = timeline.visualTreatmentPlan;
   const budgets = plan?.usageBudgets;
+  // Authored budgets may be stricter, never looser, than the production policy.
+  // Timeline JSON is an input boundary and cannot disable a gate by declaring a
+  // larger quota than the authoring builder accepts.
+  const policyBudgets = VISUAL_TREATMENT_MAXIMA;
+  const boundedBudget = (key: keyof typeof policyBudgets): number => {
+    const authored = Number(budgets?.[key]);
+    return Number.isFinite(authored) && authored > 0
+      ? Math.min(authored, policyBudgets[key])
+      : policyBudgets[key];
+  };
   const isCharacter = (source: string): boolean =>
     /(^|\/)(characters|character)\//.test(source) ||
     source.includes("generated-assets/characters/");
@@ -3130,9 +3132,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   );
   const poseLimit = Math.max(
     3,
-    Math.floor(
-      scenes.length * (budgets?.maximumPoseRatio ?? cfg.maximumPoseRatio),
-    ),
+    Math.floor(scenes.length * boundedBudget("maximumPoseRatio")),
   );
   for (const [pose, count] of poseCounts) {
     if (scenes.length >= 20 && count > poseLimit) {
@@ -3161,9 +3161,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
   );
   const stageLimit = Math.max(
     2,
-    Math.ceil(
-      scenes.length * (budgets?.maximumStageRatio ?? cfg.maximumStageRatio),
-    ),
+    Math.ceil(scenes.length * boundedBudget("maximumStageRatio")),
   );
   for (const [stage, count] of stageCounts) {
     if (count > stageLimit) {
@@ -3174,7 +3172,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
       });
     }
   }
-  const maximumStageRun = budgets?.maximumConsecutiveSameStage ?? 2;
+  const maximumStageRun = boundedBudget("maximumConsecutiveSameStage");
   let runStage = "";
   let runLength = 0;
   for (const scene of scenes) {
@@ -3192,7 +3190,7 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     }
   }
 
-  if (budgets) {
+  {
     // UI connectors are layout machinery and character poses have their own
     // base-pose budget above. The semantic asset budget is for props, photos,
     // and evidence objects — otherwise an authored pose swap is double-counted.
@@ -3206,24 +3204,25 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     );
     for (const [asset, count] of assetCounts) {
       if (
-        count > budgets.maximumAssetUses &&
+        count > boundedBudget("maximumAssetUses") &&
         !String(asset).includes("backgrounds/")
       ) {
         issues.push({
           severity: "MAJOR",
           rule: "ASSET_REUSE",
-          message: `${asset} appears ${count} times; maximum is ${budgets.maximumAssetUses}.`,
+          message: `${asset} appears ${count} times; maximum is ${boundedBudget("maximumAssetUses")}.`,
         });
       }
     }
     const statCount = scenes.filter(
       (scene) => scene.visualGrammar === "STAT_REVEAL",
     ).length;
-    if (statCount / scenes.length > budgets.maximumStatRevealRatio) {
+    const maximumStatRevealRatio = boundedBudget("maximumStatRevealRatio");
+    if (statCount / scenes.length > maximumStatRevealRatio) {
       issues.push({
         severity: "MAJOR",
         rule: "STAT_REVEAL_REUSE",
-        message: `${statCount}/${scenes.length} scenes use STAT_REVEAL; maximum ratio is ${budgets.maximumStatRevealRatio}.`,
+        message: `${statCount}/${scenes.length} scenes use STAT_REVEAL; maximum ratio is ${maximumStatRevealRatio}.`,
       });
     }
     const photoScenes = scenes.filter(
@@ -3246,24 +3245,25 @@ function checkRenderedIntentProxies(timeline: any, scenes: any[]): CheckResult {
     const treatmentCounts = countSources(
       photoScenes.map((scene) => String(scene.photoTreatment ?? "missing")),
     );
-    for (const [treatment, count] of treatmentCounts) {
-      if (
-        photoScenes.length &&
-        count / photoScenes.length > budgets.maximumPhotoTreatmentRatio
-      ) {
-        issues.push({
-          severity: "MAJOR",
-          rule: "PHOTO_TREATMENT_REUSE",
-          message: `${treatment} is used by ${count}/${photoScenes.length} photo scenes; maximum ratio is ${budgets.maximumPhotoTreatmentRatio}.`,
-        });
+    // A ratio cannot express diversity for one or two photo beats: a single
+    // deliberate emotional/evidence image is valid V4 direction. Enforce it
+    // once the sample is large enough for a 35% allocation to be attainable.
+    const maximumPhotoTreatmentRatio = boundedBudget("maximumPhotoTreatmentRatio");
+    if (photoScenes.length >= 3) {
+      for (const [treatment, count] of treatmentCounts) {
+        if (count / photoScenes.length > maximumPhotoTreatmentRatio) {
+          issues.push({
+            severity: "MAJOR",
+            rule: "PHOTO_TREATMENT_REUSE",
+            message: `${treatment} is used by ${count}/${photoScenes.length} photo scenes; maximum ratio is ${maximumPhotoTreatmentRatio}.`,
+          });
+        }
       }
     }
-    const modes = new Set(
-      scenes.flatMap((scene) =>
-        [scene.visualRegister, scene.photoTreatment].filter(Boolean),
-      ),
-    );
-    const missingModes = (plan.requiredVisualModes ?? []).filter(
+    // Register diversity and photo treatment diversity are independent quotas.
+    // A treatment must not pretend to satisfy a missing visual register.
+    const modes = new Set(scenes.map((scene) => scene.visualRegister).filter(Boolean));
+    const missingModes = (plan?.requiredVisualModes ?? []).filter(
       (mode: string) => !modes.has(mode),
     );
     if (missingModes.length) {
