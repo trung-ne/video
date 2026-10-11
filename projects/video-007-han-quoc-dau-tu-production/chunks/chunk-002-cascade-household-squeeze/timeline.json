@@ -17,8 +17,8 @@
     "measuredSceneCount": 19,
     "audioSeconds": 171.248,
     "audioSha256": "75df2436fad1c5f57ed60c081cd3190eb9f2e9112ef76d15b578b2cd1de31806",
-    "storyboardChecksum": "e20c63098935c622055088462ecdddc4dd7e54ba32be2d01196ed924695f2c40",
-    "durationsChecksum": "c40607f6f14658aef61e59ce641ca4ecf1c9d6f07d9b94740c3b8e4d9c320a4d",
+    "storyboardChecksum": "4948dfc6c96457f3c6debfad4c4ef1fd76ccf0cdb4110fb80be03d95da1d29d6",
+    "durationsChecksum": "afb98efb5e48c0bde562a97d6719a9c9a68d5d4e906a69f5336d4497d4bc8390",
     "wordsChecksum": "2ffdd39ad3e35d219fc080e5d19193111d6aad548701df27d1b9300db6acba0a",
     "subtitleTiming": {
       "source": "canonical-tts-scenes",
@@ -264,12 +264,23 @@
           "toState": "cutaway:backgrounds/evidence-retail-pexels-10697106.jpg:Áp lực bán lan rộng"
         },
         {
+          "beatText": "Trong một",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 90,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:HỆ THỐNG MARGIN CALL"
+        },
+        {
           "beatText": "thị trường mà lao dốc",
           "action": "reveal",
           "targetSlot": "cutaway",
           "frame": 99,
           "renderedComponentIds": [
-            "fresh-023-cutaway-2"
+            "fresh-023-cutaway-3"
           ],
           "fromState": "absent",
           "toState": "cutaway:backgrounds/stock_board.jpg:Thị trường lao dốc"
@@ -280,10 +291,10 @@
           "targetSlot": "cutaway",
           "frame": 176,
           "renderedComponentIds": [
-            "fresh-023-cutaway-3"
+            "fresh-023-cutaway-4"
           ],
           "fromState": "absent",
-          "toState": "cutaway:backgrounds/stock_board.jpg:Bảng giá đỏ dốc"
+          "toState": "cutaway:props/hourglass:THỜI HẠN BỔ SUNG KÝ QUỸ"
         },
         {
           "beatText": "Mọi người cùng bán",
@@ -291,10 +302,21 @@
           "targetSlot": "cutaway",
           "frame": 237,
           "renderedComponentIds": [
-            "fresh-023-cutaway-4"
+            "fresh-023-cutaway-5"
           ],
           "fromState": "absent",
           "toState": "cutaway:backgrounds/evidence-retail-pexels-10697106.jpg:Bán đồng loạt"
+        },
+        {
+          "beatText": "giá lại càng giảm mạnh hơn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 275,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-6"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:chart/down/01/flat/bold/color:GIÁ GIẢM NHANH HƠN"
         },
         {
           "beatText": "giá càng giảm",
@@ -302,10 +324,10 @@
           "targetSlot": "cutaway",
           "frame": 324,
           "renderedComponentIds": [
-            "fresh-023-cutaway-5"
+            "fresh-023-cutaway-7"
           ],
           "fromState": "absent",
-          "toState": "cutaway:backgrounds/stock_board.jpg:Giá giảm · margin call tăng"
+          "toState": "cutaway:ui/arrow_down:GIÁ GIẢM · ÁP LỰC TĂNG"
         }
       ],
       "semanticTakeaway": "The first forced sales cause the next forced sales.",
@@ -315,13 +337,17 @@
       "assetResolutionNotes": [],
       "semanticAssetIds": [
         "backgrounds/evidence-retail-pexels-10697106.jpg",
+        "props/concept_card",
         "backgrounds/stock_board.jpg",
+        "props/hourglass",
+        "chart/down/01/flat/bold/color",
+        "ui/arrow_down",
         "backgrounds/stock_chart.png"
       ],
       "heroVisual": true,
       "focalType": "evidence",
       "characterRequired": false,
-      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|screen",
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|screen",
       "silentFrameTakeaway": "Margin calls become a downward loop.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -380,6 +406,18 @@
         },
         {
           "id": "fresh-023-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "HỆ THỐNG MARGIN CALL",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 90
+        },
+        {
+          "id": "fresh-023-cutaway-3",
           "contentSrc": "backgrounds/stock_board.jpg",
           "caption": "Thị trường lao dốc",
           "position": {
@@ -391,9 +429,9 @@
           "delay": 99
         },
         {
-          "id": "fresh-023-cutaway-3",
-          "contentSrc": "backgrounds/stock_board.jpg",
-          "caption": "Bảng giá đỏ dốc",
+          "id": "fresh-023-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/props-hourglass.png",
+          "caption": "THỜI HẠN BỔ SUNG KÝ QUỸ",
           "position": {
             "x": 0.5,
             "y": 0.4
@@ -403,7 +441,7 @@
           "delay": 176
         },
         {
-          "id": "fresh-023-cutaway-4",
+          "id": "fresh-023-cutaway-5",
           "contentSrc": "backgrounds/evidence-retail-pexels-10697106.jpg",
           "caption": "Bán đồng loạt",
           "position": {
@@ -415,9 +453,21 @@
           "delay": 237
         },
         {
-          "id": "fresh-023-cutaway-5",
-          "contentSrc": "backgrounds/stock_board.jpg",
-          "caption": "Giá giảm · margin call tăng",
+          "id": "fresh-023-cutaway-6",
+          "contentSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "caption": "GIÁ GIẢM NHANH HƠN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 275
+        },
+        {
+          "id": "fresh-023-cutaway-7",
+          "contentSrc": "styles/d/generated-assets/icons/ui-arrow-down.png",
+          "caption": "GIÁ GIẢM · ÁP LỰC TĂNG",
           "position": {
             "x": 0.5,
             "y": 0.4
@@ -2386,14 +2436,14 @@
         },
         {
           "beatText": "câu chuyện nó còn khó khăn hơn nữa",
-          "action": "swap_asset",
-          "targetSlot": "prop",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 53,
           "renderedComponentIds": [
-            "fresh-036-prop"
+            "fresh-036-cutaway"
           ],
-          "fromState": "finance/savings",
-          "toState": "finance/budget"
+          "fromState": "absent",
+          "toState": "cutaway:finance/budget:ĐIỂM XUẤT PHÁT KHÓ HƠN"
         },
         {
           "beatText": "tỉ lệ có việc làm",
@@ -2401,7 +2451,7 @@
           "targetSlot": "cutaway",
           "frame": 144,
           "renderedComponentIds": [
-            "fresh-036-cutaway"
+            "fresh-036-cutaway-2"
           ],
           "fromState": "absent",
           "toState": "cutaway:backgrounds/evidence-construction-pexels-12454407.jpg:VIỆC LÀM THANH NIÊN"
@@ -2412,7 +2462,7 @@
           "targetSlot": "cutaway",
           "frame": 200,
           "renderedComponentIds": [
-            "fresh-036-cutaway-2"
+            "fresh-036-cutaway-3"
           ],
           "fromState": "absent",
           "toState": "cutaway:chart/down/01/flat/bold/color:THẤP HƠN ĐÁNG KỂ"
@@ -2432,7 +2482,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:2p|floor,free,free,free|frame:2:1,frame:2:1|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:1p|floor,free,free|frame:2:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Young people start with fewer options.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -2515,21 +2565,6 @@
             "fresh-036-a",
             "fresh-036-prop"
           ]
-        },
-        {
-          "assetId": "fresh-036-prop",
-          "src": "styles/d/generated-assets/icons/finance-budget.png",
-          "position": {
-            "x": 0.76,
-            "y": 0.59
-          },
-          "scale": 1.1,
-          "motionPolicy": "fixed",
-          "enterDelay": 53,
-          "enterAnimation": "none",
-          "clearPrevious": [
-            "fresh-036-prop"
-          ]
         }
       ],
       "texts": [],
@@ -2538,6 +2573,18 @@
       "frameBoxes": [
         {
           "id": "fresh-036-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-budget.png",
+          "caption": "ĐIỂM XUẤT PHÁT KHÓ HƠN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 53
+        },
+        {
+          "id": "fresh-036-cutaway-2",
           "contentSrc": "backgrounds/evidence-construction-pexels-12454407.jpg",
           "caption": "VIỆC LÀM THANH NIÊN",
           "position": {
@@ -2549,7 +2596,7 @@
           "delay": 144
         },
         {
-          "id": "fresh-036-cutaway-2",
+          "id": "fresh-036-cutaway-3",
           "contentSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
           "caption": "THẤP HƠN ĐÁNG KỂ",
           "position": {

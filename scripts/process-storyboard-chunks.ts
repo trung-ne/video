@@ -56,6 +56,7 @@ const value = (flag: string): string | undefined => {
   return index < 0 ? undefined : args[index + 1];
 };
 const execute = args.includes("--execute");
+const newRun = args.includes("--new-run");
 const projectArgument = value("--project");
 if (!projectArgument) {
   console.error("❌ process-storyboard-chunks requires --project <id-or-path>.");
@@ -291,9 +292,17 @@ function ensureRunConfig(storyboard: Storyboard, plan: ChunkPlan, authoringRepor
     planChecksum: desired.planChecksum,
     storyboardChecksum: desired.storyboardChecksum,
   });
-  if (issues.length) fatal(`Chunk run config is invalid: ${issues.join(" ")}`);
-  if (checksumJson(existing) !== checksumJson(desired)) {
-    fatal("Chunk run synthesis/alignment/proof settings changed. Start a new derived chunk run instead of reusing prior attestations.");
+  const synthesisChanged = checksumJson(existing) !== checksumJson(desired);
+  if (issues.length || synthesisChanged) {
+    if (!newRun) {
+      const reason = issues.length
+        ? issues.join(" ")
+        : "Chunk run synthesis/alignment/proof settings changed.";
+      fatal(`${reason} Pass --new-run to start a fresh derived chunk run; prior attestations will not be reused.`);
+    }
+    writeJson(configPath, desired);
+    console.log("✅ Started a new derived chunk run from the current storyboard and plan.");
+    return { path: configPath, value: desired };
   }
   if (plan.projectId !== existing.projectId) fatal("Chunk plan and run config project identities differ.");
   return { path: configPath, value: existing };

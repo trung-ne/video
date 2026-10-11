@@ -17,8 +17,8 @@
     "measuredSceneCount": 158,
     "audioSeconds": 1201.04,
     "audioSha256": "80fb7f67b9d7ec7f437b36f5df6149915419b9ac24f5f85a2f7b3f05e26a39c9",
-    "storyboardChecksum": "29377f48ee70cafd5df3b964e8ece32225b8d08b3bd78122f46bbc60ae2df9cc",
-    "durationsChecksum": "a3afe0e12f913da54f24deaad76c2593aa24a045f8d3a166ac75a056b89a7ad0",
+    "storyboardChecksum": "b0f2e361c76dfabf31ae2137a259d9db26a5edd6b3d662c72f1bcfba3d1a6c7c",
+    "durationsChecksum": "9d68af0fdbf0c530e13a5396ca916c6fa1690cb374d32e6f4e607d49c5b14759",
     "wordsChecksum": "b35ba64d87e67b188ae1c10fb214c87375d3c9d958fe1ade274b59386b5649ad",
     "subtitleTiming": {
       "source": "canonical-tts-scenes",
@@ -767,14 +767,14 @@
         },
         {
           "beatText": "đoàn bảy ở mức rất là cao",
-          "action": "swap_pose",
-          "targetSlot": "who",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 90,
           "renderedComponentIds": [
-            "fresh-004-a"
+            "fresh-004-cutaway"
           ],
-          "fromState": "characters/cat_investor_contract",
-          "toState": "characters/cat_surprised"
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:ĐÒN BẨY Ở MỨC RẤT CAO"
         },
         {
           "beatText": "phải tạm dừng cho vay",
@@ -796,13 +796,12 @@
         "characters/cat_investor_contract",
         "finance/credit_card",
         "characters/cat_think",
-        "characters/cat_surprised",
         "finance/interest_rate",
         "assets/scenes/bank_interior.svg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|3a:2p|counter_left,counter_left,counter_left,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|2a:2p|counter_left,counter_left,free,free|frame:2:1|none|none",
       "silentFrameTakeaway": "A trader is holding borrowed money.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -881,16 +880,6 @@
           ]
         },
         {
-          "assetId": "fresh-004-a",
-          "src": "styles/d/generated-assets/characters/cat_surprised.png",
-          "anchor": "counter_left",
-          "enterAnimation": "none",
-          "enterDelay": 90,
-          "clearPrevious": [
-            "fresh-004-a"
-          ]
-        },
-        {
           "assetId": "fresh-004-prop",
           "src": "styles/d/generated-assets/icons/finance-interest-rate.png",
           "position": {
@@ -908,7 +897,21 @@
       ],
       "texts": [],
       "speechBubbles": [],
-      "cards": []
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-004-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "ĐÒN BẨY Ở MỨC RẤT CAO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 90
+        }
+      ]
     },
     {
       "id": "fresh-005",
@@ -1252,14 +1255,14 @@
         },
         {
           "beatText": "đặt cực vào thị trường",
-          "action": "swap_pose",
-          "targetSlot": "asker",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 73,
           "renderedComponentIds": [
-            "fresh-007-a"
+            "fresh-007-cutaway"
           ],
-          "fromState": "characters/cat_think",
-          "toState": "characters/cat_point_left"
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:KHOẢN CƯỢC BẰNG TIỀN VAY"
         },
         {
           "beatText": "tại sao đoàn bảy lại trở nên phổ biến",
@@ -1297,14 +1300,14 @@
         },
         {
           "beatText": "chúng ta sẽ cùng",
-          "action": "swap_pose",
-          "targetSlot": "answerer",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 278,
           "renderedComponentIds": [
-            "fresh-007-b"
+            "fresh-007-cutaway-2"
           ],
-          "fromState": "characters/cat_investor_phone",
-          "toState": "characters/cat_surprised"
+          "fromState": "absent",
+          "toState": "cutaway:finance/portfolio_folder:GIẢI MÃ RỦI RO ĐÒN BẨY"
         }
       ],
       "semanticTakeaway": "Leverage begins with an emotional pressure.",
@@ -1315,12 +1318,13 @@
         "characters/cat_think",
         "characters/cat_investor_phone",
         "characters/cat_surprised",
-        "characters/cat_point_left",
-        "characters/cat_explain"
+        "characters/cat_explain",
+        "finance/credit_card",
+        "finance/portfolio_folder"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|7a:0p|LEFT,LEFT,LEFT,RIGHT,RIGHT,RIGHT,RIGHT|bubble,bubble|none|none",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|5a:0p|LEFT,LEFT,RIGHT,RIGHT,RIGHT|bubble,bubble,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Fear of falling behind meets borrowed money.",
       "focalOccupancyTarget": 0.57,
       "noveltyFromPrevious": [
@@ -1392,17 +1396,6 @@
           ]
         },
         {
-          "assetId": "fresh-007-a",
-          "src": "styles/d/generated-assets/characters/cat_point_left.png",
-          "circle": "#D7E8E6",
-          "slot": "LEFT",
-          "enterAnimation": "none",
-          "enterDelay": 73,
-          "clearPrevious": [
-            "fresh-007-a"
-          ]
-        },
-        {
           "assetId": "fresh-007-b",
           "src": "styles/d/generated-assets/characters/cat_explain.png",
           "circle": "#F1D8C5",
@@ -1420,17 +1413,6 @@
           "slot": "RIGHT",
           "enterAnimation": "none",
           "enterDelay": 236,
-          "clearPrevious": [
-            "fresh-007-b"
-          ]
-        },
-        {
-          "assetId": "fresh-007-b",
-          "src": "styles/d/generated-assets/characters/cat_surprised.png",
-          "circle": "#F1D8C5",
-          "slot": "RIGHT",
-          "enterAnimation": "none",
-          "enterDelay": 278,
           "clearPrevious": [
             "fresh-007-b"
           ]
@@ -1458,6 +1440,32 @@
           "fontSize": 46,
           "widthRatio": 0.54,
           "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-007-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "KHOẢN CƯỢC BẰNG TIỀN VAY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 73
+        },
+        {
+          "id": "fresh-007-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-portfolio-folder.png",
+          "caption": "GIẢI MÃ RỦI RO ĐÒN BẨY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 278
         }
       ]
     },
@@ -3191,12 +3199,23 @@
           "toState": "cutaway:backgrounds/evidence-retail-pexels-10697106.jpg:Áp lực bán lan rộng"
         },
         {
+          "beatText": "Trong một",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 90,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:HỆ THỐNG MARGIN CALL"
+        },
+        {
           "beatText": "thị trường mà lao dốc",
           "action": "reveal",
           "targetSlot": "cutaway",
           "frame": 99,
           "renderedComponentIds": [
-            "fresh-023-cutaway-2"
+            "fresh-023-cutaway-3"
           ],
           "fromState": "absent",
           "toState": "cutaway:backgrounds/stock_board.jpg:Thị trường lao dốc"
@@ -3207,10 +3226,10 @@
           "targetSlot": "cutaway",
           "frame": 176,
           "renderedComponentIds": [
-            "fresh-023-cutaway-3"
+            "fresh-023-cutaway-4"
           ],
           "fromState": "absent",
-          "toState": "cutaway:backgrounds/stock_board.jpg:Bảng giá đỏ dốc"
+          "toState": "cutaway:props/hourglass:THỜI HẠN BỔ SUNG KÝ QUỸ"
         },
         {
           "beatText": "Mọi người cùng bán",
@@ -3218,10 +3237,21 @@
           "targetSlot": "cutaway",
           "frame": 237,
           "renderedComponentIds": [
-            "fresh-023-cutaway-4"
+            "fresh-023-cutaway-5"
           ],
           "fromState": "absent",
           "toState": "cutaway:backgrounds/evidence-retail-pexels-10697106.jpg:Bán đồng loạt"
+        },
+        {
+          "beatText": "giá lại càng giảm mạnh hơn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 275,
+          "renderedComponentIds": [
+            "fresh-023-cutaway-6"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:chart/down/01/flat/bold/color:GIÁ GIẢM NHANH HƠN"
         },
         {
           "beatText": "giá càng giảm",
@@ -3229,10 +3259,10 @@
           "targetSlot": "cutaway",
           "frame": 324,
           "renderedComponentIds": [
-            "fresh-023-cutaway-5"
+            "fresh-023-cutaway-7"
           ],
           "fromState": "absent",
-          "toState": "cutaway:backgrounds/stock_board.jpg:Giá giảm · margin call tăng"
+          "toState": "cutaway:ui/arrow_down:GIÁ GIẢM · ÁP LỰC TĂNG"
         }
       ],
       "semanticTakeaway": "The first forced sales cause the next forced sales.",
@@ -3242,13 +3272,17 @@
       "assetResolutionNotes": [],
       "semanticAssetIds": [
         "backgrounds/evidence-retail-pexels-10697106.jpg",
+        "props/concept_card",
         "backgrounds/stock_board.jpg",
+        "props/hourglass",
+        "chart/down/01/flat/bold/color",
+        "ui/arrow_down",
         "backgrounds/stock_chart.png"
       ],
       "heroVisual": true,
       "focalType": "evidence",
       "characterRequired": false,
-      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|screen",
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|screen",
       "silentFrameTakeaway": "Margin calls become a downward loop.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -3307,6 +3341,18 @@
         },
         {
           "id": "fresh-023-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "HỆ THỐNG MARGIN CALL",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 90
+        },
+        {
+          "id": "fresh-023-cutaway-3",
           "contentSrc": "backgrounds/stock_board.jpg",
           "caption": "Thị trường lao dốc",
           "position": {
@@ -3318,9 +3364,9 @@
           "delay": 99
         },
         {
-          "id": "fresh-023-cutaway-3",
-          "contentSrc": "backgrounds/stock_board.jpg",
-          "caption": "Bảng giá đỏ dốc",
+          "id": "fresh-023-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/props-hourglass.png",
+          "caption": "THỜI HẠN BỔ SUNG KÝ QUỸ",
           "position": {
             "x": 0.5,
             "y": 0.4
@@ -3330,7 +3376,7 @@
           "delay": 176
         },
         {
-          "id": "fresh-023-cutaway-4",
+          "id": "fresh-023-cutaway-5",
           "contentSrc": "backgrounds/evidence-retail-pexels-10697106.jpg",
           "caption": "Bán đồng loạt",
           "position": {
@@ -3342,9 +3388,21 @@
           "delay": 237
         },
         {
-          "id": "fresh-023-cutaway-5",
-          "contentSrc": "backgrounds/stock_board.jpg",
-          "caption": "Giá giảm · margin call tăng",
+          "id": "fresh-023-cutaway-6",
+          "contentSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "caption": "GIÁ GIẢM NHANH HƠN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 275
+        },
+        {
+          "id": "fresh-023-cutaway-7",
+          "contentSrc": "styles/d/generated-assets/icons/ui-arrow-down.png",
+          "caption": "GIÁ GIẢM · ÁP LỰC TĂNG",
           "position": {
             "x": 0.5,
             "y": 0.4
@@ -5313,14 +5371,14 @@
         },
         {
           "beatText": "câu chuyện nó còn khó khăn hơn nữa",
-          "action": "swap_asset",
-          "targetSlot": "prop",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 53,
           "renderedComponentIds": [
-            "fresh-036-prop"
+            "fresh-036-cutaway"
           ],
-          "fromState": "finance/savings",
-          "toState": "finance/budget"
+          "fromState": "absent",
+          "toState": "cutaway:finance/budget:ĐIỂM XUẤT PHÁT KHÓ HƠN"
         },
         {
           "beatText": "tỉ lệ có việc làm",
@@ -5328,7 +5386,7 @@
           "targetSlot": "cutaway",
           "frame": 144,
           "renderedComponentIds": [
-            "fresh-036-cutaway"
+            "fresh-036-cutaway-2"
           ],
           "fromState": "absent",
           "toState": "cutaway:backgrounds/evidence-construction-pexels-12454407.jpg:VIỆC LÀM THANH NIÊN"
@@ -5339,7 +5397,7 @@
           "targetSlot": "cutaway",
           "frame": 200,
           "renderedComponentIds": [
-            "fresh-036-cutaway-2"
+            "fresh-036-cutaway-3"
           ],
           "fromState": "absent",
           "toState": "cutaway:chart/down/01/flat/bold/color:THẤP HƠN ĐÁNG KỂ"
@@ -5359,7 +5417,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:2p|floor,free,free,free|frame:2:1,frame:2:1|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bedroom|2a:1p|floor,free,free|frame:2:1,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Young people start with fewer options.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -5442,21 +5500,6 @@
             "fresh-036-a",
             "fresh-036-prop"
           ]
-        },
-        {
-          "assetId": "fresh-036-prop",
-          "src": "styles/d/generated-assets/icons/finance-budget.png",
-          "position": {
-            "x": 0.76,
-            "y": 0.59
-          },
-          "scale": 1.1,
-          "motionPolicy": "fixed",
-          "enterDelay": 53,
-          "enterAnimation": "none",
-          "clearPrevious": [
-            "fresh-036-prop"
-          ]
         }
       ],
       "texts": [],
@@ -5465,6 +5508,18 @@
       "frameBoxes": [
         {
           "id": "fresh-036-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-budget.png",
+          "caption": "ĐIỂM XUẤT PHÁT KHÓ HƠN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 53
+        },
+        {
+          "id": "fresh-036-cutaway-2",
           "contentSrc": "backgrounds/evidence-construction-pexels-12454407.jpg",
           "caption": "VIỆC LÀM THANH NIÊN",
           "position": {
@@ -5476,7 +5531,7 @@
           "delay": 144
         },
         {
-          "id": "fresh-036-cutaway-2",
+          "id": "fresh-036-cutaway-3",
           "contentSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
           "caption": "THẤP HƠN ĐÁNG KỂ",
           "position": {
@@ -16461,14 +16516,15 @@
       "authoredTransitionReceipts": [
         {
           "beatText": "tiền chảy sang những sản phẩm đòn bảy khác",
-          "action": "swap_pose",
-          "targetSlot": "who",
+          "action": "focus_asset",
+          "targetSlot": "prop",
           "frame": 69,
           "renderedComponentIds": [
-            "fresh-118-a"
+            "fresh-118-a",
+            "fresh-118-prop"
           ],
-          "fromState": "characters/cat_think",
-          "toState": "characters/cat_surprised"
+          "fromState": "{\"src\":\"finance/exchange\",\"position\":{\"x\":0.76,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"finance/exchange\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
         },
         {
           "beatText": "khó giám sát hơn",
@@ -16495,7 +16551,7 @@
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:train_interior|3a:1p|free,free,seat_left,seat_left|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:train_interior|2a:2p|free,free,free,seat_left|none|none|none",
       "silentFrameTakeaway": "Capital reroutes when CFD tightens.",
       "focalOccupancyTarget": 0.58,
       "noveltyFromPrevious": [
@@ -16564,13 +16620,19 @@
           }
         },
         {
-          "assetId": "fresh-118-a",
-          "src": "styles/d/generated-assets/characters/cat_surprised.png",
-          "anchor": "seat_left",
-          "enterAnimation": "none",
+          "assetId": "fresh-118-prop",
+          "src": "styles/d/generated-assets/icons/finance-exchange.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
           "enterDelay": 69,
+          "enterAnimation": "none",
           "clearPrevious": [
-            "fresh-118-a"
+            "fresh-118-a",
+            "fresh-118-prop"
           ]
         },
         {
@@ -22213,9 +22275,9 @@
   "chunkAssemblyProvenance": {
     "schemaVersion": 3,
     "projectId": "video-007-han-quoc-dau-tu-production",
-    "storyboardChecksum": "29377f48ee70cafd5df3b964e8ece32225b8d08b3bd78122f46bbc60ae2df9cc",
-    "planChecksum": "66fa6c3e4c266508c268c5ec1d056c4fc369f09eb93ea8cfb3fb67de5cd7bfc4",
-    "runConfigChecksum": "271d8f70390dc6272df0c2e609d017f849364c98532538380f936b2869f6f84a",
+    "storyboardChecksum": "b0f2e361c76dfabf31ae2137a259d9db26a5edd6b3d662c72f1bcfba3d1a6c7c",
+    "planChecksum": "73598b30bdd94bac242bf14a18d2503613a1c671a687ead7dc77ec8411f1190e",
+    "runConfigChecksum": "4f1221dc389b07a02106e56d7d74a134b237f66252b1b29fbef9f869ca379d97",
     "chunkOrder": [
       "chunk-001-hook-margin-mechanics",
       "chunk-002-cascade-household-squeeze",
@@ -22227,14 +22289,14 @@
       "chunk-008-current-outlook"
     ],
     "chunkTimelineChecksums": {
-      "chunk-001-hook-margin-mechanics": "8b1a3f4cf575134051ed74bed05259cc9ade3ba49f4622887fdfe72bd5835ba6",
-      "chunk-002-cascade-household-squeeze": "5679d9411e4c3789b3a785bdf3ea8329d4b60a464bed026045824ee1b252ae6a",
-      "chunk-003-shortcut-retail-structure": "b0adf013eb47866c3447ba02d911fea1299b167a27b96e974884a444c478463c",
-      "chunk-004-bias-margin-amplifier": "69d1b9479443577637a4b5f75c99483374a7cb898a660c6004fa6cd7795a3151",
-      "chunk-005-trust-friction-causes": "9482bcc43091ae8c6646d3bc3c3027d3287d7b516c32d21692d17b158efa04ac",
-      "chunk-006-cfd-regulatory-displacement": "378acf6a1070e532ace370f2e337c7d6732c0d95d57b384199c428f5ca620c21",
-      "chunk-007-pressure-feedback-cycle": "f500c32507a9177543a78344fb35ba8f4e005facbb801e353ad12e20daba8b8e",
-      "chunk-008-current-outlook": "672218aefbe3c3357082fdbd6ad4f8d8b6e5ac8a47a304fbe63c295eed5644f7"
+      "chunk-001-hook-margin-mechanics": "92b9fdd953c80116b6745d675a57d024214b8174e45f4d06d4c666f565eefa67",
+      "chunk-002-cascade-household-squeeze": "4aac6ea54ade83f85c95a7a5fdab07b4eb4f271924a1306f9e028f096eeb685d",
+      "chunk-003-shortcut-retail-structure": "a2f541d5610123179a561ab082fa50867ec3b00d74ec62ebef1ebd50c7bfb42b",
+      "chunk-004-bias-margin-amplifier": "6b7722970080736b47c0263538e7309846710ad8406e146aede7e8ec5586ce2d",
+      "chunk-005-trust-friction-causes": "75fd6900d47724dd985c0a457f96ef904c86d79599e70fe08607deb396c538d1",
+      "chunk-006-cfd-regulatory-displacement": "3ae8a44eae316b27ec602f9d4c41b738722c9012171bb70345b81045f6d56635",
+      "chunk-007-pressure-feedback-cycle": "f8069302ed800dcd197d00d803d40625f3eec5a617a52ae44c8c2d166b3b9534",
+      "chunk-008-current-outlook": "520809591a2876a33e0d662eadf88f82029bbb22880190b9ee166b69def4a1ae"
     },
     "chunkAudioChecksums": {
       "chunk-001-hook-margin-mechanics": "d1a4ef3c4766fe0cb5073e07b71d6b576108e2d3979de666b3743edf96825802",
@@ -22248,64 +22310,64 @@
     },
     "chunkAttestationChecksums": {
       "chunk-001-hook-margin-mechanics": {
-        "authoring": "73759d61f97c99a59d3d561d56075dda7a2bb1aebe697a0a4fefab12ab4852f3",
-        "tts": "41c05a05d62cfd97e11281365313c36cc5d7db303b69d919cd2136ec39075101",
-        "alignment": "e51f0e5ab425298a0a6af8f2fb8560f8048def46ea9bd9d61a3c6810c5a00267",
-        "compile": "0e3352541af2c26881f466b00291f3a4836737a0a8a4b70273d0e6fd5808dba3",
-        "visual-proof": "3584761c22b1782c04d32d28cbeb994153ce4e2f7358603a699ac23baa0cb405"
+        "authoring": "64a1c58164e0dea38e8a3b53f7a00f2c2f33022a419979cbdcb2b82b200efc23",
+        "tts": "254bfc645af6f15718d881e13dc9c99aa1fcb6598394375d5a9f2c58b0be8862",
+        "alignment": "20d6dc252f56ad117166376bc8f37cfca35a2ae7b678eaec5391a715c2049a05",
+        "compile": "da78739ab35a6d8ce0be65331fa17ea8a0c2e14286bcfe5dc6d41abadf986f06",
+        "visual-proof": "3a5278d45653d71a1c28470559ded41e500a20e02acad027f2c897abe5214997"
       },
       "chunk-002-cascade-household-squeeze": {
-        "authoring": "6845e3810e3954720d23168d4bf8086e17fddf54b01158770ba8fad5b49cdfc8",
-        "tts": "648a25f9080ebcdc35fd432e4d34d077d2d03b23cc0798cc110c69f6c2cead5a",
-        "alignment": "d3afe52221d6e82cb8ed1bb1f88c831e5099ca0d8df056f6b6a78c761312e86b",
-        "compile": "653be85202a81310f3d3f83f878be235ec5235c65fc8d6e937af40ce7891e7a7",
-        "visual-proof": "c65b9b446bf3f8ce43c03c272ef1273b805353a7f6f081b468f92e2c9b14e12d"
+        "authoring": "65affa77b3fe70937de22a1b5362fc5bd215d72f71aa353661673648dc5736b8",
+        "tts": "0e1747d6f73aef5db04978766bae0b0f1448fecfdbe461852ec7ebd29f1cf7d6",
+        "alignment": "be098829e14a497fa0faa47a49694401202d6b780a7a7cc7761a3fa4d73662a7",
+        "compile": "0b6835c4966c8ec6559408bbe63ac7f463687800d8bbe9b916a7005d9d027d82",
+        "visual-proof": "4c53db0c33a14a9f02e105233cbb1890ce01ad138bca0020284a69604da40ee8"
       },
       "chunk-003-shortcut-retail-structure": {
-        "authoring": "01274e5d5f1bcd22ce5b0dfed4dde680229cd00cdce0d0f3f9df1d14ab7a4438",
-        "tts": "8400328b5032fb00f6939d8b8a402c329968d31404e19b3c5b9c34b6edb81308",
-        "alignment": "364d2a8d1b44bca70ddaf64528e17cc824954344ef2739b0d73bf1af00fc153b",
-        "compile": "4c492124d4b62f1476a1ec0dd3f932c7ab35b7b4a6166b8445ff125dde759cb0",
-        "visual-proof": "b13a723344a77ef8f7cd4d9e0a64c2a1ec81aeb02e861e4e974db8d69564706c"
+        "authoring": "06ee31705603dd35c5ec52e8fc863f85db0c959db5d4f92c0674d38667fb7725",
+        "tts": "b673523610b69c22a8422d2d3af8d63a548a6416fa52a1d9da066d4430e72317",
+        "alignment": "cdae7275cc0edd134aa8f11744c4ee74582aabef0f712da91ba953c52a09090c",
+        "compile": "8ff17014b74e284052616ae5d2d96c08e872a8e5148899a283c0dab46a4b5338",
+        "visual-proof": "a83063a6381258e5cbe178ef0fd97fa446d4bb7b168a2627b5aa28f57869b8f9"
       },
       "chunk-004-bias-margin-amplifier": {
-        "authoring": "cb9b4e69c2e174a0ebfd42e83f4ed6675911eec49b5df4a1634daa383ea90305",
-        "tts": "e0d312f6b554d53c89dd2867c074c2237f86447617a926a7c598c235067511da",
-        "alignment": "dbc7841666e6d3af3bf8e84803460201675cf4bc4417d2fff268e03a165a1adb",
-        "compile": "9a8cde5aabbe46725c47d350e1af542a7a7dbce4f76af734c3b84d50588312d3",
-        "visual-proof": "b9c96023ce35863a553d0c26aa162f3aa3345681e2c2fdaf0ca046d5bdc2aecd"
+        "authoring": "8b049c7449c2bd2f135bbf83b8e686c744c8ef37bb5720f8e8e7ce8f03a2e065",
+        "tts": "7d68cc3cfe729436ae5136caea496a4d6504574948ba271a9e7d9f69d0990921",
+        "alignment": "df34f5e0207411126bb55a8708fedef6b11e783152b7873e70f6f37e5cf6075f",
+        "compile": "7a75cdebc2be2573e6f60aed5371097b71d3aaf211c36062cb76aa9b558d9c57",
+        "visual-proof": "ccacbe8c64d101c648b0bacb3d87a04215891be460e488a20fd458fc3768f1fe"
       },
       "chunk-005-trust-friction-causes": {
-        "authoring": "8779e44cbf2888a7a5379886cac2b2d138854370546fd5c104f2622aeea1fa3e",
-        "tts": "3e95177ea4efa5fcac6e64207816f3a0f1a31542d60a049531cde592b043a00c",
-        "alignment": "3bebcf3058630653d0eb417e6fcda9f3e55c46a45d56703c94da3cbdc794292c",
-        "compile": "78932a8c5a63b4e94c5d2514ab5095a0df268b44826c8d160556be1b6bb08826",
-        "visual-proof": "fa8039197af0c40254c153695197a051ed9d1328f2f014bafb6c2ef93c68d6be"
+        "authoring": "6631a3669d5bdb9aed43accb6b5b93f91c9a9953d14d3e8380749d3924fda392",
+        "tts": "e09b53b510be39703a1445b31e8116ee443928b7b1030477f477f457520e14a8",
+        "alignment": "b6f403a8093bbd46a893d76f84cc905f6daea94f6ce43e3c0d2111b308ba5021",
+        "compile": "f13a061397b9ad3de7651b8386573e5fc203366480821acdaec82d3c13b8cbc1",
+        "visual-proof": "20b15235a31166bde5515836c4c73579baa04ca4d1ea31135561e0fe55d24087"
       },
       "chunk-006-cfd-regulatory-displacement": {
-        "authoring": "20c737e28b8235641b7ebec640d525a82e73aa57f503ae89d0ec27feeba0fd85",
-        "tts": "fbb79fbcd247b782d2f51a1e4bcb69cd02d36ab379ee5de87d82567fcc856f43",
-        "alignment": "bb5ab90a26bdb8fe60122abe77ee86ce3a85ffe46d33b0b6fdf0cb24620dede5",
-        "compile": "4ffd01b4cf756b2cdc5de6b67a71cfcbcb84d367315bb7d639cd82ff151f2b9f",
-        "visual-proof": "8d67c68c3b1eced5522ba3975275e0f4047423d08157d5912978e3b38f0085cf"
+        "authoring": "29e8906fb4811e467f1acb7d8a640dfbc7d459b372878e6d1f60295cc7f3db37",
+        "tts": "432f3b936771d647c73fad59625b50bcf8c48ba6a98ab53e00f80f1597c78408",
+        "alignment": "273456357fad1ff9dd0a2ee0afe5c03b246fc6b79005af450c9a30714e0e6ec4",
+        "compile": "fe0d94c50e23ae2dc21b7f9317ccf439d7840d50d00dec4d3467336409ae1f33",
+        "visual-proof": "c476266f3ca933e32e4141dc6292787788458a87063840df8e78d11c44a43ffa"
       },
       "chunk-007-pressure-feedback-cycle": {
-        "authoring": "a939e72df300f2f5cba96665c503014e8c9f95582d0cf5b179601a2afe5e2ea5",
-        "tts": "87ac3eee5d421259eb3d1dcf9f9e8919fb637803c395118fc9047128c4af2007",
-        "alignment": "c877897bbeb27eae1de6cafc3509c4e4fb8963fff3bdf6827fa22183d072b103",
-        "compile": "207d9882c495fee54cda6e11716bf702c72b2928569a4b941b8e09c52b5790c1",
-        "visual-proof": "1e4e14fc3a7d7df2de21807c607f3720c9868babe96c09715498305f32b1b5d4"
+        "authoring": "c36f015b459c58a18b64513b4d2645b9bbe2bf1ed6de191b3db23e704b6d5ccc",
+        "tts": "fc584958b127e3eafa216421000071a2c76953eea8c848b0f3005f494827b03b",
+        "alignment": "222c6f31f7d44462302cdf8f4af19be3c5c253e5dc150816136b7bb0c0bc2230",
+        "compile": "a783a129cd7335ac4cdba024e5b8f87bda5c7875e266b53e0d9de26806359fec",
+        "visual-proof": "0651cc4331c1b049e2ae60d103db2636c7cb2689be242f3009ab2ce0b4b3f3f8"
       },
       "chunk-008-current-outlook": {
-        "authoring": "272d0431980ce7eaaebbc98821fbf71d392c456efb7bf2248d829afaf2defefe",
-        "tts": "7765c6aac71bde32707c74504a93727cf8432303b7bd07e1681280770a5cf994",
-        "alignment": "fb03ea6eab30618b9e275720a7635f994d6a35072412fd53ccc0cdd7f6bd9e8c",
-        "compile": "294731a85b43ddcf6cfe22d66da985b84c11cbaff6335d989cbaf7be8cfc0d2f",
-        "visual-proof": "befe6d786db1297412ca16b2b558347a4934525c1f9887564c3314c7da15ffd8"
+        "authoring": "923bb5168be1269122f1e32c0662dd9dcfc6e66b4cdde9a67f5b4e86ee4bcc98",
+        "tts": "93800ce2e8e8fc5738adcefcd6c853fa6ee946f47f17f254a72ed18e0779e2fc",
+        "alignment": "95afdad1e38f1a4cd70570973ff15536d0ba3ad2cf787dad0bd41f3dc869e8ea",
+        "compile": "70eaafbe86e47d7e935e4aa7639139b699b2d1c2ed08246a592aec747e37d9d6",
+        "visual-proof": "47741dc44df8e76ef4814f34bbbede286ce79b098a95241e7e159da1931b1299"
       }
     },
     "assemblyToolchainHashes": {
-      "productionCodeSnapshot": "daf5047c53f39f536a6be46ad24612fbf600af6beb76244cc97baf75736ebc9a",
+      "productionCodeSnapshot": "9d820129afe2c2ad55567de88c67e931fd9ffed4a08a478e6803f324d84a6b18",
       "assemblyOrchestrator": "ef806b6f960becd8cbbef87eed702f5dd5ce21421b92af4cddf7b123f0aba851",
       "audioAssembler": "b04d3e1e1fe011ae642f4d913cb3bd17036d86c3d149d39ea18d62af7b7b488e",
       "ttsSceneBuilder": "18c542961e5ab839f623d31cd9a95633dce13afbdeb89ce749c051fef926a246",
@@ -22314,10 +22376,10 @@
     "canonicalOutputHashes": {
       "ttsScenes": "f8b1496cbf10bec96e58bdfaef250bd60823dd57346f4ee6ebf6166649fa7feb",
       "audio": "80fb7f67b9d7ec7f437b36f5df6149915419b9ac24f5f85a2f7b3f05e26a39c9",
-      "durations": "a3afe0e12f913da54f24deaad76c2593aa24a045f8d3a166ac75a056b89a7ad0",
+      "durations": "9d68af0fdbf0c530e13a5396ca916c6fa1690cb374d32e6f4e607d49c5b14759",
       "words": "b35ba64d87e67b188ae1c10fb214c87375d3c9d958fe1ade274b59386b5649ad",
       "alignment": "ce751b53ad97bdb588bedad3fc851dea5f3163a6e46b0721e047be491f8c0586",
-      "timelineBody": "727170ac93552402d906e637349aa9bee7ab8f90a5792b65e674f3ef15ceb36f"
+      "timelineBody": "f2cf327c20425fed289140dcdd307a688172db68a52828bc280eeaf9cf27ce50"
     },
     "assemblyPolicyVersion": "sample-exact-chunk-concat-v3"
   }

@@ -17,8 +17,8 @@
     "measuredSceneCount": 21,
     "audioSeconds": 153.936,
     "audioSha256": "d1a4ef3c4766fe0cb5073e07b71d6b576108e2d3979de666b3743edf96825802",
-    "storyboardChecksum": "b7328577cae88e8d7746dea1175847a67cb7bb44bd508de80d8995d0c1a82fe4",
-    "durationsChecksum": "dd91906a8ae63b299bdf2c1244eae4b553cc7af3d8aba3d3a61117a6d2d862f6",
+    "storyboardChecksum": "0693fc04548b5ce42c534f838bcffaab1e0d613fcdb355074d32acc6f3cdfd43",
+    "durationsChecksum": "f95014b14554cec86928dafc6af6fc6ae791ed691216a3ba214487939c3e8f16",
     "wordsChecksum": "7c9d6b86b8baf04fd24269cf621429b928ab47d5d5cb8ba36c865011c4b29732",
     "subtitleTiming": {
       "source": "canonical-tts-scenes",
@@ -767,14 +767,14 @@
         },
         {
           "beatText": "đoàn bảy ở mức rất là cao",
-          "action": "swap_pose",
-          "targetSlot": "who",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 90,
           "renderedComponentIds": [
-            "fresh-004-a"
+            "fresh-004-cutaway"
           ],
-          "fromState": "characters/cat_investor_contract",
-          "toState": "characters/cat_surprised"
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:ĐÒN BẨY Ở MỨC RẤT CAO"
         },
         {
           "beatText": "phải tạm dừng cho vay",
@@ -796,13 +796,12 @@
         "characters/cat_investor_contract",
         "finance/credit_card",
         "characters/cat_think",
-        "characters/cat_surprised",
         "finance/interest_rate",
         "assets/scenes/bank_interior.svg"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|3a:2p|counter_left,counter_left,counter_left,free,free|none|none|none",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:bank_interior|2a:2p|counter_left,counter_left,free,free|frame:2:1|none|none",
       "silentFrameTakeaway": "A trader is holding borrowed money.",
       "focalOccupancyTarget": 0.48,
       "noveltyFromPrevious": [
@@ -881,16 +880,6 @@
           ]
         },
         {
-          "assetId": "fresh-004-a",
-          "src": "styles/d/generated-assets/characters/cat_surprised.png",
-          "anchor": "counter_left",
-          "enterAnimation": "none",
-          "enterDelay": 90,
-          "clearPrevious": [
-            "fresh-004-a"
-          ]
-        },
-        {
           "assetId": "fresh-004-prop",
           "src": "styles/d/generated-assets/icons/finance-interest-rate.png",
           "position": {
@@ -908,7 +897,21 @@
       ],
       "texts": [],
       "speechBubbles": [],
-      "cards": []
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "fresh-004-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "ĐÒN BẨY Ở MỨC RẤT CAO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 90
+        }
+      ]
     },
     {
       "id": "fresh-005",
@@ -1252,14 +1255,14 @@
         },
         {
           "beatText": "đặt cực vào thị trường",
-          "action": "swap_pose",
-          "targetSlot": "asker",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 73,
           "renderedComponentIds": [
-            "fresh-007-a"
+            "fresh-007-cutaway"
           ],
-          "fromState": "characters/cat_think",
-          "toState": "characters/cat_point_left"
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:KHOẢN CƯỢC BẰNG TIỀN VAY"
         },
         {
           "beatText": "tại sao đoàn bảy lại trở nên phổ biến",
@@ -1297,14 +1300,14 @@
         },
         {
           "beatText": "chúng ta sẽ cùng",
-          "action": "swap_pose",
-          "targetSlot": "answerer",
+          "action": "reveal",
+          "targetSlot": "cutaway",
           "frame": 278,
           "renderedComponentIds": [
-            "fresh-007-b"
+            "fresh-007-cutaway-2"
           ],
-          "fromState": "characters/cat_investor_phone",
-          "toState": "characters/cat_surprised"
+          "fromState": "absent",
+          "toState": "cutaway:finance/portfolio_folder:GIẢI MÃ RỦI RO ĐÒN BẨY"
         }
       ],
       "semanticTakeaway": "Leverage begins with an emotional pressure.",
@@ -1315,12 +1318,13 @@
         "characters/cat_think",
         "characters/cat_investor_phone",
         "characters/cat_surprised",
-        "characters/cat_point_left",
-        "characters/cat_explain"
+        "characters/cat_explain",
+        "finance/credit_card",
+        "finance/portfolio_folder"
       ],
       "heroVisual": false,
       "focalType": "character_action",
-      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|7a:0p|LEFT,LEFT,LEFT,RIGHT,RIGHT,RIGHT,RIGHT|bubble,bubble|none|none",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|5a:0p|LEFT,LEFT,RIGHT,RIGHT,RIGHT|bubble,bubble,frame:2:1,frame:2:1|none|none",
       "silentFrameTakeaway": "Fear of falling behind meets borrowed money.",
       "focalOccupancyTarget": 0.57,
       "noveltyFromPrevious": [
@@ -1392,17 +1396,6 @@
           ]
         },
         {
-          "assetId": "fresh-007-a",
-          "src": "styles/d/generated-assets/characters/cat_point_left.png",
-          "circle": "#D7E8E6",
-          "slot": "LEFT",
-          "enterAnimation": "none",
-          "enterDelay": 73,
-          "clearPrevious": [
-            "fresh-007-a"
-          ]
-        },
-        {
           "assetId": "fresh-007-b",
           "src": "styles/d/generated-assets/characters/cat_explain.png",
           "circle": "#F1D8C5",
@@ -1420,17 +1413,6 @@
           "slot": "RIGHT",
           "enterAnimation": "none",
           "enterDelay": 236,
-          "clearPrevious": [
-            "fresh-007-b"
-          ]
-        },
-        {
-          "assetId": "fresh-007-b",
-          "src": "styles/d/generated-assets/characters/cat_surprised.png",
-          "circle": "#F1D8C5",
-          "slot": "RIGHT",
-          "enterAnimation": "none",
-          "enterDelay": 278,
           "clearPrevious": [
             "fresh-007-b"
           ]
@@ -1458,6 +1440,32 @@
           "fontSize": 46,
           "widthRatio": 0.54,
           "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "fresh-007-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "KHOẢN CƯỢC BẰNG TIỀN VAY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 73
+        },
+        {
+          "id": "fresh-007-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-portfolio-folder.png",
+          "caption": "GIẢI MÃ RỦI RO ĐÒN BẨY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 278
         }
       ]
     },
