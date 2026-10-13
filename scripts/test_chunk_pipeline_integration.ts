@@ -685,10 +685,9 @@ function main(): void {
       plan,
       runConfig,
     };
-    assert.strictEqual(
+    assert.ok(
       computeExpectedChunkStageContract(context, firstChunk.id, "authoring")
-        .inputHashes.globalAuthoringReport,
-      authoringReportChecksum,
+        .inputHashes.chunkSource,
     );
 
     materializeChunk(context, 0, python);
@@ -713,7 +712,8 @@ function main(): void {
 
     const predecessorReceiptPath = stageAttestationPath(projectDir, firstChunk.id, "visual-proof");
     const secondAuthoringContract = computeExpectedChunkStageContract(context, secondChunk.id, "authoring");
-    assert.strictEqual(secondAuthoringContract.inputHashes.previousVisualProof, checksumArtifact(predecessorReceiptPath));
+    assert.ok(secondAuthoringContract.inputHashes.chunkSource);
+    assert.ok(!secondAuthoringContract.inputHashes.previousVisualProof);
     const predecessorReceiptBytes = fs.readFileSync(predecessorReceiptPath);
     const driftedPredecessor = readJson<any>(predecessorReceiptPath);
     driftedPredecessor.passed = false;
@@ -769,7 +769,7 @@ function main(): void {
       "--execute",
       "--python", python,
       "--lang", LANGUAGE,
-    ], { succeeds: false, output: /durations has no scenes/i });
+    ], { succeeds: false, output: /stale chunks/i });
     assertLockReleased(projectDir);
     for (const [filePath, bytes] of priorCanonical) {
       assert.deepStrictEqual(fs.readFileSync(filePath), bytes, `Failed candidate assembly changed ${filePath}.`);

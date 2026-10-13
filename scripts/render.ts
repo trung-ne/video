@@ -4,7 +4,10 @@
  * Usage:
  *   npx ts-node scripts/render.ts --project <id> --out output/<id>/video.mp4
  *   npx ts-node scripts/render.ts --timeline timeline.json --out output/video.mp4
+ *   npx ts-node scripts/render.ts --project <id> --scene <scene-id> --halo-scenes 1 --out diagnostics/<id>/<scene-id>.mp4
  *
+ * `--scene` is a non-promotable authoring diagnostic. It selects the requested
+ * scene plus an optional adjacent-scene halo and always requires explicit output.
  * Exactly one of --project or --timeline is required.
  *
  * Without --out, the output path defaults to output/<id>/video.mp4 (id from
@@ -69,7 +72,7 @@ loadLocalEnvironment();
 
 const args = process.argv.slice(2);
 
-const VALUE_FLAGS = new Set(["--project", "--timeline", "--out", "--composition", "--frames", "--quality-scope"]);
+const VALUE_FLAGS = new Set(["--project", "--timeline", "--out", "--composition", "--frames", "--scene", "--halo-scenes", "--quality-scope"]);
 const BOOLEAN_FLAGS = new Set([
   "--proxy",
   "--skip-validate",
@@ -183,6 +186,23 @@ if (isChunkProof) {
   }
 }
 const framesArg = valueOf("--frames");
+const sceneArg = valueOf("--scene");
+const haloScenesArg = valueOf("--halo-scenes", "0");
+if (sceneArg && framesArg) {
+  console.error("--scene and --frames cannot be combined.");
+  process.exit(1);
+}
+let haloScenes = 0;
+try {
+  haloScenes = Number(haloScenesArg);
+  if (!Number.isInteger(haloScenes) || haloScenes < 0 || haloScenes > 4) {
+    throw new Error("--halo-scenes must be an integer from 0 to 4.");
+  }
+  if (haloScenes && !sceneArg) throw new Error("--halo-scenes requires --scene.");
+} catch (error) {
+  console.error((error as Error).message);
+  process.exit(1);
+}
 function parseFrameRange(value: string): { start: number; end: number } | null {
   if (!value) return null;
   const parts = value.split("-");
@@ -204,6 +224,7 @@ try {
   process.exit(1);
 }
 const diagnosticFlags = [
+  "--scene",
   "--proxy",
   "--frames",
   "--skip-validate",
@@ -225,7 +246,8 @@ if (diagnosticRun && (!hasFlag("--out") || path.resolve(outPath) === path.resolv
   );
   process.exit(1);
 }
-const frameRangeStart = frameRange?.start ?? 0;
+let frameRangeStart = frameRange?.start ?? 0;
+let sceneDiagnostic: { requestedSceneId: string; sceneIds: string[]; haloScenes: number } | null = null;
 const referenceBaselinePath = path.resolve("config/reference-visual-baseline.json");
 if (!fs.existsSync(referenceBaselinePath)) {
   console.error(`Reference baseline not found: ${referenceBaselinePath}`);
@@ -423,6 +445,39 @@ try {
 }
 
 const raw = JSON.parse(fs.readFileSync(timelinePath, "utf-8"));
+if (sceneArg) {
+  const scenes = Array.isArray(raw.scenes) ? raw.scenes : [];
+  const matches = scenes.map((scene: any, index: number) => ({ scene, index }))
+    .filter(({ scene }) => scene?.id === sceneArg);
+  if (matches.length !== 1) {
+    console.error(matches.length
+      ? `--scene must identify exactly one scene; found ${matches.length} scenes with id ${JSON.stringify(sceneArg)}.`
+      : `--scene does not exist in this timeline: ${JSON.stringify(sceneArg)}.`);
+    process.exit(1);
+  }
+  const { scene, index } = matches[0];
+  if (!Number.isInteger(scene.startFrame) || !Number.isInteger(scene.durationFrames) || scene.startFrame < 0 || scene.durationFrames <= 0) {
+    console.error(`--scene ${JSON.stringify(sceneArg)} has invalid measured frame bounds.`);
+    process.exit(1);
+  }
+  const first = Math.max(0, index - haloScenes);
+  const last = Math.min(scenes.length - 1, index + haloScenes);
+  const selected = scenes.slice(first, last + 1);
+  const start = selected[0]?.startFrame;
+  const final = selected.at(-1);
+  const end = Number(final?.startFrame) + Number(final?.durationFrames) - 1;
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start) {
+    console.error(`--scene ${JSON.stringify(sceneArg)} cannot derive a contiguous measured frame range.`);
+    process.exit(1);
+  }
+  frameRange = { start, end };
+  frameRangeStart = start;
+  sceneDiagnostic = {
+    requestedSceneId: sceneArg,
+    sceneIds: selected.map((item: any) => String(item.id)),
+    haloScenes,
+  };
+}
 let chunkProofBinding: ChunkProofBinding | null = null;
 if (isChunkProof) {
   if (raw.artifactRole !== "chunk-proof") {
@@ -559,6 +614,26 @@ if (sourceAudioSeconds !== undefined) {
   }
 }
 
+// Validate the exact pixel-audit sampling plan before expensive audio mastering
+// or Remotion work. Partial/diagnostic scopes receive their own bounded plan and
+// can never be mistaken for the canonical full-duration sampling contract.
+const plannedVisualAuditSeconds = frameRange
+  ? (frameRange.end - frameRange.start + 1) / (raw.fps ?? 30)
+  : raw.durationInFrames / (raw.fps ?? 30);
+let plannedVisualAuditOffsets: number[] | null = null;
+if (!hasFlag("--skip-visual-audit")) {
+  try {
+    plannedVisualAuditOffsets = normalizeVisualAuditOffsets(
+      visualMeasurementContract.sampleOffsets,
+      visualMeasurementContract.sampleSeconds,
+      plannedVisualAuditSeconds,
+    );
+  } catch (error) {
+    console.error(`Visual audit sampling preflight failed: ${(error as Error).message}`);
+    process.exit(1);
+  }
+}
+
 const finalDir = path.dirname(outPath);
 const runId = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 // Audio mastering writes shared files under public/audio, so serialize the run
@@ -629,11 +704,6 @@ console.log(`   Duration: ${timeline.durationInFrames} frames @ ${timeline.fps}f
 console.log(`   = ${(timeline.durationInFrames / timeline.fps).toFixed(1)} seconds`);
 console.log(`   Events: ${timeline.events.length}`);
 
-const plannedVisualAuditSeconds = frameRange
-  ? (frameRange.end - frameRange.start + 1) / timeline.fps
-  : timeline.durationInFrames / timeline.fps;
-let plannedVisualAuditOffsets: number[] | null = null;
-
 // Render into a per-run staging directory and promote only once every gate has
 // passed. Previously a blocked run left a fresh MP4 sitting beside the previous
 // run's audits with a report that said "diagnostic" — anything globbing
@@ -686,15 +756,29 @@ let timingAudit: {
 
 async function runRenderPipeline(): Promise<void> {
 try {
-  plannedVisualAuditOffsets = hasFlag("--skip-visual-audit")
-    ? null
-    : normalizeVisualAuditOffsets(
-        visualMeasurementContract.sampleOffsets,
-        visualMeasurementContract.sampleSeconds,
-        plannedVisualAuditSeconds,
-      );
   if (isProxy) {
     getScaledDimensions(timeline.width, timeline.height, DEFAULT_PROXY_SCALE);
+  }
+  if (sceneDiagnostic) {
+    const diagnosticManifest = {
+      schemaVersion: 1,
+      artifactRole: "scene-diagnostic",
+      nonPromotable: true,
+      requestedSceneId: sceneDiagnostic.requestedSceneId,
+      sceneIds: sceneDiagnostic.sceneIds,
+      haloScenes: sceneDiagnostic.haloScenes,
+      frameRange,
+      timeline: path.resolve(timelinePath),
+      timelineSha256: sha256File(timelinePath),
+      output: path.resolve(outPath),
+      sampleSeconds: visualMeasurementContract.sampleSeconds,
+      sampleOffsets: plannedVisualAuditOffsets,
+    };
+    fs.writeFileSync(
+      path.join(stagingDir, "scene-diagnostic-manifest.json"),
+      `${JSON.stringify(diagnosticManifest, null, 2)}\n`,
+      "utf8",
+    );
   }
   const browserExecutable = findCachedChromeHeadlessShell();
   const remotionCli = path.join(
@@ -717,7 +801,7 @@ try {
     // bitrate floor despite the requested target bitrate.
     isProxy ? "--crf=23" : `--max-rate=${referenceQuality.encoding.maximumVideoBitrate}`,
     isProxy ? "--muted" : `--buffer-size=${referenceQuality.encoding.encodingBufferSize}`,
-    framesArg ? `--frames=${framesArg}` : "",
+    frameRange ? `--frames=${frameRange.start}-${frameRange.end}` : "",
     `--audio-bitrate=${referenceQuality.encoding.audioBitrate}`,
     `--pixel-format=${referenceQuality.encoding.pixelFormat}`,
     browserExecutable ? `--browser-executable=${browserExecutable}` : "",
@@ -739,7 +823,8 @@ try {
   }
 
   console.log(`\nEncoded media: ${stagedOut}. Running publish audits...`);
-  if (!isProxy && !framesArg) {
+  const boundedRender = frameRange !== null;
+  if (!isProxy && !boundedRender) {
     console.log("Normalizing staged H.264 delivery bitrate before audit...");
     await normalizeProductionBitrate(stagedOut);
   }
@@ -748,7 +833,7 @@ try {
   // seconds (especially a quiet white opening) and cannot prove or disprove
   // the production encoding contract. Keep the full-render audit fail-closed;
   // slices still undergo requested-range timing and pixel audits below.
-  const encodingAudit = (isProxy || framesArg) ? null : runEncodingAudit(stagedOut, outPath);
+  const encodingAudit = (isProxy || boundedRender) ? null : runEncodingAudit(stagedOut, outPath);
 
   // A render that does not match what was asked for must never reach an audit or
   // a cross-render comparison — a truncated MP4 scores *better* on sampled pixel
@@ -765,7 +850,7 @@ try {
       mp4Seconds,
       expectedSeconds,
       driftSeconds: Number((mp4Seconds - expectedSeconds).toFixed(3)),
-      scope: framesArg ? `frames ${framesArg}` : "full timeline",
+      scope: frameRange ? `frames ${frameRange.start}-${frameRange.end}` : "full timeline",
     };
     if (issues.length) {
       console.error(`\n⏱️  TIMING INTEGRITY\n${formatTimingIssues(issues)}\n`);
@@ -864,13 +949,13 @@ try {
   // the full-track LUFS window — so a partial render skips the audio audit for the
   // same reason a proxy does.
   const audioAuditPath = stagedOut.replace(/\.mp4$/i, ".audio-audit.json");
-  const audioAudit = isProxy || framesArg || hasFlag("--skip-audio-audit")
+  const audioAudit = isProxy || boundedRender || hasFlag("--skip-audio-audit")
     ? null
     : writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath));
   const referenceComparison = visualAudit && qualityScope.kind === "global"
     ? buildReferenceComparison(visualAudit, referenceBaseline)
     : null;
-  if (!isProxy && !framesArg && referenceComparison) {
+  if (!isProxy && !boundedRender && referenceComparison) {
     const profile = JSON.parse(fs.readFileSync(path.resolve("config/reference-quality.json"), "utf8"));
     const deltaLimit = Number(profile.visualAudit?.maximumSaturationAboveReference ?? 0.025);
     const saturationDelta = Number(referenceComparison.deltaCandidateMinusReference?.saturation);

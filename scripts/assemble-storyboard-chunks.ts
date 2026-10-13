@@ -11,7 +11,10 @@ import {
   CHUNK_POLICY_VERSION,
   CHUNK_STAGES,
   ChunkStageContractContext,
+  buildChunkInvalidationReport,
+  chunkInvalidationReportPath,
   checksumArtifact,
+  globalAuthoringReportPath,
   chunkPipelinePaths,
   chunkRunConfigPath,
   computeExpectedChunkStageContract,
@@ -152,6 +155,9 @@ async function main(signal: AbortSignal): Promise<void> {
     storyboardChecksum: checksumJson(storyboard),
   });
   if (configIssues.length) fail(`Chunk run config is invalid: ${configIssues.join(" ")}`);
+  if (runConfig.globalAuthoringReportChecksum !== checksumArtifact(globalAuthoringReportPath(projectDir))) {
+    fail("Global authoring checkpoint changed after the chunk run began; rerun process-storyboard-chunks before assembly.");
+  }
   if (runConfig.proof.qualityProfileHash !== thresholdProfileHash) fail("Quality threshold profile changed after chunk proofing.");
   if (requestedLanguage && requestedLanguage !== runConfig.alignment.language) {
     fail("--lang differs from the immutable chunk run alignment language.");
@@ -166,6 +172,15 @@ async function main(signal: AbortSignal): Promise<void> {
     plan,
     runConfig,
   };
+
+  const invalidation = buildChunkInvalidationReport(context);
+  writeJsonAtomic(chunkInvalidationReportPath(projectDir), invalidation);
+  const staleChunks = invalidation.chunks.filter((chunk) => chunk.invalidStages.length);
+  if (staleChunks.length) {
+    fail(`Chunk assembly requires current proof receipts; stale chunks: ${staleChunks
+      .map((chunk) => `${chunk.id} (${chunk.invalidStages.map((entry) => entry.stage).join(", ")})`)
+      .join(", ")}.`);
+  }
 
   const inputs: Array<{
     id: string;
@@ -261,6 +276,9 @@ async function main(signal: AbortSignal): Promise<void> {
     });
     if (finalConfigIssues.length || currentRunConfig.proof.qualityProfileHash !== thresholdProfileHash) {
       fail(`Chunk run config changed during assembly: ${finalConfigIssues.join(" ")}`);
+    }
+    if (currentRunConfig.globalAuthoringReportChecksum !== checksumArtifact(globalAuthoringReportPath(projectDir), digestCache)) {
+      fail("Global authoring checkpoint changed during canonical candidate assembly.");
     }
 
     const finalContext: ChunkStageContractContext = {

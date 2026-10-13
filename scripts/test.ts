@@ -107,6 +107,7 @@ import {
 } from "../src/engine/chunkProvenance";
 import referenceQuality from "../config/reference-quality.json";
 import { resolveStableSceneIds } from "../src/engine/sceneIdentity";
+import { buildStoryboardIterationScope } from "../src/engine/iterationScope";
 import { ProcessRunError, runProcess, shouldRetryDllInitFailure, STATUS_DLL_INIT_FAILED } from "../src/engine/childProcessRunner";
 import { sha256File } from "../src/audio/prepareAudio";
 import {
@@ -634,7 +635,7 @@ test("canonical chunk provenance independently re-hashes every input and output"
     const globalReportBytes = fs.readFileSync(globalReportPath);
     fs.writeFileSync(globalReportPath, JSON.stringify({ passed: false, drifted: true }));
     assert.ok(verifyChunkAssemblyProvenance(projectDir, timeline).some((entry) =>
-      entry.code === "CHUNK_ATTESTATION_DRIFT" || entry.code === "CHUNK_ATTESTATION_INVALID"));
+      entry.code === "CHUNK_RUN_CONFIG_DRIFT"));
     fs.writeFileSync(globalReportPath, globalReportBytes);
     assert.deepStrictEqual(verifyChunkAssemblyProvenance(projectDir, timeline), []);
 
@@ -711,6 +712,17 @@ test("chunk proof mode rejects diagnostic bypasses before rendering", () => {
     fs.rmSync(temp, { recursive: true, force: true });
   }
 });
+test("scene diagnostics require explicit noncanonical output and reject manual frame ranges", () => {
+  const noOut = spawnSync(process.execPath, [require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+    "--project", "missing-project", "--scene", "scene-a"], { encoding: "utf8", cwd: process.cwd() });
+  assert.notStrictEqual(noOut.status, 0);
+  assert.match(`${noOut.stdout}\n${noOut.stderr}`, /require an explicit noncanonical --out path/i);
+  const conflicting = spawnSync(process.execPath, [require.resolve("ts-node/dist/bin.js"), "scripts/render.ts",
+    "--project", "missing-project", "--scene", "scene-a", "--frames", "0", "--out", "diagnostics/scene-a.mp4"], { encoding: "utf8", cwd: process.cwd() });
+  assert.notStrictEqual(conflicting.status, 0);
+  assert.match(`${conflicting.stdout}\n${conflicting.stderr}`, /--scene and --frames cannot be combined/i);
+});
+
 test("chunk proof CLI rejects a core-only timeline when the declared halo is absent", () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-chunk-proof-scope-"));
   try {
@@ -1548,6 +1560,28 @@ test("chunk scopes materialize exactly one adjacent scene without contaminating 
   assert.deepStrictEqual(projectStoryboardForQualityScope(storyboard, scope).scenes.map((scene) => scene.id), ["s1", "s2", "s3", "s4"]);
 });
 
+test("iteration scope expands a local edit through only its visual seam halo", () => {
+  const range = (value: number) => ({ startWord: value, endWord: value, quoteChecksum: String(value) });
+  const baseline: Storyboard = {
+    fps: 30, width: 1920, height: 1080,
+    sections: [
+      { id: "a", sourceRange: range(0), thesis: "a", emotionalTurn: "a", energyCurve: "build", targetDurationSeconds: 10, treatmentSequence: ["evidence"] },
+      { id: "b", sourceRange: range(1), thesis: "b", emotionalTurn: "b", energyCurve: "release", targetDurationSeconds: 10, treatmentSequence: ["infographic"] },
+    ],
+    scenes: [0, 1].map((index) => ({ id: `s${index}`, narration: `word${index}`, purpose: "x", emotion: "neutral" as const, viewerFocus: "x", visualGrammar: "EVIDENCE" as const, sourceRange: range(index), sectionId: index ? "b" : "a" })),
+  };
+  const storyboard = JSON.parse(JSON.stringify(baseline)) as Storyboard;
+  storyboard.scenes[1].purpose = "changed semantic purpose";
+  const plan = planSemanticChunks(storyboard, {
+    projectId: "fixture", storyboardChecksum: checksumJson(storyboard), targetChunkSeconds: 10, maximumChunkTargetSeconds: 10,
+  }).plan!;
+  const scope = buildStoryboardIterationScope(baseline, storyboard, plan, 1);
+  assert.deepStrictEqual(scope.changedSceneIds, ["s1"]);
+  assert.deepStrictEqual(scope.diagnosticSceneIds, ["s0", "s1"]);
+  assert.deepStrictEqual(scope.affectedChunkIds, plan.chunks.map((chunk) => chunk.id));
+  assert.strictEqual(scope.nonPromotable, true);
+});
+
 test("scoped timeline quality fails closed when a declared halo is absent", () => {
   const report = runScopedQualityCheck({ scenes: [{ id: "core" }] }, {
     kind: "chunk", chunkId: "chunk-002", coreSceneIds: ["core"], haloBeforeSceneIds: ["prior"], haloAfterSceneIds: [],
@@ -1597,7 +1631,7 @@ test("strict attestation validation rejects malformed maps and unexpected keys w
   }).some((entry) => entry.code === "ATTESTATION_INPUT_DRIFT"));
 });
 
-test("stage contracts bind predecessor proof, alignment receipt, and quality scope independently", () => {
+test("stage contracts bind material inputs without receipt cascades", () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-stage-contract-"));
   const projectId = path.basename(temp);
   const audioRoot = path.resolve("public", "audio", "chunks", projectAudioIdentity(temp));
@@ -1632,10 +1666,10 @@ test("stage contracts bind predecessor proof, alignment receipt, and quality sco
     fs.mkdirSync(path.dirname(previousReceipt), { recursive: true });
     fs.writeFileSync(previousReceipt, JSON.stringify({ version: 1 }));
     const context = { projectDir: temp, storyboardPath, planPath, runConfigPath: configPath, storyboard, plan, runConfig: config };
-    const first = computeExpectedChunkStageContract(context, plan.chunks[1].id, "authoring").inputHashes.previousVisualProof;
+    const first = computeExpectedChunkStageContract(context, plan.chunks[1].id, "authoring").inputHashes.chunkSource;
     fs.writeFileSync(previousReceipt, JSON.stringify({ version: 2 }));
-    const second = computeExpectedChunkStageContract(context, plan.chunks[1].id, "authoring").inputHashes.previousVisualProof;
-    assert.notStrictEqual(first, second);
+    const second = computeExpectedChunkStageContract(context, plan.chunks[1].id, "authoring").inputHashes.chunkSource;
+    assert.strictEqual(first, second, "a predecessor receipt must not cascade into unchanged chunk source");
     const paths = chunkPipelinePaths(temp, plan.chunks[1].id);
     [paths.projection, paths.audio, paths.durations, paths.words, paths.alignment, paths.scope, paths.coreScope].forEach((filePath) => {
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -1645,7 +1679,8 @@ test("stage contracts bind predecessor proof, alignment receipt, and quality sco
     fs.mkdirSync(path.dirname(alignmentReceipt), { recursive: true });
     fs.writeFileSync(alignmentReceipt, "{}");
     const compile = computeExpectedChunkStageContract(context, plan.chunks[1].id, "compile");
-    assert.ok(compile.inputHashes.alignmentAttestation);
+    assert.ok(compile.inputHashes.alignment);
+    assert.ok(!compile.inputHashes.alignmentAttestation);
     assert.ok(compile.inputHashes.coreScope);
     fs.mkdirSync(path.dirname(paths.proofTimeline), { recursive: true });
     fs.writeFileSync(paths.proofTimeline, JSON.stringify({ scenes: [{ backgroundSrc: "rgba(12, 34, 56, 0.5)", entities: [] }] }));

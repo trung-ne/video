@@ -20,6 +20,7 @@ import {
   checksumArtifact,
   chunkPipelinePaths,
   chunkRunConfigPath,
+  globalAuthoringReportPath,
   computeProductionCodeSnapshotHash,
   createArtifactDigestCache,
   projectAudioIdentity,
@@ -229,6 +230,11 @@ export function verifyChunkAssemblyProvenance(projectDir: string, timeline: any)
   });
   if (configIssues.length || runConfig.proof.qualityProfileHash !== PROFILE_HASH) {
     return issue("CHUNK_RUN_CONFIG_DRIFT", [...configIssues, "Current quality profile must match the proof run."].join(" "));
+  }
+  const authoringReportPath = globalAuthoringReportPath(projectDir);
+  if (!fs.existsSync(authoringReportPath)
+    || runConfig.globalAuthoringReportChecksum !== checksumArtifact(authoringReportPath, digestCache)) {
+    return issue("CHUNK_RUN_CONFIG_DRIFT", "The global authoring checkpoint changed after canonical assembly.");
   }
   if (sidecar.projectId !== plan.projectId
     || sidecar.storyboardChecksum !== checksumJson(storyboard)

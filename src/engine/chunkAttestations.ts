@@ -12,6 +12,7 @@ import {
   StageAttestation,
   assertSafeLineageId,
   isSafeLineageId,
+  orderedSceneIdsForScope,
   qualityScopeForChunk,
 } from "../types/chunk";
 import { Storyboard } from "../types/storyboard";
@@ -161,6 +162,13 @@ export function globalAuthoringReportPath(projectDir: string): string {
   return resolveContained(chunksRoot, "global-authoring-report.json");
 }
 
+/** Diagnostic-only and deliberately excluded from all stage contracts. */
+export function chunkInvalidationReportPath(projectDir: string): string {
+  const projectRoot = path.resolve(projectDir);
+  const chunksRoot = resolveContained(projectRoot, "chunks");
+  return resolveContained(chunksRoot, "chunk-invalidation-report.json");
+}
+
 export function chunkPipelinePaths(projectDir: string, chunkId: string): ChunkPipelinePaths {
   // Reject before using the identifier in any path operation. Containment checks
   // below remain mandatory defense in depth if this validation is weakened later.
@@ -256,7 +264,7 @@ export function createChunkRunConfig(input: {
       terminalGapPolicy: "all-non-final-chunks",
     };
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     projectId: path.basename(input.projectDir),
     policyVersion: CHUNK_POLICY_VERSION,
     planChecksum: checksumArtifact(input.planPath),
@@ -287,17 +295,18 @@ export function createChunkRunConfig(input: {
 export function validateChunkRunConfig(
   value: unknown,
   expected: Pick<ChunkRunConfig, "projectId" | "policyVersion" | "planChecksum" | "storyboardChecksum">,
+  options: { allowSourceDrift?: boolean } = {},
 ): string[] {
   if (!isRecord(value)) return ["Chunk run config must be an object."];
   const config = value as unknown as ChunkRunConfig;
   const issues: string[] = [];
   const rootKeys = ["schemaVersion", "projectId", "policyVersion", "planChecksum", "storyboardChecksum", "globalAuthoringReportChecksum", "tts", "alignment", "compile", "proof"];
   if (!sameKeys(value, Object.fromEntries(rootKeys.map((key) => [key, true])))) issues.push("Chunk run config fields are not exact.");
-  if (config.schemaVersion !== 1) issues.push("Unsupported chunk run config schema.");
+  if (config.schemaVersion !== 2) issues.push("Unsupported chunk run config schema.");
   if (config.projectId !== expected.projectId) issues.push("Chunk run config belongs to another project.");
   if (config.policyVersion !== expected.policyVersion) issues.push("Chunk run config policy changed.");
-  if (config.planChecksum !== expected.planChecksum) issues.push("Chunk run config plan checksum drifted.");
-  if (config.storyboardChecksum !== expected.storyboardChecksum) issues.push("Chunk run config storyboard checksum drifted.");
+  if (!options.allowSourceDrift && config.planChecksum !== expected.planChecksum) issues.push("Chunk run config plan checksum drifted.");
+  if (!options.allowSourceDrift && config.storyboardChecksum !== expected.storyboardChecksum) issues.push("Chunk run config storyboard checksum drifted.");
   if (!HASH_PATTERN.test(String(config.planChecksum ?? ""))
     || !HASH_PATTERN.test(String(config.storyboardChecksum ?? ""))
     || !HASH_PATTERN.test(String(config.globalAuthoringReportChecksum ?? ""))) {
@@ -369,6 +378,45 @@ function sameKeys(actual: Record<string, unknown>, expected: Record<string, unkn
 
 function digestSemantic(value: unknown): string {
   return checksumJson(value);
+}
+
+/**
+ * Hash only material that can affect this chunk's authored projection or its
+ * one-scene seam proof. Whole-storyboard identity deliberately remains a
+ * canonical assembly gate, not a reuse dependency for unrelated chunks.
+ */
+export function chunkSourceFingerprint(
+  storyboard: Storyboard,
+  chunk: SemanticChunk,
+  scope: Extract<QualityScope, { kind: "chunk" }>,
+): string {
+  const sceneIds = new Set(orderedSceneIdsForScope(scope));
+  const claimIds = new Set<string>();
+  for (const scene of storyboard.scenes) {
+    if (!sceneIds.has(scene.id)) continue;
+    for (const claimId of scene.claimIds ?? []) claimIds.add(claimId);
+  }
+  return digestSemantic({
+    chunk,
+    scope,
+    // Cast is shared render material, so a cast revision correctly invalidates
+    // every chunk without reintroducing whole-storyboard invalidation.
+    cast: storyboard.cast ?? null,
+    scenes: storyboard.scenes.filter((scene) => sceneIds.has(scene.id)),
+    sections: (storyboard.sections ?? []).filter((section) => chunk.sectionIds.includes(section.id)),
+    claims: (storyboard.claims ?? []).filter((claim) => claimIds.has(claim.id)),
+  });
+}
+
+/** Stable static settings fingerprint; mutable project lineage is excluded. */
+export function chunkSynthesisConfigFingerprint(config: ChunkRunConfig): string {
+  return digestSemantic({
+    policyVersion: config.policyVersion,
+    tts: config.tts,
+    alignment: config.alignment,
+    compile: config.compile,
+    proof: config.proof,
+  });
 }
 
 function digestFile(filePath: string, logicalName: string, missing: string[], cache?: ArtifactDigestCache): string {
@@ -476,8 +524,6 @@ export function computeExpectedChunkStageContract(
   const paths = chunkPipelinePaths(context.projectDir, chunkId);
   const missingInputs: string[] = [];
   const file = (filePath: string, name: string) => digestFile(filePath, name, missingInputs, context.digestCache);
-  const receipt = (id: string, priorStage: ChunkStage) => file(stageAttestationPath(context.projectDir, id, priorStage), `${id}:${priorStage}:attestation`);
-  const configHash = file(context.runConfigPath, "runConfig");
   const manifestPath = path.resolve("public", "assets.manifest.json");
   const terminalGap = index + 1 < context.plan.chunks.length;
 
@@ -485,15 +531,9 @@ export function computeExpectedChunkStageContract(
   let outputPaths: Record<string, string>;
   switch (stage) {
     case "authoring": {
-      const previous = context.plan.chunks[index - 1];
       inputHashes = {
-        storyboard: digestSemantic(context.storyboard),
-        plan: file(context.planPath, "plan"),
-        chunk: digestSemantic(chunk),
+        chunkSource: chunkSourceFingerprint(context.storyboard, chunk, scope),
         scope: digestSemantic(scope),
-        globalAuthoringReport: file(globalAuthoringReportPath(context.projectDir), "globalAuthoringReport"),
-        runConfig: configHash,
-        previousVisualProof: previous ? receipt(previous.id, "visual-proof") : digestSemantic(null),
         toolchain: toolchainHash(stage, context.digestCache),
       };
       outputPaths = { storyboard: paths.projection, scope: paths.scope, coreScope: paths.coreScope, proofStoryboard: paths.proofStoryboard };
@@ -502,8 +542,6 @@ export function computeExpectedChunkStageContract(
     case "tts":
       inputHashes = {
         storyboard: file(paths.projection, "storyboard"),
-        authoring: receipt(chunkId, "authoring"),
-        runConfig: configHash,
         ttsConfig: digestSemantic(context.runConfig.tts),
         terminalGap: digestSemantic(terminalGap),
         toolchain: toolchainHash(stage, context.digestCache),
@@ -514,8 +552,6 @@ export function computeExpectedChunkStageContract(
       inputHashes = {
         audio: file(paths.audio, "audio"),
         scenes: file(paths.ttsScenes, "ttsScenes"),
-        tts: receipt(chunkId, "tts"),
-        runConfig: configHash,
         alignmentConfig: digestSemantic(context.runConfig.alignment),
         toolchain: toolchainHash(stage, context.digestCache),
       };
@@ -528,10 +564,8 @@ export function computeExpectedChunkStageContract(
         durations: file(paths.durations, "durations"),
         words: file(paths.words, "words"),
         alignment: file(paths.alignment, "alignment"),
-        alignmentAttestation: receipt(chunkId, "alignment"),
         scope: file(paths.scope, "scope"),
         coreScope: file(paths.coreScope, "coreScope"),
-        runConfig: configHash,
         compileConfig: digestSemantic(context.runConfig.compile),
         assetsManifest: file(manifestPath, "assetsManifest"),
         toolchain: toolchainHash(stage, context.digestCache),
@@ -542,12 +576,7 @@ export function computeExpectedChunkStageContract(
       inputHashes = {
         timeline: file(paths.timeline, "coreTimeline"),
         audio: file(paths.audio, "coreAudio"),
-        authoring: receipt(chunkId, "authoring"),
-        tts: receipt(chunkId, "tts"),
-        alignment: receipt(chunkId, "alignment"),
-        compile: receipt(chunkId, "compile"),
         scope: file(paths.scope, "scope"),
-        runConfig: configHash,
         proofConfig: digestSemantic(context.runConfig.proof),
         qualityProfile: context.runConfig.proof.qualityProfileHash,
         assetsManifest: file(manifestPath, "assetsManifest"),
@@ -581,7 +610,7 @@ export function createStageAttestation(input: Omit<StageAttestation, "schemaVers
   assertSafeLineageId(input.chunkId, "Attested chunk id");
   if (!CHUNK_STAGES.includes(input.stage)) throw new Error(`Unsupported chunk stage ${JSON.stringify(input.stage)}.`);
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     ...input,
     completedAt: input.completedAt ?? new Date().toISOString(),
   };
@@ -623,7 +652,7 @@ export function verifyStageAttestation(
     "thresholdProfileHash", "passed", "blockerCount", "majorCount", "completedAt",
   ];
   if (!isRecord(raw) || !sameKeys(raw, Object.fromEntries(requiredKeys.map((key) => [key, true])))
-    || raw.schemaVersion !== 2 || !isSafeLineageId(raw.chunkId) || !CHUNK_STAGES.includes(raw.stage as ChunkStage)
+    || raw.schemaVersion !== 3 || !isSafeLineageId(raw.chunkId) || !CHUNK_STAGES.includes(raw.stage as ChunkStage)
     || !nonempty(raw.policyVersion) || typeof raw.thresholdProfileHash !== "string" || !HASH_PATTERN.test(raw.thresholdProfileHash)
     || !nonempty(raw.completedAt) || !Number.isFinite(Date.parse(raw.completedAt))
     || typeof raw.passed !== "boolean" || !Number.isInteger(raw.blockerCount) || Number(raw.blockerCount) < 0
@@ -694,4 +723,34 @@ export function verifyChunkStage(
     thresholdProfileHash: context.runConfig.proof.qualityProfileHash,
     digestCache: context.digestCache,
   });
+}
+
+/** A deterministic explanation of what must be rebuilt; never an attestation. */
+export function buildChunkInvalidationReport(context: ChunkStageContractContext): {
+  schemaVersion: 1;
+  policyVersion: string;
+  storyboardChecksum: string;
+  planChecksum: string;
+  chunks: Array<{
+    id: string;
+    sourceFingerprint: string;
+    invalidStages: Array<{ stage: ChunkStage; issues: ChunkAttestationIssue[] }>;
+  }>;
+} {
+  return {
+    schemaVersion: 1,
+    policyVersion: CHUNK_POLICY_VERSION,
+    storyboardChecksum: checksumJson(context.storyboard),
+    planChecksum: checksumArtifact(context.planPath, context.digestCache),
+    chunks: context.plan.chunks.map((chunk) => {
+      const scope = qualityScopeForChunk(context.plan, chunk.id) as Extract<QualityScope, { kind: "chunk" }>;
+      const invalidStages = CHUNK_STAGES.map((stage) => ({ stage, issues: verifyChunkStage(context, chunk.id, stage) }))
+        .filter((entry) => entry.issues.length > 0);
+      return {
+        id: chunk.id,
+        sourceFingerprint: chunkSourceFingerprint(context.storyboard, chunk, scope),
+        invalidStages,
+      };
+    }),
+  };
 }

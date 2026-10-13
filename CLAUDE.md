@@ -160,10 +160,17 @@ npx ts-node scripts/compile-storyboard.ts --storyboard projects/<id>/storyboard.
 # Không cắt SCENES trước build; chunk proof không bao giờ là artifact publish.
 npx ts-node scripts/plan-chunks.ts --project <id>
 npx ts-node scripts/process-storyboard-chunks.ts --project <id> --execute
+# Sau sửa cục bộ, runner in chunk reuse + ghi chunks/chunk-invalidation-report.json;
+# chỉ chunk stale mới chạy lại. Assembly/render canonical vẫn bắt buộc full gate.
 npx ts-node scripts/assemble-storyboard-chunks.ts --project <id> --execute
 
 # Render ra MP4 (→ output/<id>/video.mp4)
 npx ts-node scripts/render.ts --project <id>
+
+# Fast non-promotable authoring check: compare a prior storyboard, then render
+# one changed scene plus a seam halo to an explicit diagnostic output path.
+npx ts-node scripts/verify-storyboard-scope.ts --project <id> --baseline <prior-storyboard.json>
+npx ts-node scripts/render.ts --project <id> --scene <scene-id> --halo-scenes 1 --out diagnostics/<id>/<scene-id>.mp4
 
 # TypeScript check
 npx tsc --noEmit

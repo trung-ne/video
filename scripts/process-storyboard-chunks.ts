@@ -16,8 +16,11 @@ import {
 import {
   CHUNK_POLICY_VERSION,
   CHUNK_STAGES,
+  buildChunkInvalidationReport,
   ChunkStageContractContext,
+  chunkInvalidationReportPath,
   chunkPipelinePaths,
+  chunkSynthesisConfigFingerprint,
   chunkRunConfigPath,
   checksumArtifact,
   computeExpectedChunkStageContract,
@@ -291,8 +294,8 @@ function ensureRunConfig(storyboard: Storyboard, plan: ChunkPlan, authoringRepor
     policyVersion: CHUNK_POLICY_VERSION,
     planChecksum: desired.planChecksum,
     storyboardChecksum: desired.storyboardChecksum,
-  });
-  const synthesisChanged = checksumJson(existing) !== checksumJson(desired);
+  }, { allowSourceDrift: true });
+  const synthesisChanged = chunkSynthesisConfigFingerprint(existing) !== chunkSynthesisConfigFingerprint(desired);
   if (issues.length || synthesisChanged) {
     if (!newRun) {
       const reason = issues.length
@@ -305,6 +308,14 @@ function ensureRunConfig(storyboard: Storyboard, plan: ChunkPlan, authoringRepor
     return { path: configPath, value: desired };
   }
   if (plan.projectId !== existing.projectId) fatal("Chunk plan and run config project identities differ.");
+  // Update the immutable assembly lineage record after the global authoring gate
+  // passes. Stage receipts intentionally do not hash this mutable project-wide
+  // metadata, so unaffected chunks remain reusable.
+  if (checksumJson(existing) !== checksumJson(desired)) {
+    writeJson(configPath, desired);
+    console.log("✅ Refreshed canonical run lineage; unchanged chunks remain reusable.");
+    return { path: configPath, value: desired };
+  }
   return { path: configPath, value: existing };
 }
 
@@ -384,6 +395,14 @@ async function main(signal: AbortSignal): Promise<void> {
     plan,
     runConfig: runConfig.value,
   };
+  const invalidation = buildChunkInvalidationReport(context);
+  writeJson(chunkInvalidationReportPath(projectDir), invalidation);
+  const staleChunks = invalidation.chunks.filter((chunk) => chunk.invalidStages.length);
+  const reusableChunks = invalidation.chunks.length - staleChunks.length;
+  console.log(`ℹ️  chunk reuse: ${reusableChunks}/${invalidation.chunks.length} unchanged chunk(s) reusable.`);
+  for (const chunk of staleChunks) {
+    console.log(`   ${chunk.id}: ${chunk.invalidStages.map((entry) => entry.stage).join(", ")}`);
+  }
   const chunks = requestedChunk ? plan.chunks.filter((chunk) => chunk.id === requestedChunk) : plan.chunks;
   if (requestedChunk && !chunks.length) fatal(`Unknown planned chunk: ${requestedChunk}`);
 

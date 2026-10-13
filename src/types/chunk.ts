@@ -148,7 +148,12 @@ export type ChunkTtsConfig = {
 };
 
 export interface ChunkRunConfig {
-  schemaVersion: 1;
+  /**
+   * v2 separates mutable whole-project lineage (used by canonical assembly) from
+   * stage-local contracts. A local storyboard edit must not invalidate an
+   * unrelated chunk merely because this manifest records the new project hash.
+   */
+  schemaVersion: 2;
   projectId: string;
   policyVersion: string;
   planChecksum: string;
@@ -176,7 +181,8 @@ export interface ChunkRunConfig {
 }
 
 export interface StageAttestation {
-  schemaVersion: 2;
+  /** v3 contracts use chunk-local source/config fingerprints. */
+  schemaVersion: 3;
   chunkId: string;
   stage: ChunkStage;
   inputHashes: Record<string, string>;
