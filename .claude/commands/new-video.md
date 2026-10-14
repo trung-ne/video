@@ -17,11 +17,15 @@ trả lời "đã xong", handoff, hoặc tự dừng sau một artifact trung gi
 
 Chỉ được kết thúc khi `output/<id>/video.mp4` **mới được tạo trong lần chạy
 hiện tại** và production report/audit cho artifact đó đều pass. Nếu một bước
-thất bại, agent phải tự chẩn đoán, sửa đúng authored source hoặc asset, rồi chạy
-lại pipeline; cấm dùng skip gate. **Repair có giới hạn:** nhóm diagnostics theo
-mã lỗi + scene ID/section và tầng (source/build, authored quality, measured
-TTS/alignment, compile, visual audit); sửa scene-local từng batch nhỏ, kiểm lại.
-Nếu cùng lỗi y hệt tái diễn sau 2 lần sửa/chạy, dừng retry mù, báo blocker và
+thất bại và đã có canonical output/audit report, trước hết chạy triage read-only:
+`npm run triage -- --report <explicit-report>`. Triage chỉ phân loại evidence
+đã persist và source boundary của nó; không tự suy ra lỗi source/build chưa có
+report, không sửa/build/TTS/compile/render hay bypass gate.
+Sau đó sửa đúng Route A authored source hoặc asset rồi chạy lại pipeline; cấm
+skip gate. **Repair có giới hạn:** nhóm diagnostics theo mã lỗi + scene ID/section
+và tầng (source/build, authored quality, measured TTS/alignment, compile, visual
+audit); sửa scene-local từng batch nhỏ, kiểm lại. Nếu cùng lỗi y hệt tái diễn
+sau 2 lần sửa/chạy, dừng retry mù, báo blocker và
 log cụ thể để xin chẩn đoán/đầu vào mới — không coi là hoàn thành và không bypass
 production gate. Chỉ hỏi/dừng khi cần quyền, input hoặc quyết
 định sáng tạo mà agent không thể tự suy ra an toàn. User interrupt là ngoại lệ:

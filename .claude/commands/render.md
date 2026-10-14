@@ -22,3 +22,14 @@ khi toàn bộ audit pass, và promotion có rollback. Sau render tự chạy:
 
 Các flag `--skip-quality`, `--skip-validate`, `--skip-visual-audit` chỉ dành cho
 diagnostic, không dùng để xuất bản.
+
+Khi render hoặc audit tạo failed report, chạy triage read-only với report đó trước:
+
+```powershell
+npm run triage -- --report output/<id>/.runs/<run-id>/production-report.json
+```
+
+Triage chỉ đọc report/artifact hiện có để phân loại failure evidence;
+không repair, compile, render, promote hoặc bypass. Sửa Route A source of
+record (`storyboard-data.ts`, transcript, hoặc production asset) rồi chạy lại
+các canonical gate đầy đủ. Không sửa `timeline.json` hay report/output đã sinh.

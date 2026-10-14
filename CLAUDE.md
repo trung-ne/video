@@ -447,6 +447,25 @@ import { validateTimeline } from "./src/ai/validateTimeline";
 const result = validateTimeline(timeline);
 ```
 
+### Failure triage (read-only persisted evidence)
+
+Khi render/audit tạo failed report, chạy với evidence tường minh:
+
+```bash
+npm run triage -- --report output/<id>/.runs/<run-id>/production-report.json
+```
+
+Đây là command chỉ đọc evidence persisted, phân loại remediation theo catalog;
+không tự suy ra lỗi source/build chưa có structured report. Triage không ghi/sửa source,
+không build/TTS/alignment/compile/render/promote, và không có bypass/override.
+Sửa đúng source of record (`transcript`, session-authored
+`projects/<id>/storyboard-data.ts`, hoặc production asset), rồi chạy lại pipeline
+và toàn bộ canonical gates: schema, director quality, measured timing/provenance,
+asset/hash integrity, render và production audits. Không sửa `timeline.json`,
+generated audio/alignment, report hoặc output để chữa gate.
+
+Runbook: [docs/runbooks/failure-triage.md](docs/runbooks/failure-triage.md).
+
 ---
 
 ## Troubleshooting
@@ -474,6 +493,7 @@ Dùng trong Claude Code:
 | `/preview` | Mở Remotion Studio |
 | `/validate` | Schema validate timeline.json (errors/warnings) |
 | `quality-check` | Full quality checklist 22 rules → score 0-100, grade A-F |
+| `/triage` | Read-only diagnosis of explicit Route A failure evidence; never bypasses gates |
 | `/list-assets` | Liệt kê tất cả SVG có sẵn |
 | `/edit-timeline` | Sửa storyboard đúng tầng rồi compile lại |
 | `/add-asset` | Hướng dẫn thêm SVG mới |

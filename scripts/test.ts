@@ -122,6 +122,20 @@ import {
   assertOutputProjectIdentity,
   buildCanonicalTimelineIdentity,
 } from "../src/engine/publicationIntegrity";
+import {
+  FAILURE_TRIAGE_CATALOG_VERSION,
+  classifyFinding,
+  findingsFromProductionReport,
+  findingsFromQualityIssues,
+  findingsFromVisualAudit,
+  findingsFromDeliveryAudit,
+  formatTriageResult,
+} from "../src/engine/failureTriage";
+import {
+  collectTriageStatus,
+  parseTriageArgs,
+  resolveTriageTarget,
+} from "./triage-status";
 
 type Test = { name: string; run: () => void | Promise<void> };
 const tests: Test[] = [];
@@ -4282,6 +4296,94 @@ test("asset style defaults to f and rejects unknown environment values", () => {
   assert.throws(() => requestedAssetStyle(), /ASSET_STYLE must be one of/);
   if (saved === undefined) delete process.env.ASSET_STYLE;
   else process.env.ASSET_STYLE = saved;
+});
+
+test("failure triage maps existing visual, quality, timing, and chunk diagnostics", () => {
+  const visual = findingsFromVisualAudit({ failures: [
+    "LOW_VISUAL_DENSITY: content edge density is below threshold",
+    "STATIC_SCENE_RUN: scene remains static",
+  ], withinSceneDuplicateDiagnostics: [{
+    sceneId: "scene-visual", duplicatePairs: 2, intervals: [{ fromSeconds: 3, toSeconds: 6 }],
+  }] }, "/tmp/video.visual-audit.json");
+  assert.deepStrictEqual(visual.map((finding) => finding.catalogId), ["visual-density", "visual-temporal-cadence"]);
+  assert.strictEqual(visual[1].sceneId, "scene-visual");
+  assert.deepStrictEqual(visual[1].evidence.intervals, [{ fromSeconds: 3, toSeconds: 6 }]);
+  assert.ok(visual.every((finding) => finding.catalogVersion === FAILURE_TRIAGE_CATALOG_VERSION));
+  assert.ok(visual.every((finding) => finding.artifactPath === "/tmp/video.visual-audit.json"));
+
+  const quality = findingsFromQualityIssues([{ severity: "BLOCKER", rule: "ASSET_EXISTS", scene: "scene-001", message: "Missing asset." }]);
+  assert.strictEqual(quality[0].catalogId, "quality-rule");
+  assert.strictEqual(quality[0].sceneId, "scene-001");
+  assert.strictEqual(quality[0].code, undefined);
+  assert.strictEqual(quality[0].rule, "ASSET_EXISTS");
+
+  assert.strictEqual(classifyFinding({ code: "TIMING_NO_DURATIONS", message: "No duration." }).domain, "timing");
+  assert.strictEqual(classifyFinding({ code: "CHUNK_ARTIFACT_DRIFT", message: "Drift." }).domain, "chunk-lineage");
+  assert.strictEqual(findingsFromDeliveryAudit({ passed: false }, "audio")[0].catalogId, "pipeline-failure");
+});
+
+test("triage CLI requires explicit safe evidence and preserves staged audit locality", () => {
+  const root = path.resolve(__dirname, "..");
+  const projectId = `triage-fixture-${process.pid}-${Date.now()}`;
+  const projectPath = path.join(root, "projects", projectId);
+  const runPath = path.join(root, "output", projectId, ".runs", "failed-run");
+  const reportPath = path.join(runPath, "production-report.json");
+  try {
+    fs.mkdirSync(projectPath, { recursive: true });
+    fs.mkdirSync(runPath, { recursive: true });
+    fs.writeFileSync(reportPath, JSON.stringify({
+      status: "diagnostic", phase: "visual-audit", error: "visual audit failed",
+    }));
+    fs.writeFileSync(path.join(runPath, "visual-audit.json"), JSON.stringify({
+      passed: false,
+      failures: ["WITHIN_SCENE_SIMILARITY: repeated semantic state"],
+      withinSceneDuplicateDiagnostics: [{ sceneId: "scene-008", intervals: [{ fromSeconds: 3, toSeconds: 6 }] }],
+    }));
+
+    const parsed = parseTriageArgs(["--report", path.relative(root, reportPath)]);
+    const target = resolveTriageTarget(parsed);
+    assert.strictEqual(target.reportPath, fs.realpathSync(reportPath));
+    const status = collectTriageStatus(target.projectPath, false, target.reportPath);
+    assert.deepStrictEqual(status.findings.map((finding) => finding.catalogId), ["pipeline-failure", "visual-temporal-cadence"]);
+    assert.strictEqual(status.findings[1].sceneId, "scene-008");
+    assert.match(status.findings[1].artifactPath ?? "", /\.runs[\\/]failed-run[\\/]visual-audit\.json$/);
+    assert.throws(() => parseTriageArgs(["--report", "../outside.json"]), /traversal-free/);
+    assert.throws(() => parseTriageArgs(["--project", projectId, "--report", path.relative(root, reportPath)]), /exactly one/);
+  } finally {
+    fs.rmSync(projectPath, { recursive: true, force: true });
+    fs.rmSync(path.join(root, "output", projectId), { recursive: true, force: true });
+  }
+});
+
+test("failure triage fails closed for malformed and unknown diagnostics", () => {
+  const unknown = classifyFinding({ code: "FUTURE_UNRECOGNIZED_FAILURE", message: "New failure." });
+  assert.strictEqual(unknown.classification, "unknown");
+  assert.strictEqual(unknown.domain, "unknown");
+  assert.strictEqual(unknown.remediation.retryClass, "manual-review");
+  assert.match(formatTriageResult([unknown]), /\[UNKNOWN\] FUTURE_UNRECOGNIZED_FAILURE/);
+
+  const malformedVisual = findingsFromVisualAudit({ passed: false }, "/tmp/audit.json");
+  assert.strictEqual(malformedVisual.length, 1);
+  assert.strictEqual(malformedVisual[0].classification, "unknown");
+  const malformedQuality = findingsFromQualityIssues({ not: "an array" });
+  assert.strictEqual(malformedQuality[0].classification, "unknown");
+});
+
+test("production-report triage preserves process evidence and nested visual failures", () => {
+  const findings = findingsFromProductionReport({
+    status: "diagnostic", phase: "visual-audit", error: "audit failed",
+    process: { windowsStatus: 0xc0000142, terminationReason: null },
+  }, "/tmp/production-report.json", {
+    visualAuditPath: "/tmp/video.visual-audit.json",
+    visualAudit: { failures: ["FRAME_SIMILARITY: repeated frames"] },
+  });
+  assert.deepStrictEqual(findings.map((finding) => finding.catalogId), ["process-dll-initialization", "visual-temporal-cadence"]);
+  assert.strictEqual(findings[0].phase, "visual-audit");
+  assert.strictEqual(findings[1].artifactPath, "/tmp/video.visual-audit.json");
+
+  const failedAudits = findingsFromProductionReport({ status: "candidate-ready", audioAudit: { passed: false }, encodingAudit: { passed: false } });
+  assert.deepStrictEqual(failedAudits.map((finding) => finding.code), ["AUDIO_AUDIT_FAILED", "ENCODING_AUDIT_FAILED"]);
+  assert.ok(failedAudits.every((finding) => finding.domain === "pipeline"));
 });
 
 async function runTests(): Promise<void> {
