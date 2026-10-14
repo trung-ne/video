@@ -447,7 +447,7 @@ function makeCompleteStoryboard(): { transcript: string; storyboard: Storyboard 
           object: "budget response",
           takeaway: "Budgets answer next.",
         },
-        heroVisual: true,
+        heroVisual: false,
         focalType: "evidence",
         characterRequired: false,
         visualFingerprint: "test-only:warm-budget-response-document",

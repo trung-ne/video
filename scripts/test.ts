@@ -17,6 +17,7 @@ import {
   runScopedStoryboardCheck,
 } from "../src/ai/qualityCheck";
 import { stageMatchesSetting } from "../src/engine/stageRegistry";
+import { heroTimingPreflight } from "../src/engine/heroTimingPreflight";
 import { critiqueSceneBriefs } from "../src/ai/visualCritic";
 import { validateTimeline } from "../src/ai/validateTimeline";
 import {
@@ -377,6 +378,33 @@ test("storyboard builder fails density before TTS and records a passing authorin
       policyVersion: "scene-density-v1", transcriptWords: 5, minimumScenes: 1,
       authoredScenes: 1, longVideo: false, sectionsRequired: false, passed: true,
     });
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
+test("storyboard builder reports invalid authored stage and anchor before TTS", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "cat-storyboard-stage-"));
+  const transcriptPath = path.join(temp, "transcript.txt");
+  const dataPath = path.join(temp, "storyboard-data.ts");
+  const outPath = path.join(temp, "storyboard.json");
+  const invalidScene = {
+    marker: "At the desk", grammar: "TABLEAU", emotion: "neutral", purpose: "show the desk",
+    viewerFocus: "the cat at a desk", slots: { stage: "assets/scenes/office.svg", who: "characters/cat", anchorA: "desk_left" },
+    visualRegister: "full_tableau", focalType: "character_action",
+    semanticVisual: { subject: "cat", action: "works at a desk", setting: "office", takeaway: "work happens here" },
+    silentFrameTakeaway: "work happens here", focalOccupancyTarget: 0.35,
+  };
+  try {
+    fs.writeFileSync(transcriptPath, "At the desk the cat works.");
+    fs.writeFileSync(dataPath, `module.exports = ${JSON.stringify({ SCENES: [invalidScene] })};\n`);
+    const result = spawnSync(process.execPath, [
+      require.resolve("ts-node/dist/bin.js"), "scripts/build-storyboard.ts",
+      "--project", temp, "--transcript", transcriptPath, "--data", dataPath, "--out", outPath,
+    ], { cwd: process.cwd(), encoding: "utf8" });
+    assert.notStrictEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /stage "assets\/scenes\/office\.svg" does not exist.*office_desk\.svg/s);
+    assert.ok(!fs.existsSync(outPath), "an invalid stage wrote a downstream storyboard artifact");
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -2903,6 +2931,59 @@ test("authored asset bookkeeping resolves cast roles and excludes stage anchors"
   });
   assert.ok(!Object.values(resolved).includes("seat_left"));
   assert.ok(!Object.values(resolved).includes("host"));
+});
+
+test("authored stage errors include the valid stage and anchor keys before TTS", () => {
+  const issuesFor = (stage: string, anchorA: string) => runStoryboardCheck({
+    schemaVersion: 1,
+    scenes: [{ id: "stage-scene", visualGrammar: "TABLEAU", narration: "A character at a desk.",
+      slots: { stage, who: "characters/cat", anchorA } }],
+  }).checks.flatMap((check) => check.issues).filter((issue) => issue.rule === "INTENT_REALIZED");
+  const missingStage = issuesFor("assets/scenes/office.svg", "desk_left");
+  assert.ok(missingStage.some((issue) => issue.message.includes("office.svg") && issue.message.includes("office_desk.svg")));
+  const missingAnchor = issuesFor("assets/scenes/office_desk.svg", "desk_left");
+  assert.ok(missingAnchor.some((issue) => issue.message.includes("desk_left") && issue.message.includes("desk_right")));
+  assert.ok(!issuesFor("assets/scenes/office_desk.svg", "desk").some((issue) => /stage|anchor/.test(issue.message)));
+});
+
+test("hero spacing reports every adjacent pair with the correct scene IDs", () => {
+  const starts = [0, 150, 300, 450];
+  const scenes = starts.map((startFrame, index) => ({
+    id: `scene-${index + 1}`, label: `scene-${index + 1}`, startFrame, durationFrames: 150,
+    layout: "SOLO", narration: "A short claim.", backgroundSrc: "#FFFFFF",
+    visualGrammar: "SOLO", visualRegister: "solo", heroVisual: index !== 1,
+    entities: [], texts: [], cards: [], paperCards: [], frameBoxes: [], speechBubbles: [],
+  }));
+  const result = runQualityCheck({ schemaVersion: 2, fps: 30, width: 1920, height: 1080,
+    durationInFrames: 600, audio: "audio/test.wav", scenes });
+  const heroIssues = result.checks.flatMap((check) => check.issues)
+    .filter((issue) => issue.rule === "HERO_VISUAL_TOO_DENSE");
+  assert.deepStrictEqual(heroIssues.map((issue) => issue.scene), ["scene-3", "scene-4"]);
+  assert.ok(heroIssues[0].message.includes("scene-1") && heroIssues[0].message.includes("scene-3"));
+  assert.ok(heroIssues[1].message.includes("scene-3") && heroIssues[1].message.includes("scene-4"));
+});
+
+test("hero timing preflight separates measured prefix from advisory future scenes", () => {
+  const scenes = [
+    { id: "a", narration: "A first claim.", heroVisual: true },
+    { id: "b", narration: "A bridge.", heroVisual: true },
+    { id: "c", narration: "A future claim.", heroVisual: true },
+  ];
+  const prefix = heroTimingPreflight(scenes, [
+    { id: "a", startSeconds: 0, durationSeconds: 12 },
+    { id: "b", startSeconds: 12, durationSeconds: 8 },
+  ]);
+  assert.deepStrictEqual(prefix.measuredShortPairs.map((pair) => [pair.previous, pair.current]), [["a", "b"]]);
+  assert.deepStrictEqual(prefix.unmeasuredSceneIds, ["c"]);
+  assert.ok(prefix.forecastPairs.some((pair) => pair.current === "c"));
+  assert.ok(!prefix.measuredIssues.some((issue) => issue.scene === "c"));
+  assert.throws(() => heroTimingPreflight(scenes, [
+    { id: "a", startSeconds: 0, durationSeconds: 10 },
+    { id: "b", startSeconds: 50, durationSeconds: 8 },
+  ]), /contiguous/);
+  assert.throws(() => heroTimingPreflight(scenes, [
+    { id: "b", startSeconds: 0, durationSeconds: 12 },
+  ]), /contiguous/);
 });
 
 test("component-backed evidence does not need a decorative asset request", () => {

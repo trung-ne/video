@@ -18,7 +18,12 @@ trả lời "đã xong", handoff, hoặc tự dừng sau một artifact trung gi
 Chỉ được kết thúc khi `output/<id>/video.mp4` **mới được tạo trong lần chạy
 hiện tại** và production report/audit cho artifact đó đều pass. Nếu một bước
 thất bại, agent phải tự chẩn đoán, sửa đúng authored source hoặc asset, rồi chạy
-lại pipeline; cấm dùng skip gate. Chỉ hỏi/dừng khi cần quyền, input hoặc quyết
+lại pipeline; cấm dùng skip gate. **Repair có giới hạn:** nhóm diagnostics theo
+mã lỗi + scene ID/section và tầng (source/build, authored quality, measured
+TTS/alignment, compile, visual audit); sửa scene-local từng batch nhỏ, kiểm lại.
+Nếu cùng lỗi y hệt tái diễn sau 2 lần sửa/chạy, dừng retry mù, báo blocker và
+log cụ thể để xin chẩn đoán/đầu vào mới — không coi là hoàn thành và không bypass
+production gate. Chỉ hỏi/dừng khi cần quyền, input hoặc quyết
 định sáng tạo mà agent không thể tự suy ra an toàn. User interrupt là ngoại lệ:
 agent báo state hiện tại ngắn gọn và tiếp tục khi user yêu cầu tiếp tục.
 
@@ -55,9 +60,17 @@ npm run render -- --project <id>
 ```
 
 `process-storyboard-chunks.ts` chỉ resume artifact có attestation/hash/policy còn
-khớp. `--chunk-proof` là render non-promotable do orchestrator gọi; không dùng
-trực tiếp để xuất bản. Final render từ project có `chunk-plan.json` từ chối nếu
-thiếu hoặc drift chunk assembly provenance.
+khớp. Đọc `chunks/chunk-invalidation-report.json` và dòng `chunk reuse`; chỉ
+stage/chunk stale được chạy lại theo thứ tự, cache hit không thay full-video gate.
+Sau mỗi TTS checkpoint, `chunks/hero-timing-preflight.json` phân biệt prefix
+**measured** từ core TTS đã attested (hero spacing <19.9s dừng trước proof; mốc
+quality cuối là 20s) và `forecastPairs` cho scene chưa đo (ước lượng 2.5 từ/giây,
+<25s chỉ cảnh báo, không phải gate). Chỉnh hero tại authored source theo kết quả
+đo; không coi forecast là thời lượng thật. `--chunk-proof` là render non-promotable
+do orchestrator gọi; không dùng trực tiếp để xuất bản. Chỉ assemble sau mọi chunk
+proof pass rồi render/audit full canonical `output/<id>/video.mp4` mới; scene/halo
+hoặc sampled diagnostic không được thay production report pass. Final render từ
+project có `chunk-plan.json` từ chối nếu thiếu hoặc drift assembly provenance.
 
 Trước khi viết `SCENES`, bắt buộc export `VISUAL_TREATMENT_PLAN` đầy đủ: usage budgets,
 ít nhất 6 visual modes, hero cadence tối đa 45 giây và `paletteProfile: "editorial-muted-v2"`.
@@ -80,10 +93,13 @@ npm run render -- --project <id>
 ```
 
 Trước `build-storyboard.ts`, agent phải đọc transcript và viết tay
-`projects/<id>/storyboard-data.ts` theo từng câu/beat. Không được dùng các
-heading `Phân cảnh N` làm toàn bộ scene boundary cho transcript dài. Không chạy
-TTS nếu storyboard chỉ pass source coverage nhưng chưa pass granularity/director
-review.
+`projects/<id>/storyboard-data.ts` theo từng câu/beat. Sau **mỗi batch nhỏ sửa
+scene-local**, chạy `npx tsc --noEmit` và
+`npx ts-node scripts/build-storyboard.ts --project <id>` (source preflight);
+sửa lỗi TypeScript/build đúng scene trước khi viết batch tiếp hoặc chạy TTS. Không regex/codemod/override map để bulk-mutate
+scene; không dùng các heading `Phân cảnh N` làm toàn bộ scene boundary cho
+transcript dài. Không chạy TTS nếu storyboard chỉ pass source coverage nhưng
+chưa pass granularity/director review.
 
 Video từ 8 scene trở lên phải export `VISUAL_TREATMENT_PLAN` cùng `SCENES`:
 ít nhất 3 register target, character-free target, hero concepts, visual motifs

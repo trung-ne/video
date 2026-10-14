@@ -219,7 +219,19 @@ seam, không biến thành authored source. `assemble-storyboard-chunks.ts` ch�
 khi toàn bộ proof pass, tái tạo audio/words/durations/timeline chuẩn từ sample
 boundary và vẫn phải qua full global render/audit. `timeline.json` canonical có
 chunk plan thì render từ chối thiếu/drift assembly provenance. Không nối MP4 proof
-và không dùng proof để publish.
+và không dùng proof để publish. `process-storyboard-chunks.ts` ghi
+`chunks/hero-timing-preflight.json`: chỉ prefix scene có TTS core đã attested là
+**measured**; hero spacing <20s rõ ràng (<19.9s để chừa sai số làm tròn frame)
+dừng trước proof. Các scene còn lại dùng ước lượng narration 2.5 từ/giây:
+`forecastPairs` <25s chỉ là cảnh báo để chỉnh plan, **không** phải gate hay thời
+lượng đo. Quality gate trên timeline compiled canonical vẫn quyết định cuối cùng.
+
+Sau sửa cục bộ, xem `chunks/chunk-invalidation-report.json` và dòng `chunk reuse`:
+chỉ chunk có stage stale chạy lại theo thứ tự checkpoint; hash/attestation hợp lệ
+mới được tái sử dụng. Cache hit không chứng minh video cuối đạt. Luôn assemble từ
+core đã proof, chạy full canonical render/audit và chỉ công nhận
+`output/<id>/video.mp4` mới cùng production report pass; scene/halo diagnostic,
+chunk proof hoặc sampled preflight không thay thế canonical proof.
 
 **Hai tầng biến đổi (cố ý, đừng nhầm):**
 - **Authoring-time** (chạy lúc generate, GHI ĐÈ scenes trên đĩa): `autoFixBackgrounds` ([backgroundResolver.ts](src/ai/backgroundResolver.ts)) sửa nền lười → được *persist* trước khi compile. Không chạy post-hoc trên timeline có provenance.
@@ -331,6 +343,13 @@ Video mẫu không bao giờ để màn hình đứng yên — cứ ~5s có th�
    codemod, hay override map sinh hàng loạt để đổi grammar/register/slots trong
    `storyboard-data.ts`. Sửa theo scene-local patch, build ngay sau batch nhỏ;
    source fail phải được sửa bằng patch có mục tiêu, không tiếp tục transform.
+   **Source preflight trước TTS:** sau mỗi batch nhỏ scene-local, chạy
+   `npx tsc --noEmit` rồi `npx ts-node scripts/build-storyboard.ts --project <id>`;
+   sửa lỗi TypeScript/marker/slot/asset ngay tại scene liên quan trước batch tiếp.
+   Gom diagnostics theo mã lỗi + scene ID/section, phân biệt lỗi nguồn, quality
+   authored, measured timing, compile và visual proof; không sửa hàng loạt chỉ vì
+   nhiều scene cùng báo lỗi. Nếu cùng một lỗi lặp lại y hệt sau 2 lần sửa/chạy,
+   dừng vòng lặp, báo blocker cùng log và cần chẩn đoán/đầu vào mới; không skip gate.
 
 2. **Authored semantic cadence** — mỗi scene phải có một trạng thái hình bền vững
    cho tối đa 28 từ narration. Builder gọi `authoredCadenceIssues`; beat phải chứa

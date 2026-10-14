@@ -23,7 +23,96 @@ import sys
 import re
 import unicodedata
 import hashlib
+import importlib.metadata
+import math
+import tempfile
 from difflib import SequenceMatcher
+
+
+CACHE_SCHEMA_VERSION = 1
+ALIGNER_POLICY = "raw-whisper-word-timestamps-v1"
+WHISPER_OPTIONS = {"word_timestamps": True, "vad_filter": False}
+DEVICE = "cpu"
+COMPUTE_TYPE = "int8"
+
+
+def wav_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def cache_identity(wav, model, language, whisper_version):
+    return {
+        "wavSha256": wav_sha256(wav),
+        "model": model,
+        "fasterWhisperVersion": whisper_version,
+        "language": language,
+        "device": DEVICE,
+        "computeType": COMPUTE_TYPE,
+        "options": WHISPER_OPTIONS,
+        "alignerPolicy": ALIGNER_POLICY,
+    }
+
+
+def raw_cache_path(outdir, identity):
+    key = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    return os.path.join(outdir, f"raw_whisper_cache_{key}.json")
+
+
+def validate_raw_words(words):
+    if not isinstance(words, list):
+        raise ValueError("raw Whisper words must be a JSON array")
+    previous_start = 0.0
+    for index, word in enumerate(words):
+        if not isinstance(word, dict) or set(word) != {"word", "startSec", "endSec", "confidence"}:
+            raise ValueError(f"invalid raw Whisper word at index {index}")
+        if not isinstance(word["word"], str) or not word["word"].strip():
+            raise ValueError(f"invalid raw Whisper token at index {index}")
+        for field in ("startSec", "endSec", "confidence"):
+            value = word[field]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError(f"invalid raw Whisper {field} at index {index}")
+        if (word["startSec"] < previous_start or word["startSec"] < 0
+                or word["endSec"] < word["startSec"] or not 0 <= word["confidence"] <= 1):
+            raise ValueError(f"invalid raw Whisper timing/confidence at index {index}")
+        previous_start = word["startSec"]
+
+
+def read_raw_cache(path, identity):
+    with open(path, "r", encoding="utf-8") as source:
+        cached = json.load(source)
+    if not isinstance(cached, dict) or set(cached) != {"schemaVersion", "identity", "detectedLanguage", "words"}:
+        raise ValueError("malformed raw Whisper cache")
+    if type(cached["schemaVersion"]) is not int or cached["schemaVersion"] != CACHE_SCHEMA_VERSION or cached["identity"] != identity:
+        raise ValueError("stale raw Whisper cache: WAV or inference policy changed")
+    language = cached["detectedLanguage"]
+    if not isinstance(language, str) or not language.strip():
+        raise ValueError("invalid raw Whisper detected language")
+    validate_raw_words(cached["words"])
+    return cached["words"], language
+
+
+def write_raw_cache(path, identity, words, language):
+    validate_raw_words(words)
+    if not isinstance(language, str) or not language.strip():
+        raise ValueError("invalid raw Whisper detected language")
+    payload = {
+        "schemaVersion": CACHE_SCHEMA_VERSION, "identity": identity,
+        "detectedLanguage": language, "words": words,
+    }
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=os.path.dirname(path),
+                                         prefix=".raw_whisper_cache_", suffix=".tmp", delete=False) as destination:
+            temporary = destination.name
+            json.dump(payload, destination, ensure_ascii=False, indent=2)
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None and os.path.exists(temporary):
+            os.remove(temporary)
 
 
 def normalize_word(value):
@@ -284,28 +373,35 @@ def main() -> int:
         detected_language = args.lang or "unknown"
     else:
         try:
-            from faster_whisper import WhisperModel
-        except ImportError:
+            identity = cache_identity(args.wav, args.model, args.lang, importlib.metadata.version("faster-whisper"))
+            cache_path = raw_cache_path(args.outdir, identity)
+            if os.path.exists(cache_path):
+                words, detected_language = read_raw_cache(cache_path, identity)
+                print(f"[align_words] using verified raw Whisper cache: {cache_path}")
+            else:
+                from faster_whisper import WhisperModel
+                print(f"[align_words] loading model '{args.model}' (CPU int8)...")
+                model = WhisperModel(args.model, device=DEVICE, compute_type=COMPUTE_TYPE)
+                print(f"[align_words] transcribing {args.wav} with word timestamps...")
+                segments, info = model.transcribe(args.wav, language=args.lang, **WHISPER_OPTIONS)
+                words = []
+                for seg in segments:
+                    for w in (seg.words or []):
+                        token = (w.word or "").strip()
+                        if token:
+                            words.append({
+                                "word": token, "startSec": round(float(w.start), 3),
+                                "endSec": round(float(w.end), 3),
+                                "confidence": round(float(getattr(w, "probability", 0.0) or 0.0), 3),
+                            })
+                detected_language = info.language or args.lang or "unknown"
+                write_raw_cache(cache_path, identity, words, detected_language)
+        except (ValueError, OSError, json.JSONDecodeError) as exc:
+            print(f"[align_words] raw Whisper cache/input error: {exc}", file=sys.stderr)
+            return 1
+        except (ImportError, importlib.metadata.PackageNotFoundError):
             print("[align_words] faster-whisper chưa cài. Chạy: py -3.11 -m pip install faster-whisper", file=sys.stderr)
             return 2
-
-        print(f"[align_words] loading model '{args.model}' (CPU int8)...")
-        model = WhisperModel(args.model, device="cpu", compute_type="int8")
-        print(f"[align_words] transcribing {args.wav} with word timestamps...")
-        segments, info = model.transcribe(
-            args.wav, word_timestamps=True, language=args.lang, vad_filter=False,
-        )
-        words = []
-        for seg in segments:
-            for w in (seg.words or []):
-                token = (w.word or "").strip()
-                if token:
-                    words.append({
-                        "word": token, "startSec": round(float(w.start), 3),
-                        "endSec": round(float(w.end), 3),
-                        "confidence": round(float(getattr(w, "probability", 0.0) or 0.0), 3),
-                    })
-        detected_language = info.language or args.lang
 
     provenance = None
     if args.scenes:

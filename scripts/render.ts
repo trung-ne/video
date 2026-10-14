@@ -64,6 +64,7 @@ import {
   VisualMeasurementContract,
 } from "../src/engine/visualAuditIntegrity";
 import {
+  ProcessAttempt,
   ProcessRunError,
   runProcessWithDllInitRetry,
 } from "../src/engine/childProcessRunner";
@@ -343,7 +344,7 @@ function runEncodingAudit(videoPath: string, recordAs = videoPath): any {
  * production floor. Normalize the staged candidate with explicit ABR bounds
  * before auditing it. This never touches a published artifact.
  */
-async function normalizeProductionBitrate(videoPath: string): Promise<void> {
+async function normalizeProductionBitrate(videoPath: string): Promise<ProcessAttempt[]> {
   const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path as string;
   const normalizedPath = videoPath.replace(/\.mp4$/i, ".normalized.mp4");
   const target = referenceQuality.encoding.targetVideoBitrate;
@@ -360,8 +361,9 @@ async function normalizeProductionBitrate(videoPath: string): Promise<void> {
     "-c:a", "aac", "-b:a", referenceQuality.encoding.audioBitrate,
     "-movflags", "+faststart", normalizedPath,
   ];
+  let attempts: ProcessAttempt[];
   try {
-    await runProcessWithDllInitRetry({
+    attempts = await runProcessWithDllInitRetry({
       phase: "bitrate-normalization",
       executable: ffmpegPath,
       args,
@@ -377,6 +379,7 @@ async function normalizeProductionBitrate(videoPath: string): Promise<void> {
     throw error;
   }
   fs.renameSync(normalizedPath, videoPath);
+  return attempts;
 }
 
 function derivedChunksProjectRoot(filePath: string): string | null {
@@ -754,6 +757,47 @@ let timingAudit: {
   mp4Seconds: number; expectedSeconds: number; driftSeconds: number; scope: string;
 } | null = null;
 
+// Invocation-local diagnostics only: never add these values to hashed audits or
+// the production report, and never place them in the promotion artifact set.
+const performanceTelemetry: {
+  schemaVersion: number;
+  runId: string;
+  subprocesses: Record<string, { elapsedMs: number; attempts: number; retried: boolean }>;
+  audits: Record<string, number>;
+  outcome: "completed" | "failed";
+} = { schemaVersion: 1, runId, subprocesses: {}, audits: {}, outcome: "failed" };
+async function measureProcess(
+  phase: string,
+  run: () => Promise<ProcessAttempt[]>,
+): Promise<void> {
+  const start = Date.now();
+  try {
+    const attempts = await run();
+    performanceTelemetry.subprocesses[phase] = {
+      elapsedMs: Date.now() - start,
+      attempts: attempts.length,
+      retried: attempts.length > 1,
+    };
+  } catch (error) {
+    if (error instanceof ProcessRunError) {
+      performanceTelemetry.subprocesses[phase] = {
+        elapsedMs: Date.now() - start,
+        attempts: error.result.attempt,
+        retried: error.result.attempt > 1,
+      };
+    }
+    throw error;
+  }
+}
+function measureAudit<T>(name: string, audit: () => T): T {
+  const start = Date.now();
+  try {
+    return audit();
+  } finally {
+    performanceTelemetry.audits[name] = Date.now() - start;
+  }
+}
+
 async function runRenderPipeline(): Promise<void> {
 try {
   if (isProxy) {
@@ -808,7 +852,7 @@ try {
   ].filter(Boolean);
 
   try {
-    await runProcessWithDllInitRetry({
+    await measureProcess("remotion-render", () => runProcessWithDllInitRetry({
       phase: "remotion-render",
       executable: process.execPath,
       args: remotionArgs,
@@ -816,7 +860,7 @@ try {
       signal: pipelineAbort.signal,
       retryDllInitFailure: true,
       beforeRetry: () => fs.rmSync(stagedOut, { force: true }),
-    });
+    }));
   } catch (error) {
     fs.rmSync(stagedOut, { force: true });
     throw error;
@@ -826,14 +870,14 @@ try {
   const boundedRender = frameRange !== null;
   if (!isProxy && !boundedRender) {
     console.log("Normalizing staged H.264 delivery bitrate before audit...");
-    await normalizeProductionBitrate(stagedOut);
+    await measureProcess("bitrate-normalization", () => normalizeProductionBitrate(stagedOut));
   }
   // A bounded --frames render is a diagnostic slice, never a publishable
   // deliverable. Its average bitrate is dominated by its particular few
   // seconds (especially a quiet white opening) and cannot prove or disprove
   // the production encoding contract. Keep the full-render audit fail-closed;
   // slices still undergo requested-range timing and pixel audits below.
-  const encodingAudit = (isProxy || boundedRender) ? null : runEncodingAudit(stagedOut, outPath);
+  const encodingAudit = (isProxy || boundedRender) ? null : measureAudit("encoding", () => runEncodingAudit(stagedOut, outPath));
 
   // A render that does not match what was asked for must never reach an audit or
   // a cross-render comparison — a truncated MP4 scores *better* on sampled pixel
@@ -879,8 +923,9 @@ try {
       throw new Error("Visual audit timing plan drifted after rendering.");
     }
     const sampleOffsets = plannedVisualAuditOffsets;
+    const visualAuditStarted = Date.now();
     try {
-      await runProcessWithDllInitRetry({
+      await measureProcess("visual-audit", () => runProcessWithDllInitRetry({
         phase: "visual-audit",
         executable: "python",
         args: [
@@ -907,12 +952,14 @@ try {
           fs.rmSync(visualAuditPath, { force: true });
           fs.rmSync(contactSheetPath, { force: true });
         },
-      });
+      }));
     } catch (error) {
       // A completed audit that fails a quality threshold is valuable diagnostic
       // evidence. Keep its report/contact sheet in staging; only the bounded
       // DLL-init retry above clears partial outputs before rerunning.
       throw error;
+    } finally {
+      performanceTelemetry.audits.visual = Date.now() - visualAuditStarted;
     }
     if (!fs.existsSync(visualAuditPath)) {
       throw new Error(`Visual audit did not produce its required report: ${visualAuditPath}`);
@@ -951,7 +998,7 @@ try {
   const audioAuditPath = stagedOut.replace(/\.mp4$/i, ".audio-audit.json");
   const audioAudit = isProxy || boundedRender || hasFlag("--skip-audio-audit")
     ? null
-    : writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath));
+    : measureAudit("audio", () => writeAudioAudit(path.resolve(stagedOut), audioAuditPath, path.resolve(outPath)));
   const referenceComparison = visualAudit && qualityScope.kind === "global"
     ? buildReferenceComparison(visualAudit, referenceBaseline)
     : null;
@@ -1056,6 +1103,7 @@ try {
   } else {
     console.log(`\n✅ Diagnostic render complete. Artifacts kept at: ${stagingDir}`);
   }
+  performanceTelemetry.outcome = "completed";
 } catch (err) {
   // The previously published build is left exactly as it was. The failed run
   // stays in its staging dir so its artifacts can be inspected without being
@@ -1090,6 +1138,19 @@ try {
   console.error(`   Published build untouched. Failed run kept at: ${stagingDir}`);
   process.exitCode = 1;
 } finally {
+  // Successful promotion removes staging; keep telemetry under this invocation's
+  // run directory, never among promoted or hash-bound artifacts. Observability
+  // must not change a render's success/failure or promotion decision.
+  try {
+    fs.mkdirSync(stagingDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(stagingDir, "performance.json"),
+      `${JSON.stringify(performanceTelemetry, null, 2)}\n`,
+      "utf8",
+    );
+  } catch (error) {
+    console.warn(`Could not write invocation performance telemetry: ${(error as Error).message}`);
+  }
   if (fs.existsSync(propsTmpFile)) {
     fs.unlinkSync(propsTmpFile);
   }

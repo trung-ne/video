@@ -27,7 +27,7 @@
     "check-style-assets": "npx ts-node scripts/check-style-assets.ts",
     "typecheck": "npx tsc --noEmit",
     "test": "npx ts-node scripts/test.ts",
-    "check": "npm run typecheck && npm test && npx ts-node scripts/test_chunk_pipeline_integration.ts && python -m unittest scripts/test_align_words.py scripts/test_visual_audit.py scripts/test_chunk_audio.py scripts/test_chunk_audio_validation.py scripts/test_verify_proof_core_pcm.py scripts/test_tts_scene_cache.py scripts/test_tts_edge_cache.py scripts/test_tts_kokoro_cache.py"
+    "check": "npm run typecheck && npm test && npx ts-node scripts/test_chunk_pipeline_integration.ts && python -m unittest scripts/test_align_words.py scripts/test_sample_visual_preflight.py scripts/test_visual_audit.py scripts/test_chunk_audio.py scripts/test_chunk_audio_validation.py scripts/test_verify_proof_core_pcm.py scripts/test_tts_scene_cache.py scripts/test_tts_edge_cache.py scripts/test_tts_kokoro_cache.py"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.248",

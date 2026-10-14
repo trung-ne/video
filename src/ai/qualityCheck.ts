@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { backgroundImageExists, isCSSBackground } from "./backgroundResolver";
 import { getManifestAssetEntry, resolveAssetSrcStrict } from "../engine/assetPaths";
-import { STAGE_ANCHORS } from "../engine/stageAnchors";
+import { STAGE_ANCHORS, authoredStageIssues } from "../engine/stageAnchors";
 import { isApprovedNoFacePhoto } from "../engine/photoPolicy";
 import {
   getGrammarDefinition,
@@ -1185,18 +1185,22 @@ export function runStoryboardCheck(storyboard: any): QualityReport {
         });
       }
     }
-    // TABLEAU stage must be a known stage set.
-    if (
-      g === "TABLEAU" &&
-      slots.stage &&
-      !STAGE_ANCHORS_KEYS.has(slots.stage)
-    ) {
+    for (const message of authoredStageIssues(g, slots)) {
       intentIssues.push({
         severity: "MAJOR",
         rule: "INTENT_REALIZED",
         scene: b.id,
-        message: `${b.id}: stage "${slots.stage}" không tồn tại`,
-        suggestion: `Stage hợp lệ: ${[...STAGE_ANCHORS_KEYS].join(", ")}`,
+        message: `${b.id}: ${message}`,
+      });
+    }
+    if ((g === "TABLEAU" || g === "DIALOGUE_QA") && slots.stage &&
+        STAGE_ANCHORS_KEYS.has(slots.stage) && !backgroundImageExists(slots.stage)) {
+      intentIssues.push({
+        severity: "MAJOR",
+        rule: "INTENT_REALIZED",
+        scene: b.id,
+        message: `${b.id}: stage "${slots.stage}" has no resolvable production image`,
+        suggestion: "Build the asset manifest and supply a production stage image.",
       });
     }
 
@@ -2145,6 +2149,30 @@ function checkAuthoredTransitionRealization(scenes: any[]): CheckResult {
 }
 
 // CHECK 14: Visual cadence — persistent semantic state change every 10 seconds.
+export function measuredHeroSpacingIssues(
+  scenes: Array<{ id: string; startFrame: number; heroVisual?: boolean }>,
+  fps: number,
+): QualityIssue[] {
+  const heroes = scenes.filter((scene) => scene.heroVisual);
+  const issues: QualityIssue[] = [];
+  for (let index = 1; index < heroes.length; index++) {
+    const previous = heroes[index - 1];
+    const current = heroes[index];
+    const gapSeconds = (current.startFrame - previous.startFrame) / fps;
+    if (gapSeconds < 20) {
+      issues.push({
+        severity: "MAJOR",
+        rule: "HERO_VISUAL_TOO_DENSE",
+        scene: current.id,
+        message: `${previous.id} (${(previous.startFrame / fps).toFixed(1)}s) → ${current.id} ` +
+          `(${(current.startFrame / fps).toFixed(1)}s): hero visuals are ${gapSeconds.toFixed(1)}s apart; minimum is 20s outside an authored montage climax.`,
+        suggestion: "Move or remove one authored hero visual; review all listed pairs before recompiling.",
+      });
+    }
+  }
+  return issues;
+}
+
 function checkVisualRhythm(scenes: any[]): CheckResult {
   const issues: QualityIssue[] = [];
 
@@ -2964,9 +2992,8 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
 
   const durationSeconds =
     Number(timeline.durationInFrames ?? 0) / Number(timeline.fps ?? 30);
-  const heroFrames = scenes
-    .filter((scene) => scene.heroVisual)
-    .map((scene) => scene.startFrame);
+  const heroes = scenes.filter((scene) => scene.heroVisual);
+  const heroFrames = heroes.map((hero) => hero.startFrame);
   const heroRatio = heroFrames.length / Math.max(1, scenes.length);
   if (heroRatio > 0.28) {
     issues.push({
@@ -2975,21 +3002,7 @@ function checkSemanticTimeline(timeline: any, scenes: any[]): CheckResult {
       message: `${heroFrames.length}/${scenes.length} scenes are heroes; maximum is 28%.`,
     });
   }
-  for (let index = 1; index < heroFrames.length; index++) {
-    if (
-      (heroFrames[index] - heroFrames[index - 1]) / (timeline.fps ?? 30) <
-      20
-    ) {
-      issues.push({
-        severity: "MAJOR",
-        rule: "HERO_VISUAL_TOO_DENSE",
-        scene: scenes[index]?.id,
-        message:
-          "Hero visuals must be at least 20 seconds apart outside an authored montage climax.",
-      });
-      break;
-    }
-  }
+  issues.push(...measuredHeroSpacingIssues(scenes, timeline.fps ?? 30));
   const boundaries = [0, ...heroFrames, timeline.durationInFrames ?? 0].sort(
     (a, b) => a - b,
   );

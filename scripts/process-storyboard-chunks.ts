@@ -49,7 +49,8 @@ import {
   verifyCanonicalChunkPlan,
 } from "../src/types/chunk";
 import { Storyboard } from "../src/types/storyboard";
-import { runProcessWithDllInitRetry } from "../src/engine/childProcessRunner";
+import { heroTimingPreflight, MeasuredSceneTiming } from "../src/engine/heroTimingPreflight";
+import { ProcessRunError, runProcessWithDllInitRetry } from "../src/engine/childProcessRunner";
 import { ProjectChunkInterruptedError, runWithProjectChunkLock } from "../src/engine/projectChunkLock";
 import qualityProfile from "../config/reference-quality.json";
 
@@ -93,6 +94,47 @@ const alignModel = value("--align-model") ?? "small";
 const python = value("--python") ?? "py";
 const thresholdProfileHash = checksumJson(qualityProfile);
 
+// Invocation-local observations never participate in stage receipts or promotion.
+const performancePath = path.join(projectDir, "chunks", ".runs", `${Date.now()}-${process.pid}`, "performance.json");
+const performance = {
+  schemaVersion: 1,
+  kind: "chunk-run-performance",
+  projectId: path.basename(projectDir),
+  startedAt: new Date().toISOString(),
+  productionGatesUnchanged: true,
+  stages: [] as Array<{ phase: string; cache: "hit" | "miss"; elapsedMs?: number;
+    attemptCount?: number; status?: "ok" | "failed"; scope?: string;
+    frameCount?: number; videoBytes?: number }>,
+};
+
+function writePerformance(valueToWrite: unknown): void {
+  try { writeJson(performancePath, valueToWrite); }
+  catch (error) { console.warn(`Could not write chunk performance telemetry: ${String(error)}`); }
+}
+
+function recordStage(phase: string, cache: "hit" | "miss", details: {
+  elapsedMs?: number; attemptCount?: number; status?: "ok" | "failed";
+  scope?: string; frameCount?: number; videoBytes?: number;
+} = {}): void {
+  performance.stages.push({ phase, cache, ...details });
+  writePerformance(performance);
+}
+
+async function measuredProcess(phase: string, options: Parameters<typeof runProcessWithDllInitRetry>[0]): Promise<void> {
+  try {
+    const attempts = await runProcessWithDllInitRetry(options);
+    recordStage(phase, "miss", {
+      elapsedMs: attempts.reduce((sum, attempt) => sum + attempt.elapsedMs, 0),
+      attemptCount: attempts.length, status: "ok",
+    });
+  } catch (error) {
+    if (error instanceof ProcessRunError) recordStage(phase, "miss", {
+      elapsedMs: error.result.elapsedMs, attemptCount: error.result.attempt, status: "failed",
+    });
+    throw error;
+  }
+}
+
 function fatal(message: string): never {
   throw new Error(message);
 }
@@ -117,7 +159,7 @@ async function runNodeScript(
   timeoutMs: number,
   signal: AbortSignal,
 ): Promise<void> {
-  await runProcessWithDllInitRetry({
+  await measuredProcess(phase, {
     phase,
     executable: process.execPath,
     args: [require.resolve("ts-node/dist/bin.js"), script, ...scriptArgs],
@@ -136,7 +178,7 @@ async function runPython(
   signal: AbortSignal,
 ): Promise<void> {
   const pythonArgs = python.toLowerCase() === "py" ? ["-3.11", script, ...scriptArgs] : [script, ...scriptArgs];
-  await runProcessWithDllInitRetry({
+  await measuredProcess(phase, {
     phase,
     executable: python,
     args: pythonArgs,
@@ -212,6 +254,13 @@ interface GlobalAuthoringCheckpoint {
   passed: true;
 }
 
+function blockingQualityIssues(report: ReturnType<typeof runStoryboardCheck>): string {
+  return report.checks.flatMap((check) => check.issues)
+    .filter((issue) => issue.severity !== "MINOR")
+    .map((issue) => `${issue.scene ?? "global"} ${issue.rule}: ${issue.message}${issue.suggestion ? ` (${issue.suggestion})` : ""}`)
+    .join("; ");
+}
+
 function writeGlobalAuthoringCheckpoint(storyboard: Storyboard, plan: ChunkPlan): string {
   const transcriptPath = path.join(projectDir, "transcript.txt");
   if (!fs.existsSync(transcriptPath)) fatal(`Missing complete transcript required by the global authoring gate: ${transcriptPath}`);
@@ -233,7 +282,7 @@ function writeGlobalAuthoringCheckpoint(storyboard: Storyboard, plan: ChunkPlan)
       ...coverage.issues.map((issue) => `${issue.code}: ${issue.message}`),
       ...(!decisionMatches ? ["the persisted authoringDecision does not match the complete transcript/storyboard"] : []),
       ...(report.blockers || report.majors
-        ? [`global storyboard quality has ${report.blockers} blocker(s) and ${report.majors} major issue(s)`]
+        ? [`global storyboard quality has ${report.blockers} blocker(s) and ${report.majors} major issue(s): ${blockingQualityIssues(report)}`]
         : []),
     ];
     fatal(`Global authoring gate failed before TTS: ${reasons.join("; ")}`);
@@ -365,6 +414,48 @@ function readBoundChunkTimeline(filePath: string, role: "chunk-core" | "chunk-pr
   return timeline;
 }
 
+function checkHeroTimingPrefix(context: ChunkStageContractContext): void {
+  const measured: MeasuredSceneTiming[] = [];
+  let elapsedSeconds = 0;
+  for (const chunk of context.plan.chunks) {
+    if (verifyChunkStage(context, chunk.id, "tts").length) break;
+    const manifest = readJson<{
+      sampleRate: number;
+      scenes: Array<{ id: string; startSample: number; samples: number }>;
+    }>(chunkPipelinePaths(projectDir, chunk.id).durations);
+    if (!Number.isInteger(manifest.sampleRate) || manifest.sampleRate <= 0 ||
+        manifest.scenes?.length !== chunk.sceneIds.length) {
+      fatal(`${chunk.id} has an invalid measured TTS duration manifest.`);
+    }
+    let chunkSamples = 0;
+    for (const [index, scene] of manifest.scenes.entries()) {
+      if (scene.id !== chunk.sceneIds[index] || scene.startSample !== chunkSamples ||
+          !Number.isInteger(scene.samples) || scene.samples <= 0) {
+        fatal(`${chunk.id} has noncontiguous measured scene samples.`);
+      }
+      measured.push({ id: scene.id, startSeconds: elapsedSeconds + chunkSamples / manifest.sampleRate,
+        durationSeconds: scene.samples / manifest.sampleRate });
+      chunkSamples += scene.samples;
+    }
+    elapsedSeconds += chunkSamples / manifest.sampleRate;
+  }
+  const report = heroTimingPreflight(context.storyboard.scenes, measured);
+  writeJson(path.join(projectDir, "chunks", "hero-timing-preflight.json"), {
+    schemaVersion: 1, basis: "attested-core-tts-prefix", storyboardChecksum: checksumJson(context.storyboard),
+    ...report,
+  });
+  if (report.forecastPairs.length) {
+    console.log(`ℹ️  ${report.forecastPairs.length} unmeasured hero-spacing forecast(s) under 25s; narration-rate estimates are advisory, not gate results.`);
+  }
+  // Chunk sample rounding can shift a later canonical start by one frame.
+  // Leave borderline measured pairs to the exact compiled quality gate.
+  const definite = report.measuredShortPairs.filter((pair) => pair.gapSeconds < 19.9);
+  if (definite.length) {
+    fatal(`Measured hero-spacing preflight failed before proof: ${definite.map((pair) =>
+      `${pair.previous} → ${pair.current}: ${pair.gapSeconds.toFixed(2)}s (minimum 20s)`).join("; ")}`);
+  }
+}
+
 async function main(signal: AbortSignal): Promise<void> {
   if (storyboardOverride && path.resolve(storyboardOverride) !== canonicalStoryboardPath) {
     fatal("--storyboard must resolve to the project's canonical storyboard.json.");
@@ -405,6 +496,7 @@ async function main(signal: AbortSignal): Promise<void> {
   }
   const chunks = requestedChunk ? plan.chunks.filter((chunk) => chunk.id === requestedChunk) : plan.chunks;
   if (requestedChunk && !chunks.length) fatal(`Unknown planned chunk: ${requestedChunk}`);
+  checkHeroTimingPrefix(context);
 
   for (const chunk of chunks) {
     const index = plan.chunks.findIndex((item) => item.id === chunk.id);
@@ -419,16 +511,19 @@ async function main(signal: AbortSignal): Promise<void> {
     writeJson(paths.scope, scope);
     writeJson(paths.coreScope, coreScope);
     writeJson(paths.proofStoryboard, proofProjected);
-    if (!stageIsValid(context, chunk.id, "authoring")) {
+    const authoringCached = stageIsValid(context, chunk.id, "authoring");
+    if (!authoringCached) {
       const report = runScopedStoryboardCheck(proofProjected, scope);
       if (report.blockers || report.majors) {
-        fatal(`${chunk.id} authoring quality failed (${report.blockers} blocker(s), ${report.majors} major issue(s)).`);
+        fatal(`${chunk.id} authoring quality failed (${report.blockers} blocker(s), ${report.majors} major issue(s)): ${blockingQualityIssues(report)}`);
       }
       attest(context, chunk.id, "authoring");
     }
+    recordStage(`${chunk.id}:authoring`, authoringCached ? "hit" : "miss", { scope: "core+halo", status: "ok" });
     console.log(`✅ ${chunk.id} authoring checkpoint`);
 
-    if (!stageIsValid(context, chunk.id, "tts")) {
+    const ttsCached = stageIsValid(context, chunk.id, "tts");
+    if (!ttsCached) {
       if (!execute) fatal(`${chunk.id} needs TTS. Re-run with --execute after reviewing its authoring checkpoint.`);
       await runNodeScript(`${chunk.id}:tts-scenes`, "scripts/storyboard-to-tts.ts", ["--storyboard", paths.projection, "--out", paths.ttsScenes], 5 * 60_000, signal);
       const audioDir = path.dirname(paths.audio);
@@ -445,9 +540,12 @@ async function main(signal: AbortSignal): Promise<void> {
       fs.copyFileSync(generatedDurations, paths.durations);
       attest(context, chunk.id, "tts");
     }
+    recordStage(`${chunk.id}:tts-checkpoint`, ttsCached ? "hit" : "miss", { scope: "core", status: "ok" });
     console.log(`✅ ${chunk.id} TTS checkpoint`);
+    checkHeroTimingPrefix(context);
 
-    if (!stageIsValid(context, chunk.id, "alignment")) {
+    const alignmentCached = stageIsValid(context, chunk.id, "alignment");
+    if (!alignmentCached) {
       if (!execute) fatal(`${chunk.id} needs alignment. Re-run with --execute after reviewing its TTS checkpoint.`);
       fs.mkdirSync(path.dirname(paths.words), { recursive: true });
       const alignArgs = [
@@ -461,9 +559,11 @@ async function main(signal: AbortSignal): Promise<void> {
       await runPython(`${chunk.id}:alignment`, "scripts/align_words.py", alignArgs, 2 * 60 * 60_000, signal);
       attest(context, chunk.id, "alignment");
     }
+    recordStage(`${chunk.id}:alignment-checkpoint`, alignmentCached ? "hit" : "miss", { scope: "core", status: "ok" });
     console.log(`✅ ${chunk.id} alignment checkpoint`);
 
-    if (!stageIsValid(context, chunk.id, "compile")) {
+    const compileCached = stageIsValid(context, chunk.id, "compile");
+    if (!compileCached) {
       if (!execute) fatal(`${chunk.id} needs compile. Re-run with --execute after reviewing its alignment checkpoint.`);
       const audioPublicPath = path.relative(path.resolve("public"), paths.audio).replace(/\\/g, "/");
       await runNodeScript(`${chunk.id}:compile`, "scripts/compile-storyboard.ts", [
@@ -485,13 +585,18 @@ async function main(signal: AbortSignal): Promise<void> {
         end: scene.startFrame + scene.durationFrames,
       })));
       if (!validation.valid || quality.blockers || quality.majors || !spatial.passed) {
-        fatal(`${chunk.id} compile quality failed (schema=${validation.valid}, quality=${quality.blockers}/${quality.majors}, spatial=${spatial.passed}).`);
+        fatal(`${chunk.id} compile quality failed (schema=${validation.valid}, quality=${quality.blockers}/${quality.majors}, spatial=${spatial.passed}): ${[...validation.errors, blockingQualityIssues(quality), ...(!spatial.passed ? [JSON.stringify(spatial)] : [])].filter(Boolean).join("; ")}`);
       }
       attest(context, chunk.id, "compile");
     }
+    recordStage(`${chunk.id}:compile-checkpoint`, compileCached ? "hit" : "miss", {
+      scope: "core", status: "ok",
+      frameCount: fs.existsSync(paths.timeline) ? readJson<{ durationInFrames: number }>(paths.timeline).durationInFrames : undefined,
+    });
     console.log(`✅ ${chunk.id} compile checkpoint`);
 
-    if (!stageIsValid(context, chunk.id, "visual-proof")) {
+    const proofCached = stageIsValid(context, chunk.id, "visual-proof");
+    if (!proofCached) {
       if (!execute) fatal(`${chunk.id} needs visual proof. Re-run with --execute after reviewing its compile checkpoint.`);
       await runNodeScript(`${chunk.id}:proof-tts-scenes`, "scripts/storyboard-to-tts.ts", [
         "--storyboard", paths.proofStoryboard,
@@ -549,6 +654,11 @@ async function main(signal: AbortSignal): Promise<void> {
       ], 4 * 60 * 60_000, signal);
       attest(context, chunk.id, "visual-proof");
     }
+    recordStage(`${chunk.id}:visual-proof-checkpoint`, proofCached ? "hit" : "miss", {
+      scope: "core+halo", status: "ok",
+      frameCount: fs.existsSync(paths.proofTimeline) ? readJson<{ durationInFrames: number }>(paths.proofTimeline).durationInFrames : undefined,
+      videoBytes: fs.existsSync(paths.proofVideo) ? fs.statSync(paths.proofVideo).size : undefined,
+    });
     console.log(`✅ ${chunk.id} visual-proof checkpoint`);
   }
 
@@ -559,7 +669,11 @@ void runWithProjectChunkLock(projectDir, {
   operation: "process-storyboard-chunks",
   mode: execute ? "execute" : "check",
   requestedChunk,
-}, main).catch((error) => {
+}, main).then(() => {
+  writePerformance({ ...performance, finishedAt: new Date().toISOString(), status: "completed" });
+}).catch((error) => {
+  writePerformance({ ...performance, finishedAt: new Date().toISOString(), status: "failed",
+    error: error instanceof Error ? error.message : String(error) });
   console.error(`❌ ${error instanceof Error ? error.message : String(error)}`);
   process.exitCode = error instanceof ProjectChunkInterruptedError ? error.exitCode : 1;
 });

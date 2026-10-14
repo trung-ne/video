@@ -29,6 +29,8 @@ import { resolveAssetRequest } from "../src/engine/assetResolver";
 import referenceQuality from "../config/reference-quality.json";
 import { ENTRANCE_STYLES } from "../src/engine/entrancePolicy";
 import { authoredCadenceIssues, authoredTransitionCapabilityIssues } from "../src/engine/visualCadence";
+import { authoredStageIssues, STAGE_ANCHORS } from "../src/engine/stageAnchors";
+import { backgroundImageExists } from "../src/ai/backgroundResolver";
 import { resolveStableSceneIds } from "../src/engine/sceneIdentity";
 import { isLongVideoWordCount, minimumAuthoredScenesForWordCount } from "../src/types/chunk";
 import { VISUAL_REGISTER_IDS, VISUAL_TREATMENT_MAXIMA } from "../src/ai/visualTreatmentPolicy";
@@ -266,6 +268,11 @@ const scenes = SCENES.map((s, i) => {
       fail(`${s.grammar} does not support register "${s.visualRegister}" ` +
            `(supported: ${definition.supportedRegisters.join(", ")})`);
     }
+  }
+  for (const issue of authoredStageIssues(s.grammar, slots)) fail(issue);
+  if ((s.grammar === "TABLEAU" || s.grammar === "DIALOGUE_QA") && slots.stage &&
+      STAGE_ANCHORS[slots.stage] && !backgroundImageExists(slots.stage)) {
+    fail(`stage "${slots.stage}" has no resolvable production image; build the asset manifest or supply the stage`);
   }
   const sv = s.semanticVisual;
   if (!sv?.subject?.trim() || !sv?.action?.trim() || !sv?.takeaway?.trim()) {

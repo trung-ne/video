@@ -148,3 +148,15 @@ export function resolveStageAnchor(
   if (!backgroundSrc || !anchor) return undefined;
   return STAGE_ANCHORS[canonicalStagePath(backgroundSrc)]?.[anchor];
 }
+
+/** Validate authored stage slots before TTS rather than silently falling back to a free position. */
+export function authoredStageIssues(grammar: string, slots: Record<string, string>): string[] {
+  const stage = slots.stage;
+  if (grammar !== "TABLEAU" && !(grammar === "DIALOGUE_QA" && stage)) return [];
+  if (!stage) return []; // Required-slot validation reports this separately.
+  const anchors = STAGE_ANCHORS[stage];
+  if (!anchors) return [`stage "${stage}" does not exist; valid stages: ${Object.keys(STAGE_ANCHORS).join(", ")}`];
+  return (["anchorA", "anchorB"] as const)
+    .filter((key) => slots[key] && !anchors[slots[key]])
+    .map((key) => `${key} "${slots[key]}" is not on stage "${stage}"; valid anchors: ${Object.keys(anchors).join(", ")}`);
+}
