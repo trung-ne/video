@@ -57,6 +57,7 @@ import { fitTextToBox } from "../src/engine/textLayout";
 import { getPaletteSaturationScale, listManifestAssetPaths, listResolvableRefs } from "../src/engine/assetPaths";
 import { buildSystemPrompt, listAvailableAssets, listAvailableBackgrounds } from "../src/ai/systemPrompt";
 import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
+import { parseContainerDurationSeconds, parseVideoStreamDurationSeconds } from "../src/engine/mediaDuration";
 import { checkSpatialIntegrity, visibleAssetBox } from "../src/engine/spatialIntegrity";
 import { getEnterAnimation } from "../src/animations";
 import { animationForEntranceStyle, normalizeEntranceAnimation, selectEntranceStyle } from "../src/engine/entrancePolicy";
@@ -2586,6 +2587,8 @@ test("visual audit readiness requires complete global and chunk evidence", () =>
     (value: any) => { value.measurementSpecHash = "0".repeat(64); },
     (value: any) => { value.sampleOffsets = [0]; },
     (value: any) => { value.expectedDurationSeconds = 9.9; },
+    (value: any) => { value.probedDurationSeconds = 9.9; },
+    (value: any) => { value.durationSource = "container-duration"; },
     (value: any) => { value.durationToleranceSeconds = 1; },
     (value: any) => { value.expectedSampleCount = 3; },
     (value: any) => { value.samples[1].scheduledSeconds = 2.4; },
@@ -3601,6 +3604,17 @@ test("tolerates accumulated per-scene rounding, but not a real desync", () => {
 test("blocks a rendered MP4 that does not match its timeline", () => {
   assert.ok(hasBlocker(checkRenderMatchesTimeline(1124.31, 1513.14)));
   assert.deepStrictEqual(checkRenderMatchesTimeline(1434.28, 1434.23), []);
+});
+
+test("uses the selected video stream rather than AAC-padded container duration", () => {
+  const metadata = {
+    format: { duration: "188.096000" },
+    streams: [{ duration: "188.033333" }],
+  };
+  assert.strictEqual(parseContainerDurationSeconds(metadata), 188.096);
+  assert.strictEqual(parseVideoStreamDurationSeconds(metadata), 188.033333);
+  assert.strictEqual(parseVideoStreamDurationSeconds({ format: { duration: "188.096" }, streams: [{}] }), undefined);
+  assert.strictEqual(parseVideoStreamDurationSeconds({ streams: [{ duration: "0" }] }), undefined);
 });
 
 test("blocks word alignment that belongs to a different audio file", () => {

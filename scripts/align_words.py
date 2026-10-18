@@ -276,6 +276,19 @@ def constrain_words_to_measured_scenes(words, durations):
     return words
 
 
+def has_positive_word_duration(word):
+    return (
+        isinstance(word, dict)
+        and isinstance(word.get("startSec"), (int, float))
+        and not isinstance(word.get("startSec"), bool)
+        and isinstance(word.get("endSec"), (int, float))
+        and not isinstance(word.get("endSec"), bool)
+        and math.isfinite(word["startSec"])
+        and math.isfinite(word["endSec"])
+        and word["endSec"] > word["startSec"]
+    )
+
+
 def attach_canonical_scene_indices(aligned, scenes):
     """Map Whisper words to the exact scene narration read by TTS.
 
@@ -284,9 +297,13 @@ def attach_canonical_scene_indices(aligned, scenes):
     it has to follow the words the voice actually spoke.
     """
     expected = canonical_tts_tokens(scenes)
+    # Faster-Whisper occasionally returns a zero-width word timestamp. It is
+    # not measured alignment evidence, so leave that canonical token unmatched
+    # and generate an explicitly marked interpolated in-scene interval below.
     canonical_matches = {
         canonical_index: (aligned[aligned_index], similarity)
         for canonical_index, (aligned_index, similarity) in fuzzy_monotonic_matches(expected, aligned).items()
+        if has_positive_word_duration(aligned[aligned_index])
     }
     matched = len(canonical_matches)
 

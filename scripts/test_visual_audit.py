@@ -145,6 +145,32 @@ class SamplingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "encoded duration"):
             audit.validate_expected_duration(expected, 161.90, 30)
 
+    def test_probe_uses_selected_video_stream_duration(self):
+        audit = load_hyphenated_script("visual-audit.py", "visual_audit_stream_duration")
+        payload = {
+            "format": {"duration": "188.096000"},
+            "streams": [{"duration": "188.033333", "avg_frame_rate": "30/1"}],
+        }
+        with mock.patch.object(
+            audit.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess([], 0, stdout=json.dumps(payload), stderr=""),
+        ) as run:
+            duration, fps = audit.probe_video_metadata("ffprobe", "video.mp4")
+        self.assertAlmostEqual(duration, 188.033333)
+        self.assertEqual(fps, 30)
+        command = run.call_args.args[0]
+        self.assertIn("stream=duration,avg_frame_rate", command)
+        self.assertNotIn("format=duration", command)
+
+        with mock.patch.object(
+            audit.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess([], 0, stdout=json.dumps({"format": payload["format"], "streams": [{}]}), stderr=""),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "malformed"):
+                audit.probe_video_metadata("ffprobe", "video.mp4")
+
         audit = load_hyphenated_script("visual-audit.py", "visual_audit_for_extract_test")
         schedule = canonical_sample_schedule([0, 2.5], 5, 10)
         with tempfile.TemporaryDirectory() as temp_dir:

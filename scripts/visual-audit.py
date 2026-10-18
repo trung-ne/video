@@ -79,7 +79,7 @@ def probe_video_metadata(ffprobe, video):
             "-select_streams",
             "v:0",
             "-show_entries",
-            "format=duration:stream=avg_frame_rate",
+            "stream=duration,avg_frame_rate",
             "-of",
             "json",
             str(video),
@@ -91,8 +91,9 @@ def probe_video_metadata(ffprobe, video):
         raise RuntimeError(f"ffprobe failed: {result.stderr.strip() or 'unknown error'}")
     try:
         payload = json.loads(result.stdout)
-        duration = float(payload["format"]["duration"])
-        rate = payload.get("streams", [{}])[0].get("avg_frame_rate", "0/1")
+        stream = payload.get("streams", [{}])[0]
+        duration = float(stream["duration"])
+        rate = stream.get("avg_frame_rate", "0/1")
         numerator, denominator = (float(value) for value in str(rate).split("/", 1))
         fps = numerator / denominator if denominator else 0.0
     except (KeyError, TypeError, ValueError, ZeroDivisionError, json.JSONDecodeError) as error:

@@ -34,6 +34,7 @@ import { promoteArtifacts, pruneRunHistory } from "../src/engine/promoteArtifact
 import { buildReferenceComparison } from "../src/engine/referenceComparison";
 import { buildDirectionSummary } from "../src/engine/directionReport";
 import { DEFAULT_PROXY_SCALE, getScaledDimensions } from "../src/engine/renderDimensions";
+import { parseContainerDurationSeconds, parseVideoStreamDurationSeconds } from "../src/engine/mediaDuration";
 import {
   checkRenderMatchesTimeline,
   checkSceneBeatTimingSources,
@@ -287,8 +288,21 @@ function probeDurationSeconds(filePath: string): number | undefined {
     const out = execFileSync(ffprobePath, [
       "-v", "error", "-show_entries", "format=duration", "-of", "json", filePath,
     ], { encoding: "utf8" });
-    const seconds = Number(JSON.parse(out)?.format?.duration);
-    return Number.isFinite(seconds) ? seconds : undefined;
+    return parseContainerDurationSeconds(JSON.parse(out));
+  } catch {
+    return undefined;
+  }
+}
+
+/** Selected video-stream duration in seconds, excluding audio packet padding. */
+function probeVideoDurationSeconds(filePath: string): number | undefined {
+  if (!fs.existsSync(filePath)) return undefined;
+  try {
+    const ffprobePath = require("@ffprobe-installer/ffprobe").path as string;
+    const out = execFileSync(ffprobePath, [
+      "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=duration", "-of", "json", filePath,
+    ], { encoding: "utf8" });
+    return parseVideoStreamDurationSeconds(JSON.parse(out));
   } catch {
     return undefined;
   }
@@ -884,8 +898,8 @@ try {
   // metrics, so this blocks before visual-audit runs, not after. A partial
   // --frames render is compared against its requested range rather than skipped.
   {
-    const mp4Seconds = probeDurationSeconds(stagedOut);
-    if (mp4Seconds === undefined) throw new Error(`Rendered file is unreadable: ${stagedOut}`);
+    const mp4Seconds = probeVideoDurationSeconds(stagedOut);
+    if (mp4Seconds === undefined) throw new Error(`Rendered video stream is unreadable: ${stagedOut}`);
     const expectedSeconds = frameRange
       ? (frameRange.end - frameRange.start + 1) / timeline.fps
       : timeline.durationInFrames / timeline.fps;
