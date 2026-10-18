@@ -128,6 +128,7 @@ import {
   classifyFinding,
   findingsFromProductionReport,
   findingsFromQualityIssues,
+  findingsFromSpatialIntegrity,
   findingsFromVisualAudit,
   findingsFromDeliveryAudit,
   formatTriageResult,
@@ -137,6 +138,7 @@ import {
   parseTriageArgs,
   resolveTriageTarget,
 } from "./triage-status";
+import { parseVisualTraceArgs } from "./trace-visual-interval";
 
 type Test = { name: string; run: () => void | Promise<void> };
 const tests: Test[] = [];
@@ -1948,6 +1950,44 @@ test("spatial integrity blocks undeclared asset overlap and permits an authored 
   base.events[1].allowOverlapWith = ["cat"];
   assert.strictEqual(checkSpatialIntegrity(base).passed, true);
 });
+
+test("spatial integrity detects panel stacking and intermediate move collisions", () => {
+  const panels: any = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 120,
+    events: [
+      { frame: 0, type: "card", cardId: "base", position: { x: 0.5, y: 0.5 }, background: "#fff", width: 600, height: 400, animation: "none", exitFrame: 119 },
+      { frame: 10, type: "frameBox", frameId: "overlay", position: { x: 0.5, y: 0.5 }, contentSrc: "finance/money", width: 600, animation: "none", exitFrame: 119 },
+    ],
+  };
+  const panelIssues = checkSpatialIntegrity(panels).issues;
+  assert.ok(panelIssues.some((issue) => issue.code === "FOREGROUND_COLLISION" && issue.assetIds.includes("base") && issue.assetIds.includes("overlay")));
+
+  const crossing: any = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 120,
+    events: [
+      { frame: 0, type: "enter", assetId: "moving", src: "finance/money", position: { x: 0.1, y: 0.5 }, scale: 1, animation: "none" },
+      { frame: 0, type: "enter", assetId: "fixed", src: "finance/money", position: { x: 0.5, y: 0.5 }, scale: 1, animation: "none" },
+      { frame: 20, type: "move", assetId: "moving", position: { x: 0.9, y: 0.5 }, duration: 20 },
+    ],
+  };
+  const crossingIssues = checkSpatialIntegrity(crossing).issues;
+  assert.ok(crossingIssues.some((issue) => issue.code === "UNDECLARED_ASSET_OVERLAP" && issue.frame > 20 && issue.frame < 40));
+});
+
+test("spatial integrity rejects conflicting and abrupt asset motion", () => {
+  const timeline: any = {
+    fps: 30, width: 1920, height: 1080, durationInFrames: 120,
+    events: [
+      { frame: 0, type: "enter", assetId: "cat", src: "characters/cat", position: { x: 0.3, y: 0.5 }, scale: 1, animation: "none" },
+      { frame: 20, type: "move", assetId: "cat", position: { x: 0.6, y: 0.5 }, duration: 4 },
+      { frame: 22, type: "move", assetId: "cat", position: { x: 0.7, y: 0.5 }, duration: 20 },
+    ],
+  };
+  const codes = checkSpatialIntegrity(timeline).issues.map((issue) => issue.code);
+  assert.ok(codes.includes("ABRUPT_MOVE"));
+  assert.ok(codes.includes("CONFLICTING_MOTION"));
+});
+
 
 test("stage-anchored fixed assets receive no automatic spatial move", () => {
   const timeline: any = {
@@ -3854,6 +3894,8 @@ test("an authored cutaway is phrase-aligned, persistent and fully specified", ()
   assert.strictEqual(cutaway?.caption, "Market evidence");
   assert.strictEqual(cutaway?.delay, 120);
   assert.strictEqual(cutaway?.duration, undefined);
+  assert.ok(timeline.scenes[0].entities.every((entity) => entity.exitFrame === 117));
+  assert.ok((timeline.scenes[0].texts ?? []).every((text) => (text.duration ?? 0) <= 117));
   assert.deepStrictEqual(transitionReceipt(timeline.scenes[0], "reveal", "cutaway"), {
     beatText: "three",
     action: "reveal",
@@ -3864,8 +3906,8 @@ test("an authored cutaway is phrase-aligned, persistent and fully specified", ()
     toState: "cutaway:backgrounds/stock_chart.jpg:Market evidence",
   });
 
-  // Multiple reveals in one scene must remain distinct persisted states rather
-  // than collide under one frame-box ID.
+  // Multiple reveals in one scene remain distinct teaching states, but only the
+  // current cutaway may occupy the full-frame cutaway slot.
   storyboard.scenes[0].beats = [
     { text: "two", importance: 0.85, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/stock_chart.jpg", targetLabel: "First state", holdState: "first" },
     { text: "three", importance: 0.85, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/market_monitor.jpg", targetLabel: "Second state", holdState: "second" },
@@ -3881,11 +3923,25 @@ test("an authored cutaway is phrase-aligned, persistent and fully specified", ()
     multiCutawayTimeline.scenes[0].frameBoxes?.map((frame) => frame.id),
     ["scene-001-cutaway", "scene-001-cutaway-2"],
   );
+  assert.strictEqual(multiCutawayTimeline.scenes[0].frameBoxes?.[0].duration, 57);
+  assert.strictEqual(multiCutawayTimeline.scenes[0].frameBoxes?.[1].duration, undefined);
   assert.deepStrictEqual(
     (multiCutawayTimeline.scenes[0] as any).authoredTransitionReceipts
       ?.filter((receipt: any) => receipt.action === "reveal")
       .map((receipt: any) => receipt.renderedComponentIds),
     [["scene-001-cutaway"], ["scene-001-cutaway-2"]],
+  );
+
+  storyboard.scenes[0].beats = [
+    { text: "two", importance: 0.85, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/stock_chart.jpg", targetLabel: "First state", holdState: "first" },
+    { text: "two", importance: 0.85, kind: "turn", action: "reveal", targetSlot: "cutaway", targetAssetId: "backgrounds/market_monitor.jpg", targetLabel: "Second state", holdState: "second" },
+  ];
+  assert.throws(
+    () => compileStoryboard(storyboard, {
+      durations: [{ id: "scene-001", startFrame: 0, frames: 300 }],
+      words: [{ scene: "scene-001", word: "two", startSec: 2, endSec: 2.2 }],
+    }),
+    /cutaway beats resolve too close together/,
   );
 
   // Cutaways may use a logical production asset alias, not only a raw photo
@@ -4334,6 +4390,61 @@ test("failure triage maps existing visual, quality, timing, and chunk diagnostic
   assert.strictEqual(classifyFinding({ code: "TIMING_NO_DURATIONS", message: "No duration." }).domain, "timing");
   assert.strictEqual(classifyFinding({ code: "CHUNK_ARTIFACT_DRIFT", message: "Drift." }).domain, "chunk-lineage");
   assert.strictEqual(findingsFromDeliveryAudit({ passed: false }, "audio")[0].catalogId, "pipeline-failure");
+});
+
+test("failure triage preserves spatial element and frame evidence", () => {
+  const findings = findingsFromSpatialIntegrity({
+    passed: false,
+    issues: [{
+      code: "FOREGROUND_COLLISION",
+      frame: 144,
+      sceneId: "scene-021",
+      message: "frame-box market and frame-box history overlap.",
+      assetIds: ["market", "history"],
+      primitiveKinds: ["frame-box", "frame-box"],
+      overlapRatio: 0.84,
+    }],
+  }, "/tmp/production-report.json");
+  assert.strictEqual(findings.length, 1);
+  assert.strictEqual(findings[0].catalogId, "spatial-temporal-integrity");
+  assert.strictEqual(findings[0].sceneId, "scene-021");
+  assert.deepStrictEqual(findings[0].evidence.assetIds, ["market", "history"]);
+  assert.strictEqual(findings[0].evidence.frame, 144);
+
+  const nested = findingsFromProductionReport({
+    status: "diagnostic",
+    spatialIntegrity: { passed: false, issues: [{
+      code: "UNEXPLAINED_POSITION_JUMP", frame: 30, sceneId: "scene-022", message: "asset jumps.", assetIds: ["cat"],
+    }] },
+  }, "/tmp/production-report.json");
+  assert.strictEqual(nested[0].catalogId, "spatial-temporal-integrity");
+});
+
+test("visual interval trace requires explicit bounded non-promotable paths", () => {
+  const root = path.resolve(__dirname, "..");
+  const out = `diagnostics/trace-fixture-${process.pid}-${Date.now()}.json`;
+  const args = parseVisualTraceArgs([
+    "--timeline", "projects/video-009/timeline.json",
+    "--from-frame", "20",
+    "--to-frame", "30",
+    "--out", out,
+  ]);
+  assert.strictEqual(args.fromFrame, 20);
+  assert.strictEqual(args.toFrame, 30);
+  assert.match(args.outPath, /diagnostics[\\/]trace-fixture-/);
+  assert.throws(() => parseVisualTraceArgs([
+    "--timeline", "projects/video-009/timeline.json",
+    "--from-frame", "0",
+    "--to-frame", "301",
+    "--out", out,
+  ]), /at most 300 frames/);
+  assert.throws(() => parseVisualTraceArgs([
+    "--timeline", "projects/video-009/timeline.json",
+    "--from-frame", "0",
+    "--to-frame", "1",
+    "--out", "output/video-009/trace.json",
+  ]), /inside diagnostics/);
+  assert.ok(root.endsWith("video"));
 });
 
 test("triage CLI requires explicit safe evidence and preserves staged audit locality", () => {

@@ -11,7 +11,7 @@
 // Browser-safe: no fs / Date / random.
 // ============================================================
 
-import { AuthoredTransitionReceipt, Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, TimingProvenance } from "../types/scene";
+import { AuthoredTransitionReceipt, Scene, SceneTimeline, SceneEntity, SceneBeatTimingSource, SceneFrameBox, TimingProvenance } from "../types/scene";
 import { Storyboard, SceneBrief, AlignedWord } from "../types/storyboard";
 import { VISUAL_GRAMMARS, applyShot, GrammarContext, GrammarResult } from "./visualGrammars";
 import { STAGE_ANCHORS } from "./stageAnchors";
@@ -351,6 +351,32 @@ function applyAuthoredBeatTransitions(
     .sort((a, b) => (a.delay ?? 0) - (b.delay ?? 0));
   let advanceIndex = 0;
   let cutawayIndex = 0;
+  let activeCutaway: SceneFrameBox | undefined;
+  // A cutaway is a replacement shot, not a monitor placed over the current
+  // tableau. Retire every already-visible foreground layer before it arrives;
+  // otherwise a full-frame visual necessarily buries cards, bubbles, or actors.
+  // Subtitles are deliberately not touched: their dedicated bottom band remains
+  // the narration channel under V4.
+  const retireForegroundForCutaway = (delay: number): void => {
+    const exitDelay = Math.max(1, delay - 3);
+    const endComponent = (component: { delay?: number; duration?: number }) => {
+      const componentDelay = component.delay ?? 0;
+      if (componentDelay < exitDelay) component.duration = Math.max(1, exitDelay - componentDelay);
+    };
+    for (const entity of result.entities) {
+      if ((entity.enterDelay ?? 0) < exitDelay) {
+        entity.exitFrame = timing.startFrame + exitDelay;
+        entity.exitAnimation = "fadeOut";
+      }
+    }
+    for (const text of result.texts) endComponent(text);
+    for (const card of result.cards ?? []) endComponent(card);
+    for (const card of result.paperCards ?? []) endComponent(card);
+    for (const bubble of result.speechBubbles ?? []) endComponent(bubble);
+    for (const frame of result.frameBoxes ?? []) {
+      if (frame !== activeCutaway) endComponent(frame);
+    }
+  };
   const receipts: AuthoredTransitionReceipt[] = [];
   const recordTransition = (
     beatText: string,
@@ -485,6 +511,34 @@ function applyAuthoredBeatTransitions(
     return { componentIds: visibleIds, fromState, toState };
   };
 
+  // Discover every insufficient cutaway hold before mutating grammar output. A
+  // compile error must describe the complete scene-local repair set rather than
+  // making the author discover one adjacent pair per rebuild.
+  const cutawayOffsets = brief.beats
+    .filter((beat) => beat.action === "reveal" && beat.targetSlot === "cutaway")
+    .map((beat) => ({
+      text: beat.text,
+      offset: Math.max(2, Math.min(
+        timing.frames - 20,
+        resolveBeatOffset(beat.text, brief.narration, brief.id, timing.startFrame, timing.frames, fps, words).offset,
+      )),
+    }));
+  const cutawayTimingIssues: string[] = [];
+  for (let index = 1; index < cutawayOffsets.length; index += 1) {
+    const previous = cutawayOffsets[index - 1];
+    const current = cutawayOffsets[index];
+    const holdFrames = current.offset - previous.offset - 3;
+    if (holdFrames < 12) {
+      cutawayTimingIssues.push(`“${previous.text}” (${previous.offset}) → “${current.text}” (${current.offset})`);
+    }
+  }
+  if (cutawayTimingIssues.length) {
+    throw new Error(
+      `${brief.id} cutaway beats resolve too close together: ${cutawayTimingIssues.join("; ")}. `
+      + "Author distinct phrase timing or a different semantic transition.",
+    );
+  }
+
   const sources: SceneBeatTimingSource[] = [];
   for (const beat of brief.beats) {
     if (!beat.action || !beat.targetSlot) continue;
@@ -525,11 +579,24 @@ function applyAuthoredBeatTransitions(
         );
       }
       result.frameBoxes = result.frameBoxes ?? [];
-      // Each authored reveal is a distinct persistent teaching state. Reusing the
-      // base ID made later cutaways collide in the timeline and silently erased
-      // their visual change.
+      retireForegroundForCutaway(delay);
+      // Cutaway is a teaching *state*, not a stack of full-screen panels. Close
+      // the preceding cutaway before the next one appears; otherwise every
+      // reveal remains painted at the same centre slot and later frames become
+      // unreadable. A beat that cannot hold independently is an authoring error
+      // rather than something the renderer may paper over.
+      if (activeCutaway) {
+        const previousDelay = activeCutaway.delay ?? 0;
+        const holdFrames = delay - previousDelay - 3;
+        if (holdFrames < 12) {
+          throw new Error(
+            `${brief.id} cutaway beats resolve too close together (${previousDelay} → ${delay}); author distinct phrase timing or a different semantic transition.`,
+          );
+        }
+        activeCutaway.duration = holdFrames;
+      }
       const cutawayId = `${brief.id}-cutaway${cutawayIndex++ ? `-${cutawayIndex}` : ""}`;
-      result.frameBoxes.push({
+      const cutaway: SceneFrameBox = {
         id: cutawayId,
         contentSrc: beat.targetAssetId,
         caption: beat.targetLabel.trim(),
@@ -537,7 +604,9 @@ function applyAuthoredBeatTransitions(
         width: 1550,
         objectFit: "cover",
         delay,
-      });
+      };
+      result.frameBoxes.push(cutaway);
+      activeCutaway = cutaway;
       recordTransition(beat.text, beat.action, beat.targetSlot, delay,
         [cutawayId], "absent", `cutaway:${beat.targetAssetId}:${beat.targetLabel.trim()}`);
       continue;

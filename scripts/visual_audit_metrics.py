@@ -629,10 +629,14 @@ def evaluate_visual_failures(
         static_run_key,
         applies("longestStaticRun") and owned_pairs > 0,
     )
-    if static_run is not None and static_run > thresholds["maximumStaticRunSeconds"]:
+    # The configured maximum is an exclusive ceiling: a run exactly at the
+    # director's maximum already consumed the full cadence budget and cannot be
+    # treated as healthy. This prevents a localized 10s hold from disappearing
+    # behind an otherwise acceptable aggregate duplicate ratio.
+    if static_run is not None and static_run >= thresholds["maximumStaticRunSeconds"]:
         failures.append(
             "STATIC_SCENE_RUN: longest applicable near-duplicate run "
-            f">{thresholds['maximumStaticRunSeconds']:.1f}s"
+            f">={thresholds['maximumStaticRunSeconds']:.1f}s"
         )
     flat_ratio = metric_number(
         metrics.get("flatFrameRatio"),

@@ -75,6 +75,30 @@ const CATALOG: readonly Remediation[] = [
     canonicalRecheck: "Run the canonical visual audit with its pinned profile.", retryClass: "source-fix",
   },
   {
+    id: "spatial-temporal-integrity", domain: "quality", codes: [
+      "ASSET_COLLISION",
+      "ASSET_OUT_OF_FRAME",
+      "UNDECLARED_ASSET_OVERLAP",
+      "FOREGROUND_COLLISION",
+      "TEXT_SUBTITLE_OVERLAP",
+      "PRIMITIVE_OUT_OF_FRAME",
+      "CONFLICTING_MOTION",
+      "ABRUPT_MOVE",
+      "UNEXPLAINED_POSITION_JUMP",
+    ],
+    repairLayer: "Scene-local authored composition and beat timing.",
+    sourceOfTruth: "projects/<id>/storyboard-data.ts, then rebuilt storyboard.json and measured compile.",
+    forbiddenActions: [
+      "Do not edit compiled timeline.json, generated timing artifacts, reports, or output video.",
+      "Do not relax spatial/temporal thresholds, suppress an overlap declaration, or publish a diagnostic artifact.",
+    ],
+    resolutionFlow: [
+      "Use the reported scene, frame, and element identities to repair the authored scene locally.",
+      "Rebuild through Route A, rerun affected proof, then rerender and audit the canonical candidate.",
+    ],
+    canonicalRecheck: "Run the pre-render spatial integrity gate and every canonical production audit.", retryClass: "source-fix",
+  },
+  {
     id: "visual-audit-evidence", domain: "render-audit", codePrefixes: ["MISSING_", "MALFORMED_"],
     repairLayer: "Audit inputs, canonical artifact, and audit configuration.", sourceOfTruth: "The canonical render artifact and pinned visual-audit profile.",
     forbiddenActions: ["Do not alter audit JSON to manufacture evidence.", "Do not promote an artifact with incomplete audit evidence."],

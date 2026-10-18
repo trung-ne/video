@@ -139,6 +139,49 @@ export function findingsFromVisualAudit(report: unknown, artifactPath?: string):
 
 export const triageVisualAudit = findingsFromVisualAudit;
 
+/**
+ * Normalize the pre-render spatial gate without guessing at geometry from a
+ * rendered artifact. Each issue already identifies the authored scene/frame and
+ * painted primitives that the source repair must address.
+ */
+export function findingsFromSpatialIntegrity(report: unknown, artifactPath?: string): TriageFinding[] {
+  const spatial = object(report);
+  if (!spatial) {
+    return [classifyFinding({
+      message: "Spatial integrity report is malformed.", artifactPath, evidence: { report },
+    })];
+  }
+  if (spatial.passed !== false || !Array.isArray(spatial.issues)) {
+    return [classifyFinding({
+      message: "Spatial integrity report has no explicit failed issues.", artifactPath, evidence: spatial,
+    })];
+  }
+  return spatial.issues.map((issue) => {
+    const item = object(issue);
+    if (!item || !text(item.code) || !text(item.message)) {
+      return classifyFinding({
+        message: "Spatial integrity issue is malformed.", artifactPath, evidence: { issue },
+      });
+    }
+    return classifyFinding({
+      code: text(item.code),
+      severity: "BLOCKER",
+      message: text(item.message),
+      sceneId: text(item.sceneId),
+      artifactPath,
+      evidence: {
+        frame: item.frame,
+        assetIds: item.assetIds,
+        primitiveKinds: item.primitiveKinds,
+        bounds: item.bounds,
+        overlapRatio: item.overlapRatio,
+      },
+    });
+  });
+}
+
+export const triageSpatialIntegrity = findingsFromSpatialIntegrity;
+
 /** Normalize a standalone canonical audio or encoding audit. */
 export function findingsFromDeliveryAudit(
   report: unknown,
@@ -199,6 +242,11 @@ export function findingsFromProductionReport(
     }));
   }
   const sibling = object(siblingAudits);
+  const spatialIntegrity = value.spatialIntegrity;
+  if (spatialIntegrity !== undefined) {
+    const spatial = object(spatialIntegrity);
+    if (spatial?.passed === false) findings.push(...findingsFromSpatialIntegrity(spatial, artifactPath));
+  }
   const visualAudit = sibling?.visualAudit ?? value.visualAuditReport;
   if (visualAudit !== undefined) findings.push(...findingsFromVisualAudit(visualAudit, text(sibling?.visualAuditPath) ?? artifactPath));
   for (const [name, code] of [["audioAudit", "AUDIO_AUDIT_FAILED"], ["encodingAudit", "ENCODING_AUDIT_FAILED"]] as const) {
