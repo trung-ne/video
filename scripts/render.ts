@@ -851,6 +851,9 @@ try {
     stagedOut,
     `--props=${propsTmpFile}`,
     "--log=info",
+    // Parallel Chrome tabs intermittently lose static production assets on this
+    // Windows renderer. A single tab keeps the bundled public tree stable.
+    "--concurrency=1",
     "--codec=h264",
     isProxy ? `--scale=${DEFAULT_PROXY_SCALE}` : `--video-bitrate=${referenceQuality.encoding.targetVideoBitrate}`,
     // Remotion CLI exposes FFmpeg's rate-control options as --max-rate and

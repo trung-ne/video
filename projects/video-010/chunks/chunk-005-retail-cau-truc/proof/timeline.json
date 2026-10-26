@@ -1,0 +1,860 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 1176,
+  "audio": "audio/chunks/video-010/chunk-005-retail-cau-truc/proof/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "aligned-words",
+    "beatTimingSummary": {
+      "aligned-words": 5
+    },
+    "measuredSceneCount": 5,
+    "audioSeconds": 39.2,
+    "audioSha256": "5eb546be7d18bce9054432677ac5dcadfc3ec40080a8459d6e305a23fa842f60",
+    "storyboardChecksum": "487ffcd12820cb7da7083cd7ab12da44c5a70b62c33c0493ee4b97e95f78789f",
+    "durationsChecksum": "0c11da63e3d87236df2f8bf4b786da6dfe5a186d5070fb5b12ddb3ab8b1057f5",
+    "wordsChecksum": "e70db96505fe5f3bd30cbbd1320589b08ffb5720c28e600327999dc7e2486608",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 129,
+      "matchedWordCount": 127,
+      "coverage": 1,
+      "matchedCoverage": 0.984496,
+      "interpolatedWordCount": 2,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.26,
+      "character_action": 0.17,
+      "infographic": 0.19,
+      "evidence": 0.13,
+      "photo_broll": 0.07,
+      "framebox": 0.09,
+      "visual_gag": 0.09
+    },
+    "characterFreeTarget": 0.27,
+    "heroConcepts": [
+      "Cú lao dốc CPI và tiền vay",
+      "margin nhân đôi cả lãi lẫn lỗ",
+      "nợ nhà ở đẩy người trẻ vào đường tắt",
+      "đàn kiến retail khuếch đại lệnh",
+      "CFD che người gánh rủi ro",
+      "nước đầu cơ đổi dòng",
+      "câu hỏi về tài sản an toàn cho người trẻ"
+    ],
+    "visualMotifs": [
+      "vạch an toàn margin đỏ",
+      "điện thoại biến thành hợp đồng vay",
+      "căn nhà lùi xa",
+      "đàn kiến cùng hướng",
+      "dòng nước vòng qua đập",
+      "bảng giá phản chiếu trong điện thoại"
+    ],
+    "forbiddenRepeats": [
+      "mèo đứng cạnh icon không liên quan",
+      "thẻ số tối như mặc định",
+      "ảnh nền trang trí",
+      "cùng một sân khấu liền nhau",
+      "pose lặp không có lý do cảm xúc",
+      "lời kể thay cho hành động của prop"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "character_action",
+      "infographic",
+      "evidence",
+      "photo_broll",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-075",
+      "label": "Biến ý “Nhưng mà đó mới chỉ là một nửa câu chuyện thôi. Nửa còn” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 0,
+      "durationFrames": 225,
+      "layout": "TABLEAU",
+      "entranceStyle": "slide",
+      "narration": "Nhưng mà đó mới chỉ là một nửa câu\r\nchuyện thôi. Nửa còn lại thì nó nằm ở\r\ncấu trúc của thị trường chứng khoán Hàn",
+      "sourceRange": {
+        "startWord": 1475,
+        "endWord": 1500,
+        "quoteChecksum": "a23988d24e150db97b83605deb856cad61bf8b6e9ff753147706b0e8e9002cb1"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Nhưng mà đó mới chỉ là",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-075-a"
+          ],
+          "fromState": "characters/cat",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "Nửa còn lại thì nó nằm ở",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 101,
+          "renderedComponentIds": [
+            "scene-075-prop"
+          ],
+          "fromState": "finance/credit_card",
+          "toState": "finance/stock"
+        }
+      ],
+      "semanticTakeaway": "Nhưng mà đó mới chỉ là một nửa câu chuyện thôi. Nửa còn",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/loan",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat",
+        "finance/credit_card",
+        "characters/cat_think",
+        "finance/stock",
+        "assets/scenes/cafe.svg"
+      ],
+      "sectionId": "nguoi-tre-loi-tat",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|2a:2p|counter_left,counter_left,free,free|none|none|none",
+      "silentFrameTakeaway": "Nhưng mà đó mới chỉ là một nửa câu chuyện thôi. Nửa còn",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "register:full_tableau",
+        "asset:characters/cat",
+        "asset:finance/credit_card",
+        "asset:assets/scenes/cafe.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Nhưng mà đó mới chỉ là một nửa câu",
+          "startFrame": 0,
+          "endFrame": 70
+        },
+        {
+          "text": "chuyện thôi Nửa còn lại thì nó nằm ở",
+          "startFrame": 70,
+          "endFrame": 144
+        },
+        {
+          "text": "cấu trúc của thị trường chứng khoán Hàn",
+          "startFrame": 144,
+          "endFrame": 225
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/cafe.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-075-a",
+          "src": "styles/d/generated-assets/characters/cat.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 95,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-075-prop",
+          "src": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-075-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-075-a"
+          ]
+        },
+        {
+          "assetId": "scene-075-prop",
+          "src": "styles/d/generated-assets/icons/finance-stock.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 101,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-075-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-076",
+      "label": "Biến ý “Quốc. Một cái đặc điểm khá là khác thường của chứng khoán” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 225,
+      "durationFrames": 260,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "softScale",
+      "narration": "Quốc. Một cái đặc điểm khá là khác\r\nthường của chứng khoán Hàn Quốc là nhà\r\nđầu tư cá nhân chiếm tỉ trọng rất lớn. Ở",
+      "sourceRange": {
+        "startWord": 1501,
+        "endWord": 1526,
+        "quoteChecksum": "d75b4f80599e06d6b60537334980a916541e9b51ad2b55934da67ca13a91b1f2"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "chứng khoán Hàn Quốc",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 95,
+          "renderedComponentIds": [
+            "scene-076-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/company:THỊ TRƯỜNG HÀN QUỐC"
+        },
+        {
+          "beatText": "nhà đầu tư cá nhân chiếm tỉ trọng rất lớn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 130,
+          "renderedComponentIds": [
+            "scene-076-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/person:NHÀ ĐẦU TƯ CÁ NHÂN"
+        },
+        {
+          "beatText": "tỉ trọng rất lớn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 167,
+          "renderedComponentIds": [
+            "scene-076-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/money:TỈ TRỌNG LỚN"
+        }
+      ],
+      "semanticTakeaway": "Quốc. Một cái đặc điểm khá là khác thường của chứng khoán",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/trending_down",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_business",
+        "props/computer_desk",
+        "people/company",
+        "people/person",
+        "finance/money"
+      ],
+      "sectionId": "retail-cau-truc",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "characterRequired": false,
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|1a:1p|LEFT,RIGHT|frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Quốc. Một cái đặc điểm khá là khác thường của chứng khoán",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "register:character_action",
+        "asset:characters/cat_business",
+        "asset:props/computer_desk"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Quốc Một cái đặc điểm khá là khác thường",
+          "startFrame": 0,
+          "endFrame": 94
+        },
+        {
+          "text": "của chứng khoán Hàn Quốc là nhà đầu tư",
+          "startFrame": 94,
+          "endFrame": 183
+        },
+        {
+          "text": "cá nhân chiếm tỉ trọng rất lớn Ở",
+          "startFrame": 183,
+          "endFrame": 260
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-076-cat",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "exitFrame": 389,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-076-prop",
+          "src": "styles/d/generated-assets/icons/props-computer-desk.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "TỈ TRỌNG RETAIL",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 106,
+            "duration": 24
+          },
+          "exitFrame": 389,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-076-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/people-company.png",
+          "caption": "THỊ TRƯỜNG HÀN QUỐC",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 95,
+          "duration": 32
+        },
+        {
+          "id": "scene-076-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/people-person.png",
+          "caption": "NHÀ ĐẦU TƯ CÁ NHÂN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 130,
+          "duration": 34
+        },
+        {
+          "id": "scene-076-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-money.png",
+          "caption": "TỈ TRỌNG LỚN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 167
+        }
+      ]
+    },
+    {
+      "id": "scene-077",
+      "label": "Biến ý “nhiều thị trường phát triển ý thì phần lớn giao dịch hàng” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 485,
+      "durationFrames": 203,
+      "layout": "QA_REVEAL",
+      "entranceStyle": "fade",
+      "narration": "nhiều thị trường phát triển ý thì phần\r\nlớn giao dịch hàng ngày đến từ những quỹ\r\nđầu tư, ngân hàng hay là những tổ chức",
+      "sourceRange": {
+        "startWord": 1527,
+        "endWord": 1552,
+        "quoteChecksum": "84a6dd1dabc7ff33c93e2e58a7cf3332b5998039da9db24a1a82abf12bfca01a"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "QA_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "giao dịch hàng ngày đến từ những quỹ đầu tư",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 64,
+          "renderedComponentIds": [
+            "scene-077-a",
+            "scene-077-q"
+          ],
+          "fromState": "visible-at:80",
+          "toState": "visible-at:64"
+        },
+        {
+          "beatText": "ngân hàng hay là những tổ chức",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 135,
+          "renderedComponentIds": [
+            "scene-077-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/company:TỔ CHỨC TÀI CHÍNH"
+        }
+      ],
+      "semanticTakeaway": "nhiều thị trường phát triển ý thì phần lớn giao dịch hàng",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/house",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_contract",
+        "finance/revenue",
+        "people/company"
+      ],
+      "sectionId": "retail-cau-truc",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:none:1:1,card:revenue:1:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "nhiều thị trường phát triển ý thì phần lớn giao dịch hàng",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic",
+        "asset:characters/cat_investor_contract",
+        "asset:finance/revenue"
+      ],
+      "subtitleCues": [
+        {
+          "text": "nhiều thị trường phát triển ý thì phần lớn",
+          "startFrame": 0,
+          "endFrame": 74
+        },
+        {
+          "text": "giao dịch hàng ngày đến từ những quỹ đầu",
+          "startFrame": 74,
+          "endFrame": 144
+        },
+        {
+          "text": "tư ngân hàng hay là những tổ chức",
+          "startFrame": 144,
+          "endFrame": 203
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-077-cat",
+          "src": "styles/d/generated-assets/characters/cat_investor_contract.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "circle": "#F1D8C5",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 127,
+            "duration": 22
+          },
+          "exitFrame": 617,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-077-q",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#286F7A",
+          "label": "Điều gì đang xảy ra?",
+          "width": 1200,
+          "height": 700,
+          "delay": 0,
+          "duration": 58
+        },
+        {
+          "id": "scene-077-a",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-revenue.png",
+          "label": "nhiều thị trường phát triển ý thì phần lớn giao dịch hàng",
+          "width": 1200,
+          "height": 700,
+          "delay": 64,
+          "duration": 68
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-077-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/people-company.png",
+          "caption": "TỔ CHỨC TÀI CHÍNH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 135
+        }
+      ]
+    },
+    {
+      "id": "scene-078",
+      "label": "Biến ý “tài chính lớn. vẫn có nhà đầu tư cá nhân nhưng mà sẽ” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 688,
+      "durationFrames": 228,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "tài chính lớn. vẫn có nhà đầu tư cá nhân\r\nnhưng mà sẽ không phải lực lượng quyết\r\nđịnh xu hướng ngắn hạn của thị trường",
+      "sourceRange": {
+        "startWord": 1553,
+        "endWord": 1578,
+        "quoteChecksum": "3795d753f8906c287d031dbc1a3d2edf80194a80673fd481383c28c83044b27d"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "tài chính lớn vẫn có nhà",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 5,
+          "renderedComponentIds": [
+            "scene-078-a"
+          ],
+          "fromState": "characters/cat_investor_panic",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "nhà đầu tư cá nhân nhưng mà sẽ không phải",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 69,
+          "renderedComponentIds": [
+            "scene-078-prop"
+          ],
+          "fromState": "props/book",
+          "toState": "finance/stock"
+        },
+        {
+          "beatText": "quyết định xu hướng ngắn hạn của thị trường",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 141,
+          "renderedComponentIds": [
+            "scene-078-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending/down:KHÔNG QUYẾT ĐỊNH XU HƯỚNG"
+        }
+      ],
+      "semanticTakeaway": "tài chính lớn. vẫn có nhà đầu tư cá nhân nhưng mà sẽ",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/debt",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_panic",
+        "props/book",
+        "characters/cat_explain",
+        "finance/stock",
+        "finance/trending/down",
+        "assets/scenes/boardroom.svg"
+      ],
+      "sectionId": "retail-cau-truc",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:boardroom|2a:2p|free,free,seat_left,seat_left|frame:2:1|none|none",
+      "silentFrameTakeaway": "tài chính lớn. vẫn có nhà đầu tư cá nhân nhưng mà sẽ",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_investor_panic",
+        "asset:props/book",
+        "asset:assets/scenes/boardroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "tài chính lớn vẫn có nhà đầu tư cá",
+          "startFrame": 0,
+          "endFrame": 68
+        },
+        {
+          "text": "nhân nhưng mà sẽ không phải lực lượng quyết",
+          "startFrame": 68,
+          "endFrame": 153
+        },
+        {
+          "text": "định xu hướng ngắn hạn của thị trường",
+          "startFrame": 153,
+          "endFrame": 228
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/boardroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-078-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "anchor": "seat_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "exitFrame": 826,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 63,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-078-prop",
+          "src": "styles/d/generated-assets/icons/props-book.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          },
+          "exitFrame": 826,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-078-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "seat_left",
+          "enterAnimation": "none",
+          "enterDelay": 5,
+          "clearPrevious": [
+            "scene-078-a"
+          ],
+          "exitFrame": 826,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-078-prop",
+          "src": "styles/d/generated-assets/icons/finance-stock.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 69,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-078-prop"
+          ],
+          "exitFrame": 826,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-078-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "caption": "KHÔNG QUYẾT ĐỊNH XU HƯỚNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 141
+        }
+      ]
+    },
+    {
+      "id": "scene-079",
+      "label": "Biến ý “Còn ở Hàn Quốc ấy thì trong nhiều năm nhà đầu tư cá nhân” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 916,
+      "durationFrames": 260,
+      "layout": "SOLO",
+      "entranceStyle": "reveal",
+      "narration": "Còn ở Hàn Quốc ấy thì trong nhiều năm\r\nnhà đầu tư cá nhân luôn chiếm phần lớn\r\nthanh khoản trên thị trường. Năm 2020",
+      "sourceRange": {
+        "startWord": 1579,
+        "endWord": 1603,
+        "quoteChecksum": "5e91ce4632cd3ee0767acd746899792e63feb7bbce67d8a4a6e7135ae5b4b57e"
+      },
+      "visualRegister": "framebox",
+      "visualGrammar": "FRAMEBOX",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "trong nhiều năm",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 41,
+          "renderedComponentIds": [
+            "scene-079-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/bank:THANH KHOẢN CÁ NHÂN"
+        },
+        {
+          "beatText": "nhà đầu tư cá nhân luôn chiếm phần lớn thanh khoản",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 58,
+          "renderedComponentIds": [
+            "scene-079-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/person:PHẦN LỚN THANH KHOẢN"
+        }
+      ],
+      "semanticTakeaway": "Còn ở Hàn Quốc ấy thì trong nhiều năm nhà đầu tư cá nhân",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/interest_rate",
+      "photoTreatment": "tv_frame",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_debt_burden",
+        "backgrounds/mobile_trading_flatlay.jpg",
+        "finance/bank",
+        "people/person"
+      ],
+      "sectionId": "dam-dong-thi-truong",
+      "heroVisual": true,
+      "focalType": "photo",
+      "visualFingerprint": "FRAMEBOX|framebox|graphic|1a:0p|RIGHT_BOTTOM|frame:1:1,frame:2:1,frame:2:1|none|tv_frame",
+      "silentFrameTakeaway": "Còn ở Hàn Quốc ấy thì trong nhiều năm nhà đầu tư cá nhân",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:FRAMEBOX",
+        "register:framebox",
+        "asset:characters/cat_debt_burden",
+        "asset:backgrounds/mobile_trading_flatlay.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Còn ở Hàn Quốc ấy thì trong nhiều năm",
+          "startFrame": 0,
+          "endFrame": 86
+        },
+        {
+          "text": "nhà đầu tư cá nhân luôn chiếm phần lớn",
+          "startFrame": 86,
+          "endFrame": 174
+        },
+        {
+          "text": "thanh khoản trên thị trường Năm 2020",
+          "startFrame": 174,
+          "endFrame": 260
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-079-cat",
+          "src": "styles/d/generated-assets/characters/cat_debt_burden.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "enterDelay": 14,
+          "exitFrame": 971,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 44,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-079-tv",
+          "contentSrc": "backgrounds/mobile_trading_flatlay.jpg",
+          "caption": "Còn ở Hàn Quốc ấy thì trong nhiều năm nhà đầu tư cá nhân",
+          "objectFit": "cover",
+          "position": {
+            "x": 0.43,
+            "y": 0.4
+          },
+          "width": 1320,
+          "delay": 0,
+          "duration": 38
+        },
+        {
+          "id": "scene-079-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-bank.png",
+          "caption": "THANH KHOẢN CÁ NHÂN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 41,
+          "duration": 14
+        },
+        {
+          "id": "scene-079-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/people-person.png",
+          "caption": "PHẦN LỚN THANH KHOẢN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 58
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-proof",
+  "projectOpeningSceneId": "scene-001"
+}

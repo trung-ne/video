@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 2,
+  "measurementSpecVersion": "visual-audit-multiphase-v2",
+  "measurementSpecHash": "4185e245a99b35face67f19d9af70bd86e267f5d2a310c3dc584e535692b09a5",
+  "measurementSpec": {
+    "schemaVersion": 1,
+    "metricVersion": "visual-audit-multiphase-v2",
+    "sampling": {
+      "intervalSeconds": 5.0,
+      "phaseOffsetsSeconds": [
+        0.0,
+        2.5
+      ],
+      "timestampRule": "offset + n*interval, with 0 <= timestamp < audited duration",
+      "timestampPrecisionDecimals": 9,
+      "maximumPhaseBatches": 8,
+      "frameSelection": "phase trim, zero-based PTS, fixed-rate nearest-frame sampling",
+      "pairing": "chronological adjacent samples across all phases"
+    },
+    "contentMask": {
+      "includedTopRatio": 0.76,
+      "excludedRegion": "subtitle band from includedTopRatio through frame bottom"
+    },
+    "frameMetrics": {
+      "analysisSize": [
+        160,
+        68
+      ],
+      "contactSize": [
+        320,
+        180
+      ],
+      "scalarOwnership": "core frames only for chunk scope; all frames for global scope"
+    },
+    "temporalMetrics": {
+      "thumbnailSize": [
+        32,
+        14
+      ],
+      "difference": "mean absolute normalized grayscale pixel difference",
+      "nearDuplicatePixelThreshold": 0.025,
+      "ratioNormalization": "mean duplicate incidence weighted by actual pair delta / nominal interval",
+      "pairDelta": "actual destination timestamp minus source timestamp",
+      "pairOwnership": "destination core scene for chunk scope",
+      "seamClassification": "source and destination scene ids differ",
+      "staticRunDuration": "sum actual edge deltas plus the initial sample span"
+    },
+    "scopeRules": {
+      "global": {
+        "distributionGates": true,
+        "localDetailAndTemporalGates": true
+      },
+      "chunk": {
+        "distributionGates": false,
+        "localDetailAndTemporalGates": true,
+        "seamPairsReportedAndGatedSeparately": true,
+        "lastCoreToNextHaloOwnedByNextChunk": true
+      }
+    },
+    "minimumEvidence": {
+      "scalarCoreFrames": 2,
+      "ownedTemporalPairs": 1,
+      "sameScenePairsWhenTimelinePresent": 1,
+      "seamPairsWhenExpected": 1
+    }
+  },
+  "video": "C:\\Users\\Administrator\\Documents\\video\\projects\\video-010\\chunks\\chunk-013-human-context\\proof\\video.mp4",
+  "auditScope": {
+    "kind": "chunk",
+    "chunkId": "chunk-013-human-context",
+    "coreSceneIds": [
+      "scene-177"
+    ],
+    "scalarOwnership": "core-only",
+    "temporalOwnership": "destination-core",
+    "seamExpected": true
+  },
+  "sampleSeconds": 5.0,
+  "sampleOffsets": [
+    0.0,
+    2.5
+  ],
+  "sampleOffsetSeconds": null,
+  "expectedDurationSeconds": 20.1,
+  "probedDurationSeconds": 20.1,
+  "durationSource": "caller-expected-and-probe-verified",
+  "durationToleranceSeconds": 0.059666666666666666,
+  "expectedSampleCount": 9,
+  "timelineOffsetSeconds": 0.0,
+  "subtitleBandMaskedFrom": 0.76,
+  "sampledFrames": 9,
+  "gatingSampledFrames": 2,
+  "gatingCoreSceneIds": [
+    "scene-177"
+  ],
+  "nearWhiteMean": 0.5199,
+  "whiteDominantRatio": 0.5,
+  "flatFrameRatio": 0.5,
+  "saturation": {
+    "mean": 0.2521,
+    "p10": 0.2141,
+    "p50": 0.2521
+  },
+  "edgeDensity": {
+    "mean": 0.2011,
+    "p10": 0.1701,
+    "p50": 0.2011
+  },
+  "nearDuplicateRatio": 0.0,
+  "edgeNearDuplicateRatio": 0.0,
+  "withinSceneNearDuplicateRatio": 0.0,
+  "withinSceneEdgeNearDuplicateRatio": 0.0,
+  "seamNearDuplicateRatio": 0.0,
+  "seamEdgeNearDuplicateRatio": 0.0,
+  "crossSceneNearDuplicateRatio": 0.0,
+  "ownedPairCount": 2,
+  "withinScenePairCount": 1,
+  "withinSceneDuplicateCount": 0,
+  "withinScenePairCountsByScene": {
+    "scene-177": 1
+  },
+  "seamPairCount": 1,
+  "seamDuplicateCount": 0,
+  "crossScenePairCount": 1,
+  "crossSceneDuplicateCount": 0,
+  "longestNearDuplicateRunSeconds": 0.0,
+  "longestWithinSceneNearDuplicateRunSeconds": 0.0,
+  "structuralChangeMean": 0.3209,
+  "samples": [
+    {
+      "seconds": 2.466666667,
+      "scheduledSeconds": 0.0,
+      "sceneId": "scene-176",
+      "sampleRole": "halo-before",
+      "white": 0.49145220588235294,
+      "saturation": 0.26233577728271484,
+      "edges": 0.19705882352941176,
+      "dominantColor": 0.4907169117647059,
+      "flat": false,
+      "focalOccupancy": 0.8688,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3087
+    },
+    {
+      "seconds": 4.966666667,
+      "scheduledSeconds": 2.5,
+      "sceneId": "scene-176",
+      "sampleRole": "halo-before",
+      "white": 0.9476102941176471,
+      "saturation": 0.015325132757425308,
+      "edges": 0.07371323529411765,
+      "dominantColor": 0.9469669117647059,
+      "flat": true,
+      "focalOccupancy": 0.4265,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.1335
+    },
+    {
+      "seconds": 7.466666667,
+      "scheduledSeconds": 5.0,
+      "sceneId": "scene-176",
+      "sampleRole": "halo-before",
+      "white": 0.3636948529411765,
+      "saturation": 0.27932220697402954,
+      "edges": 0.20974264705882353,
+      "dominantColor": 0.3630514705882353,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 9.966666667,
+      "scheduledSeconds": 7.5,
+      "sceneId": "scene-177",
+      "sampleRole": "core",
+      "white": 0.6738051470588236,
+      "saturation": 0.20457157492637634,
+      "edges": 0.16231617647058824,
+      "dominantColor": 0.6681985294117647,
+      "flat": true,
+      "focalOccupancy": 0.8824,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3224
+    },
+    {
+      "seconds": 12.466666667,
+      "scheduledSeconds": 10.0,
+      "sceneId": "scene-177",
+      "sampleRole": "core",
+      "white": 0.3660845588235294,
+      "saturation": 0.29966825246810913,
+      "edges": 0.23979779411764707,
+      "dominantColor": 0.3640625,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 14.966666667,
+      "scheduledSeconds": 12.5,
+      "sceneId": "scene-178",
+      "sampleRole": "halo-after",
+      "white": 0.6606617647058823,
+      "saturation": 0.1613861322402954,
+      "edges": 0.15018382352941176,
+      "dominantColor": 0.6606617647058823,
+      "flat": true,
+      "focalOccupancy": 0.6324,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0724
+    },
+    {
+      "seconds": 17.466666667,
+      "scheduledSeconds": 15.0,
+      "sceneId": "scene-178",
+      "sampleRole": "halo-after",
+      "white": 0.4909926470588235,
+      "saturation": 0.2434326559305191,
+      "edges": 0.20579044117647058,
+      "dominantColor": 0.4909926470588235,
+      "flat": false,
+      "focalOccupancy": 0.6324,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0724
+    },
+    {
+      "seconds": 19.966666667,
+      "scheduledSeconds": 17.5,
+      "sceneId": "scene-178",
+      "sampleRole": "halo-after",
+      "white": 1.0,
+      "saturation": 0.0,
+      "edges": 0.04154411764705882,
+      "dominantColor": 1.0,
+      "flat": true,
+      "focalOccupancy": 0.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.56
+    },
+    {
+      "seconds": 20.066666667,
+      "scheduledSeconds": 20.0,
+      "sceneId": "scene-178",
+      "sampleRole": "halo-after",
+      "white": 1.0,
+      "saturation": 0.0,
+      "edges": 0.04154411764705882,
+      "dominantColor": 1.0,
+      "flat": true,
+      "focalOccupancy": 0.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.56
+    }
+  ],
+  "focalOccupancy": {
+    "mean": 0.9412,
+    "p10": 0.8942,
+    "declaredTargetSamples": 2,
+    "belowDeclaredTargetRatio": 0.0
+  },
+  "worstFlatScenes": [
+    {
+      "sceneId": "scene-177",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.2011,
+      "saturationMean": 0.2521
+    }
+  ],
+  "lowDensityScenes": [
+    {
+      "sceneId": "scene-177",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.2011,
+      "saturationMean": 0.2521
+    }
+  ],
+  "registerMetrics": {
+    "character_action": {
+      "sceneCount": 1,
+      "sampleCount": 2,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.2011,
+      "saturationMean": 0.2521
+    }
+  },
+  "grammarMetrics": {
+    "TABLEAU": {
+      "sceneCount": 1,
+      "sampleCount": 2,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.2011,
+      "saturationMean": 0.2521
+    }
+  },
+  "temporalPairs": [
+    {
+      "fromSceneId": "scene-176",
+      "toSceneId": "scene-177",
+      "fromSeconds": 7.466666667,
+      "toSeconds": 9.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.338069,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-177",
+      "toSceneId": "scene-177",
+      "fromSeconds": 9.966666667,
+      "toSeconds": 12.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.30372,
+      "nearDuplicate": false
+    }
+  ],
+  "duplicateScenePairs": [],
+  "withinSceneDuplicateDiagnostics": [],
+  "contactSheet": "C:\\Users\\Administrator\\Documents\\video\\projects\\video-010\\chunks\\chunk-013-human-context\\proof\\video.contact.jpg",
+  "gateApplicability": {
+    "saturation": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "nearWhiteMean": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "whiteDominantRatio": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "flatFrameRatio": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "nearDuplicateRatio": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "edgeDensity": {
+      "applies": true,
+      "category": "local-frame-detail"
+    },
+    "focalOccupancy": {
+      "applies": true,
+      "category": "local-frame-detail"
+    },
+    "withinSceneNearDuplicateRatio": {
+      "applies": true,
+      "category": "within-scene-temporal"
+    },
+    "longestStaticRun": {
+      "applies": true,
+      "category": "within-scene-temporal"
+    },
+    "seamNearDuplicateRatio": {
+      "applies": true,
+      "category": "seam-temporal"
+    },
+    "minimumEvidence": {
+      "applies": true,
+      "category": "evidence-integrity"
+    }
+  },
+  "minimumEvidence": {
+    "scalarCoreFrames": 2,
+    "ownedTemporalPairs": 1,
+    "sameScenePairsWhenTimelinePresent": 1,
+    "seamPairsWhenExpected": 1,
+    "observedScalarFrames": 2,
+    "observedOwnedTemporalPairs": 2,
+    "observedWithinScenePairs": 1,
+    "observedSeamPairs": 1,
+    "sufficient": true
+  },
+  "failures": [],
+  "passed": true
+}

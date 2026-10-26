@@ -1,0 +1,2330 @@
+{
+  "schemaVersion": 2,
+  "measurementSpecVersion": "visual-audit-multiphase-v2",
+  "measurementSpecHash": "4185e245a99b35face67f19d9af70bd86e267f5d2a310c3dc584e535692b09a5",
+  "measurementSpec": {
+    "schemaVersion": 1,
+    "metricVersion": "visual-audit-multiphase-v2",
+    "sampling": {
+      "intervalSeconds": 5.0,
+      "phaseOffsetsSeconds": [
+        0.0,
+        2.5
+      ],
+      "timestampRule": "offset + n*interval, with 0 <= timestamp < audited duration",
+      "timestampPrecisionDecimals": 9,
+      "maximumPhaseBatches": 8,
+      "frameSelection": "phase trim, zero-based PTS, fixed-rate nearest-frame sampling",
+      "pairing": "chronological adjacent samples across all phases"
+    },
+    "contentMask": {
+      "includedTopRatio": 0.76,
+      "excludedRegion": "subtitle band from includedTopRatio through frame bottom"
+    },
+    "frameMetrics": {
+      "analysisSize": [
+        160,
+        68
+      ],
+      "contactSize": [
+        320,
+        180
+      ],
+      "scalarOwnership": "core frames only for chunk scope; all frames for global scope"
+    },
+    "temporalMetrics": {
+      "thumbnailSize": [
+        32,
+        14
+      ],
+      "difference": "mean absolute normalized grayscale pixel difference",
+      "nearDuplicatePixelThreshold": 0.025,
+      "ratioNormalization": "mean duplicate incidence weighted by actual pair delta / nominal interval",
+      "pairDelta": "actual destination timestamp minus source timestamp",
+      "pairOwnership": "destination core scene for chunk scope",
+      "seamClassification": "source and destination scene ids differ",
+      "staticRunDuration": "sum actual edge deltas plus the initial sample span"
+    },
+    "scopeRules": {
+      "global": {
+        "distributionGates": true,
+        "localDetailAndTemporalGates": true
+      },
+      "chunk": {
+        "distributionGates": false,
+        "localDetailAndTemporalGates": true,
+        "seamPairsReportedAndGatedSeparately": true,
+        "lastCoreToNextHaloOwnedByNextChunk": true
+      }
+    },
+    "minimumEvidence": {
+      "scalarCoreFrames": 2,
+      "ownedTemporalPairs": 1,
+      "sameScenePairsWhenTimelinePresent": 1,
+      "seamPairsWhenExpected": 1
+    }
+  },
+  "video": "C:\\Users\\Administrator\\Documents\\video\\projects\\video-010\\chunks\\chunk-012-con-nguoi-va-phan-thuong\\proof\\video.mp4",
+  "auditScope": {
+    "kind": "chunk",
+    "chunkId": "chunk-012-con-nguoi-va-phan-thuong",
+    "coreSceneIds": [
+      "scene-155",
+      "scene-156",
+      "scene-157",
+      "scene-158",
+      "scene-159",
+      "scene-160",
+      "scene-161",
+      "scene-162",
+      "scene-163",
+      "scene-164",
+      "scene-165",
+      "scene-166",
+      "scene-167",
+      "scene-168",
+      "scene-169",
+      "scene-170",
+      "scene-171",
+      "scene-172",
+      "scene-173",
+      "scene-174",
+      "scene-175",
+      "scene-176"
+    ],
+    "scalarOwnership": "core-only",
+    "temporalOwnership": "destination-core",
+    "seamExpected": true
+  },
+  "sampleSeconds": 5.0,
+  "sampleOffsets": [
+    0.0,
+    2.5
+  ],
+  "sampleOffsetSeconds": null,
+  "expectedDurationSeconds": 152.86666666666667,
+  "probedDurationSeconds": 152.866667,
+  "durationSource": "caller-expected-and-probe-verified",
+  "durationToleranceSeconds": 0.059666666666666666,
+  "expectedSampleCount": 62,
+  "timelineOffsetSeconds": 0.0,
+  "subtitleBandMaskedFrom": 0.76,
+  "sampledFrames": 62,
+  "gatingSampledFrames": 57,
+  "gatingCoreSceneIds": [
+    "scene-155",
+    "scene-156",
+    "scene-157",
+    "scene-158",
+    "scene-159",
+    "scene-160",
+    "scene-161",
+    "scene-162",
+    "scene-163",
+    "scene-164",
+    "scene-165",
+    "scene-166",
+    "scene-167",
+    "scene-168",
+    "scene-169",
+    "scene-170",
+    "scene-171",
+    "scene-172",
+    "scene-173",
+    "scene-174",
+    "scene-175",
+    "scene-176"
+  ],
+  "nearWhiteMean": 0.5556,
+  "whiteDominantRatio": 0.4912,
+  "flatFrameRatio": 0.5614,
+  "saturation": {
+    "mean": 0.143,
+    "p10": 0.0367,
+    "p50": 0.1332
+  },
+  "edgeDensity": {
+    "mean": 0.1867,
+    "p10": 0.0974,
+    "p50": 0.1881
+  },
+  "nearDuplicateRatio": 0.1053,
+  "edgeNearDuplicateRatio": 0.2105,
+  "withinSceneNearDuplicateRatio": 0.1714,
+  "withinSceneEdgeNearDuplicateRatio": 0.3429,
+  "seamNearDuplicateRatio": 0.0,
+  "seamEdgeNearDuplicateRatio": 0.0,
+  "crossSceneNearDuplicateRatio": 0.0,
+  "ownedPairCount": 57,
+  "withinScenePairCount": 35,
+  "withinSceneDuplicateCount": 12,
+  "withinScenePairCountsByScene": {
+    "scene-155": 2,
+    "scene-156": 1,
+    "scene-157": 1,
+    "scene-158": 2,
+    "scene-159": 1,
+    "scene-160": 2,
+    "scene-161": 2,
+    "scene-162": 2,
+    "scene-163": 1,
+    "scene-164": 2,
+    "scene-165": 2,
+    "scene-166": 2,
+    "scene-167": 1,
+    "scene-168": 1,
+    "scene-169": 2,
+    "scene-170": 1,
+    "scene-171": 2,
+    "scene-172": 1,
+    "scene-173": 2,
+    "scene-174": 1,
+    "scene-175": 1,
+    "scene-176": 3
+  },
+  "seamPairCount": 22,
+  "seamDuplicateCount": 0,
+  "crossScenePairCount": 22,
+  "crossSceneDuplicateCount": 0,
+  "longestNearDuplicateRunSeconds": 7.5,
+  "longestWithinSceneNearDuplicateRunSeconds": 7.5,
+  "structuralChangeMean": 0.1837,
+  "samples": [
+    {
+      "seconds": 2.466666667,
+      "scheduledSeconds": 0.0,
+      "sceneId": "scene-154",
+      "sampleRole": "halo-before",
+      "white": 0.6606617647058823,
+      "saturation": 0.16360226273536682,
+      "edges": 0.15220588235294116,
+      "dominantColor": 0.6606617647058823,
+      "flat": true,
+      "focalOccupancy": 0.6324,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0724
+    },
+    {
+      "seconds": 4.966666667,
+      "scheduledSeconds": 2.5,
+      "sceneId": "scene-154",
+      "sampleRole": "halo-before",
+      "white": 0.4909926470588235,
+      "saturation": 0.2663756012916565,
+      "edges": 0.2088235294117647,
+      "dominantColor": 0.4909926470588235,
+      "flat": false,
+      "focalOccupancy": 0.6324,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0724
+    },
+    {
+      "seconds": 7.466666667,
+      "scheduledSeconds": 5.0,
+      "sceneId": "scene-155",
+      "sampleRole": "core",
+      "white": 0.6688419117647059,
+      "saturation": 0.1823907345533371,
+      "edges": 0.21424632352941175,
+      "dominantColor": 0.6620404411764705,
+      "flat": true,
+      "focalOccupancy": 0.5735,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0135
+    },
+    {
+      "seconds": 9.966666667,
+      "scheduledSeconds": 7.5,
+      "sceneId": "scene-155",
+      "sampleRole": "core",
+      "white": 0.3307904411764706,
+      "saturation": 0.3463252782821655,
+      "edges": 0.33125,
+      "dominantColor": 0.3290441176470588,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 12.466666667,
+      "scheduledSeconds": 10.0,
+      "sceneId": "scene-155",
+      "sampleRole": "core",
+      "white": 0.6285845588235294,
+      "saturation": 0.13244634866714478,
+      "edges": 0.2713235294117647,
+      "dominantColor": 0.6252757352941176,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 14.966666667,
+      "scheduledSeconds": 12.5,
+      "sceneId": "scene-156",
+      "sampleRole": "core",
+      "white": 0.3287683823529412,
+      "saturation": 0.08664663136005402,
+      "edges": 0.16020220588235295,
+      "dominantColor": 0.3258272058823529,
+      "flat": false,
+      "focalOccupancy": 0.8875,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3275
+    },
+    {
+      "seconds": 17.466666667,
+      "scheduledSeconds": 15.0,
+      "sceneId": "scene-156",
+      "sampleRole": "core",
+      "white": 0.6473345588235294,
+      "saturation": 0.067886121571064,
+      "edges": 0.09862132352941176,
+      "dominantColor": 0.6454044117647059,
+      "flat": true,
+      "focalOccupancy": 0.8235,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.2635
+    },
+    {
+      "seconds": 19.966666667,
+      "scheduledSeconds": 17.5,
+      "sceneId": "scene-157",
+      "sampleRole": "core",
+      "white": 0.6541360294117647,
+      "saturation": 0.044866062700748444,
+      "edges": 0.10358455882352942,
+      "dominantColor": 0.6514705882352941,
+      "flat": true,
+      "focalOccupancy": 0.8529,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.2929
+    },
+    {
+      "seconds": 22.466666667,
+      "scheduledSeconds": 20.0,
+      "sceneId": "scene-157",
+      "sampleRole": "core",
+      "white": 0.26700367647058826,
+      "saturation": 0.13114267587661743,
+      "edges": 0.16755514705882352,
+      "dominantColor": 0.2640625,
+      "flat": false,
+      "focalOccupancy": 0.9265,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3665
+    },
+    {
+      "seconds": 24.966666667,
+      "scheduledSeconds": 22.5,
+      "sceneId": "scene-158",
+      "sampleRole": "core",
+      "white": 0.4390625,
+      "saturation": 0.23735710978507996,
+      "edges": 0.2548713235294118,
+      "dominantColor": 0.43676470588235294,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 27.466666667,
+      "scheduledSeconds": 25.0,
+      "sceneId": "scene-158",
+      "sampleRole": "core",
+      "white": 0.3911764705882353,
+      "saturation": 0.1319427192211151,
+      "edges": 0.24825367647058824,
+      "dominantColor": 0.38786764705882354,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 29.966666667,
+      "scheduledSeconds": 27.5,
+      "sceneId": "scene-158",
+      "sampleRole": "core",
+      "white": 0.5811580882352941,
+      "saturation": 0.13541428744792938,
+      "edges": 0.2046875,
+      "dominantColor": 0.5786764705882353,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 32.466666667,
+      "scheduledSeconds": 30.0,
+      "sceneId": "scene-159",
+      "sampleRole": "core",
+      "white": 0.6344669117647059,
+      "saturation": 0.2005235105752945,
+      "edges": 0.19448529411764706,
+      "dominantColor": 0.6305147058823529,
+      "flat": true,
+      "focalOccupancy": 0.9853,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.4253
+    },
+    {
+      "seconds": 34.966666667,
+      "scheduledSeconds": 32.5,
+      "sceneId": "scene-159",
+      "sampleRole": "core",
+      "white": 0.6259191176470589,
+      "saturation": 0.1918400675058365,
+      "edges": 0.20238970588235294,
+      "dominantColor": 0.6214154411764706,
+      "flat": true,
+      "focalOccupancy": 0.9853,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.4253
+    },
+    {
+      "seconds": 37.466666667,
+      "scheduledSeconds": 35.0,
+      "sceneId": "scene-160",
+      "sampleRole": "core",
+      "white": 0.3302389705882353,
+      "saturation": 0.16580988466739655,
+      "edges": 0.19154411764705884,
+      "dominantColor": 0.3284007352941177,
+      "flat": false,
+      "focalOccupancy": 0.8382,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.2782
+    },
+    {
+      "seconds": 39.966666667,
+      "scheduledSeconds": 37.5,
+      "sceneId": "scene-160",
+      "sampleRole": "core",
+      "white": 0.5341911764705882,
+      "saturation": 0.23079469799995422,
+      "edges": 0.28979779411764706,
+      "dominantColor": 0.5199448529411764,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 42.466666667,
+      "scheduledSeconds": 40.0,
+      "sceneId": "scene-160",
+      "sampleRole": "core",
+      "white": 0.5276654411764706,
+      "saturation": 0.23047292232513428,
+      "edges": 0.28409926470588237,
+      "dominantColor": 0.5136029411764705,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 44.966666667,
+      "scheduledSeconds": 42.5,
+      "sceneId": "scene-161",
+      "sampleRole": "core",
+      "white": 0.33639705882352944,
+      "saturation": 0.35678499937057495,
+      "edges": 0.1203125,
+      "dominantColor": 0.44246323529411763,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 47.466666667,
+      "scheduledSeconds": 45.0,
+      "sceneId": "scene-161",
+      "sampleRole": "core",
+      "white": 0.7433823529411765,
+      "saturation": 0.027020344510674477,
+      "edges": 0.08584558823529412,
+      "dominantColor": 0.7408088235294118,
+      "flat": true,
+      "focalOccupancy": 0.6471,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0871
+    },
+    {
+      "seconds": 49.966666667,
+      "scheduledSeconds": 47.5,
+      "sceneId": "scene-161",
+      "sampleRole": "core",
+      "white": 0.4328125,
+      "saturation": 0.23735205829143524,
+      "edges": 0.2604779411764706,
+      "dominantColor": 0.4306066176470588,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 52.466666667,
+      "scheduledSeconds": 50.0,
+      "sceneId": "scene-162",
+      "sampleRole": "core",
+      "white": 0.7252757352941176,
+      "saturation": 0.13321807980537415,
+      "edges": 0.1879595588235294,
+      "dominantColor": 0.7205882352941176,
+      "flat": true,
+      "focalOccupancy": 0.8529,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.2929
+    },
+    {
+      "seconds": 54.966666667,
+      "scheduledSeconds": 52.5,
+      "sceneId": "scene-162",
+      "sampleRole": "core",
+      "white": 0.725,
+      "saturation": 0.13332155346870422,
+      "edges": 0.18860294117647058,
+      "dominantColor": 0.7193014705882353,
+      "flat": true,
+      "focalOccupancy": 0.8529,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.2929
+    },
+    {
+      "seconds": 57.466666667,
+      "scheduledSeconds": 55.0,
+      "sceneId": "scene-162",
+      "sampleRole": "core",
+      "white": 0.7320772058823529,
+      "saturation": 0.13345828652381897,
+      "edges": 0.18216911764705881,
+      "dominantColor": 0.7258272058823529,
+      "flat": true,
+      "focalOccupancy": 0.8529,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.2929
+    },
+    {
+      "seconds": 59.966666667,
+      "scheduledSeconds": 57.5,
+      "sceneId": "scene-163",
+      "sampleRole": "core",
+      "white": 0.2743566176470588,
+      "saturation": 0.1810036599636078,
+      "edges": 0.3205882352941177,
+      "dominantColor": 0.27389705882352944,
+      "flat": false,
+      "focalOccupancy": 0.9853,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.4253
+    },
+    {
+      "seconds": 62.466666667,
+      "scheduledSeconds": 60.0,
+      "sceneId": "scene-163",
+      "sampleRole": "core",
+      "white": 0.5780330882352941,
+      "saturation": 0.16052979230880737,
+      "edges": 0.23676470588235293,
+      "dominantColor": 0.5746323529411764,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 64.966666667,
+      "scheduledSeconds": 62.5,
+      "sceneId": "scene-164",
+      "sampleRole": "core",
+      "white": 0.6433823529411765,
+      "saturation": 0.12865093350410461,
+      "edges": 0.25073529411764706,
+      "dominantColor": 0.6327205882352941,
+      "flat": true,
+      "focalOccupancy": 0.9118,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3518
+    },
+    {
+      "seconds": 67.466666667,
+      "scheduledSeconds": 65.0,
+      "sceneId": "scene-164",
+      "sampleRole": "core",
+      "white": 0.6439338235294118,
+      "saturation": 0.1291143149137497,
+      "edges": 0.25036764705882353,
+      "dominantColor": 0.6326286764705882,
+      "flat": true,
+      "focalOccupancy": 0.9118,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3518
+    },
+    {
+      "seconds": 69.966666667,
+      "scheduledSeconds": 67.5,
+      "sceneId": "scene-164",
+      "sampleRole": "core",
+      "white": 0.5331801470588236,
+      "saturation": 0.09528905898332596,
+      "edges": 0.3113051470588235,
+      "dominantColor": 0.5138786764705883,
+      "flat": false,
+      "focalOccupancy": 0.9706,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.4106
+    },
+    {
+      "seconds": 72.466666667,
+      "scheduledSeconds": 70.0,
+      "sceneId": "scene-165",
+      "sampleRole": "core",
+      "white": 0.6366727941176471,
+      "saturation": 0.15076841413974762,
+      "edges": 0.16534926470588235,
+      "dominantColor": 0.6299632352941177,
+      "flat": true,
+      "focalOccupancy": 0.9559,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3959
+    },
+    {
+      "seconds": 74.966666667,
+      "scheduledSeconds": 72.5,
+      "sceneId": "scene-165",
+      "sampleRole": "core",
+      "white": 0.6466911764705883,
+      "saturation": 0.14462018013000488,
+      "edges": 0.1666360294117647,
+      "dominantColor": 0.6400735294117647,
+      "flat": true,
+      "focalOccupancy": 0.9559,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3959
+    },
+    {
+      "seconds": 77.466666667,
+      "scheduledSeconds": 75.0,
+      "sceneId": "scene-165",
+      "sampleRole": "core",
+      "white": 0.6619485294117647,
+      "saturation": 0.14725732803344727,
+      "edges": 0.15900735294117646,
+      "dominantColor": 0.6543198529411764,
+      "flat": true,
+      "focalOccupancy": 0.5294,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.0306
+    },
+    {
+      "seconds": 79.966666667,
+      "scheduledSeconds": 77.5,
+      "sceneId": "scene-166",
+      "sampleRole": "core",
+      "white": 0.6606617647058823,
+      "saturation": 0.16284231841564178,
+      "edges": 0.14779411764705883,
+      "dominantColor": 0.6606617647058823,
+      "flat": true,
+      "focalOccupancy": 0.6324,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0724
+    },
+    {
+      "seconds": 82.466666667,
+      "scheduledSeconds": 80.0,
+      "sceneId": "scene-166",
+      "sampleRole": "core",
+      "white": 0.4910845588235294,
+      "saturation": 0.2277301549911499,
+      "edges": 0.20248161764705883,
+      "dominantColor": 0.4909926470588235,
+      "flat": false,
+      "focalOccupancy": 0.6324,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.0724
+    },
+    {
+      "seconds": 84.966666667,
+      "scheduledSeconds": 82.5,
+      "sceneId": "scene-166",
+      "sampleRole": "core",
+      "white": 1.0,
+      "saturation": 0.0,
+      "edges": 0.04154411764705882,
+      "dominantColor": 1.0,
+      "flat": true,
+      "focalOccupancy": 0.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.56
+    },
+    {
+      "seconds": 87.466666667,
+      "scheduledSeconds": 85.0,
+      "sceneId": "scene-167",
+      "sampleRole": "core",
+      "white": 0.3911764705882353,
+      "saturation": 0.13194917142391205,
+      "edges": 0.2478860294117647,
+      "dominantColor": 0.3876838235294118,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 89.966666667,
+      "scheduledSeconds": 87.5,
+      "sceneId": "scene-167",
+      "sampleRole": "core",
+      "white": 1.0,
+      "saturation": 0.0,
+      "edges": 0.04154411764705882,
+      "dominantColor": 1.0,
+      "flat": true,
+      "focalOccupancy": 0.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.56
+    },
+    {
+      "seconds": 92.466666667,
+      "scheduledSeconds": 90.0,
+      "sceneId": "scene-168",
+      "sampleRole": "core",
+      "white": 0.35744485294117645,
+      "saturation": 0.0780564621090889,
+      "edges": 0.1661764705882353,
+      "dominantColor": 0.3533088235294118,
+      "flat": false,
+      "focalOccupancy": 0.8688,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3087
+    },
+    {
+      "seconds": 94.966666667,
+      "scheduledSeconds": 92.5,
+      "sceneId": "scene-168",
+      "sampleRole": "core",
+      "white": 0.5735294117647058,
+      "saturation": 0.07486583292484283,
+      "edges": 0.16498161764705882,
+      "dominantColor": 0.571139705882353,
+      "flat": true,
+      "focalOccupancy": 0.8625,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3025
+    },
+    {
+      "seconds": 97.466666667,
+      "scheduledSeconds": 95.0,
+      "sceneId": "scene-169",
+      "sampleRole": "core",
+      "white": 0.5004595588235294,
+      "saturation": 0.04241916537284851,
+      "edges": 0.09568014705882352,
+      "dominantColor": 0.4979779411764706,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 99.966666667,
+      "scheduledSeconds": 97.5,
+      "sceneId": "scene-169",
+      "sampleRole": "core",
+      "white": 0.1832720588235294,
+      "saturation": 0.12196074426174164,
+      "edges": 0.1420955882352941,
+      "dominantColor": 0.33612132352941176,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 102.466666667,
+      "scheduledSeconds": 100.0,
+      "sceneId": "scene-169",
+      "sampleRole": "core",
+      "white": 0.1818014705882353,
+      "saturation": 0.12221715599298477,
+      "edges": 0.14301470588235293,
+      "dominantColor": 0.3353860294117647,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 104.966666667,
+      "scheduledSeconds": 102.5,
+      "sceneId": "scene-170",
+      "sampleRole": "core",
+      "white": 0.4446691176470588,
+      "saturation": 0.06315558403730392,
+      "edges": 0.19209558823529413,
+      "dominantColor": 0.4432904411764706,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 107.466666667,
+      "scheduledSeconds": 105.0,
+      "sceneId": "scene-170",
+      "sampleRole": "core",
+      "white": 0.8041360294117647,
+      "saturation": 0.033037520945072174,
+      "edges": 0.17095588235294118,
+      "dominantColor": 0.8015625,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 109.966666667,
+      "scheduledSeconds": 107.5,
+      "sceneId": "scene-171",
+      "sampleRole": "core",
+      "white": 0.6846507352941177,
+      "saturation": 0.13589216768741608,
+      "edges": 0.2453125,
+      "dominantColor": 0.6797794117647059,
+      "flat": true,
+      "focalOccupancy": 0.9559,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3959
+    },
+    {
+      "seconds": 112.466666667,
+      "scheduledSeconds": 110.0,
+      "sceneId": "scene-171",
+      "sampleRole": "core",
+      "white": 0.6684742647058823,
+      "saturation": 0.14249835908412933,
+      "edges": 0.2590073529411765,
+      "dominantColor": 0.6615808823529412,
+      "flat": true,
+      "focalOccupancy": 0.9559,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3959
+    },
+    {
+      "seconds": 114.966666667,
+      "scheduledSeconds": 112.5,
+      "sceneId": "scene-171",
+      "sampleRole": "core",
+      "white": 0.66875,
+      "saturation": 0.151764914393425,
+      "edges": 0.25652573529411765,
+      "dominantColor": 0.6597426470588236,
+      "flat": true,
+      "focalOccupancy": 0.9559,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3959
+    },
+    {
+      "seconds": 117.466666667,
+      "scheduledSeconds": 115.0,
+      "sceneId": "scene-172",
+      "sampleRole": "core",
+      "white": 0.7434742647058824,
+      "saturation": 0.11362767219543457,
+      "edges": 0.16994485294117648,
+      "dominantColor": 0.7420955882352941,
+      "flat": true,
+      "focalOccupancy": 0.9853,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.4253
+    },
+    {
+      "seconds": 119.966666667,
+      "scheduledSeconds": 117.5,
+      "sceneId": "scene-172",
+      "sampleRole": "core",
+      "white": 0.7794117647058824,
+      "saturation": 0.09324665367603302,
+      "edges": 0.13658088235294116,
+      "dominantColor": 0.7772058823529412,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 122.466666667,
+      "scheduledSeconds": 120.0,
+      "sceneId": "scene-173",
+      "sampleRole": "core",
+      "white": 0.3452205882352941,
+      "saturation": 0.34058982133865356,
+      "edges": 0.11029411764705882,
+      "dominantColor": 0.4442095588235294,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 124.966666667,
+      "scheduledSeconds": 122.5,
+      "sceneId": "scene-173",
+      "sampleRole": "core",
+      "white": 0.7630514705882353,
+      "saturation": 0.03918686509132385,
+      "edges": 0.07435661764705882,
+      "dominantColor": 0.7610294117647058,
+      "flat": true,
+      "focalOccupancy": 0.6618,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.1018
+    },
+    {
+      "seconds": 127.466666667,
+      "scheduledSeconds": 125.0,
+      "sceneId": "scene-173",
+      "sampleRole": "core",
+      "white": 1.0,
+      "saturation": 0.0,
+      "edges": 0.04154411764705882,
+      "dominantColor": 1.0,
+      "flat": true,
+      "focalOccupancy": 0.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.56
+    },
+    {
+      "seconds": 129.966666667,
+      "scheduledSeconds": 127.5,
+      "sceneId": "scene-174",
+      "sampleRole": "core",
+      "white": 0.29733455882352944,
+      "saturation": 0.12735041975975037,
+      "edges": 0.15257352941176472,
+      "dominantColor": 0.29301470588235295,
+      "flat": false,
+      "focalOccupancy": 0.9125,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3525
+    },
+    {
+      "seconds": 132.466666667,
+      "scheduledSeconds": 130.0,
+      "sceneId": "scene-174",
+      "sampleRole": "core",
+      "white": 0.2974264705882353,
+      "saturation": 0.12732595205307007,
+      "edges": 0.15395220588235295,
+      "dominantColor": 0.2936580882352941,
+      "flat": false,
+      "focalOccupancy": 0.9125,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3525
+    },
+    {
+      "seconds": 134.966666667,
+      "scheduledSeconds": 132.5,
+      "sceneId": "scene-175",
+      "sampleRole": "core",
+      "white": 0.29384191176470587,
+      "saturation": 0.20512937009334564,
+      "edges": 0.20330882352941176,
+      "dominantColor": 0.2933823529411765,
+      "flat": false,
+      "focalOccupancy": 0.9853,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.4253
+    },
+    {
+      "seconds": 137.466666667,
+      "scheduledSeconds": 135.0,
+      "sceneId": "scene-175",
+      "sampleRole": "core",
+      "white": 0.8039522058823529,
+      "saturation": 0.032435715198516846,
+      "edges": 0.17077205882352942,
+      "dominantColor": 0.8012867647058823,
+      "flat": true,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 139.966666667,
+      "scheduledSeconds": 137.5,
+      "sceneId": "scene-176",
+      "sampleRole": "core",
+      "white": 0.4932904411764706,
+      "saturation": 0.2489946186542511,
+      "edges": 0.18814338235294117,
+      "dominantColor": 0.49237132352941176,
+      "flat": false,
+      "focalOccupancy": 0.8688,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3087
+    },
+    {
+      "seconds": 142.466666667,
+      "scheduledSeconds": 140.0,
+      "sceneId": "scene-176",
+      "sampleRole": "core",
+      "white": 0.6126838235294118,
+      "saturation": 0.1035611629486084,
+      "edges": 0.19797794117647058,
+      "dominantColor": 0.6111213235294117,
+      "flat": true,
+      "focalOccupancy": 0.5147,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": -0.0453
+    },
+    {
+      "seconds": 144.966666667,
+      "scheduledSeconds": 142.5,
+      "sceneId": "scene-176",
+      "sampleRole": "core",
+      "white": 0.3636948529411765,
+      "saturation": 0.2793790400028229,
+      "edges": 0.20919117647058824,
+      "dominantColor": 0.3628676470588235,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 147.466666667,
+      "scheduledSeconds": 145.0,
+      "sceneId": "scene-176",
+      "sampleRole": "core",
+      "white": 0.3636948529411765,
+      "saturation": 0.27930527925491333,
+      "edges": 0.21029411764705883,
+      "dominantColor": 0.36323529411764705,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 149.966666667,
+      "scheduledSeconds": 147.5,
+      "sceneId": "scene-177",
+      "sampleRole": "halo-after",
+      "white": 0.596139705882353,
+      "saturation": 0.22652024030685425,
+      "edges": 0.19595588235294117,
+      "dominantColor": 0.5897977941176471,
+      "flat": true,
+      "focalOccupancy": 0.8824,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3224
+    },
+    {
+      "seconds": 152.466666667,
+      "scheduledSeconds": 150.0,
+      "sceneId": "scene-177",
+      "sampleRole": "halo-after",
+      "white": 0.3660845588235294,
+      "saturation": 0.2991291284561157,
+      "edges": 0.23943014705882354,
+      "dominantColor": 0.36378676470588234,
+      "flat": false,
+      "focalOccupancy": 1.0,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.44
+    },
+    {
+      "seconds": 152.833333333,
+      "scheduledSeconds": 152.5,
+      "sceneId": "scene-177",
+      "sampleRole": "halo-after",
+      "white": 0.7424632352941176,
+      "saturation": 0.1893603354692459,
+      "edges": 0.11737132352941176,
+      "dominantColor": 0.7388786764705882,
+      "flat": true,
+      "focalOccupancy": 0.8824,
+      "focalOccupancyTarget": 0.56,
+      "focalOccupancyDelta": 0.3224
+    }
+  ],
+  "focalOccupancy": {
+    "mean": 0.8597,
+    "p10": 0.6088,
+    "declaredTargetSamples": 57,
+    "belowDeclaredTargetRatio": 0.0877
+  },
+  "worstFlatScenes": [
+    {
+      "sceneId": "scene-172",
+      "samples": 2,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1533,
+      "saturationMean": 0.1034
+    },
+    {
+      "sceneId": "scene-165",
+      "samples": 3,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1637,
+      "saturationMean": 0.1475
+    },
+    {
+      "sceneId": "scene-162",
+      "samples": 3,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1862,
+      "saturationMean": 0.1333
+    },
+    {
+      "sceneId": "scene-159",
+      "samples": 2,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1984,
+      "saturationMean": 0.1962
+    },
+    {
+      "sceneId": "scene-171",
+      "samples": 3,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.2536,
+      "saturationMean": 0.1434
+    },
+    {
+      "sceneId": "scene-173",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.0754,
+      "saturationMean": 0.1266
+    },
+    {
+      "sceneId": "scene-166",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.1306,
+      "saturationMean": 0.1302
+    },
+    {
+      "sceneId": "scene-164",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.2708,
+      "saturationMean": 0.1177
+    },
+    {
+      "sceneId": "scene-155",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.2723,
+      "saturationMean": 0.2204
+    },
+    {
+      "sceneId": "scene-156",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1294,
+      "saturationMean": 0.0773
+    },
+    {
+      "sceneId": "scene-157",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1356,
+      "saturationMean": 0.088
+    },
+    {
+      "sceneId": "scene-167",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1447,
+      "saturationMean": 0.066
+    },
+    {
+      "sceneId": "scene-168",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1656,
+      "saturationMean": 0.0765
+    },
+    {
+      "sceneId": "scene-170",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1815,
+      "saturationMean": 0.0481
+    },
+    {
+      "sceneId": "scene-175",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.187,
+      "saturationMean": 0.1188
+    },
+    {
+      "sceneId": "scene-163",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.2787,
+      "saturationMean": 0.1708
+    },
+    {
+      "sceneId": "scene-169",
+      "samples": 3,
+      "flatRatio": 0.3333,
+      "edgeDensityMean": 0.1269,
+      "saturationMean": 0.0955
+    },
+    {
+      "sceneId": "scene-161",
+      "samples": 3,
+      "flatRatio": 0.3333,
+      "edgeDensityMean": 0.1555,
+      "saturationMean": 0.2071
+    },
+    {
+      "sceneId": "scene-158",
+      "samples": 3,
+      "flatRatio": 0.3333,
+      "edgeDensityMean": 0.2359,
+      "saturationMean": 0.1682
+    },
+    {
+      "sceneId": "scene-176",
+      "samples": 4,
+      "flatRatio": 0.25,
+      "edgeDensityMean": 0.2014,
+      "saturationMean": 0.2278
+    }
+  ],
+  "lowDensityScenes": [
+    {
+      "sceneId": "scene-173",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.0754,
+      "saturationMean": 0.1266
+    },
+    {
+      "sceneId": "scene-169",
+      "samples": 3,
+      "flatRatio": 0.3333,
+      "edgeDensityMean": 0.1269,
+      "saturationMean": 0.0955
+    },
+    {
+      "sceneId": "scene-156",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1294,
+      "saturationMean": 0.0773
+    },
+    {
+      "sceneId": "scene-166",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.1306,
+      "saturationMean": 0.1302
+    },
+    {
+      "sceneId": "scene-157",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1356,
+      "saturationMean": 0.088
+    },
+    {
+      "sceneId": "scene-167",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1447,
+      "saturationMean": 0.066
+    },
+    {
+      "sceneId": "scene-172",
+      "samples": 2,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1533,
+      "saturationMean": 0.1034
+    },
+    {
+      "sceneId": "scene-174",
+      "samples": 2,
+      "flatRatio": 0.0,
+      "edgeDensityMean": 0.1533,
+      "saturationMean": 0.1273
+    },
+    {
+      "sceneId": "scene-161",
+      "samples": 3,
+      "flatRatio": 0.3333,
+      "edgeDensityMean": 0.1555,
+      "saturationMean": 0.2071
+    },
+    {
+      "sceneId": "scene-165",
+      "samples": 3,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1637,
+      "saturationMean": 0.1475
+    },
+    {
+      "sceneId": "scene-168",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1656,
+      "saturationMean": 0.0765
+    },
+    {
+      "sceneId": "scene-170",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.1815,
+      "saturationMean": 0.0481
+    },
+    {
+      "sceneId": "scene-162",
+      "samples": 3,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1862,
+      "saturationMean": 0.1333
+    },
+    {
+      "sceneId": "scene-175",
+      "samples": 2,
+      "flatRatio": 0.5,
+      "edgeDensityMean": 0.187,
+      "saturationMean": 0.1188
+    },
+    {
+      "sceneId": "scene-159",
+      "samples": 2,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.1984,
+      "saturationMean": 0.1962
+    },
+    {
+      "sceneId": "scene-176",
+      "samples": 4,
+      "flatRatio": 0.25,
+      "edgeDensityMean": 0.2014,
+      "saturationMean": 0.2278
+    },
+    {
+      "sceneId": "scene-158",
+      "samples": 3,
+      "flatRatio": 0.3333,
+      "edgeDensityMean": 0.2359,
+      "saturationMean": 0.1682
+    },
+    {
+      "sceneId": "scene-171",
+      "samples": 3,
+      "flatRatio": 1.0,
+      "edgeDensityMean": 0.2536,
+      "saturationMean": 0.1434
+    },
+    {
+      "sceneId": "scene-160",
+      "samples": 3,
+      "flatRatio": 0.0,
+      "edgeDensityMean": 0.2551,
+      "saturationMean": 0.209
+    },
+    {
+      "sceneId": "scene-164",
+      "samples": 3,
+      "flatRatio": 0.6667,
+      "edgeDensityMean": 0.2708,
+      "saturationMean": 0.1177
+    }
+  ],
+  "registerMetrics": {
+    "full_tableau": {
+      "sceneCount": 5,
+      "sampleCount": 14,
+      "flatRatioMean": 0.8571,
+      "edgeDensityMean": 0.239,
+      "saturationMean": 0.1598
+    },
+    "character_action": {
+      "sceneCount": 5,
+      "sampleCount": 12,
+      "flatRatioMean": 0.5833,
+      "edgeDensityMean": 0.1444,
+      "saturationMean": 0.1011
+    },
+    "evidence": {
+      "sceneCount": 4,
+      "sampleCount": 10,
+      "flatRatioMean": 0.4,
+      "edgeDensityMean": 0.2143,
+      "saturationMean": 0.1435
+    },
+    "infographic": {
+      "sceneCount": 4,
+      "sampleCount": 13,
+      "flatRatioMean": 0.4615,
+      "edgeDensityMean": 0.1454,
+      "saturationMean": 0.1771
+    },
+    "framebox": {
+      "sceneCount": 2,
+      "sampleCount": 4,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.2329,
+      "saturationMean": 0.1448
+    },
+    "photo_broll": {
+      "sceneCount": 1,
+      "sampleCount": 2,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.1447,
+      "saturationMean": 0.066
+    },
+    "visual_gag": {
+      "sceneCount": 1,
+      "sampleCount": 2,
+      "flatRatioMean": 0.0,
+      "edgeDensityMean": 0.1533,
+      "saturationMean": 0.1273
+    }
+  },
+  "grammarMetrics": {
+    "TABLEAU": {
+      "sceneCount": 6,
+      "sampleCount": 17,
+      "flatRatioMean": 0.8824,
+      "edgeDensityMean": 0.2257,
+      "saturationMean": 0.1576
+    },
+    "DIALOGUE_QA": {
+      "sceneCount": 2,
+      "sampleCount": 4,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.1475,
+      "saturationMean": 0.0769
+    },
+    "CHAR_PROP": {
+      "sceneCount": 3,
+      "sampleCount": 7,
+      "flatRatioMean": 0.2857,
+      "edgeDensityMean": 0.1369,
+      "saturationMean": 0.1025
+    },
+    "EVIDENCE": {
+      "sceneCount": 4,
+      "sampleCount": 10,
+      "flatRatioMean": 0.4,
+      "edgeDensityMean": 0.2143,
+      "saturationMean": 0.1435
+    },
+    "QA_REVEAL": {
+      "sceneCount": 2,
+      "sampleCount": 6,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.1155,
+      "saturationMean": 0.1668
+    },
+    "FRAMEBOX": {
+      "sceneCount": 2,
+      "sampleCount": 4,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.2329,
+      "saturationMean": 0.1448
+    },
+    "ICON_TRIPLE": {
+      "sceneCount": 1,
+      "sampleCount": 3,
+      "flatRatioMean": 0.6667,
+      "edgeDensityMean": 0.1306,
+      "saturationMean": 0.1302
+    },
+    "PHOTO_EVIDENCE": {
+      "sceneCount": 1,
+      "sampleCount": 2,
+      "flatRatioMean": 0.5,
+      "edgeDensityMean": 0.1447,
+      "saturationMean": 0.066
+    },
+    "CAUSE_EFFECT": {
+      "sceneCount": 1,
+      "sampleCount": 4,
+      "flatRatioMean": 0.25,
+      "edgeDensityMean": 0.2014,
+      "saturationMean": 0.2278
+    }
+  },
+  "temporalPairs": [
+    {
+      "fromSceneId": "scene-154",
+      "toSceneId": "scene-155",
+      "fromSeconds": 4.966666667,
+      "toSeconds": 7.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.305007,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-155",
+      "toSceneId": "scene-155",
+      "fromSeconds": 7.466666667,
+      "toSeconds": 9.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.30836,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-155",
+      "toSceneId": "scene-155",
+      "fromSeconds": 9.966666667,
+      "toSeconds": 12.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.180532,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-155",
+      "toSceneId": "scene-156",
+      "fromSeconds": 12.466666667,
+      "toSeconds": 14.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.232195,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-156",
+      "toSceneId": "scene-156",
+      "fromSeconds": 14.966666667,
+      "toSeconds": 17.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.093768,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-156",
+      "toSceneId": "scene-157",
+      "fromSeconds": 17.466666667,
+      "toSeconds": 19.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.131075,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-157",
+      "toSceneId": "scene-157",
+      "fromSeconds": 19.966666667,
+      "toSeconds": 22.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.086949,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-157",
+      "toSceneId": "scene-158",
+      "fromSeconds": 22.466666667,
+      "toSeconds": 24.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.258071,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-158",
+      "toSceneId": "scene-158",
+      "fromSeconds": 24.966666667,
+      "toSeconds": 27.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.111257,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-158",
+      "toSceneId": "scene-158",
+      "fromSeconds": 27.466666667,
+      "toSeconds": 29.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.171131,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-158",
+      "toSceneId": "scene-159",
+      "fromSeconds": 29.966666667,
+      "toSeconds": 32.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.283727,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-159",
+      "toSceneId": "scene-159",
+      "fromSeconds": 32.466666667,
+      "toSeconds": 34.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.011607,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-159",
+      "toSceneId": "scene-160",
+      "fromSeconds": 34.966666667,
+      "toSeconds": 37.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.218943,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-160",
+      "toSceneId": "scene-160",
+      "fromSeconds": 37.466666667,
+      "toSeconds": 39.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.247339,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-160",
+      "toSceneId": "scene-160",
+      "fromSeconds": 39.966666667,
+      "toSeconds": 42.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.009252,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-160",
+      "toSceneId": "scene-161",
+      "fromSeconds": 42.466666667,
+      "toSeconds": 44.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.22865,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-161",
+      "toSceneId": "scene-161",
+      "fromSeconds": 44.966666667,
+      "toSeconds": 47.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.329893,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-161",
+      "toSceneId": "scene-161",
+      "fromSeconds": 47.466666667,
+      "toSeconds": 49.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.327854,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-161",
+      "toSceneId": "scene-162",
+      "fromSeconds": 49.966666667,
+      "toSeconds": 52.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.349203,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-162",
+      "toSceneId": "scene-162",
+      "fromSeconds": 52.466666667,
+      "toSeconds": 54.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.000193,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-162",
+      "toSceneId": "scene-162",
+      "fromSeconds": 54.966666667,
+      "toSeconds": 57.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.011301,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-162",
+      "toSceneId": "scene-163",
+      "fromSeconds": 57.466666667,
+      "toSeconds": 59.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.391894,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-163",
+      "toSceneId": "scene-163",
+      "fromSeconds": 59.966666667,
+      "toSeconds": 62.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.252565,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-163",
+      "toSceneId": "scene-164",
+      "fromSeconds": 62.466666667,
+      "toSeconds": 64.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.320676,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-164",
+      "toSceneId": "scene-164",
+      "fromSeconds": 64.966666667,
+      "toSeconds": 67.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.000762,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-164",
+      "toSceneId": "scene-164",
+      "fromSeconds": 67.466666667,
+      "toSeconds": 69.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.182624,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-164",
+      "toSceneId": "scene-165",
+      "fromSeconds": 69.966666667,
+      "toSeconds": 72.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.253755,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-165",
+      "toSceneId": "scene-165",
+      "fromSeconds": 72.466666667,
+      "toSeconds": 74.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.012553,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-165",
+      "toSceneId": "scene-165",
+      "fromSeconds": 74.966666667,
+      "toSeconds": 77.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.018015,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-165",
+      "toSceneId": "scene-166",
+      "fromSeconds": 77.466666667,
+      "toSeconds": 79.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.305173,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-166",
+      "toSceneId": "scene-166",
+      "fromSeconds": 79.966666667,
+      "toSeconds": 82.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.067026,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-166",
+      "toSceneId": "scene-166",
+      "fromSeconds": 82.466666667,
+      "toSeconds": 84.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.27472,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-166",
+      "toSceneId": "scene-167",
+      "fromSeconds": 84.966666667,
+      "toSeconds": 87.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.351707,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-167",
+      "toSceneId": "scene-167",
+      "fromSeconds": 87.466666667,
+      "toSeconds": 89.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.351707,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-167",
+      "toSceneId": "scene-168",
+      "fromSeconds": 89.966666667,
+      "toSeconds": 92.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.115249,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-168",
+      "toSceneId": "scene-168",
+      "fromSeconds": 92.466666667,
+      "toSeconds": 94.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.091859,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-168",
+      "toSceneId": "scene-169",
+      "fromSeconds": 94.966666667,
+      "toSeconds": 97.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.119897,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-169",
+      "toSceneId": "scene-169",
+      "fromSeconds": 97.466666667,
+      "toSeconds": 99.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.077346,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-169",
+      "toSceneId": "scene-169",
+      "fromSeconds": 99.966666667,
+      "toSeconds": 102.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.00042,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-169",
+      "toSceneId": "scene-170",
+      "fromSeconds": 102.466666667,
+      "toSeconds": 104.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.244818,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-170",
+      "toSceneId": "scene-170",
+      "fromSeconds": 104.966666667,
+      "toSeconds": 107.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.192393,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-170",
+      "toSceneId": "scene-171",
+      "fromSeconds": 107.466666667,
+      "toSeconds": 109.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.236467,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-171",
+      "toSceneId": "scene-171",
+      "fromSeconds": 109.966666667,
+      "toSeconds": 112.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.008001,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-171",
+      "toSceneId": "scene-171",
+      "fromSeconds": 112.466666667,
+      "toSeconds": 114.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.023993,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-171",
+      "toSceneId": "scene-172",
+      "fromSeconds": 114.966666667,
+      "toSeconds": 117.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.247444,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-172",
+      "toSceneId": "scene-172",
+      "fromSeconds": 117.466666667,
+      "toSeconds": 119.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.179622,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-172",
+      "toSceneId": "scene-173",
+      "fromSeconds": 119.966666667,
+      "toSeconds": 122.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.286161,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-173",
+      "toSceneId": "scene-173",
+      "fromSeconds": 122.466666667,
+      "toSeconds": 124.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.337342,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-173",
+      "toSceneId": "scene-173",
+      "fromSeconds": 124.966666667,
+      "toSeconds": 127.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.041859,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-173",
+      "toSceneId": "scene-174",
+      "fromSeconds": 127.466666667,
+      "toSeconds": 129.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.156942,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-174",
+      "toSceneId": "scene-174",
+      "fromSeconds": 129.966666667,
+      "toSeconds": 132.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.000254,
+      "nearDuplicate": true
+    },
+    {
+      "fromSceneId": "scene-174",
+      "toSceneId": "scene-175",
+      "fromSeconds": 132.466666667,
+      "toSeconds": 134.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.340896,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-175",
+      "toSceneId": "scene-175",
+      "fromSeconds": 134.966666667,
+      "toSeconds": 137.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.355077,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-175",
+      "toSceneId": "scene-176",
+      "fromSeconds": 137.466666667,
+      "toSeconds": 139.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "seam",
+      "difference": 0.288743,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-176",
+      "toSceneId": "scene-176",
+      "fromSeconds": 139.966666667,
+      "toSeconds": 142.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.26889,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-176",
+      "toSceneId": "scene-176",
+      "fromSeconds": 142.466666667,
+      "toSeconds": 144.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.178414,
+      "nearDuplicate": false
+    },
+    {
+      "fromSceneId": "scene-176",
+      "toSceneId": "scene-176",
+      "fromSeconds": 144.966666667,
+      "toSeconds": 147.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.000289,
+      "nearDuplicate": true
+    }
+  ],
+  "duplicateScenePairs": [
+    {
+      "fromSceneId": "scene-159",
+      "toSceneId": "scene-159",
+      "fromSeconds": 32.466666667,
+      "toSeconds": 34.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0116
+    },
+    {
+      "fromSceneId": "scene-160",
+      "toSceneId": "scene-160",
+      "fromSeconds": 39.966666667,
+      "toSeconds": 42.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0093
+    },
+    {
+      "fromSceneId": "scene-162",
+      "toSceneId": "scene-162",
+      "fromSeconds": 52.466666667,
+      "toSeconds": 54.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0002
+    },
+    {
+      "fromSceneId": "scene-162",
+      "toSceneId": "scene-162",
+      "fromSeconds": 54.966666667,
+      "toSeconds": 57.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0113
+    },
+    {
+      "fromSceneId": "scene-164",
+      "toSceneId": "scene-164",
+      "fromSeconds": 64.966666667,
+      "toSeconds": 67.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0008
+    },
+    {
+      "fromSceneId": "scene-165",
+      "toSceneId": "scene-165",
+      "fromSeconds": 72.466666667,
+      "toSeconds": 74.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0126
+    },
+    {
+      "fromSceneId": "scene-165",
+      "toSceneId": "scene-165",
+      "fromSeconds": 74.966666667,
+      "toSeconds": 77.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.018
+    },
+    {
+      "fromSceneId": "scene-169",
+      "toSceneId": "scene-169",
+      "fromSeconds": 99.966666667,
+      "toSeconds": 102.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0004
+    },
+    {
+      "fromSceneId": "scene-171",
+      "toSceneId": "scene-171",
+      "fromSeconds": 109.966666667,
+      "toSeconds": 112.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.008
+    },
+    {
+      "fromSceneId": "scene-171",
+      "toSceneId": "scene-171",
+      "fromSeconds": 112.466666667,
+      "toSeconds": 114.966666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.024
+    },
+    {
+      "fromSceneId": "scene-174",
+      "toSceneId": "scene-174",
+      "fromSeconds": 129.966666667,
+      "toSeconds": 132.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0003
+    },
+    {
+      "fromSceneId": "scene-176",
+      "toSceneId": "scene-176",
+      "fromSeconds": 144.966666667,
+      "toSeconds": 147.466666667,
+      "deltaSeconds": 2.5,
+      "pairKind": "within-scene",
+      "difference": 0.0003
+    }
+  ],
+  "withinSceneDuplicateDiagnostics": [
+    {
+      "sceneId": "scene-162",
+      "duplicatePairs": 2,
+      "intervals": [
+        {
+          "fromSeconds": 52.467,
+          "toSeconds": 54.967
+        },
+        {
+          "fromSeconds": 54.967,
+          "toSeconds": 57.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-165",
+      "duplicatePairs": 2,
+      "intervals": [
+        {
+          "fromSeconds": 72.467,
+          "toSeconds": 74.967
+        },
+        {
+          "fromSeconds": 74.967,
+          "toSeconds": 77.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-171",
+      "duplicatePairs": 2,
+      "intervals": [
+        {
+          "fromSeconds": 109.967,
+          "toSeconds": 112.467
+        },
+        {
+          "fromSeconds": 112.467,
+          "toSeconds": 114.967
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-159",
+      "duplicatePairs": 1,
+      "intervals": [
+        {
+          "fromSeconds": 32.467,
+          "toSeconds": 34.967
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-160",
+      "duplicatePairs": 1,
+      "intervals": [
+        {
+          "fromSeconds": 39.967,
+          "toSeconds": 42.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-164",
+      "duplicatePairs": 1,
+      "intervals": [
+        {
+          "fromSeconds": 64.967,
+          "toSeconds": 67.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-169",
+      "duplicatePairs": 1,
+      "intervals": [
+        {
+          "fromSeconds": 99.967,
+          "toSeconds": 102.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-174",
+      "duplicatePairs": 1,
+      "intervals": [
+        {
+          "fromSeconds": 129.967,
+          "toSeconds": 132.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    },
+    {
+      "sceneId": "scene-176",
+      "duplicatePairs": 1,
+      "intervals": [
+        {
+          "fromSeconds": 144.967,
+          "toSeconds": 147.467
+        }
+      ],
+      "suggestion": "Author a persistent pose, prop, focus, cutaway, or dialogue handoff beat in this interval; do not lower the similarity threshold."
+    }
+  ],
+  "contactSheet": "C:\\Users\\Administrator\\Documents\\video\\projects\\video-010\\chunks\\chunk-012-con-nguoi-va-phan-thuong\\proof\\video.contact.jpg",
+  "gateApplicability": {
+    "saturation": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "nearWhiteMean": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "whiteDominantRatio": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "flatFrameRatio": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "nearDuplicateRatio": {
+      "applies": false,
+      "category": "distribution",
+      "reason": "global distribution quota; reported but not gated per chunk"
+    },
+    "edgeDensity": {
+      "applies": true,
+      "category": "local-frame-detail"
+    },
+    "focalOccupancy": {
+      "applies": true,
+      "category": "local-frame-detail"
+    },
+    "withinSceneNearDuplicateRatio": {
+      "applies": true,
+      "category": "within-scene-temporal"
+    },
+    "longestStaticRun": {
+      "applies": true,
+      "category": "within-scene-temporal"
+    },
+    "seamNearDuplicateRatio": {
+      "applies": true,
+      "category": "seam-temporal"
+    },
+    "minimumEvidence": {
+      "applies": true,
+      "category": "evidence-integrity"
+    }
+  },
+  "minimumEvidence": {
+    "scalarCoreFrames": 2,
+    "ownedTemporalPairs": 1,
+    "sameScenePairsWhenTimelinePresent": 1,
+    "seamPairsWhenExpected": 1,
+    "observedScalarFrames": 57,
+    "observedOwnedTemporalPairs": 57,
+    "observedWithinScenePairs": 35,
+    "observedSeamPairs": 22,
+    "sufficient": true
+  },
+  "failures": [
+    "WITHIN_SCENE_SIMILARITY: same-scene near-duplicate ratio >15%"
+  ],
+  "passed": false
+}

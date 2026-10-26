@@ -1,0 +1,497 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 589,
+  "audio": "audio/chunks/video-010/chunk-009-short-selling-trust/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "aligned-words",
+    "beatTimingSummary": {
+      "aligned-words": 3
+    },
+    "measuredSceneCount": 3,
+    "audioSeconds": 19.632,
+    "audioSha256": "0ae82c226c0aa0b2487d4405357ad2181e68bdb8fadc83d01fea6b2e62644364",
+    "storyboardChecksum": "0798a519d35080f5e5cd90162427a08f5051f96477d6259bb3848c9a11424641",
+    "durationsChecksum": "b3d00d55cc580d905d1ad23aaab54827c8575e6e8d676c4a4701e6b31bf35408",
+    "wordsChecksum": "85fb61c4cd99578020a86a5dd05b964a2db7cb8ffad27ce865ecb6daad3cc009",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 62,
+      "matchedWordCount": 61,
+      "coverage": 1,
+      "matchedCoverage": 0.983871,
+      "interpolatedWordCount": 1,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.26,
+      "character_action": 0.17,
+      "infographic": 0.19,
+      "evidence": 0.13,
+      "photo_broll": 0.07,
+      "framebox": 0.09,
+      "visual_gag": 0.09
+    },
+    "characterFreeTarget": 0.27,
+    "heroConcepts": [
+      "Cú lao dốc CPI và tiền vay",
+      "margin nhân đôi cả lãi lẫn lỗ",
+      "nợ nhà ở đẩy người trẻ vào đường tắt",
+      "đàn kiến retail khuếch đại lệnh",
+      "CFD che người gánh rủi ro",
+      "nước đầu cơ đổi dòng",
+      "câu hỏi về tài sản an toàn cho người trẻ"
+    ],
+    "visualMotifs": [
+      "vạch an toàn margin đỏ",
+      "điện thoại biến thành hợp đồng vay",
+      "căn nhà lùi xa",
+      "đàn kiến cùng hướng",
+      "dòng nước vòng qua đập",
+      "bảng giá phản chiếu trong điện thoại"
+    ],
+    "forbiddenRepeats": [
+      "mèo đứng cạnh icon không liên quan",
+      "thẻ số tối như mặc định",
+      "ảnh nền trang trí",
+      "cùng một sân khấu liền nhau",
+      "pose lặp không có lý do cảm xúc",
+      "lời kể thay cho hành động của prop"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "character_action",
+      "infographic",
+      "evidence",
+      "photo_broll",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-130",
+      "label": "Biến ý “Nhưng mà trong mắt nhiều nhà đầu tư cá nhân của Hàn Quốc” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 0,
+      "durationFrames": 149,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "Nhưng mà trong mắt nhiều nhà đầu tư cá\r\nnhân của Hàn Quốc thì bán khống lại là",
+      "sourceRange": {
+        "startWord": 2652,
+        "endWord": 2669,
+        "quoteChecksum": "3e87147a24e0013e6cb42f9cb77650284be222d3784e228f39813e636df98680"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "nhà đầu tư cá nhân",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 38,
+          "renderedComponentIds": [
+            "scene-130-a"
+          ],
+          "fromState": "characters/cat_sad",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "Hàn Quốc thì bán khống lại là",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 73,
+          "renderedComponentIds": [
+            "scene-130-prop"
+          ],
+          "fromState": "finance/portfolio",
+          "toState": "finance/warning"
+        }
+      ],
+      "semanticTakeaway": "Nhưng mà trong mắt nhiều nhà đầu tư cá nhân của Hàn Quốc",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/loss",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "finance/portfolio",
+        "characters/cat_think",
+        "finance/warning",
+        "assets/scenes/courtroom.svg"
+      ],
+      "sectionId": "short-selling-trust",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:courtroom|2a:2p|free,free,stand_left,stand_left|none|none|none",
+      "silentFrameTakeaway": "Nhưng mà trong mắt nhiều nhà đầu tư cá nhân của Hàn Quốc",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "register:full_tableau",
+        "asset:characters/cat_sad",
+        "asset:finance/portfolio",
+        "asset:assets/scenes/courtroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Nhưng mà trong mắt nhiều nhà đầu tư cá",
+          "startFrame": 0,
+          "endFrame": 74
+        },
+        {
+          "text": "nhân của Hàn Quốc thì bán khống lại là",
+          "startFrame": 74,
+          "endFrame": 149
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/courtroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-130-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "anchor": "stand_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 67,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-130-prop",
+          "src": "styles/d/generated-assets/icons/finance-portfolio.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-130-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "stand_left",
+          "enterAnimation": "none",
+          "enterDelay": 38,
+          "clearPrevious": [
+            "scene-130-a"
+          ]
+        },
+        {
+          "assetId": "scene-130-prop",
+          "src": "styles/d/generated-assets/icons/finance-warning.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 73,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-130-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-131",
+      "label": "Biến ý “sân chơi của những tổ chức lớn, đặc biệt là những quỹ” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 149,
+      "durationFrames": 241,
+      "layout": "CLOSE_UP",
+      "entranceStyle": "cut",
+      "narration": "sân chơi của những tổ chức lớn, đặc biệt\r\nlà những quỹ nước ngoài. Những cái bê\r\nbối liên quan đến bán khống trong nhiều",
+      "sourceRange": {
+        "startWord": 2670,
+        "endWord": 2694,
+        "quoteChecksum": "b9068a4c82150c295bf754750d38055b9acce929f1aa13a77689b5742a1cd3b2"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "BEAT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "những quỹ nước ngoài",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 80,
+          "renderedComponentIds": [
+            "scene-131-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/bank:QUỸ NƯỚC NGOÀI"
+        },
+        {
+          "beatText": "Những cái bê bối liên quan",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 138,
+          "renderedComponentIds": [
+            "scene-131-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:BÊ BỐI BÁN KHỐNG"
+        },
+        {
+          "beatText": "bán khống trong nhiều",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 182,
+          "renderedComponentIds": [
+            "scene-131-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/portfolio:NGHI NGỜ TĂNG LÊN"
+        }
+      ],
+      "semanticTakeaway": "sân chơi của những tổ chức lớn, đặc biệt là những quỹ",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/portfolio",
+      "photoTreatment": "full_bleed",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/bank",
+        "props/concept_card",
+        "finance/portfolio",
+        "backgrounds/evidence-market-pexels-28682356.jpg"
+      ],
+      "sectionId": "nguyen-nhan-va-ma-sat",
+      "captionTreatment": "none",
+      "heroVisual": false,
+      "focalType": "photo",
+      "characterRequired": false,
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1,frame:2:1|none|full_bleed",
+      "silentFrameTakeaway": "sân chơi của những tổ chức lớn, đặc biệt là những quỹ",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:BEAT",
+        "register:photo_broll",
+        "asset:backgrounds/evidence-market-pexels-28682356.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "sân chơi của những tổ chức lớn đặc biệt",
+          "startFrame": 0,
+          "endFrame": 82
+        },
+        {
+          "text": "là những quỹ nước ngoài Những cái bê bối",
+          "startFrame": 82,
+          "endFrame": 166
+        },
+        {
+          "text": "liên quan đến bán khống trong nhiều",
+          "startFrame": 166,
+          "endFrame": 241
+        }
+      ],
+      "backgroundSrc": "backgrounds/evidence-market-pexels-28682356.jpg",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-131-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-bank.png",
+          "caption": "QUỸ NƯỚC NGOÀI",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 80,
+          "duration": 55
+        },
+        {
+          "id": "scene-131-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "BÊ BỐI BÁN KHỐNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 138,
+          "duration": 41
+        },
+        {
+          "id": "scene-131-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-portfolio.png",
+          "caption": "NGHI NGỜ TĂNG LÊN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 182
+        }
+      ]
+    },
+    {
+      "id": "scene-132",
+      "label": "Biến ý “năm qua càng khiến sự nghi ngờ tăng lên. Và khi mà niềm” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 390,
+      "durationFrames": 199,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "năm qua càng khiến sự nghi ngờ tăng lên.\r\nVà khi mà niềm tin và tính công bằng của",
+      "sourceRange": {
+        "startWord": 2695,
+        "endWord": 2713,
+        "quoteChecksum": "04cc7c6a1cd1d7d4de893dd0f262774746711b6b2cad2768a558acb51837cdd0"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "niềm tin và tính công bằng",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "frame": 121,
+          "renderedComponentIds": [
+            "scene-132-qa",
+            "scene-132-qb",
+            "scene-132-b"
+          ],
+          "fromState": "question:Vì sao lại như vậy?:characters/cat_investor_phone",
+          "toState": "answer:năm qua càng khiến sự nghi ngờ tăng lên. Và khi mà niềm:characters/cat_investor_panic"
+        }
+      ],
+      "semanticTakeaway": "năm qua càng khiến sự nghi ngờ tăng lên. Và khi mà niềm",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/bank",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_shrug",
+        "characters/cat_investor_phone",
+        "characters/cat_investor_panic"
+      ],
+      "sectionId": "nguyen-nhan-va-ma-sat",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|3a:0p|LEFT,RIGHT,RIGHT|bubble,bubble|none|none",
+      "silentFrameTakeaway": "năm qua càng khiến sự nghi ngờ tăng lên. Và khi mà niềm",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_shrug",
+        "asset:characters/cat_investor_phone"
+      ],
+      "subtitleCues": [
+        {
+          "text": "năm qua càng khiến sự nghi ngờ tăng lên",
+          "startFrame": 0,
+          "endFrame": 86
+        },
+        {
+          "text": "Và khi mà niềm tin và tính công bằng",
+          "startFrame": 86,
+          "endFrame": 166
+        },
+        {
+          "text": "của",
+          "startFrame": 166,
+          "endFrame": 199
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-132-a",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "circle": "#D7E8E6",
+          "slot": "LEFT",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 121,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-132-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        },
+        {
+          "assetId": "scene-132-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "none",
+          "enterDelay": 121,
+          "clearPrevious": [
+            "scene-132-b"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-132-qa",
+          "anchorAssetId": "scene-132-a",
+          "text": "Vì sao lại như vậy?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 103,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-132-qb",
+          "anchorAssetId": "scene-132-b",
+          "text": "năm qua càng khiến sự nghi ngờ tăng lên. Và khi mà niềm",
+          "direction": "left",
+          "delay": 121,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-core",
+  "projectOpeningSceneId": "scene-001"
+}

@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 143,
+  "audio": "audio/chunks/video-010/chunk-013-human-context/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "aligned-words",
+    "beatTimingSummary": {
+      "aligned-words": 1
+    },
+    "measuredSceneCount": 1,
+    "audioSeconds": 4.76,
+    "audioSha256": "3410498bfa21e7841ac0c02c7f0ff321dff2b923ea83f43658a781671112b5a3",
+    "storyboardChecksum": "e15c77d8df6974b942a1e47c3cae084be8f77093b360ccb3413400e9e5ed6722",
+    "durationsChecksum": "9cbe3a85619ca35fbaba6bbae746559cd626b8bc34e8b88f70734a7a0110df32",
+    "wordsChecksum": "12afff0859b2233c1e4849fd3c23cbdea5e7ed368fe0d25fee39c4b73316ed38",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 18,
+      "matchedWordCount": 18,
+      "coverage": 1,
+      "matchedCoverage": 1,
+      "interpolatedWordCount": 0,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.26,
+      "character_action": 0.17,
+      "infographic": 0.19,
+      "evidence": 0.13,
+      "photo_broll": 0.07,
+      "framebox": 0.09,
+      "visual_gag": 0.09
+    },
+    "characterFreeTarget": 0.27,
+    "heroConcepts": [
+      "Cú lao dốc CPI và tiền vay",
+      "margin nhân đôi cả lãi lẫn lỗ",
+      "nợ nhà ở đẩy người trẻ vào đường tắt",
+      "đàn kiến retail khuếch đại lệnh",
+      "CFD che người gánh rủi ro",
+      "nước đầu cơ đổi dòng",
+      "câu hỏi về tài sản an toàn cho người trẻ"
+    ],
+    "visualMotifs": [
+      "vạch an toàn margin đỏ",
+      "điện thoại biến thành hợp đồng vay",
+      "căn nhà lùi xa",
+      "đàn kiến cùng hướng",
+      "dòng nước vòng qua đập",
+      "bảng giá phản chiếu trong điện thoại"
+    ],
+    "forbiddenRepeats": [
+      "mèo đứng cạnh icon không liên quan",
+      "thẻ số tối như mặc định",
+      "ảnh nền trang trí",
+      "cùng một sân khấu liền nhau",
+      "pose lặp không có lý do cảm xúc",
+      "lời kể thay cho hành động của prop"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "character_action",
+      "infographic",
+      "evidence",
+      "photo_broll",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-177",
+      "label": "Biến ý “mà chúng ta vừa nói ở trên ấy thì cũng không đồng nghĩa” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 0,
+      "durationFrames": 143,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "mà chúng ta vừa nói ở trên ấy thì cũng\r\nkhông đồng nghĩa với cái việc là người",
+      "sourceRange": {
+        "startWord": 3621,
+        "endWord": 3638,
+        "quoteChecksum": "59bac807c88abef0d9d767f2843c7a7bf7f3b6d057df86797695ab2751b256ef"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mà chúng ta vừa nói ở",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-177-a"
+          ],
+          "fromState": "characters/cat_debt_burden",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "cũng không đồng nghĩa",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 61,
+          "renderedComponentIds": [
+            "scene-177-prop"
+          ],
+          "fromState": "finance/savings",
+          "toState": "finance/loss"
+        },
+        {
+          "beatText": "đồng nghĩa với cái",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 73,
+          "renderedComponentIds": [
+            "scene-177-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/person:HOÀN CẢNH CỦA MỘT NGƯỜI"
+        }
+      ],
+      "semanticTakeaway": "mà chúng ta vừa nói ở trên ấy thì cũng không đồng nghĩa",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/savings",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_debt_burden",
+        "finance/savings",
+        "characters/cat_explain",
+        "finance/loss",
+        "people/person",
+        "assets/scenes/boardroom.svg"
+      ],
+      "sectionId": "human-context",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|character_action|stage:boardroom|2a:2p|free,free,seat_left,seat_left|frame:2:1|none|none",
+      "silentFrameTakeaway": "mà chúng ta vừa nói ở trên ấy thì cũng không đồng nghĩa",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:character_action",
+        "asset:characters/cat_debt_burden",
+        "asset:finance/savings",
+        "asset:assets/scenes/boardroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "mà chúng ta vừa nói ở trên ấy thì",
+          "startFrame": 0,
+          "endFrame": 61
+        },
+        {
+          "text": "cũng không đồng nghĩa với cái việc là người",
+          "startFrame": 61,
+          "endFrame": 143
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/boardroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-177-a",
+          "src": "styles/d/generated-assets/characters/cat_debt_burden.png",
+          "anchor": "seat_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "exitFrame": 70,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 67,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-177-prop",
+          "src": "styles/d/generated-assets/icons/finance-savings.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          },
+          "exitFrame": 70,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-177-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "seat_left",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-177-a"
+          ],
+          "exitFrame": 70,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-177-prop",
+          "src": "styles/d/generated-assets/icons/finance-loss.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 61,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-177-prop"
+          ],
+          "exitFrame": 70,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-177-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/people-person.png",
+          "caption": "HOÀN CẢNH CỦA MỘT NGƯỜI",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 73
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-core",
+  "projectOpeningSceneId": "scene-001"
+}

@@ -1,0 +1,2933 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 4090,
+  "audio": "audio/chunks/video-010/chunk-015-outlook-cau-hoi/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "aligned-words",
+    "beatTimingSummary": {
+      "aligned-words": 19
+    },
+    "measuredSceneCount": 19,
+    "audioSeconds": 136.32,
+    "audioSha256": "3848654ef22bd289fc1c8b4547b8392c15733d7143d8ac5aa94aeab5949c0094",
+    "storyboardChecksum": "ff7bd836674480afd87be268acee4b2b5dd6079511fcc92d3b327b9019d86d80",
+    "durationsChecksum": "f4e64f37275ce81a4bb5922c775d5ecef29f427846ee41c1e0a551d33aa0e12f",
+    "wordsChecksum": "1ac0c5dd70362e8071e4d554ad1ef59d0cc3a39a8872256d2285ff2c1820ed74",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 411,
+      "matchedWordCount": 402,
+      "coverage": 1,
+      "matchedCoverage": 0.978102,
+      "interpolatedWordCount": 9,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.26,
+      "character_action": 0.17,
+      "infographic": 0.19,
+      "evidence": 0.13,
+      "photo_broll": 0.07,
+      "framebox": 0.09,
+      "visual_gag": 0.09
+    },
+    "characterFreeTarget": 0.27,
+    "heroConcepts": [
+      "Cú lao dốc CPI và tiền vay",
+      "margin nhân đôi cả lãi lẫn lỗ",
+      "nợ nhà ở đẩy người trẻ vào đường tắt",
+      "đàn kiến retail khuếch đại lệnh",
+      "CFD che người gánh rủi ro",
+      "nước đầu cơ đổi dòng",
+      "câu hỏi về tài sản an toàn cho người trẻ"
+    ],
+    "visualMotifs": [
+      "vạch an toàn margin đỏ",
+      "điện thoại biến thành hợp đồng vay",
+      "căn nhà lùi xa",
+      "đàn kiến cùng hướng",
+      "dòng nước vòng qua đập",
+      "bảng giá phản chiếu trong điện thoại"
+    ],
+    "forbiddenRepeats": [
+      "mèo đứng cạnh icon không liên quan",
+      "thẻ số tối như mặc định",
+      "ảnh nền trang trí",
+      "cùng một sân khấu liền nhau",
+      "pose lặp không có lý do cảm xúc",
+      "lời kể thay cho hành động của prop"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "character_action",
+      "infographic",
+      "evidence",
+      "photo_broll",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-204",
+      "label": "Biến ý “lịch sử. Và thường là niềm tin này lại cũng chính là thứ” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 0,
+      "durationFrames": 260,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "lịch sử. Và thường là niềm tin này lại\r\ncũng chính là thứ mà khiến mọi thứ\r\ntoang. Thế thì bao giờ người Hàn Quốc",
+      "sourceRange": {
+        "startWord": 4195,
+        "endWord": 4219,
+        "quoteChecksum": "b2cb0083f35fb9ae0d40285d6c5991740af363c3d6f452b68d19803b9acd0aac"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "niềm tin này lại cũng",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "frame": 74,
+          "renderedComponentIds": [
+            "scene-204-qa",
+            "scene-204-qb"
+          ],
+          "fromState": "question:Vì sao lại như vậy?",
+          "toState": "answer:lịch sử. Và thường là niềm tin này lại cũng chính là thứ"
+        },
+        {
+          "beatText": "cũng chính là thứ mà khiến mọi thứ toang",
+          "action": "focus_actor",
+          "targetSlot": "asker",
+          "frame": 101,
+          "renderedComponentIds": [
+            "scene-204-a",
+            "scene-204-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_shrug\",\"slot\":\"LEFT\"}",
+          "toState": "{\"src\":\"characters/cat_shrug\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "Thế thì bao giờ người Hàn Quốc",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "frame": 185,
+          "renderedComponentIds": [
+            "scene-204-a",
+            "scene-204-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_investor_panic\",\"slot\":\"RIGHT\"}",
+          "toState": "{\"src\":\"characters/cat_surprised\",\"position\":{\"x\":0.64,\"y\":0.58},\"scale\":2.75}"
+        }
+      ],
+      "semanticTakeaway": "lịch sử. Và thường là niềm tin này lại cũng chính là thứ",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/bank",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_shrug",
+        "characters/cat_investor_panic",
+        "characters/cat_surprised"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|4a:0p|LEFT,RIGHT,free,free|bubble,bubble|none|none",
+      "silentFrameTakeaway": "lịch sử. Và thường là niềm tin này lại cũng chính là thứ",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_shrug",
+        "asset:characters/cat_investor_panic"
+      ],
+      "subtitleCues": [
+        {
+          "text": "lịch sử Và thường là niềm tin này lại",
+          "startFrame": 0,
+          "endFrame": 90
+        },
+        {
+          "text": "cũng chính là thứ mà khiến mọi thứ toang",
+          "startFrame": 90,
+          "endFrame": 187
+        },
+        {
+          "text": "Thế thì bao giờ người Hàn Quốc",
+          "startFrame": 187,
+          "endFrame": 260
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-204-a",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "circle": "#D7E8E6",
+          "slot": "LEFT",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 185,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-204-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_panic.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        },
+        {
+          "assetId": "scene-204-a",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 101,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-204-a",
+            "scene-204-b"
+          ]
+        },
+        {
+          "assetId": "scene-204-b",
+          "src": "styles/d/generated-assets/characters/cat_surprised.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 185,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-204-a",
+            "scene-204-b"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-204-qa",
+          "anchorAssetId": "scene-204-a",
+          "text": "Vì sao lại như vậy?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 56,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-204-qb",
+          "anchorAssetId": "scene-204-b",
+          "text": "lịch sử. Và thường là niềm tin này lại cũng chính là thứ",
+          "direction": "left",
+          "delay": 74,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ]
+    },
+    {
+      "id": "scene-205",
+      "label": "Biến ý “mới nhận ra và bỏ cuộc chơi này? Thì thực ra là người Hàn” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 260,
+      "durationFrames": 184,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "mới nhận ra và bỏ cuộc chơi này? Thì\r\nthực ra là người Hàn Quốc tôi nghĩ là họ",
+      "sourceRange": {
+        "startWord": 4220,
+        "endWord": 4238,
+        "quoteChecksum": "842632622b5e3565aac5d782dfd7deda259d020ec57a2085a54376bc364359b2"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mới nhận ra và bỏ cuộc",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 5,
+          "renderedComponentIds": [
+            "scene-205-cat"
+          ],
+          "fromState": "characters/cat_debt_burden",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "thực ra là người Hàn Quốc tôi nghĩ là",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 93,
+          "renderedComponentIds": [
+            "scene-205-prop"
+          ],
+          "fromState": "finance/credit_card",
+          "toState": "finance/loan"
+        }
+      ],
+      "semanticTakeaway": "mới nhận ra và bỏ cuộc chơi này? Thì thực ra là người Hàn",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/credit_card",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_debt_burden",
+        "finance/credit_card",
+        "characters/cat_explain",
+        "finance/loan"
+      ],
+      "sectionId": "outlook-cau-hoi",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,RIGHT|none|none|none",
+      "silentFrameTakeaway": "mới nhận ra và bỏ cuộc chơi này? Thì thực ra là người Hàn",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "asset:characters/cat_debt_burden",
+        "asset:finance/credit_card"
+      ],
+      "subtitleCues": [
+        {
+          "text": "mới nhận ra và bỏ cuộc chơi này Thì",
+          "startFrame": 0,
+          "endFrame": 74
+        },
+        {
+          "text": "thực ra là người Hàn Quốc tôi nghĩ là",
+          "startFrame": 74,
+          "endFrame": 152
+        },
+        {
+          "text": "họ",
+          "startFrame": 152,
+          "endFrame": 184
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-205-cat",
+          "src": "styles/d/generated-assets/characters/cat_debt_burden.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "scene-205-prop",
+          "src": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "mới nhận ra và bỏ cuộc chơi này? Thì thực ra là người Hàn",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 69,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-205-cat",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 5,
+          "clearPrevious": [
+            "scene-205-cat"
+          ]
+        },
+        {
+          "assetId": "scene-205-prop",
+          "src": "styles/d/generated-assets/icons/finance-loan.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "mới nhận ra và bỏ cuộc chơi này? Thì thực ra là người Hàn",
+          "enterDelay": 93,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-205-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "scene-206",
+      "label": "Biến ý “biết đấy. Nhưng mà câu trả lời là cũng chưa biết. Bớt” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 444,
+      "durationFrames": 302,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "biết đấy. Nhưng mà câu trả lời là cũng\r\nchưa biết. Bớt sang năm 2026 thì thị\r\ntrường Hàn Quốc vẫn tiếp tục biến động",
+      "sourceRange": {
+        "startWord": 4239,
+        "endWord": 4263,
+        "quoteChecksum": "42a48cd47b37568a808ebf202fc1b397d3fe0cb0e5b2fce950002f08ca63783d"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "biết đấy Nhưng mà câu trả",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-206-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/expense:CÂU TRẢ LỜI CÒN BỎ NGỎ"
+        },
+        {
+          "beatText": "chưa biết",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 98,
+          "renderedComponentIds": [
+            "scene-206-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/clover:RỦI RO CHƯA RÕ"
+        },
+        {
+          "beatText": "Bớt sang năm 2026",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 139,
+          "renderedComponentIds": [
+            "scene-206-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/calendar:BƯỚC SANG 2026"
+        },
+        {
+          "beatText": "thị trường Hàn Quốc vẫn tiếp tục biến động",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 214,
+          "renderedComponentIds": [
+            "scene-206-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending_down:BIẾN ĐỘNG TIẾP DIỄN"
+        }
+      ],
+      "semanticTakeaway": "biết đấy. Nhưng mà câu trả lời là cũng chưa biết. Bớt",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/expense",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/expense",
+        "props/clover",
+        "props/calendar",
+        "finance/trending_down"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "evidenceTreatment": "document",
+      "heroVisual": true,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "biết đấy. Nhưng mà câu trả lời là cũng chưa biết. Bớt",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "biết đấy Nhưng mà câu trả lời là cũng",
+          "startFrame": 0,
+          "endFrame": 101
+        },
+        {
+          "text": "chưa biết Bớt sang năm 2026 thì thị trường",
+          "startFrame": 101,
+          "endFrame": 216
+        },
+        {
+          "text": "Hàn Quốc vẫn tiếp tục biến động",
+          "startFrame": 216,
+          "endFrame": 302
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-206-ev",
+          "variant": "survey",
+          "title": "CÂU TRẢ LỜI CHƯA RÕ",
+          "body": "biết đấy. Nhưng mà câu trả lời là cũng chưa biết. Bớt",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 1
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-206-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-expense.png",
+          "caption": "CÂU TRẢ LỜI CÒN BỎ NGỎ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 2,
+          "duration": 93
+        },
+        {
+          "id": "scene-206-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-clover.png",
+          "caption": "RỦI RO CHƯA RÕ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 98,
+          "duration": 38
+        },
+        {
+          "id": "scene-206-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/props-calendar.png",
+          "caption": "BƯỚC SANG 2026",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 139,
+          "duration": 72
+        },
+        {
+          "id": "scene-206-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "caption": "BIẾN ĐỘNG TIẾP DIỄN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 214
+        }
+      ]
+    },
+    {
+      "id": "scene-207",
+      "label": "Biến ý “rất là mạnh. Một bên là nhà đầu tư nước ngoài liên tục” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 746,
+      "durationFrames": 205,
+      "layout": "TABLEAU",
+      "entranceStyle": "rise",
+      "narration": "rất là mạnh. Một bên là nhà đầu tư nước\r\nngoài liên tục rút vốn, bên còn lại là",
+      "sourceRange": {
+        "startWord": 4264,
+        "endWord": 4282,
+        "quoteChecksum": "74c19f4635d417c1c814657860b77268d35c04cf5bed7bf3789b2cdaf7eb96be"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "rất là mạnh Một bên là",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 5,
+          "renderedComponentIds": [
+            "scene-207-a"
+          ],
+          "fromState": "characters/cat_homebuyer",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "nước ngoài liên tục rút vốn",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "frame": 98,
+          "renderedComponentIds": [
+            "scene-207-a",
+            "scene-207-prop"
+          ],
+          "fromState": "{\"src\":\"characters/cat_homebuyer\",\"anchor\":\"counter_left\"}",
+          "toState": "{\"src\":\"characters/cat_think\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "bên còn lại là",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 150,
+          "renderedComponentIds": [
+            "scene-207-prop"
+          ],
+          "fromState": "finance/revenue",
+          "toState": "finance/wallet"
+        }
+      ],
+      "semanticTakeaway": "rất là mạnh. Một bên là nhà đầu tư nước ngoài liên tục",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/exchange",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "finance/revenue",
+        "characters/cat_think",
+        "finance/wallet",
+        "assets/scenes/kitchen.svg"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:kitchen|3a:2p|counter_left,counter_left,free,free,free|none|none|none",
+      "silentFrameTakeaway": "rất là mạnh. Một bên là nhà đầu tư nước ngoài liên tục",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_homebuyer",
+        "asset:finance/revenue",
+        "asset:assets/scenes/kitchen.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "rất là mạnh Một bên là nhà đầu tư",
+          "startFrame": 0,
+          "endFrame": 78
+        },
+        {
+          "text": "nước ngoài liên tục rút vốn bên còn lại",
+          "startFrame": 78,
+          "endFrame": 172
+        },
+        {
+          "text": "là",
+          "startFrame": 172,
+          "endFrame": 205
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/kitchen.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-207-a",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 144,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-207-prop",
+          "src": "styles/d/generated-assets/icons/finance-revenue.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-207-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 5,
+          "clearPrevious": [
+            "scene-207-a"
+          ]
+        },
+        {
+          "assetId": "scene-207-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "enterAnimation": "none",
+          "enterDelay": 98,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-207-a",
+            "scene-207-prop"
+          ]
+        },
+        {
+          "assetId": "scene-207-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 150,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-207-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-208",
+      "label": "Biến ý “những nhà đầu tư cá nhân vẫn kiên trì mua vào. Về quan” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 951,
+      "durationFrames": 271,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "những nhà đầu tư cá nhân vẫn kiên trì\r\nmua vào. Về quan điểm đầu tư thì mỗi\r\nngười lại nghĩ một kiểu. Nhiều người tin",
+      "sourceRange": {
+        "startWord": 4283,
+        "endWord": 4308,
+        "quoteChecksum": "543dadea23ce094150070b2dfdf8eaec23b31b0406906b45d6a165d44a98b650"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mua vào",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 65,
+          "renderedComponentIds": [
+            "scene-208-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/revenue:KIÊN TRÌ MUA VÀO"
+        },
+        {
+          "beatText": "mỗi người lại nghĩ một kiểu",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 145,
+          "renderedComponentIds": [
+            "scene-208-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/speech_bubble:MỖI NGƯỜI MỘT NIỀM TIN"
+        }
+      ],
+      "semanticTakeaway": "những nhà đầu tư cá nhân vẫn kiên trì mua vào. Về quan",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/chart_up",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/revenue",
+        "props/speech_bubble"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "những nhà đầu tư cá nhân vẫn kiên trì mua vào. Về quan",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "những nhà đầu tư cá nhân vẫn kiên trì",
+          "startFrame": 0,
+          "endFrame": 90
+        },
+        {
+          "text": "mua vào Về quan điểm đầu tư thì mỗi",
+          "startFrame": 90,
+          "endFrame": 175
+        },
+        {
+          "text": "người lại nghĩ một kiểu Nhiều người tin",
+          "startFrame": 175,
+          "endFrame": 271
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-208-ev",
+          "variant": "survey",
+          "title": "CHI TIẾT CẦN NHÌN",
+          "body": "những nhà đầu tư cá nhân vẫn kiên trì mua vào. Về quan",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 62
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-208-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-revenue.png",
+          "caption": "KIÊN TRÌ MUA VÀO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 65,
+          "duration": 77
+        },
+        {
+          "id": "scene-208-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-speech-bubble.png",
+          "caption": "MỖI NGƯỜI MỘT NIỀM TIN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 145
+        }
+      ]
+    },
+    {
+      "id": "scene-209",
+      "label": "Biến ý “rằng là thị trường đang giảm giá, tương lai vẫn còn ở” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1222,
+      "durationFrames": 198,
+      "layout": "QA_REVEAL",
+      "entranceStyle": "softScale",
+      "narration": "rằng là thị trường đang giảm giá, tương\r\nlai vẫn còn ở phía trước. Thậm chí là có",
+      "sourceRange": {
+        "startWord": 4309,
+        "endWord": 4326,
+        "quoteChecksum": "5cb6e35a27e5c00fb8c4fcb390979cb8e01d071d86b3d45a84ba3a0f0aee3c19"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "QA_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "tương lai vẫn còn ở phía trước",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 66,
+          "renderedComponentIds": [
+            "scene-209-a",
+            "scene-209-q"
+          ],
+          "fromState": "visible-at:80",
+          "toState": "visible-at:66"
+        },
+        {
+          "beatText": "Thậm chí là có",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 132,
+          "renderedComponentIds": [
+            "scene-209-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:chart/up/01/flat/bold/color:KỲ VỌNG HỒI PHỤC"
+        }
+      ],
+      "semanticTakeaway": "rằng là thị trường đang giảm giá, tương lai vẫn còn ở",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/inflation",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_police",
+        "finance/inflation",
+        "chart/up/01/flat/bold/color"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:inflation:1:1,card:none:1:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "rằng là thị trường đang giảm giá, tương lai vẫn còn ở",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic",
+        "asset:characters/cat_police",
+        "asset:finance/inflation"
+      ],
+      "subtitleCues": [
+        {
+          "text": "rằng là thị trường đang giảm giá tương lai",
+          "startFrame": 0,
+          "endFrame": 108
+        },
+        {
+          "text": "vẫn còn ở phía trước Thậm chí là có",
+          "startFrame": 108,
+          "endFrame": 198
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-209-cat",
+          "src": "styles/d/generated-assets/characters/cat_police.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "circle": "#F1D8C5",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 124,
+            "duration": 22
+          },
+          "exitFrame": 1351,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-209-q",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#286F7A",
+          "label": "Điều gì đang xảy ra?",
+          "width": 1200,
+          "height": 700,
+          "delay": 0,
+          "duration": 60
+        },
+        {
+          "id": "scene-209-a",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-inflation.png",
+          "label": "rằng là thị trường đang giảm giá, tương lai vẫn còn ở",
+          "width": 1200,
+          "height": 700,
+          "delay": 66,
+          "duration": 63
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-209-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/chart-up-01-flat-bold-color.png",
+          "caption": "KỲ VỌNG HỒI PHỤC",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 132
+        }
+      ]
+    },
+    {
+      "id": "scene-210",
+      "label": "Biến ý “những người vẫn tiếp tục vay tiền để đầu tư, tin rằng là” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1420,
+      "durationFrames": 163,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "những người vẫn tiếp tục vay tiền để đầu\r\ntư, tin rằng là cú hồi phục tiếp theo sẽ",
+      "sourceRange": {
+        "startWord": 4327,
+        "endWord": 4345,
+        "quoteChecksum": "ca3d240734f5b168d46e9c175c98e774c570bdae83570a3a0b4b77422200fa22"
+      },
+      "visualRegister": "visual_gag",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "những người vẫn tiếp tục vay",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 5,
+          "renderedComponentIds": [
+            "scene-210-cat"
+          ],
+          "fromState": "characters/cat_sunglasses",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "cú hồi phục tiếp theo",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 94,
+          "renderedComponentIds": [
+            "scene-210-prop"
+          ],
+          "fromState": "props/brain",
+          "toState": "finance/trending_up"
+        }
+      ],
+      "semanticTakeaway": "những người vẫn tiếp tục vay tiền để đầu tư, tin rằng là",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/brain",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sunglasses",
+        "props/brain",
+        "characters/cat_explain",
+        "finance/trending_up"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|visual_gag|graphic|2a:2p|LEFT,LEFT,RIGHT,RIGHT|none|none|none",
+      "silentFrameTakeaway": "những người vẫn tiếp tục vay tiền để đầu tư, tin rằng là",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "register:visual_gag",
+        "asset:characters/cat_sunglasses",
+        "asset:props/brain"
+      ],
+      "subtitleCues": [
+        {
+          "text": "những người vẫn tiếp tục vay tiền để đầu",
+          "startFrame": 0,
+          "endFrame": 69
+        },
+        {
+          "text": "tư tin rằng là cú hồi phục tiếp theo",
+          "startFrame": 69,
+          "endFrame": 131
+        },
+        {
+          "text": "sẽ",
+          "startFrame": 131,
+          "endFrame": 163
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-210-cat",
+          "src": "styles/d/generated-assets/characters/cat_sunglasses.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "scene-210-prop",
+          "src": "styles/d/generated-assets/icons/props-brain.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "những người vẫn tiếp tục vay tiền để đầu tư, tin rằng là",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 70,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-210-cat",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 5,
+          "clearPrevious": [
+            "scene-210-cat"
+          ]
+        },
+        {
+          "assetId": "scene-210-prop",
+          "src": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "những người vẫn tiếp tục vay tiền để đầu tư, tin rằng là",
+          "enterDelay": 94,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-210-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "scene-211",
+      "label": "Biến ý “xuất hiện. Và biết đâu lần này mình là người đúng thì” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1583,
+      "durationFrames": 269,
+      "layout": "SOLO",
+      "entranceStyle": "reveal",
+      "narration": "xuất hiện. Và biết đâu lần này mình là\r\nngười đúng thì sao. Tất nhiên là kịch\r\nbản lạc quan thì vẫn hoàn toàn có thể",
+      "sourceRange": {
+        "startWord": 4346,
+        "endWord": 4371,
+        "quoteChecksum": "a1e45efcbcb336f7d783ec24b73ee47e727c11f6eebe0d3faa8549af0a3fe0c9"
+      },
+      "visualRegister": "framebox",
+      "visualGrammar": "FRAMEBOX",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "người đúng thì sao",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 98,
+          "renderedComponentIds": [
+            "scene-211-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/person:MÌNH LÀ NGƯỜI ĐÚNG?"
+        },
+        {
+          "beatText": "Tất nhiên là kịch bản",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 147,
+          "renderedComponentIds": [
+            "scene-211-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/warning:KỊCH BẢN RỦI RO"
+        },
+        {
+          "beatText": "lạc quan thì vẫn hoàn toàn có thể",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 184,
+          "renderedComponentIds": [
+            "scene-211-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending_up:KỊCH BẢN LẠC QUAN"
+        }
+      ],
+      "semanticTakeaway": "xuất hiện. Và biết đâu lần này mình là người đúng thì",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/hourglass",
+      "photoTreatment": "tv_frame",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_think",
+        "backgrounds/evidence-construction-pexels-31656151.jpg",
+        "people/person",
+        "finance/warning",
+        "finance/trending_up"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": true,
+      "focalType": "photo",
+      "visualFingerprint": "FRAMEBOX|framebox|graphic|1a:0p|RIGHT_BOTTOM|frame:1:1,frame:2:1,frame:2:1,frame:2:1|none|tv_frame",
+      "silentFrameTakeaway": "xuất hiện. Và biết đâu lần này mình là người đúng thì",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:FRAMEBOX",
+        "register:framebox",
+        "asset:characters/cat_explain",
+        "asset:backgrounds/evidence-construction-pexels-31656151.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "xuất hiện Và biết đâu lần này mình là",
+          "startFrame": 0,
+          "endFrame": 90
+        },
+        {
+          "text": "người đúng thì sao Tất nhiên là kịch bản",
+          "startFrame": 90,
+          "endFrame": 187
+        },
+        {
+          "text": "lạc quan thì vẫn hoàn toàn có thể",
+          "startFrame": 187,
+          "endFrame": 269
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-211-cat",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "enterDelay": 14,
+          "exitFrame": 1764,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 170,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-211-tv",
+          "contentSrc": "backgrounds/evidence-construction-pexels-31656151.jpg",
+          "caption": "xuất hiện. Và biết đâu lần này mình là người đúng thì",
+          "objectFit": "cover",
+          "position": {
+            "x": 0.43,
+            "y": 0.4
+          },
+          "width": 1320,
+          "delay": 0,
+          "duration": 95
+        },
+        {
+          "id": "scene-211-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/people-person.png",
+          "caption": "MÌNH LÀ NGƯỜI ĐÚNG?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 98,
+          "duration": 46
+        },
+        {
+          "id": "scene-211-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-warning.png",
+          "caption": "KỊCH BẢN RỦI RO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 147,
+          "duration": 34
+        },
+        {
+          "id": "scene-211-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "caption": "KỊCH BẢN LẠC QUAN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 184
+        }
+      ]
+    },
+    {
+      "id": "scene-212",
+      "label": "Biến ý “xảy ra. Tại vì Hàn Quốc vẫn sở hữu những doanh nghiệp” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1852,
+      "durationFrames": 191,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "xảy ra. Tại vì Hàn Quốc vẫn sở hữu những\r\ndoanh nghiệp hàng đầu thế giới, vẫn có",
+      "sourceRange": {
+        "startWord": 4372,
+        "endWord": 4389,
+        "quoteChecksum": "c40b05378f8c80c755f9193db4a543b249c3be335c38234836b09a56ee567c85"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "xảy ra Tại vì Hàn Quốc",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-212-effect"
+          ],
+          "fromState": "visible-at:38",
+          "toState": "visible-at:2"
+        },
+        {
+          "beatText": "những doanh nghiệp hàng đầu thế giới",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 94,
+          "renderedComponentIds": [
+            "scene-212-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/company:DOANH NGHIỆP HÀNG ĐẦU"
+        }
+      ],
+      "semanticTakeaway": "xảy ra. Tại vì Hàn Quốc vẫn sở hữu những doanh nghiệp",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/computer_desk",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "props/calendar",
+        "props/concept_card",
+        "people/company"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:calendar:1:1,card:concept_card:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "xảy ra. Tại vì Hàn Quốc vẫn sở hữu những doanh nghiệp",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:props/calendar",
+        "asset:props/concept_card"
+      ],
+      "subtitleCues": [
+        {
+          "text": "xảy ra Tại vì Hàn Quốc vẫn sở hữu",
+          "startFrame": 0,
+          "endFrame": 82
+        },
+        {
+          "text": "những doanh nghiệp hàng đầu thế giới vẫn có",
+          "startFrame": 82,
+          "endFrame": 191
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-212-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "exitFrame": 1943,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 66,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-212-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/props-calendar.png",
+          "label": "Áp lực tích lũy",
+          "width": 650,
+          "height": 540,
+          "delay": 0,
+          "duration": 91
+        },
+        {
+          "id": "scene-212-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "label": "xảy ra. Tại vì Hàn Quốc vẫn sở hữu những doanh nghiệp",
+          "width": 650,
+          "height": 540,
+          "delay": 2,
+          "duration": 89
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-212-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/people-company.png",
+          "caption": "DOANH NGHIỆP HÀNG ĐẦU",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 94
+        }
+      ]
+    },
+    {
+      "id": "scene-213",
+      "label": "Biến ý “ngành bán dẫn, vẫn có AI, vẫn có những cái động lực tăng” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2043,
+      "durationFrames": 258,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "ngành bán dẫn, vẫn có AI, vẫn có những\r\ncái động lực tăng trưởng rất là mạnh\r\ntrong dài hạn. Nếu mà mọi thứ diễn ra",
+      "sourceRange": {
+        "startWord": 4390,
+        "endWord": 4415,
+        "quoteChecksum": "1c6679d32061c8f072b5c9ba2e17ab5e91363bc27a38f8a080d9146c779e7f68"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "ngành bán dẫn vẫn có AI",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-213-a"
+          ],
+          "fromState": "characters/cat_surprised",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "vẫn có AI",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "frame": 37,
+          "renderedComponentIds": [
+            "scene-213-a",
+            "scene-213-prop"
+          ],
+          "fromState": "{\"src\":\"characters/cat_surprised\",\"anchor\":\"desk\"}",
+          "toState": "{\"src\":\"characters/cat_explain\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "động lực tăng trưởng",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 89,
+          "renderedComponentIds": [
+            "scene-213-prop"
+          ],
+          "fromState": "piggy/bank",
+          "toState": "finance/trending_up"
+        },
+        {
+          "beatText": "trong dài hạn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 132,
+          "renderedComponentIds": [
+            "scene-213-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/retirement:ĐỘNG LỰC DÀI HẠN"
+        }
+      ],
+      "semanticTakeaway": "ngành bán dẫn, vẫn có AI, vẫn có những cái động lực tăng",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/piggy_bank",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_surprised",
+        "piggy/bank",
+        "characters/cat_explain",
+        "finance/trending_up",
+        "finance/retirement",
+        "assets/scenes/classroom.svg"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|character_action|stage:classroom|3a:2p|desk,desk,free,free,free|frame:2:1|none|none",
+      "silentFrameTakeaway": "ngành bán dẫn, vẫn có AI, vẫn có những cái động lực tăng",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:character_action",
+        "asset:characters/cat_surprised",
+        "asset:piggy/bank",
+        "asset:assets/scenes/classroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "ngành bán dẫn vẫn có AI vẫn có những",
+          "startFrame": 0,
+          "endFrame": 86
+        },
+        {
+          "text": "cái động lực tăng trưởng rất là mạnh trong",
+          "startFrame": 86,
+          "endFrame": 186
+        },
+        {
+          "text": "dài hạn Nếu mà mọi thứ diễn ra",
+          "startFrame": 186,
+          "endFrame": 258
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/classroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-213-a",
+          "src": "styles/d/generated-assets/characters/cat_surprised.png",
+          "anchor": "desk",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "exitFrame": 2172,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 126,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-213-prop",
+          "src": "styles/d/generated-assets/icons/piggy-bank.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          },
+          "exitFrame": 2172,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-213-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "desk",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-213-a"
+          ],
+          "exitFrame": 2172,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-213-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "enterAnimation": "none",
+          "enterDelay": 37,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-213-a",
+            "scene-213-prop"
+          ],
+          "exitFrame": 2172,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-213-prop",
+          "src": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 89,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-213-prop"
+          ],
+          "exitFrame": 2172,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-213-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-retirement.png",
+          "caption": "ĐỘNG LỰC DÀI HẠN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 132
+        }
+      ]
+    },
+    {
+      "id": "scene-214",
+      "label": "Biến ý “thuận lợi thì thị trường hoàn toàn có thể tiếp tục đi lên” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2301,
+      "durationFrames": 226,
+      "layout": "ICON_TRIPLE",
+      "entranceStyle": "fade",
+      "narration": "thuận lợi thì thị trường hoàn toàn có\r\nthể tiếp tục đi lên sau giai đoạn điều\r\nchỉnh. Nhưng mà có cơ hội thì luôn có",
+      "sourceRange": {
+        "startWord": 4416,
+        "endWord": 4441,
+        "quoteChecksum": "10fd7e8232761a2f5b694cec3a27fe9e8913e8d3ebe7aa6b7f59408d2b1f1941"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "ICON_TRIPLE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "thuận lợi thì thị trường hoàn",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-214-i1"
+          ],
+          "fromState": "visible-at:22",
+          "toState": "visible-at:2"
+        },
+        {
+          "beatText": "tiếp tục đi lên",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 56,
+          "renderedComponentIds": [
+            "scene-214-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending_up:ĐÀ TĂNG TIẾP DIỄN"
+        },
+        {
+          "beatText": "Nhưng mà có cơ hội",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 137,
+          "renderedComponentIds": [
+            "scene-214-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/compound_interest:CƠ HỘI VẪN CÒN"
+        }
+      ],
+      "semanticTakeaway": "thuận lợi thì thị trường hoàn toàn có thể tiếp tục đi lên",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/calendar",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/compound_interest",
+        "finance/savings",
+        "chart/down/01/flat/bold/color",
+        "finance/trending_up"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:color:2:1,card:compound_interest:1:1,card:savings:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "thuận lợi thì thị trường hoàn toàn có thể tiếp tục đi lên",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:ICON_TRIPLE",
+        "register:infographic",
+        "asset:finance/compound_interest",
+        "asset:finance/savings",
+        "asset:chart/down/01/flat/bold/color"
+      ],
+      "subtitleCues": [
+        {
+          "text": "thuận lợi thì thị trường hoàn toàn có thể",
+          "startFrame": 0,
+          "endFrame": 83
+        },
+        {
+          "text": "tiếp tục đi lên sau giai đoạn điều chỉnh",
+          "startFrame": 83,
+          "endFrame": 164
+        },
+        {
+          "text": "Nhưng mà có cơ hội thì luôn có",
+          "startFrame": 164,
+          "endFrame": 226
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-214-i0",
+          "position": {
+            "x": 0.2,
+            "y": 0.47
+          },
+          "background": "#7B5AA6",
+          "iconSrc": "styles/d/generated-assets/icons/finance-compound-interest.png",
+          "label": "Nợ",
+          "width": 500,
+          "height": 500,
+          "delay": 0,
+          "duration": 53
+        },
+        {
+          "id": "scene-214-i1",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-savings.png",
+          "label": "Tài sản",
+          "width": 500,
+          "height": 500,
+          "delay": 2,
+          "duration": 51
+        },
+        {
+          "id": "scene-214-i2",
+          "position": {
+            "x": 0.8,
+            "y": 0.47
+          },
+          "background": "#B56B35",
+          "iconSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "label": "Rủi ro",
+          "width": 500,
+          "height": 500,
+          "delay": 36,
+          "duration": 17
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-214-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "caption": "ĐÀ TĂNG TIẾP DIỄN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 56,
+          "duration": 78
+        },
+        {
+          "id": "scene-214-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-compound-interest.png",
+          "caption": "CƠ HỘI VẪN CÒN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 137
+        }
+      ]
+    },
+    {
+      "id": "scene-215",
+      "label": "Biến ý “rủi ro. Đoàn bảy hiện nặng ở mức rất là cao, nợ hộ gia” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2527,
+      "durationFrames": 197,
+      "layout": "SOLO",
+      "entranceStyle": "reveal",
+      "narration": "rủi ro. Đoàn bảy hiện nặng ở mức rất là\r\ncao, nợ hộ gia đình vẫn thuộc nhóm cao",
+      "sourceRange": {
+        "startWord": 4442,
+        "endWord": 4460,
+        "quoteChecksum": "9c12a63c2b5b0567daa9a4f54a5ffff40c3e99d5dfd7ffc6e1e7e3f69233dc1b"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "nợ hộ gia đình vẫn thuộc nhóm",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 118,
+          "renderedComponentIds": [
+            "scene-215-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/debt:NỢ HỘ GIA ĐÌNH RẤT CAO"
+        }
+      ],
+      "semanticTakeaway": "rủi ro. Đoàn bảy hiện nặng ở mức rất là cao, nợ hộ gia",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/book",
+      "photoTreatment": "headline",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "backgrounds/urban_apartments.jpg",
+        "finance/debt"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "captionTreatment": "none",
+      "heroVisual": false,
+      "focalType": "photo",
+      "characterRequired": false,
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|graphic|0a:0p|none|frame:2:1,frame:2:1|none|headline",
+      "silentFrameTakeaway": "rủi ro. Đoàn bảy hiện nặng ở mức rất là cao, nợ hộ gia",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:PHOTO_EVIDENCE",
+        "register:photo_broll",
+        "asset:backgrounds/urban_apartments.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "rủi ro Đoàn bảy hiện nặng ở mức rất",
+          "startFrame": 0,
+          "endFrame": 80
+        },
+        {
+          "text": "là cao nợ hộ gia đình vẫn thuộc nhóm",
+          "startFrame": 80,
+          "endFrame": 163
+        },
+        {
+          "text": "cao",
+          "startFrame": 163,
+          "endFrame": 197
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-215-photo",
+          "contentSrc": "backgrounds/urban_apartments.jpg",
+          "caption": "NỢ HỘ GIA ĐÌNH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1500,
+          "objectFit": "contain",
+          "delay": 0,
+          "duration": 115
+        },
+        {
+          "id": "scene-215-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-debt.png",
+          "caption": "NỢ HỘ GIA ĐÌNH RẤT CAO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 118
+        }
+      ]
+    },
+    {
+      "id": "scene-216",
+      "label": "Biến ý “nhất thế giới. Trong khi nền kinh tế thực thì lại phục” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2724,
+      "durationFrames": 265,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "nhất thế giới. Trong khi nền kinh tế\r\nthực thì lại phục hồi chậm hơn nhiều\r\nngười kỳ vọng. Và khi mà một hệ thống đã",
+      "sourceRange": {
+        "startWord": 4461,
+        "endWord": 4486,
+        "quoteChecksum": "225c4ac82d8bf012e5762cd6ab7173bb7966ff1c05134264807f6dd99cfe68de"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Trong khi nền kinh tế thực",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "frame": 59,
+          "renderedComponentIds": [
+            "scene-216-qa",
+            "scene-216-qb"
+          ],
+          "fromState": "question:Vì sao lại như vậy?",
+          "toState": "answer:nhất thế giới. Trong khi nền kinh tế thực thì lại phục"
+        },
+        {
+          "beatText": "thì lại phục hồi chậm hơn",
+          "action": "focus_actor",
+          "targetSlot": "asker",
+          "frame": 95,
+          "renderedComponentIds": [
+            "scene-216-a",
+            "scene-216-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_shrug\",\"slot\":\"LEFT\"}",
+          "toState": "{\"src\":\"characters/cat_shrug\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "nhiều người kỳ vọng",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "frame": 133,
+          "renderedComponentIds": [
+            "scene-216-a",
+            "scene-216-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_investor_phone\",\"slot\":\"RIGHT\"}",
+          "toState": "{\"src\":\"characters/cat_explain\",\"position\":{\"x\":0.64,\"y\":0.58},\"scale\":2.75}"
+        }
+      ],
+      "semanticTakeaway": "nhất thế giới. Trong khi nền kinh tế thực thì lại phục",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/trophy",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_shrug",
+        "characters/cat_investor_phone",
+        "characters/cat_explain"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": true,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|4a:0p|LEFT,RIGHT,free,free|bubble,bubble|none|none",
+      "silentFrameTakeaway": "nhất thế giới. Trong khi nền kinh tế thực thì lại phục",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_shrug",
+        "asset:characters/cat_investor_phone"
+      ],
+      "subtitleCues": [
+        {
+          "text": "nhất thế giới Trong khi nền kinh tế thực",
+          "startFrame": 0,
+          "endFrame": 96
+        },
+        {
+          "text": "thì lại phục hồi chậm hơn nhiều người kỳ",
+          "startFrame": 96,
+          "endFrame": 192
+        },
+        {
+          "text": "vọng Và khi mà một hệ thống đã",
+          "startFrame": 192,
+          "endFrame": 265
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-216-a",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "circle": "#D7E8E6",
+          "slot": "LEFT",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 133,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-216-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        },
+        {
+          "assetId": "scene-216-a",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 95,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-216-a",
+            "scene-216-b"
+          ]
+        },
+        {
+          "assetId": "scene-216-b",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 133,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-216-a",
+            "scene-216-b"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-216-qa",
+          "anchorAssetId": "scene-216-a",
+          "text": "Vì sao lại như vậy?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 41,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-216-qb",
+          "anchorAssetId": "scene-216-b",
+          "text": "nhất thế giới. Trong khi nền kinh tế thực thì lại phục",
+          "direction": "left",
+          "delay": 59,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ]
+    },
+    {
+      "id": "scene-217",
+      "label": "Biến ý “chất đầy đoàn bảy thì mọi cú sốc đều trở nên nhạy cảm hơn” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2989,
+      "durationFrames": 187,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "softScale",
+      "narration": "chất đầy đoàn bảy thì mọi cú sốc đều trở\r\nnên nhạy cảm hơn rất là nhiều. Có thể là",
+      "sourceRange": {
+        "startWord": 4487,
+        "endWord": 4506,
+        "quoteChecksum": "ea1e209059aea865d212e223911d0ad19bac9d20a97c0c05b5ce410b5a174fe7"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "chất đầy đoàn bảy thì mọi",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 4,
+          "renderedComponentIds": [
+            "scene-217-cat"
+          ],
+          "fromState": "characters/cat_investor_contract",
+          "toState": "characters/cat_surprised"
+        },
+        {
+          "beatText": "trở nên nhạy cảm hơn rất là nhiều",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 62,
+          "renderedComponentIds": [
+            "scene-217-prop"
+          ],
+          "fromState": "props/trophy",
+          "toState": "finance/warning"
+        }
+      ],
+      "semanticTakeaway": "chất đầy đoàn bảy thì mọi cú sốc đều trở nên nhạy cảm hơn",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/stock",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_contract",
+        "props/trophy",
+        "characters/cat_surprised",
+        "finance/warning"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,RIGHT|none|none|none",
+      "silentFrameTakeaway": "chất đầy đoàn bảy thì mọi cú sốc đều trở nên nhạy cảm hơn",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "asset:characters/cat_investor_contract",
+        "asset:props/trophy"
+      ],
+      "subtitleCues": [
+        {
+          "text": "chất đầy đoàn bảy thì mọi cú sốc đều",
+          "startFrame": 0,
+          "endFrame": 76
+        },
+        {
+          "text": "trở nên nhạy cảm hơn rất là nhiều Có",
+          "startFrame": 76,
+          "endFrame": 152
+        },
+        {
+          "text": "thể là",
+          "startFrame": 152,
+          "endFrame": 187
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-217-cat",
+          "src": "styles/d/generated-assets/characters/cat_investor_contract.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "scene-217-prop",
+          "src": "styles/d/generated-assets/icons/props-trophy.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "chất đầy đoàn bảy thì mọi cú sốc đều trở nên nhạy cảm hơn",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 38,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-217-cat",
+          "src": "styles/d/generated-assets/characters/cat_surprised.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 4,
+          "clearPrevious": [
+            "scene-217-cat"
+          ]
+        },
+        {
+          "assetId": "scene-217-prop",
+          "src": "styles/d/generated-assets/icons/finance-warning.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "chất đầy đoàn bảy thì mọi cú sốc đều trở nên nhạy cảm hơn",
+          "enterDelay": 62,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-217-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "scene-218",
+      "label": "Biến ý “xốc về lãi suất toàn cầu này, có thể là sốc về địa chính” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3176,
+      "durationFrames": 163,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "xốc về lãi suất toàn cầu này, có thể là\r\nsốc về địa chính trị này, có thể là một",
+      "sourceRange": {
+        "startWord": 4507,
+        "endWord": 4526,
+        "quoteChecksum": "b5865f5833e33bf4cd9d7f1726b8befec1371d8c0d410e4f88de87ca4962837e"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "xốc về lãi suất toàn cầu",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 5,
+          "renderedComponentIds": [
+            "scene-218-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/compound_interest:CÚ SỐC LÃI SUẤT"
+        },
+        {
+          "beatText": "sốc về địa chính trị này",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 70,
+          "renderedComponentIds": [
+            "scene-218-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/warning:CÚ SỐC ĐỊA CHÍNH TRỊ"
+        }
+      ],
+      "semanticTakeaway": "xốc về lãi suất toàn cầu này, có thể là sốc về địa chính",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/money",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/compound_interest",
+        "finance/warning"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "xốc về lãi suất toàn cầu này, có thể là sốc về địa chính",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "xốc về lãi suất toàn cầu này có thể",
+          "startFrame": 0,
+          "endFrame": 65
+        },
+        {
+          "text": "là sốc về địa chính trị này có thể",
+          "startFrame": 65,
+          "endFrame": 129
+        },
+        {
+          "text": "là một",
+          "startFrame": 129,
+          "endFrame": 163
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-218-ev",
+          "variant": "survey",
+          "title": "CÚ SỐC BÊN NGOÀI",
+          "body": "xốc về lãi suất toàn cầu này, có thể là sốc về địa chính",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 2
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-218-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-compound-interest.png",
+          "caption": "CÚ SỐC LÃI SUẤT",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 5,
+          "duration": 62
+        },
+        {
+          "id": "scene-218-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-warning.png",
+          "caption": "CÚ SỐC ĐỊA CHÍNH TRỊ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 70
+        }
+      ]
+    },
+    {
+      "id": "scene-219",
+      "label": "Biến ý “cái biến động bất ngờ trong ngành chip hoặc đơn giản là” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3339,
+      "durationFrames": 238,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "cái biến động bất ngờ trong ngành chip\r\nhoặc đơn giản là tâm lý thị trường đổi\r\nchiều thôi. Có đấy là cái điều đáng quan",
+      "sourceRange": {
+        "startWord": 4527,
+        "endWord": 4552,
+        "quoteChecksum": "417a555a614c450ff2a2509f45e0320f8818554393480a69b6611d5681fc7c92"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "cái biến động bất ngờ trong",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 3,
+          "renderedComponentIds": [
+            "scene-219-a"
+          ],
+          "fromState": "characters/cat_debt_burden",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "ngành chip",
+          "action": "focus_actor",
+          "targetSlot": "who",
+          "frame": 42,
+          "renderedComponentIds": [
+            "scene-219-a",
+            "scene-219-prop"
+          ],
+          "fromState": "{\"src\":\"characters/cat_debt_burden\",\"anchor\":\"sidewalk_left\"}",
+          "toState": "{\"src\":\"characters/cat_think\",\"position\":{\"x\":0.36,\"y\":0.58},\"scale\":2.75}"
+        },
+        {
+          "beatText": "tâm lý thị trường đổi chiều",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 88,
+          "renderedComponentIds": [
+            "scene-219-prop"
+          ],
+          "fromState": "finance/loan",
+          "toState": "finance/trending_down"
+        },
+        {
+          "beatText": "Có đấy là cái điều đáng quan",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 155,
+          "renderedComponentIds": [
+            "scene-219-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/warning:ĐIỀU ĐÁNG QUAN NGẠI"
+        }
+      ],
+      "semanticTakeaway": "cái biến động bất ngờ trong ngành chip hoặc đơn giản là",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/loan",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_debt_burden",
+        "finance/loan",
+        "characters/cat_think",
+        "finance/trending_down",
+        "finance/warning",
+        "assets/scenes/street.svg"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": true,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:street|3a:2p|free,free,free,sidewalk_left,sidewalk_left|frame:2:1|none|none",
+      "silentFrameTakeaway": "cái biến động bất ngờ trong ngành chip hoặc đơn giản là",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_debt_burden",
+        "asset:finance/loan",
+        "asset:assets/scenes/street.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "cái biến động bất ngờ trong ngành chip hoặc",
+          "startFrame": 0,
+          "endFrame": 88
+        },
+        {
+          "text": "đơn giản là tâm lý thị trường đổi chiều",
+          "startFrame": 88,
+          "endFrame": 169
+        },
+        {
+          "text": "thôi Có đấy là cái điều đáng quan",
+          "startFrame": 169,
+          "endFrame": 238
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/street.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-219-a",
+          "src": "styles/d/generated-assets/characters/cat_debt_burden.png",
+          "anchor": "sidewalk_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "exitFrame": 3491,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 149,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-219-prop",
+          "src": "styles/d/generated-assets/icons/finance-loan.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          },
+          "exitFrame": 3491,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-219-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "sidewalk_left",
+          "enterAnimation": "none",
+          "enterDelay": 3,
+          "clearPrevious": [
+            "scene-219-a"
+          ],
+          "exitFrame": 3491,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-219-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "enterAnimation": "none",
+          "enterDelay": 42,
+          "position": {
+            "x": 0.36,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-219-a",
+            "scene-219-prop"
+          ],
+          "exitFrame": 3491,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-219-prop",
+          "src": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 88,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-219-prop"
+          ],
+          "exitFrame": 3491,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-219-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-warning.png",
+          "caption": "ĐIỀU ĐÁNG QUAN NGẠI",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 155
+        }
+      ]
+    },
+    {
+      "id": "scene-220",
+      "label": "Biến ý “sát nhất trong những năm tới là liệu Hàn Quốc có tìm được” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3577,
+      "durationFrames": 196,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "sát nhất trong những năm tới là liệu Hàn\r\nQuốc có tìm được cách giúp người trẻ xây\r\ndựng tài sản mà không phải đánh cược",
+      "sourceRange": {
+        "startWord": 4553,
+        "endWord": 4578,
+        "quoteChecksum": "9862ffd6af4045217034418db742e2cdb346d76992880a1667f6702458e073e5"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "cách giúp người trẻ xây",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 85,
+          "renderedComponentIds": [
+            "scene-220-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/house:XÂY DỰNG TƯƠNG LAI"
+        }
+      ],
+      "semanticTakeaway": "sát nhất trong những năm tới là liệu Hàn Quốc có tìm được",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/trending_down",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/house"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "sát nhất trong những năm tới là liệu Hàn Quốc có tìm được",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "sát nhất trong những năm tới là liệu Hàn",
+          "startFrame": 0,
+          "endFrame": 67
+        },
+        {
+          "text": "Quốc có tìm được cách giúp người trẻ xây",
+          "startFrame": 67,
+          "endFrame": 134
+        },
+        {
+          "text": "dựng tài sản mà không phải đánh cược",
+          "startFrame": 134,
+          "endFrame": 196
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-220-ev",
+          "variant": "survey",
+          "title": "CHI TIẾT CẦN NHÌN",
+          "body": "sát nhất trong những năm tới là liệu Hàn Quốc có tìm được",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 82
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-220-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-house.png",
+          "caption": "XÂY DỰNG TƯƠNG LAI",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 85
+        }
+      ]
+    },
+    {
+      "id": "scene-221",
+      "label": "Biến ý “càng ngày càng lớn không? Cảm ơn các bạn đã theo dõi” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3773,
+      "durationFrames": 215,
+      "layout": "QA_REVEAL",
+      "entranceStyle": "fade",
+      "narration": "càng ngày càng lớn không? Cảm ơn các bạn\r\nđã theo dõi video là nhiều. Đừng quên",
+      "sourceRange": {
+        "startWord": 4579,
+        "endWord": 4595,
+        "quoteChecksum": "435e740ff7a0950db84a658a1d48cc1025fb926ce01878a40bad3ea5325602e1"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "QA_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Cảm ơn các bạn đã theo dõi",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 72,
+          "renderedComponentIds": [
+            "scene-221-a",
+            "scene-221-q"
+          ],
+          "fromState": "visible-at:80",
+          "toState": "visible-at:72"
+        },
+        {
+          "beatText": "Đừng quên",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 160,
+          "renderedComponentIds": [
+            "scene-221-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/stock:ĐỪNG QUÊN ĐĂNG KÝ"
+        }
+      ],
+      "semanticTakeaway": "càng ngày càng lớn không? Cảm ơn các bạn đã theo dõi",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/house",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "props/clover",
+        "finance/stock"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:clover:1:1,card:none:1:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "càng ngày càng lớn không? Cảm ơn các bạn đã theo dõi",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic",
+        "asset:characters/cat_homebuyer",
+        "asset:props/clover"
+      ],
+      "subtitleCues": [
+        {
+          "text": "càng ngày càng lớn không Cảm ơn các bạn",
+          "startFrame": 0,
+          "endFrame": 111
+        },
+        {
+          "text": "đã theo dõi video là nhiều Đừng quên",
+          "startFrame": 111,
+          "endFrame": 215
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-221-cat",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "circle": "#F1D8C5",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 152,
+            "duration": 22
+          },
+          "exitFrame": 3930,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-221-q",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#286F7A",
+          "label": "Điều gì đang xảy ra?",
+          "width": 1200,
+          "height": 700,
+          "delay": 0,
+          "duration": 66
+        },
+        {
+          "id": "scene-221-a",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/props-clover.png",
+          "label": "càng ngày càng lớn không? Cảm ơn các bạn đã theo dõi",
+          "width": 1200,
+          "height": 700,
+          "delay": 72,
+          "duration": 85
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-221-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-stock.png",
+          "caption": "ĐỪNG QUÊN ĐĂNG KÝ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 160
+        }
+      ]
+    },
+    {
+      "id": "scene-222",
+      "label": "Biến ý “đăng ký để không bỏ lỡ bất kỳ video nào.” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3988,
+      "durationFrames": 102,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "đăng ký để không bỏ lỡ bất kỳ video nào",
+      "sourceRange": {
+        "startWord": 4596,
+        "endWord": 4605,
+        "quoteChecksum": "63b086534b550fa4218d2a40c92de5035adaa49ea390955d6a536efb6ced905c"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "đăng ký để không bỏ lỡ",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-222-a"
+          ],
+          "fromState": "characters/cat_business",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "bất kỳ video",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 43,
+          "renderedComponentIds": [
+            "scene-222-prop"
+          ],
+          "fromState": "props/book",
+          "toState": "finance/stock"
+        }
+      ],
+      "semanticTakeaway": "đăng ký để không bỏ lỡ bất kỳ video nào.",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/debt",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_business",
+        "props/book",
+        "characters/cat_explain",
+        "finance/stock",
+        "assets/scenes/cafe.svg"
+      ],
+      "sectionId": "ket-va-cau-hoi",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:cafe|2a:2p|counter_left,counter_left,free,free|none|none|none",
+      "silentFrameTakeaway": "đăng ký để không bỏ lỡ bất kỳ video nào.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_business",
+        "asset:props/book",
+        "asset:assets/scenes/cafe.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "đăng ký để không bỏ lỡ bất kỳ video",
+          "startFrame": 0,
+          "endFrame": 70
+        },
+        {
+          "text": "nào",
+          "startFrame": 70,
+          "endFrame": 102
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/cafe.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-222-a",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 37,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-222-prop",
+          "src": "styles/d/generated-assets/icons/props-book.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-222-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-222-a"
+          ]
+        },
+        {
+          "assetId": "scene-222-prop",
+          "src": "styles/d/generated-assets/icons/finance-stock.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 43,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-222-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    }
+  ],
+  "artifactRole": "chunk-core",
+  "projectOpeningSceneId": "scene-001"
+}

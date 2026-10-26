@@ -1,0 +1,2406 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 3519,
+  "audio": "audio/chunks/video-010/chunk-010-cfd-va-dich-chuyen/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "aligned-words",
+    "beatTimingSummary": {
+      "aligned-words": 17
+    },
+    "measuredSceneCount": 17,
+    "audioSeconds": 117.304,
+    "audioSha256": "2596d2e31b00ae374a0bbd17db91565a9fe91f9fe705deafe130119af81753ee",
+    "storyboardChecksum": "32323b89989a126576e0838b27b4afe44b263f90735c4f939b84978bf96f6854",
+    "durationsChecksum": "985b5267c343464c96e5400e749654549b8793235d20b3718f2ca03b89e9f977",
+    "wordsChecksum": "7b9ef9ec134c8749f32b8df9e020579861cf7c2f9d9ce09d685e1cb51e3c3107",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 366,
+      "matchedWordCount": 362,
+      "coverage": 1,
+      "matchedCoverage": 0.989071,
+      "interpolatedWordCount": 4,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.26,
+      "character_action": 0.17,
+      "infographic": 0.19,
+      "evidence": 0.13,
+      "photo_broll": 0.07,
+      "framebox": 0.09,
+      "visual_gag": 0.09
+    },
+    "characterFreeTarget": 0.27,
+    "heroConcepts": [
+      "Cú lao dốc CPI và tiền vay",
+      "margin nhân đôi cả lãi lẫn lỗ",
+      "nợ nhà ở đẩy người trẻ vào đường tắt",
+      "đàn kiến retail khuếch đại lệnh",
+      "CFD che người gánh rủi ro",
+      "nước đầu cơ đổi dòng",
+      "câu hỏi về tài sản an toàn cho người trẻ"
+    ],
+    "visualMotifs": [
+      "vạch an toàn margin đỏ",
+      "điện thoại biến thành hợp đồng vay",
+      "căn nhà lùi xa",
+      "đàn kiến cùng hướng",
+      "dòng nước vòng qua đập",
+      "bảng giá phản chiếu trong điện thoại"
+    ],
+    "forbiddenRepeats": [
+      "mèo đứng cạnh icon không liên quan",
+      "thẻ số tối như mặc định",
+      "ảnh nền trang trí",
+      "cùng một sân khấu liền nhau",
+      "pose lặp không có lý do cảm xúc",
+      "lời kể thay cho hành động của prop"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "character_action",
+      "infographic",
+      "evidence",
+      "photo_broll",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-133",
+      "label": "Biến ý “thị trường suy giảm thì người ta sẽ không muốn chơi đường” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 0,
+      "durationFrames": 213,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "thị trường suy giảm thì người ta sẽ\r\nkhông muốn chơi đường dài nữa. Họ muốn\r\nkiếm tiền nhanh trước khi trở thành",
+      "sourceRange": {
+        "startWord": 2714,
+        "endWord": 2736,
+        "quoteChecksum": "744fbd166d65cfd78db2b89382c4dca1a746f2002c53fc21a29c8a0d8bf94f95"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "thị trường suy giảm thì người",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-133-cat"
+          ],
+          "fromState": "characters/cat_investor_contract",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "kiếm tiền nhanh trước khi trở thành",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 136,
+          "renderedComponentIds": [
+            "scene-133-prop"
+          ],
+          "fromState": "finance/credit_card",
+          "toState": "finance/stock"
+        }
+      ],
+      "semanticTakeaway": "thị trường suy giảm thì người ta sẽ không muốn chơi đường",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/credit_card",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_contract",
+        "finance/credit_card",
+        "characters/cat_explain",
+        "finance/stock"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,RIGHT|none|none|none",
+      "silentFrameTakeaway": "thị trường suy giảm thì người ta sẽ không muốn chơi đường",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "asset:characters/cat_investor_contract",
+        "asset:finance/credit_card"
+      ],
+      "subtitleCues": [
+        {
+          "text": "thị trường suy giảm thì người ta sẽ không",
+          "startFrame": 0,
+          "endFrame": 81
+        },
+        {
+          "text": "muốn chơi đường dài nữa Họ muốn kiếm tiền",
+          "startFrame": 81,
+          "endFrame": 162
+        },
+        {
+          "text": "nhanh trước khi trở thành",
+          "startFrame": 162,
+          "endFrame": 213
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-133-cat",
+          "src": "styles/d/generated-assets/characters/cat_investor_contract.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "scene-133-prop",
+          "src": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "thị trường suy giảm thì người ta sẽ không muốn chơi đường",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 112,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-133-cat",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-133-cat"
+          ]
+        },
+        {
+          "assetId": "scene-133-prop",
+          "src": "styles/d/generated-assets/icons/finance-stock.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "thị trường suy giảm thì người ta sẽ không muốn chơi đường",
+          "enterDelay": 136,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-133-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "scene-134",
+      "label": "Biến ý “thanh khoản cho người khác. Và cuối cùng cũng là yếu tố” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 213,
+      "durationFrames": 273,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "thanh khoản cho người khác. Và cuối cùng\r\ncũng là yếu tố quan trọng nhất là cái\r\ntrò này quá là dễ. Chưa bao giờ trong",
+      "sourceRange": {
+        "startWord": 2737,
+        "endWord": 2762,
+        "quoteChecksum": "7f216c17ffaf12242b8282c4119f4009d3aec4d51d97e7b495299166110a9bbf"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "cuối cùng cũng là yếu tố quan trọng nhất",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 76,
+          "renderedComponentIds": [
+            "scene-134-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/crypto:QUÁ DỄ ĐỂ BẮT ĐẦU"
+        },
+        {
+          "beatText": "trò này quá là dễ",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 149,
+          "renderedComponentIds": [
+            "scene-134-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:BẮT ĐẦU QUÁ DỄ"
+        },
+        {
+          "beatText": "Chưa bao giờ trong",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 207,
+          "renderedComponentIds": [
+            "scene-134-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/marshmallow:MUA BÁN TRONG TẦM TAY"
+        }
+      ],
+      "semanticTakeaway": "thanh khoản cho người khác. Và cuối cùng cũng là yếu tố",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/expense",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/crypto",
+        "finance/credit_card",
+        "props/marshmallow"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,frame:2:1,frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "thanh khoản cho người khác. Và cuối cùng cũng là yếu tố",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "thanh khoản cho người khác Và cuối cùng cũng",
+          "startFrame": 0,
+          "endFrame": 106
+        },
+        {
+          "text": "là yếu tố quan trọng nhất là cái trò",
+          "startFrame": 106,
+          "endFrame": 194
+        },
+        {
+          "text": "này quá là dễ Chưa bao giờ trong",
+          "startFrame": 194,
+          "endFrame": 273
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-134-ev",
+          "variant": "survey",
+          "title": "TRÒ CHƠI QUÁ DỄ",
+          "body": "thanh khoản cho người khác. Và cuối cùng cũng là yếu tố",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 73
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-134-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-crypto.png",
+          "caption": "QUÁ DỄ ĐỂ BẮT ĐẦU",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 76,
+          "duration": 70
+        },
+        {
+          "id": "scene-134-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "BẮT ĐẦU QUÁ DỄ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 149,
+          "duration": 55
+        },
+        {
+          "id": "scene-134-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/props-marshmallow.png",
+          "caption": "MUA BÁN TRONG TẦM TAY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 207
+        }
+      ]
+    },
+    {
+      "id": "scene-135",
+      "label": "Biến ý “lịch sử cái việc đặt cược vào thị trường nó lại thuận” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 486,
+      "durationFrames": 226,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "lịch sử cái việc đặt cược vào thị trường\r\nnó lại thuận tiện như bây giờ. Ngày\r\ntrước mà muốn mua bán cổ phiếu thì phải",
+      "sourceRange": {
+        "startWord": 2763,
+        "endWord": 2788,
+        "quoteChecksum": "9936e49876355cb9708a87b1996d704c2aba179e0148305c2e65355173cf5a6a"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "lịch sử cái việc đặt cược",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 5,
+          "renderedComponentIds": [
+            "scene-135-a"
+          ],
+          "fromState": "characters/cat_debt_burden",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "thuận tiện như bây giờ",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 69,
+          "renderedComponentIds": [
+            "scene-135-prop"
+          ],
+          "fromState": "finance/crypto",
+          "toState": "finance/stock"
+        },
+        {
+          "beatText": "mua bán cổ phiếu",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 154,
+          "renderedComponentIds": [
+            "scene-135-a"
+          ],
+          "fromState": "characters/cat_debt_burden",
+          "toState": "characters/cat_explain"
+        }
+      ],
+      "semanticTakeaway": "lịch sử cái việc đặt cược vào thị trường nó lại thuận",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/exchange",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_debt_burden",
+        "finance/crypto",
+        "characters/cat_think",
+        "finance/stock",
+        "characters/cat_explain",
+        "assets/scenes/kitchen.svg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": true,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:kitchen|3a:2p|counter_left,counter_left,counter_left,free,free|none|none|none",
+      "silentFrameTakeaway": "lịch sử cái việc đặt cược vào thị trường nó lại thuận",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_debt_burden",
+        "asset:finance/crypto",
+        "asset:assets/scenes/kitchen.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "lịch sử cái việc đặt cược vào thị trường",
+          "startFrame": 0,
+          "endFrame": 80
+        },
+        {
+          "text": "nó lại thuận tiện như bây giờ Ngày trước",
+          "startFrame": 80,
+          "endFrame": 160
+        },
+        {
+          "text": "mà muốn mua bán cổ phiếu thì phải",
+          "startFrame": 160,
+          "endFrame": 226
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/kitchen.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-135-a",
+          "src": "styles/d/generated-assets/characters/cat_debt_burden.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 63,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-135-prop",
+          "src": "styles/d/generated-assets/icons/finance-crypto.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-135-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 5,
+          "clearPrevious": [
+            "scene-135-a"
+          ]
+        },
+        {
+          "assetId": "scene-135-prop",
+          "src": "styles/d/generated-assets/icons/finance-stock.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 69,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-135-prop"
+          ]
+        },
+        {
+          "assetId": "scene-135-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 154,
+          "clearPrevious": [
+            "scene-135-a"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-136",
+      "label": "Biến ý “gọi điện cho mỗi giới chờ xác nhận giao dịch và trả những” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 712,
+      "durationFrames": 149,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "gọi điện cho mỗi giới chờ xác nhận giao\r\ndịch và trả những khoản phí rất là to",
+      "sourceRange": {
+        "startWord": 2789,
+        "endWord": 2806,
+        "quoteChecksum": "9caba5346be8fa56fc5b2bea6ecd5ba41e6e156a6c616b8ef792cc92dfa022a3"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "trả những khoản phí rất là to",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 74,
+          "renderedComponentIds": [
+            "scene-136-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/expense:PHÍ RẤT LÀ TO"
+        }
+      ],
+      "semanticTakeaway": "gọi điện cho mỗi giới chờ xác nhận giao dịch và trả những",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/chart_up",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/expense"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "gọi điện cho mỗi giới chờ xác nhận giao dịch và trả những",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "gọi điện cho mỗi giới chờ xác nhận giao",
+          "startFrame": 0,
+          "endFrame": 76
+        },
+        {
+          "text": "dịch và trả những khoản phí rất là to",
+          "startFrame": 76,
+          "endFrame": 149
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-136-ev",
+          "variant": "survey",
+          "title": "CHI TIẾT CẦN NHÌN",
+          "body": "gọi điện cho mỗi giới chờ xác nhận giao dịch và trả những",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 71
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-136-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-expense.png",
+          "caption": "PHÍ RẤT LÀ TO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 74
+        }
+      ]
+    },
+    {
+      "id": "scene-137",
+      "label": "Biến ý “Còn bây giờ thì cứ điện thoại thôi, mọi thứ nắm sẵn trước” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 861,
+      "durationFrames": 164,
+      "layout": "QA_REVEAL",
+      "entranceStyle": "softScale",
+      "narration": "Còn bây giờ thì cứ điện thoại thôi, mọi\r\nthứ nắm sẵn trước mặt rồi, mua vài giây",
+      "sourceRange": {
+        "startWord": 2807,
+        "endWord": 2824,
+        "quoteChecksum": "82f2178257b3bf292d0cacf6a0a7beae9ed9e36bd7d2edc1c7eda76895d647c4"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "QA_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mua vài giây",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 118,
+          "renderedComponentIds": [
+            "scene-137-a",
+            "scene-137-q"
+          ],
+          "fromState": "visible-at:80",
+          "toState": "visible-at:118"
+        }
+      ],
+      "semanticTakeaway": "Còn bây giờ thì cứ điện thoại thôi, mọi thứ nắm sẵn trước",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/inflation",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_homebuyer",
+        "finance/inflation"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:inflation:1:1,card:none:1:1|none|none",
+      "silentFrameTakeaway": "Còn bây giờ thì cứ điện thoại thôi, mọi thứ nắm sẵn trước",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic",
+        "asset:characters/cat_homebuyer",
+        "asset:finance/inflation"
+      ],
+      "subtitleCues": [
+        {
+          "text": "Còn bây giờ thì cứ điện thoại thôi mọi",
+          "startFrame": 0,
+          "endFrame": 82
+        },
+        {
+          "text": "thứ nắm sẵn trước mặt rồi mua vài giây",
+          "startFrame": 82,
+          "endFrame": 164
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-137-cat",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "circle": "#F1D8C5",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 110,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-137-q",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#286F7A",
+          "label": "Điều gì đang xảy ra?",
+          "width": 1200,
+          "height": 700,
+          "delay": 0,
+          "duration": 112
+        },
+        {
+          "id": "scene-137-a",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-inflation.png",
+          "label": "Còn bây giờ thì cứ điện thoại thôi, mọi thứ nắm sẵn trước",
+          "width": 1200,
+          "height": 700,
+          "delay": 118
+        }
+      ]
+    },
+    {
+      "id": "scene-138",
+      "label": "Biến ý “bán vài giây. Thêm vào đấy thì những cái nội dung tài” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1025,
+      "durationFrames": 245,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "bán vài giây. Thêm vào đấy thì những cái\r\nnội dung tài chính xuất hiện khắp nơi từ\r\nvideo phân tích, livestream nhận định",
+      "sourceRange": {
+        "startWord": 2825,
+        "endWord": 2848,
+        "quoteChecksum": "b139ae9f61433e4c0412faeacb0b50b03099b2890805ef61f3c3dae44c2ee32e"
+      },
+      "visualRegister": "visual_gag",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "bán vài giây Thêm vào đấy",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 6,
+          "renderedComponentIds": [
+            "scene-138-a"
+          ],
+          "fromState": "characters/cat_business",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "video phân tích",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 149,
+          "renderedComponentIds": [
+            "scene-138-prop"
+          ],
+          "fromState": "props/computer_desk",
+          "toState": "props/brain"
+        },
+        {
+          "beatText": "livestream nhận định",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 188,
+          "renderedComponentIds": [
+            "scene-138-prop"
+          ],
+          "fromState": "props/computer_desk",
+          "toState": "finance/warning"
+        }
+      ],
+      "semanticTakeaway": "bán vài giây. Thêm vào đấy thì những cái nội dung tài",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/brain",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_business",
+        "props/computer_desk",
+        "characters/cat_explain",
+        "props/brain",
+        "finance/warning",
+        "assets/scenes/office_desk.svg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "visual_gag",
+      "visualFingerprint": "TABLEAU|visual_gag|stage:office_desk|2a:3p|desk,desk,free,free,free|none|none|none",
+      "silentFrameTakeaway": "bán vài giây. Thêm vào đấy thì những cái nội dung tài",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:visual_gag",
+        "asset:characters/cat_business",
+        "asset:props/computer_desk",
+        "asset:assets/scenes/office_desk.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "bán vài giây Thêm vào đấy thì những cái",
+          "startFrame": 0,
+          "endFrame": 83
+        },
+        {
+          "text": "nội dung tài chính xuất hiện khắp nơi từ",
+          "startFrame": 83,
+          "endFrame": 167
+        },
+        {
+          "text": "video phân tích livestream nhận định",
+          "startFrame": 167,
+          "endFrame": 245
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/office-desk.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-138-a",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "anchor": "desk",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 182,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-138-prop",
+          "src": "styles/d/generated-assets/icons/props-computer-desk.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-138-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "desk",
+          "enterAnimation": "none",
+          "enterDelay": 6,
+          "clearPrevious": [
+            "scene-138-a"
+          ]
+        },
+        {
+          "assetId": "scene-138-prop",
+          "src": "styles/d/generated-assets/icons/props-brain.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 149,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-138-prop"
+          ]
+        },
+        {
+          "assetId": "scene-138-prop",
+          "src": "styles/d/generated-assets/icons/finance-warning.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 188,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-138-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-139",
+      "label": "Biến ý “nhóm cộng đồng diễn đàn, tin tức, khuyến nghị, dự đoán.” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1270,
+      "durationFrames": 262,
+      "layout": "SOLO",
+      "entranceStyle": "reveal",
+      "narration": "nhóm cộng đồng diễn đàn, tin tức, khuyến\r\nnghị, dự đoán. Mỗi ngày thì người ta\r\nliên tục được nhắc rằng là thị trường",
+      "sourceRange": {
+        "startWord": 2849,
+        "endWord": 2872,
+        "quoteChecksum": "a2ceee525252388acbfebe193a4edcbc8a3122c9dfd096e0f600974ee3f19282"
+      },
+      "visualRegister": "framebox",
+      "visualGrammar": "FRAMEBOX",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "tin tức, khuyến nghị, dự đoán",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 55,
+          "renderedComponentIds": [
+            "scene-139-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-device-pexels-27920041.jpg:TIN TỨC • KHUYẾN NGHỊ • DỰ ĐOÁN"
+        },
+        {
+          "beatText": "Mỗi ngày thì người ta liên tục được nhắc",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 147,
+          "renderedComponentIds": [
+            "scene-139-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-market-pexels-28682356.jpg:NHẮC LẠI MỖI NGÀY"
+        },
+        {
+          "beatText": "thị trường",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 220,
+          "renderedComponentIds": [
+            "scene-139-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-device-pexels-25025802.jpg:THỊ TRƯỜNG LUÔN CÓ CƠ HỘI"
+        }
+      ],
+      "semanticTakeaway": "nhóm cộng đồng diễn đàn, tin tức, khuyến nghị, dự đoán.",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/hourglass",
+      "photoTreatment": "tv_frame",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_police",
+        "backgrounds/evidence-device-pexels-8296993.jpg",
+        "backgrounds/evidence-device-pexels-27920041.jpg",
+        "backgrounds/evidence-market-pexels-28682356.jpg",
+        "backgrounds/evidence-device-pexels-25025802.jpg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "photo",
+      "visualFingerprint": "FRAMEBOX|framebox|graphic|1a:0p|RIGHT_BOTTOM|frame:1:1,frame:2:1,frame:2:1,frame:2:1|none|tv_frame",
+      "silentFrameTakeaway": "nhóm cộng đồng diễn đàn, tin tức, khuyến nghị, dự đoán.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:FRAMEBOX",
+        "register:framebox",
+        "asset:characters/cat_police",
+        "asset:backgrounds/evidence-device-pexels-8296993.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "nhóm cộng đồng diễn đàn tin tức khuyến nghị",
+          "startFrame": 0,
+          "endFrame": 103
+        },
+        {
+          "text": "dự đoán Mỗi ngày thì người ta liên tục",
+          "startFrame": 103,
+          "endFrame": 194
+        },
+        {
+          "text": "được nhắc rằng là thị trường",
+          "startFrame": 194,
+          "endFrame": 262
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-139-cat",
+          "src": "styles/d/generated-assets/characters/cat_police.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "enterDelay": 14,
+          "exitFrame": 1487,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 133,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-139-tv",
+          "contentSrc": "backgrounds/evidence-device-pexels-8296993.jpg",
+          "caption": "nhóm cộng đồng diễn đàn, tin tức, khuyến nghị, dự đoán.",
+          "objectFit": "cover",
+          "position": {
+            "x": 0.43,
+            "y": 0.4
+          },
+          "width": 1320,
+          "delay": 0,
+          "duration": 52
+        },
+        {
+          "id": "scene-139-cutaway",
+          "contentSrc": "backgrounds/evidence-device-pexels-27920041.jpg",
+          "caption": "TIN TỨC • KHUYẾN NGHỊ • DỰ ĐOÁN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 55,
+          "duration": 89
+        },
+        {
+          "id": "scene-139-cutaway-2",
+          "contentSrc": "backgrounds/evidence-market-pexels-28682356.jpg",
+          "caption": "NHẮC LẠI MỖI NGÀY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 147,
+          "duration": 70
+        },
+        {
+          "id": "scene-139-cutaway-3",
+          "contentSrc": "backgrounds/evidence-device-pexels-25025802.jpg",
+          "caption": "THỊ TRƯỜNG LUÔN CÓ CƠ HỘI",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 220
+        }
+      ]
+    },
+    {
+      "id": "scene-140",
+      "label": "Biến ý “đang có cơ hội đấy. Một mã sắp tăng rồi, sắp có trend mới” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1532,
+      "durationFrames": 238,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "đang có cơ hội đấy. Một mã sắp tăng rồi,\r\nsắp có trend mới rồi anh em ơi. Sắp có",
+      "sourceRange": {
+        "startWord": 2873,
+        "endWord": 2892,
+        "quoteChecksum": "c008c0f842932d369e4a320f83275fa7319a0707bdfea4a777c4e77bd57eaab3"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Một mã sắp tăng rồi",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 69,
+          "renderedComponentIds": [
+            "scene-140-effect"
+          ],
+          "fromState": "visible-at:38",
+          "toState": "visible-at:69"
+        },
+        {
+          "beatText": "sắp có trend mới rồi anh em ơi",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 115,
+          "renderedComponentIds": [
+            "scene-140-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending_up:SẮP CÓ TREND MỚI"
+        }
+      ],
+      "semanticTakeaway": "đang có cơ hội đấy. Một mã sắp tăng rồi, sắp có trend mới",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/computer_desk",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "finance/retirement",
+        "props/computer_desk",
+        "finance/trending_up"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": true,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:computer_desk:2:1,card:retirement:1:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "đang có cơ hội đấy. Một mã sắp tăng rồi, sắp có trend mới",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:finance/retirement",
+        "asset:props/computer_desk"
+      ],
+      "subtitleCues": [
+        {
+          "text": "đang có cơ hội đấy Một mã sắp tăng",
+          "startFrame": 0,
+          "endFrame": 99
+        },
+        {
+          "text": "rồi sắp có trend mới rồi anh em ơi",
+          "startFrame": 99,
+          "endFrame": 198
+        },
+        {
+          "text": "Sắp có",
+          "startFrame": 198,
+          "endFrame": 238
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-140-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "exitFrame": 1644,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 87,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-140-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-retirement.png",
+          "label": "Áp lực tích lũy",
+          "width": 650,
+          "height": 540,
+          "delay": 0,
+          "duration": 112
+        },
+        {
+          "id": "scene-140-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/props-computer-desk.png",
+          "label": "đang có cơ hội đấy. Một mã sắp tăng rồi, sắp có trend mới",
+          "width": 650,
+          "height": 540,
+          "delay": 69,
+          "duration": 43
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-140-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "caption": "SẮP CÓ TREND MỚI",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 115
+        }
+      ]
+    },
+    {
+      "id": "scene-141",
+      "label": "Biến ý “sóng mới rồi. Và khi mà tất cả những cái thứ đấy nó kết” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1770,
+      "durationFrames": 186,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "sóng mới rồi. Và khi mà tất cả những cái\r\nthứ đấy nó kết hợp lại thì thị trường nó",
+      "sourceRange": {
+        "startWord": 2893,
+        "endWord": 2912,
+        "quoteChecksum": "6f75bff1ce532fce93838ade395fd30a9c06dcae635150c56755e8b59fa9847f"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "sóng mới rồi Và khi mà",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-141-a"
+          ],
+          "fromState": "characters/cat_sad",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "tất cả những cái thứ đấy nó kết hợp lại",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 72,
+          "renderedComponentIds": [
+            "scene-141-prop"
+          ],
+          "fromState": "props/piggy_bank",
+          "toState": "finance/exchange"
+        }
+      ],
+      "semanticTakeaway": "sóng mới rồi. Và khi mà tất cả những cái thứ đấy nó kết",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/piggy_bank",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "props/piggy_bank",
+        "characters/cat_think",
+        "finance/exchange",
+        "assets/scenes/classroom.svg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|character_action|stage:classroom|2a:2p|desk,desk,free,free|none|none|none",
+      "silentFrameTakeaway": "sóng mới rồi. Và khi mà tất cả những cái thứ đấy nó kết",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:character_action",
+        "asset:characters/cat_explain",
+        "asset:props/piggy_bank",
+        "asset:assets/scenes/classroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "sóng mới rồi Và khi mà tất cả những",
+          "startFrame": 0,
+          "endFrame": 75
+        },
+        {
+          "text": "cái thứ đấy nó kết hợp lại thì thị",
+          "startFrame": 75,
+          "endFrame": 148
+        },
+        {
+          "text": "trường nó",
+          "startFrame": 148,
+          "endFrame": 186
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/classroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-141-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "anchor": "desk",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 66,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-141-prop",
+          "src": "styles/d/generated-assets/icons/props-piggy-bank.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-141-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "desk",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-141-a"
+          ]
+        },
+        {
+          "assetId": "scene-141-prop",
+          "src": "styles/d/generated-assets/icons/finance-exchange.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 72,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-141-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-142",
+      "label": "Biến ý “lại trông giống một cái mạng xã hội hơn là một nơi để đầu” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 1956,
+      "durationFrames": 188,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "lại trông giống một cái mạng xã hội hơn\r\nlà một nơi để đầu tư. Ai cũng nhìn bảng",
+      "sourceRange": {
+        "startWord": 2913,
+        "endWord": 2931,
+        "quoteChecksum": "624c9b1160fa8fc4a7d01e32b6a25cf8e8a19ccd8525f97af2e56ea8460bf598"
+      },
+      "visualRegister": "visual_gag",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mạng xã hội hơn là một nơi để đầu tư",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 38,
+          "renderedComponentIds": [
+            "scene-142-prop"
+          ],
+          "fromState": "props/concept_card",
+          "toState": "props/book"
+        },
+        {
+          "beatText": "Ai cũng nhìn bảng",
+          "action": "focus_asset",
+          "targetSlot": "prop",
+          "frame": 128,
+          "renderedComponentIds": [
+            "scene-142-a",
+            "scene-142-prop"
+          ],
+          "fromState": "{\"src\":\"props/concept_card\",\"position\":{\"x\":0.24,\"y\":0.59},\"scale\":1.1}",
+          "toState": "{\"src\":\"props/concept_card\",\"position\":{\"x\":0.5,\"y\":0.47},\"scale\":3.2}"
+        }
+      ],
+      "semanticTakeaway": "lại trông giống một cái mạng xã hội hơn là một nơi để đầu",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/calendar",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_explain",
+        "props/concept_card",
+        "props/book",
+        "assets/scenes/cafe.svg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "visual_gag",
+      "visualFingerprint": "TABLEAU|visual_gag|stage:cafe|1a:3p|counter_right,free,free,free|none|none|none",
+      "silentFrameTakeaway": "lại trông giống một cái mạng xã hội hơn là một nơi để đầu",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "register:visual_gag",
+        "asset:props/concept_card",
+        "asset:assets/scenes/cafe.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "lại trông giống một cái mạng xã hội hơn",
+          "startFrame": 0,
+          "endFrame": 84
+        },
+        {
+          "text": "là một nơi để đầu tư Ai cũng nhìn",
+          "startFrame": 84,
+          "endFrame": 154
+        },
+        {
+          "text": "bảng",
+          "startFrame": 154,
+          "endFrame": 188
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/cafe.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-142-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "counter_right",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 122,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-142-prop",
+          "src": "styles/d/generated-assets/icons/props-concept-card.png",
+          "position": {
+            "x": 0.24,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-142-prop",
+          "src": "styles/d/generated-assets/icons/props-book.png",
+          "position": {
+            "x": 0.24,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 38,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-142-prop"
+          ]
+        },
+        {
+          "assetId": "scene-142-prop",
+          "src": "styles/d/generated-assets/icons/props-concept-card.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "scale": 3.2,
+          "motionPolicy": "fixed",
+          "enterDelay": 128,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-142-a",
+            "scene-142-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-143",
+      "label": "Biến ý “giá, cập nhật thông tin rồi là đám đông phản ứng thế nào” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2144,
+      "durationFrames": 202,
+      "layout": "SOLO",
+      "entranceStyle": "reveal",
+      "narration": "giá, cập nhật thông tin rồi là đám đông\r\nphản ứng thế nào cũng hóng theo và càng\r\nnhiều phản ứng thì người lại càng giao",
+      "sourceRange": {
+        "startWord": 2932,
+        "endWord": 2957,
+        "quoteChecksum": "1b2bc0c8f7debb7d35e8b31c4ca862ba10d27d3760be831f4d467d9b889484da"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "PHOTO_EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "đám đông phản ứng thế nào",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 59,
+          "renderedComponentIds": [
+            "scene-143-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:backgrounds/evidence-device-pexels-35028998.jpg:ĐÁM ĐÔNG PHẢN ỨNG"
+        }
+      ],
+      "semanticTakeaway": "giá, cập nhật thông tin rồi là đám đông phản ứng thế nào",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/book",
+      "photoTreatment": "screen",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "backgrounds/evidence-device-pexels-34862486.jpg",
+        "backgrounds/evidence-device-pexels-35028998.jpg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "captionTreatment": "none",
+      "heroVisual": false,
+      "focalType": "photo",
+      "characterRequired": false,
+      "visualFingerprint": "PHOTO_EVIDENCE|photo_broll|graphic|0a:0p|none|frame:2:1,frame:2:1|none|screen",
+      "silentFrameTakeaway": "giá, cập nhật thông tin rồi là đám đông phản ứng thế nào",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:PHOTO_EVIDENCE",
+        "register:photo_broll",
+        "asset:backgrounds/evidence-device-pexels-34862486.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "giá cập nhật thông tin rồi là đám đông",
+          "startFrame": 0,
+          "endFrame": 66
+        },
+        {
+          "text": "phản ứng thế nào cũng hóng theo và càng",
+          "startFrame": 66,
+          "endFrame": 134
+        },
+        {
+          "text": "nhiều phản ứng thì người lại càng giao",
+          "startFrame": 134,
+          "endFrame": 202
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-143-photo",
+          "contentSrc": "backgrounds/evidence-device-pexels-34862486.jpg",
+          "caption": "ĐÁM ĐÔNG PHẢN ỨNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1500,
+          "objectFit": "cover",
+          "delay": 0,
+          "duration": 56
+        },
+        {
+          "id": "scene-143-cutaway",
+          "contentSrc": "backgrounds/evidence-device-pexels-35028998.jpg",
+          "caption": "ĐÁM ĐÔNG PHẢN ỨNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 59
+        }
+      ]
+    },
+    {
+      "id": "scene-144",
+      "label": "Biến ý “dịch. Tức là toàn bộ hệ thống đã làm cho cái việc đầu tư” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2346,
+      "durationFrames": 181,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "dịch. Tức là toàn bộ hệ thống đã làm cho\r\ncái việc đầu tư trở nên dễ dàng đến mức",
+      "sourceRange": {
+        "startWord": 2958,
+        "endWord": 2977,
+        "quoteChecksum": "ef7885d79a51e96869f4a077fd5861068b557959a4de5a40e5b889b18375d5ef"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "toàn bộ hệ thống đã làm",
+          "action": "handoff",
+          "targetSlot": "answerer",
+          "frame": 53,
+          "renderedComponentIds": [
+            "scene-144-qa",
+            "scene-144-qb",
+            "scene-144-b"
+          ],
+          "fromState": "question:Vì sao lại như vậy?:characters/cat_sad",
+          "toState": "answer:dịch. Tức là toàn bộ hệ thống đã làm cho cái việc đầu tư:characters/cat_explain"
+        },
+        {
+          "beatText": "trở nên dễ dàng đến mức",
+          "action": "focus_actor",
+          "targetSlot": "answerer",
+          "frame": 117,
+          "renderedComponentIds": [
+            "scene-144-a",
+            "scene-144-b"
+          ],
+          "fromState": "{\"src\":\"characters/cat_sad\",\"slot\":\"RIGHT\"}",
+          "toState": "{\"src\":\"characters/cat_sad\",\"position\":{\"x\":0.64,\"y\":0.58},\"scale\":2.75}"
+        }
+      ],
+      "semanticTakeaway": "dịch. Tức là toàn bộ hệ thống đã làm cho cái việc đầu tư",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "props/trophy",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_shrug",
+        "characters/cat_sad",
+        "characters/cat_explain"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|4a:0p|LEFT,RIGHT,RIGHT,free|bubble,bubble|none|none",
+      "silentFrameTakeaway": "dịch. Tức là toàn bộ hệ thống đã làm cho cái việc đầu tư",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_shrug",
+        "asset:characters/cat_sad"
+      ],
+      "subtitleCues": [
+        {
+          "text": "dịch Tức là toàn bộ hệ thống đã làm",
+          "startFrame": 0,
+          "endFrame": 73
+        },
+        {
+          "text": "cho cái việc đầu tư trở nên dễ dàng",
+          "startFrame": 73,
+          "endFrame": 146
+        },
+        {
+          "text": "đến mức",
+          "startFrame": 146,
+          "endFrame": 181
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-144-a",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "circle": "#D7E8E6",
+          "slot": "LEFT",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 117,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-144-b",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        },
+        {
+          "assetId": "scene-144-b",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "none",
+          "enterDelay": 53,
+          "clearPrevious": [
+            "scene-144-b"
+          ]
+        },
+        {
+          "assetId": "scene-144-b",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "circle": "#F1D8C5",
+          "enterAnimation": "none",
+          "enterDelay": 117,
+          "position": {
+            "x": 0.64,
+            "y": 0.58
+          },
+          "scale": 2.75,
+          "motionPolicy": "fixed",
+          "clearPrevious": [
+            "scene-144-a",
+            "scene-144-b"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-144-qa",
+          "anchorAssetId": "scene-144-a",
+          "text": "Vì sao lại như vậy?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 35,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-144-qb",
+          "anchorAssetId": "scene-144-b",
+          "text": "dịch. Tức là toàn bộ hệ thống đã làm cho cái việc đầu tư",
+          "direction": "left",
+          "delay": 53,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ]
+    },
+    {
+      "id": "scene-145",
+      "label": "Biến ý “mà không còn ma sát. Và khi mà việc đặt một cái lệnh mua” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2527,
+      "durationFrames": 191,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "softScale",
+      "narration": "mà không còn ma sát. Và khi mà việc đặt\r\nmột cái lệnh mua nó chỉ khó ngang với",
+      "sourceRange": {
+        "startWord": 2978,
+        "endWord": 2996,
+        "quoteChecksum": "fb20d0a3e163fda983b3e7d3c2ec6e2baeb31a6b6cc3c234c312c86e4cd6c48b"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mà không còn ma sát Và",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 4,
+          "renderedComponentIds": [
+            "scene-145-cat"
+          ],
+          "fromState": "characters/cat_talk",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "việc đặt một cái lệnh mua",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 91,
+          "renderedComponentIds": [
+            "scene-145-prop"
+          ],
+          "fromState": "finance/budget",
+          "toState": "finance/roi"
+        }
+      ],
+      "semanticTakeaway": "mà không còn ma sát. Và khi mà việc đặt một cái lệnh mua",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/stock",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_talk",
+        "finance/budget",
+        "characters/cat_think",
+        "finance/roi"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|2a:2p|LEFT,LEFT,RIGHT,RIGHT|none|none|none",
+      "silentFrameTakeaway": "mà không còn ma sát. Và khi mà việc đặt một cái lệnh mua",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "asset:characters/cat_talk",
+        "asset:finance/budget"
+      ],
+      "subtitleCues": [
+        {
+          "text": "mà không còn ma sát Và khi mà việc",
+          "startFrame": 0,
+          "endFrame": 75
+        },
+        {
+          "text": "đặt một cái lệnh mua nó chỉ khó ngang",
+          "startFrame": 75,
+          "endFrame": 157
+        },
+        {
+          "text": "với",
+          "startFrame": 157,
+          "endFrame": 191
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-145-cat",
+          "src": "styles/d/generated-assets/characters/cat_talk.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "scene-145-prop",
+          "src": "styles/d/generated-assets/icons/finance-budget.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "mà không còn ma sát. Và khi mà việc đặt một cái lệnh mua",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 67,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-145-cat",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "none",
+          "enterDelay": 4,
+          "clearPrevious": [
+            "scene-145-cat"
+          ]
+        },
+        {
+          "assetId": "scene-145-prop",
+          "src": "styles/d/generated-assets/icons/finance-roi.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "mà không còn ma sát. Và khi mà việc đặt một cái lệnh mua",
+          "enterDelay": 91,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-145-prop"
+          ]
+        }
+      ],
+      "texts": []
+    },
+    {
+      "id": "scene-146",
+      "label": "Biến ý “việc bấm like thôi thì cái số quyết định dở hơi nó cũng” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2718,
+      "durationFrames": 193,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "việc bấm like thôi thì cái số quyết định\r\ndở hơi nó cũng tăng theo. Và bốn yếu tố",
+      "sourceRange": {
+        "startWord": 2997,
+        "endWord": 3015,
+        "quoteChecksum": "b313102397b8c9698e8ba81819c4b88083d37488d3ba161edb915ab4ed4c5fe6"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "quyết định dở hơi",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 47,
+          "renderedComponentIds": [
+            "scene-146-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:QUYẾT ĐỊNH BỐC ĐỒNG"
+        },
+        {
+          "beatText": "Và bốn yếu tố",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 124,
+          "renderedComponentIds": [
+            "scene-146-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/round_table:BỐN YẾU TỐ CÙNG ĐẨY"
+        }
+      ],
+      "semanticTakeaway": "việc bấm like thôi thì cái số quyết định dở hơi nó cũng",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/money",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "props/thought_bubble",
+        "props/round_table"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "evidenceTreatment": "document",
+      "heroVisual": true,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "việc bấm like thôi thì cái số quyết định dở hơi nó cũng",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "việc bấm like thôi thì cái số quyết định",
+          "startFrame": 0,
+          "endFrame": 86
+        },
+        {
+          "text": "dở hơi nó cũng tăng theo Và bốn yếu",
+          "startFrame": 86,
+          "endFrame": 161
+        },
+        {
+          "text": "tố",
+          "startFrame": 161,
+          "endFrame": 193
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-146-ev",
+          "variant": "survey",
+          "title": "MỘT CÚ BẤM, MỘT QUYẾT ĐỊNH",
+          "body": "việc bấm like thôi thì cái số quyết định dở hơi nó cũng",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 44
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-146-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "QUYẾT ĐỊNH BỐC ĐỒNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 47,
+          "duration": 74
+        },
+        {
+          "id": "scene-146-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-round-table.png",
+          "caption": "BỐN YẾU TỐ CÙNG ĐẨY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 124
+        }
+      ]
+    },
+    {
+      "id": "scene-147",
+      "label": "Biến ý “này khi ghép lại với nhau sẽ tạo ra một môi trường rất là” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 2911,
+      "durationFrames": 187,
+      "layout": "TABLEAU",
+      "entranceStyle": "slide",
+      "narration": "này khi ghép lại với nhau sẽ tạo ra một\r\nmôi trường rất là đặc biệt. Một bên là",
+      "sourceRange": {
+        "startWord": 3016,
+        "endWord": 3034,
+        "quoteChecksum": "418dbe8e271b77e6b49ae68387bacd6f2393cd654168d8f36821c9d788afc1dd"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "này khi ghép lại với nhau",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 3,
+          "renderedComponentIds": [
+            "scene-147-a"
+          ],
+          "fromState": "characters/cat_investor_contract",
+          "toState": "characters/cat_think"
+        },
+        {
+          "beatText": "môi trường rất là đặc biệt",
+          "action": "swap_asset",
+          "targetSlot": "prop",
+          "frame": 66,
+          "renderedComponentIds": [
+            "scene-147-prop"
+          ],
+          "fromState": "finance/compound_interest",
+          "toState": "finance/portfolio"
+        }
+      ],
+      "semanticTakeaway": "này khi ghép lại với nhau sẽ tạo ra một môi trường rất là",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/compound_interest",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_contract",
+        "finance/compound_interest",
+        "characters/cat_think",
+        "finance/portfolio",
+        "assets/scenes/boardroom.svg"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:boardroom|2a:2p|free,free,seat_left,seat_left|none|none|none",
+      "silentFrameTakeaway": "này khi ghép lại với nhau sẽ tạo ra một môi trường rất là",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_investor_contract",
+        "asset:finance/compound_interest",
+        "asset:assets/scenes/boardroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "này khi ghép lại với nhau sẽ tạo ra",
+          "startFrame": 0,
+          "endFrame": 74
+        },
+        {
+          "text": "một môi trường rất là đặc biệt Một bên",
+          "startFrame": 74,
+          "endFrame": 154
+        },
+        {
+          "text": "là",
+          "startFrame": 154,
+          "endFrame": 187
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/boardroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-147-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_contract.png",
+          "anchor": "seat_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 60,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-147-prop",
+          "src": "styles/d/generated-assets/icons/finance-compound-interest.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        },
+        {
+          "assetId": "scene-147-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "seat_left",
+          "enterAnimation": "none",
+          "enterDelay": 3,
+          "clearPrevious": [
+            "scene-147-a"
+          ]
+        },
+        {
+          "assetId": "scene-147-prop",
+          "src": "styles/d/generated-assets/icons/finance-portfolio.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 66,
+          "enterAnimation": "none",
+          "clearPrevious": [
+            "scene-147-prop"
+          ]
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": []
+    },
+    {
+      "id": "scene-148",
+      "label": "Biến ý “áp lực kiếm tiền nhanh này, một bên là cảm giác luật chơi” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3098,
+      "durationFrames": 237,
+      "layout": "CUSTOM",
+      "entranceStyle": "reveal",
+      "narration": "áp lực kiếm tiền nhanh này, một bên là\r\ncảm giác luật chơi lại không hoàn toàn\r\ncông bằng. Và ở giữa là hàng loạt công",
+      "sourceRange": {
+        "startWord": 3035,
+        "endWord": 3060,
+        "quoteChecksum": "1d769023cea0944c0ccfaf65cc7994ba3b07a2ead2109236f666c09cd3f04189"
+      },
+      "visualRegister": "evidence",
+      "visualGrammar": "EVIDENCE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "cảm giác luật chơi",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 67,
+          "renderedComponentIds": [
+            "scene-148-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:LUẬT CHƠI KHÔNG CÔNG BẰNG"
+        },
+        {
+          "beatText": "Và ở giữa là hàng loạt công",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 156,
+          "renderedComponentIds": [
+            "scene-148-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:CÔNG CỤ TÀI CHÍNH"
+        }
+      ],
+      "semanticTakeaway": "áp lực kiếm tiền nhanh này, một bên là cảm giác luật chơi",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/trending_down",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "props/concept_card",
+        "finance/credit_card"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "evidenceTreatment": "document",
+      "heroVisual": false,
+      "focalType": "evidence",
+      "characterRequired": false,
+      "visualFingerprint": "EVIDENCE|evidence|graphic|0a:0p|none|frame:2:1,frame:2:1,paper:2:1|none|none",
+      "silentFrameTakeaway": "áp lực kiếm tiền nhanh này, một bên là cảm giác luật chơi",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:EVIDENCE",
+        "register:evidence"
+      ],
+      "subtitleCues": [
+        {
+          "text": "áp lực kiếm tiền nhanh này một bên là",
+          "startFrame": 0,
+          "endFrame": 78
+        },
+        {
+          "text": "cảm giác luật chơi lại không hoàn toàn công",
+          "startFrame": 78,
+          "endFrame": 168
+        },
+        {
+          "text": "bằng Và ở giữa là hàng loạt công",
+          "startFrame": 168,
+          "endFrame": 237
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "paperCards": [
+        {
+          "id": "scene-148-ev",
+          "variant": "survey",
+          "title": "CHI TIẾT CẦN NHÌN",
+          "body": "áp lực kiếm tiền nhanh này, một bên là cảm giác luật chơi",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1560,
+          "delay": 0,
+          "duration": 64
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-148-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "LUẬT CHƠI KHÔNG CÔNG BẰNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 67,
+          "duration": 86
+        },
+        {
+          "id": "scene-148-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "CÔNG CỤ TÀI CHÍNH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 156
+        }
+      ]
+    },
+    {
+      "id": "scene-149",
+      "label": "Biến ý “cụ tài chính có thể giúp bạn gọi là cân bằng cuộc chơi.” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 3335,
+      "durationFrames": 184,
+      "layout": "QA_REVEAL",
+      "entranceStyle": "fade",
+      "narration": "cụ tài chính có thể giúp bạn gọi là cân\r\nbằng cuộc chơi. Và khi mà ba thứ đấy",
+      "sourceRange": {
+        "startWord": 3061,
+        "endWord": 3079,
+        "quoteChecksum": "8def1bc27522ed9b66b12b85f93a3e65914ed4febf6ec67e6231f98d269aa734"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "QA_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "cân bằng cuộc chơi",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 60,
+          "renderedComponentIds": [
+            "scene-149-a",
+            "scene-149-q"
+          ],
+          "fromState": "visible-at:80",
+          "toState": "visible-at:60"
+        }
+      ],
+      "semanticTakeaway": "cụ tài chính có thể giúp bạn gọi là cân bằng cuộc chơi.",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/house",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_debt_burden",
+        "finance/piggy_bank"
+      ],
+      "sectionId": "cfd-va-dich-chuyen",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:none:1:1,card:piggy_bank:1:1|none|none",
+      "silentFrameTakeaway": "cụ tài chính có thể giúp bạn gọi là cân bằng cuộc chơi.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic",
+        "asset:characters/cat_debt_burden",
+        "asset:finance/piggy_bank"
+      ],
+      "subtitleCues": [
+        {
+          "text": "cụ tài chính có thể giúp bạn gọi là",
+          "startFrame": 0,
+          "endFrame": 75
+        },
+        {
+          "text": "cân bằng cuộc chơi Và khi mà ba thứ",
+          "startFrame": 75,
+          "endFrame": 150
+        },
+        {
+          "text": "đấy",
+          "startFrame": 150,
+          "endFrame": 184
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-149-cat",
+          "src": "styles/d/generated-assets/characters/cat_debt_burden.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "circle": "#F1D8C5",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 52,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-149-q",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#286F7A",
+          "label": "Điều gì đang xảy ra?",
+          "width": 1200,
+          "height": 700,
+          "delay": 0,
+          "duration": 54
+        },
+        {
+          "id": "scene-149-a",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-piggy-bank.png",
+          "label": "cụ tài chính có thể giúp bạn gọi là cân bằng cuộc chơi.",
+          "width": 1200,
+          "height": 700,
+          "delay": 60
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-core",
+  "projectOpeningSceneId": "scene-001"
+}

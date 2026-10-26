@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "projectId": "video-009",
+  "policyVersion": "route-a-chunks-v2",
+  "planChecksum": "b074c10c6bfde58a3a16117f098c2a7eb416d474f9ba40941313bac9fcff0dff",
+  "storyboardChecksum": "bbdc1e4a1c3f6e463480f390a7ea0d726988ef69084036c2bc7d44f07dbce620",
+  "globalAuthoringReportChecksum": "3ab1c09589b86326d028bfe90599f549d4c67a146cb3f7f4ecdf34b26684b6e7",
+  "tts": {
+    "engine": "kokoro",
+    "voice": "am_michael",
+    "sampleRateHz": 24000,
+    "languageCode": "a",
+    "speed": 1,
+    "repoId": "hexgrad/Kokoro-82M",
+    "modelRevision": "main",
+    "modelDir": null,
+    "device": "cpu",
+    "gapPolicyVersion": "kokoro-gap-0.08-v1",
+    "gapSeconds": 0.08,
+    "terminalGapPolicy": "all-non-final-chunks"
+  },
+  "alignment": {
+    "engine": "faster-whisper",
+    "model": "small",
+    "language": "en",
+    "device": "cpu",
+    "computeType": "int8",
+    "vadFilter": false
+  },
+  "compile": {
+    "policyVersion": "measured-route-a-v1",
+    "assetStyle": "production",
+    "scopePolicy": "exact-one-scene-halo-v1"
+  },
+  "proof": {
+    "artifactRole": "chunk-proof",
+    "qualityProfileHash": "b2da9ec7b663dc898965d8a75828a0f9107300fce888b7e73bb5836389f2fc1c",
+    "scopePolicy": "exact-one-scene-halo-v1"
+  }
+}

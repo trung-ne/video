@@ -361,7 +361,10 @@ function applyAuthoredBeatTransitions(
     const exitDelay = Math.max(1, delay - 3);
     const endComponent = (component: { delay?: number; duration?: number }) => {
       const componentDelay = component.delay ?? 0;
-      if (componentDelay < exitDelay) component.duration = Math.max(1, exitDelay - componentDelay);
+      const existingEnd = componentDelay + (component.duration ?? Number.POSITIVE_INFINITY);
+      if (componentDelay < exitDelay && existingEnd > exitDelay) {
+        component.duration = Math.max(1, exitDelay - componentDelay);
+      }
     };
     for (const entity of result.entities) {
       if ((entity.enterDelay ?? 0) < exitDelay) {
@@ -561,8 +564,23 @@ function applyAuthoredBeatTransitions(
           `${brief.id} authored advance:${beat.targetSlot} keeps teaching layer ${layer.id} at its existing reveal frame ${delay}.`,
         );
       }
+      // QA cards intentionally share a presentation slot. When an authored beat
+      // moves the answer, retain the question up to that beat, then explicitly
+      // end it before the answer arrives. The grammar's default 70-frame hold
+      // is only suitable when the answer keeps its default reveal time.
+      const replacedLayer = brief.visualGrammar === "QA_REVEAL" && layer.id === `${brief.id}-a`
+        ? result.cards?.find((card) => card.id === `${brief.id}-q`)
+        : undefined;
+      if (replacedLayer) {
+        const questionDelay = replacedLayer.delay ?? 0;
+        if (delay - questionDelay < 18) {
+          throw new Error(`${brief.id} QA answer reveal occurs before the question has a visible hold state.`);
+        }
+        replacedLayer.duration = delay - questionDelay - 6;
+      }
       layer.delay = delay;
-      recordTransition(beat.text, beat.action, beat.targetSlot, delay, [layer.id],
+      recordTransition(beat.text, beat.action, beat.targetSlot, delay,
+        [layer.id, ...(replacedLayer ? [replacedLayer.id] : [])],
         `visible-at:${previousDelay}`, `visible-at:${delay}`);
       continue;
     }

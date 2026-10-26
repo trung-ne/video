@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 2,
+  "projectId": "video-010",
+  "policyVersion": "route-a-chunks-v2",
+  "planChecksum": "d63eb09dde4425205bb4099275acbdf032671bf218905c00c42ca9f7af0e35e5",
+  "storyboardChecksum": "2139f51c1f7525b40eee7e4f0ba33c7da34e2367c50f36963f80e005c718e282",
+  "globalAuthoringReportChecksum": "cda956e7b3b1282a9cd4c6e26f74cfd5b1d7006ab8759d298aeb5a3af6bf9bfe",
+  "tts": {
+    "engine": "edge-tts",
+    "voice": "vi-VN-NamMinhNeural",
+    "sampleRateHz": 24000,
+    "rate": "+0%",
+    "volume": "+0%",
+    "pitch": "+0Hz",
+    "gapPolicyVersion": "edge-gap-0.08-v1",
+    "gapSeconds": 0.08,
+    "terminalGapPolicy": "all-non-final-chunks"
+  },
+  "alignment": {
+    "engine": "faster-whisper",
+    "model": "small",
+    "language": "vi",
+    "device": "cpu",
+    "computeType": "int8",
+    "vadFilter": false
+  },
+  "compile": {
+    "policyVersion": "measured-route-a-v1",
+    "assetStyle": "production",
+    "scopePolicy": "exact-one-scene-halo-v1"
+  },
+  "proof": {
+    "artifactRole": "chunk-proof",
+    "qualityProfileHash": "b2da9ec7b663dc898965d8a75828a0f9107300fce888b7e73bb5836389f2fc1c",
+    "scopePolicy": "exact-one-scene-halo-v1"
+  }
+}

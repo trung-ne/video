@@ -1,0 +1,1012 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 1083,
+  "audio": "audio/chunks/video-010/chunk-007-margin-trader-cost/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "aligned-words",
+    "beatTimingSummary": {
+      "aligned-words": 5
+    },
+    "measuredSceneCount": 5,
+    "audioSeconds": 36.088,
+    "audioSha256": "e2a7e164eb2853749303258a45f20bb499d4c1e83f4a8e2b9f99ea942603a15c",
+    "storyboardChecksum": "ec95344c5bfa15ffb584a28a15c22140c826d09a6efbfddc1817f6f39c070580",
+    "durationsChecksum": "17a8666b3002f83ba4e6ed4dacfa7183c267ac29074c6c20a12cb5efadb11ae0",
+    "wordsChecksum": "68a4466a4b2a0bc73c231056cdd17a275cc91db9fd5f600519e20fbef8805f23",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 115,
+      "matchedWordCount": 112,
+      "coverage": 1,
+      "matchedCoverage": 0.973913,
+      "interpolatedWordCount": 3,
+      "language": "vi"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.26,
+      "character_action": 0.17,
+      "infographic": 0.19,
+      "evidence": 0.13,
+      "photo_broll": 0.07,
+      "framebox": 0.09,
+      "visual_gag": 0.09
+    },
+    "characterFreeTarget": 0.27,
+    "heroConcepts": [
+      "Cú lao dốc CPI và tiền vay",
+      "margin nhân đôi cả lãi lẫn lỗ",
+      "nợ nhà ở đẩy người trẻ vào đường tắt",
+      "đàn kiến retail khuếch đại lệnh",
+      "CFD che người gánh rủi ro",
+      "nước đầu cơ đổi dòng",
+      "câu hỏi về tài sản an toàn cho người trẻ"
+    ],
+    "visualMotifs": [
+      "vạch an toàn margin đỏ",
+      "điện thoại biến thành hợp đồng vay",
+      "căn nhà lùi xa",
+      "đàn kiến cùng hướng",
+      "dòng nước vòng qua đập",
+      "bảng giá phản chiếu trong điện thoại"
+    ],
+    "forbiddenRepeats": [
+      "mèo đứng cạnh icon không liên quan",
+      "thẻ số tối như mặc định",
+      "ảnh nền trang trí",
+      "cùng một sân khấu liền nhau",
+      "pose lặp không có lý do cảm xúc",
+      "lời kể thay cho hành động của prop"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "character_action",
+      "infographic",
+      "evidence",
+      "photo_broll",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-102",
+      "label": "Biến ý “thường xuyên hơn rồi là thích những cổ phiếu biến động” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 0,
+      "durationFrames": 199,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "thường xuyên hơn rồi là thích những cổ\r\nphiếu biến động mạnh hơn, danh mục đầu\r\ntư cũng tập trung hơn và chấp nhận rủi",
+      "sourceRange": {
+        "startWord": 2053,
+        "endWord": 2077,
+        "quoteChecksum": "d5f156ecc7aa63d5393ebabdbf43b0f92eeb53a1842ab0ecfef8e2e8cb4db41a"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "thường xuyên hơn rồi là thích",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-102-a"
+          ],
+          "fromState": "characters/cat_sad",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "cổ phiếu biến động mạnh hơn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 47,
+          "renderedComponentIds": [
+            "scene-102-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:loss/01/flat/bold/color:BIẾN ĐỘNG MẠNH"
+        },
+        {
+          "beatText": "danh mục đầu tư",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 96,
+          "renderedComponentIds": [
+            "scene-102-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/portfolio:DANH MỤC TẬP TRUNG"
+        },
+        {
+          "beatText": "chấp nhận rủi",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 148,
+          "renderedComponentIds": [
+            "scene-102-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:CHẤP NHẬN RỦI RO"
+        }
+      ],
+      "semanticTakeaway": "thường xuyên hơn rồi là thích những cổ phiếu biến động",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/debt",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "props/computer_desk",
+        "characters/cat_explain",
+        "loss/01/flat/bold/color",
+        "finance/portfolio",
+        "props/thought_bubble",
+        "assets/scenes/office_desk.svg"
+      ],
+      "sectionId": "margin-trader-cost",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:office_desk|2a:1p|desk_right,desk_right,free|frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "thường xuyên hơn rồi là thích những cổ phiếu biến động",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_sad",
+        "asset:assets/scenes/office_desk.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "thường xuyên hơn rồi là thích những cổ phiếu",
+          "startFrame": 0,
+          "endFrame": 77
+        },
+        {
+          "text": "biến động mạnh hơn danh mục đầu tư cũng",
+          "startFrame": 77,
+          "endFrame": 146
+        },
+        {
+          "text": "tập trung hơn và chấp nhận rủi",
+          "startFrame": 146,
+          "endFrame": 199
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/office-desk.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-102-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "anchor": "desk_right",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "exitFrame": 145,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 41,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-102-prop",
+          "src": "styles/d/generated-assets/icons/props-computer-desk.png",
+          "position": {
+            "x": 0.24,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          },
+          "exitFrame": 145,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-102-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "desk_right",
+          "enterAnimation": "none",
+          "enterDelay": 2,
+          "clearPrevious": [
+            "scene-102-a"
+          ],
+          "exitFrame": 145,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-102-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/loss-01-flat-bold-color.png",
+          "caption": "BIẾN ĐỘNG MẠNH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 47,
+          "duration": 46
+        },
+        {
+          "id": "scene-102-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-portfolio.png",
+          "caption": "DANH MỤC TẬP TRUNG",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 96,
+          "duration": 49
+        },
+        {
+          "id": "scene-102-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "CHẤP NHẬN RỦI RO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 148
+        }
+      ]
+    },
+    {
+      "id": "scene-103",
+      "label": "Biến ý “ro cao hơn. Tức là đây là cái nhóm mà đạp ga mạnh nhất” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 199,
+      "durationFrames": 216,
+      "layout": "SOLO",
+      "entranceStyle": "reveal",
+      "narration": "ro cao hơn. Tức là đây là cái nhóm mà\r\nđạp ga mạnh nhất trên thị trường. Nhưng",
+      "sourceRange": {
+        "startWord": 2078,
+        "endWord": 2095,
+        "quoteChecksum": "05522319834fdf228174c2fbfcdc3b572e5ba3f1e2d71a4aafc11941b8f74086"
+      },
+      "visualRegister": "framebox",
+      "visualGrammar": "FRAMEBOX",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "ro cao hơn",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-103-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/clover:RỦI RO CAO"
+        },
+        {
+          "beatText": "nhóm mà đạp ga",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 88,
+          "renderedComponentIds": [
+            "scene-103-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/interest_rate:ĐẠP GA MARGIN"
+        },
+        {
+          "beatText": "mạnh nhất",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 115,
+          "renderedComponentIds": [
+            "scene-103-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:LỰC ĐẨY LỚN"
+        }
+      ],
+      "semanticTakeaway": "ro cao hơn. Tức là đây là cái nhóm mà đạp ga mạnh nhất",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/interest_rate",
+      "photoTreatment": "tv_frame",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_shrug",
+        "backgrounds/evidence-market-pexels-10653886.jpg",
+        "props/clover",
+        "finance/interest_rate",
+        "finance/chart_up"
+      ],
+      "sectionId": "dam-dong-thi-truong",
+      "heroVisual": false,
+      "focalType": "photo",
+      "visualFingerprint": "FRAMEBOX|framebox|graphic|1a:0p|RIGHT_BOTTOM|frame:1:1,frame:2:1,frame:2:1,frame:2:1|none|tv_frame",
+      "silentFrameTakeaway": "ro cao hơn. Tức là đây là cái nhóm mà đạp ga mạnh nhất",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:FRAMEBOX",
+        "register:framebox",
+        "asset:characters/cat_shrug",
+        "asset:backgrounds/evidence-market-pexels-10653886.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "ro cao hơn Tức là đây là cái nhóm",
+          "startFrame": 0,
+          "endFrame": 96
+        },
+        {
+          "text": "mà đạp ga mạnh nhất trên thị trường Nhưng",
+          "startFrame": 96,
+          "endFrame": 216
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-103-cat",
+          "src": "styles/d/generated-assets/characters/cat_shrug.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "enterDelay": 14,
+          "exitFrame": 311,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 74,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-103-tv",
+          "contentSrc": "backgrounds/evidence-market-pexels-10653886.jpg",
+          "caption": "ro cao hơn. Tức là đây là cái nhóm mà đạp ga mạnh nhất",
+          "objectFit": "cover",
+          "position": {
+            "x": 0.43,
+            "y": 0.4
+          },
+          "width": 1320,
+          "delay": 0,
+          "duration": 1
+        },
+        {
+          "id": "scene-103-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-clover.png",
+          "caption": "RỦI RO CAO",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 2,
+          "duration": 83
+        },
+        {
+          "id": "scene-103-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "caption": "ĐẠP GA MARGIN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 88,
+          "duration": 24
+        },
+        {
+          "id": "scene-103-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "LỰC ĐẨY LỚN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 115
+        }
+      ]
+    },
+    {
+      "id": "scene-104",
+      "label": "Biến ý “mà vấn đề ấ là cái xe của họ thì lại chạy bằng tiền đi” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 415,
+      "durationFrames": 189,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "mà vấn đề ấ là cái xe của họ thì lại\r\nchạy bằng tiền đi vay. Thì khi mà thị",
+      "sourceRange": {
+        "startWord": 2096,
+        "endWord": 2115,
+        "quoteChecksum": "e37712ea9fa7bc2cd1f20f5d57f00e7856d5f00742794726d20b58c7fa2b15cb"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "mà vấn đề ấ là cái",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 2,
+          "renderedComponentIds": [
+            "scene-104-effect"
+          ],
+          "fromState": "visible-at:38",
+          "toState": "visible-at:2"
+        },
+        {
+          "beatText": "xe của họ",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 42,
+          "renderedComponentIds": [
+            "scene-104-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/loan:CHIẾC XE MARGIN"
+        },
+        {
+          "beatText": "chạy bằng tiền đi",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 70,
+          "renderedComponentIds": [
+            "scene-104-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/wallet:TIỀN VAY"
+        }
+      ],
+      "semanticTakeaway": "mà vấn đề ấ là cái xe của họ thì lại chạy bằng tiền đi",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/investment",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "props/muscle_arm",
+        "finance/roi",
+        "finance/loan",
+        "finance/wallet"
+      ],
+      "sectionId": "dam-dong-thi-truong",
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:muscle_arm:1:1,card:roi:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "mà vấn đề ấ là cái xe của họ thì lại chạy bằng tiền đi",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:props/muscle_arm",
+        "asset:finance/roi"
+      ],
+      "subtitleCues": [
+        {
+          "text": "mà vấn đề ấ là cái xe của họ",
+          "startFrame": 0,
+          "endFrame": 66
+        },
+        {
+          "text": "thì lại chạy bằng tiền đi vay Thì khi",
+          "startFrame": 66,
+          "endFrame": 152
+        },
+        {
+          "text": "mà thị",
+          "startFrame": 152,
+          "endFrame": 189
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-104-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "exitFrame": 482,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 42,
+            "duration": 22
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-104-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/props-muscle-arm.png",
+          "label": "Áp lực tích lũy",
+          "width": 650,
+          "height": 540,
+          "delay": 0,
+          "duration": 39
+        },
+        {
+          "id": "scene-104-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-roi.png",
+          "label": "mà vấn đề ấ là cái xe của họ thì lại chạy bằng tiền đi",
+          "width": 650,
+          "height": 540,
+          "delay": 2,
+          "duration": 37
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-104-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-loan.png",
+          "caption": "CHIẾC XE MARGIN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 42,
+          "duration": 25
+        },
+        {
+          "id": "scene-104-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-wallet.png",
+          "caption": "TIỀN VAY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 70
+        }
+      ]
+    },
+    {
+      "id": "scene-105",
+      "label": "Biến ý “trường ổn ngon thì không sao, họ sẽ kiếm được nhiều tiền” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 604,
+      "durationFrames": 242,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "trường ổn ngon thì không sao, họ sẽ kiếm\r\nđược nhiều tiền hơn người khác. Nhưng mà\r\nkhi mà thị trường lao dốc thì đây là",
+      "sourceRange": {
+        "startWord": 2116,
+        "endWord": 2141,
+        "quoteChecksum": "35b01b5a7b1d0cf8f5a9023dd9de433febc631ae75b1b63909e7cd31fd706dd5"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "trường ổn ngon thì không sao",
+          "action": "swap_pose",
+          "targetSlot": "who",
+          "frame": 6,
+          "renderedComponentIds": [
+            "scene-105-a"
+          ],
+          "fromState": "characters/cat_investor_contract",
+          "toState": "characters/cat_explain"
+        },
+        {
+          "beatText": "không sao",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 35,
+          "renderedComponentIds": [
+            "scene-105-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:chart/up/01/flat/bold/color:THỊ TRƯỜNG ỔN"
+        },
+        {
+          "beatText": "kiếm được nhiều tiền",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 71,
+          "renderedComponentIds": [
+            "scene-105-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/wallet:LỢI NHUẬN"
+        },
+        {
+          "beatText": "Nhưng mà khi mà thị trường",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 139,
+          "renderedComponentIds": [
+            "scene-105-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:loss/01/flat/bold/color:KHI ĐẢO CHIỀU"
+        }
+      ],
+      "semanticTakeaway": "trường ổn ngon thì không sao, họ sẽ kiếm được nhiều tiền",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/revenue",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_contract",
+        "finance/revenue",
+        "characters/cat_explain",
+        "chart/up/01/flat/bold/color",
+        "finance/wallet",
+        "loss/01/flat/bold/color",
+        "assets/scenes/bank_interior.svg"
+      ],
+      "sectionId": "dam-dong-thi-truong",
+      "heroVisual": false,
+      "focalType": "full_scene",
+      "visualFingerprint": "TABLEAU|character_action|stage:bank_interior|2a:1p|counter_left,counter_left,free|frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "trường ổn ngon thì không sao, họ sẽ kiếm được nhiều tiền",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:character_action",
+        "asset:characters/cat_investor_contract",
+        "asset:finance/revenue",
+        "asset:assets/scenes/bank_interior.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "trường ổn ngon thì không sao họ sẽ kiếm",
+          "startFrame": 0,
+          "endFrame": 83
+        },
+        {
+          "text": "được nhiều tiền hơn người khác Nhưng mà khi",
+          "startFrame": 83,
+          "endFrame": 174
+        },
+        {
+          "text": "mà thị trường lao dốc thì đây là",
+          "startFrame": 174,
+          "endFrame": 242
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/bank-interior.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-105-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_contract.png",
+          "anchor": "counter_left",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "exitFrame": 740,
+          "exitAnimation": "fadeOut",
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 65,
+            "duration": 22
+          }
+        },
+        {
+          "assetId": "scene-105-prop",
+          "src": "styles/d/generated-assets/icons/finance-revenue.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          },
+          "exitFrame": 740,
+          "exitAnimation": "fadeOut"
+        },
+        {
+          "assetId": "scene-105-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "counter_left",
+          "enterAnimation": "none",
+          "enterDelay": 6,
+          "clearPrevious": [
+            "scene-105-a"
+          ],
+          "exitFrame": 740,
+          "exitAnimation": "fadeOut"
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-105-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/chart-up-01-flat-bold-color.png",
+          "caption": "THỊ TRƯỜNG ỔN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 35,
+          "duration": 33
+        },
+        {
+          "id": "scene-105-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-wallet.png",
+          "caption": "LỢI NHUẬN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 71,
+          "duration": 65
+        },
+        {
+          "id": "scene-105-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/loss-01-flat-bold-color.png",
+          "caption": "KHI ĐẢO CHIỀU",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 139
+        }
+      ]
+    },
+    {
+      "id": "scene-106",
+      "label": "Biến ý “những người gặp tai nạn đầu tiên và thường là tai nạn” thành một trạng thái hình ảnh riêng, không dùng minh họa nền chung.",
+      "startFrame": 846,
+      "durationFrames": 237,
+      "layout": "ICON_TRIPLE",
+      "entranceStyle": "softScale",
+      "narration": "những người gặp tai nạn đầu tiên và\r\nthường là tai nạn thảm khốc nhất. Và cái\r\nđiều buồn cười là sau khi cộng tất cả",
+      "sourceRange": {
+        "startWord": 2142,
+        "endWord": 2167,
+        "quoteChecksum": "0e10454f109c2fe68e58066b40cfdc6dbd1c79829091d30e7cd6a1b077d15d21"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "ICON_TRIPLE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "những người gặp tai nạn đầu",
+          "action": "advance",
+          "targetSlot": "next",
+          "frame": 4,
+          "renderedComponentIds": [
+            "scene-106-i1"
+          ],
+          "fromState": "visible-at:22",
+          "toState": "visible-at:4"
+        },
+        {
+          "beatText": "tai nạn đầu tiên",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 25,
+          "renderedComponentIds": [
+            "scene-106-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:characters/cat_surprised:TAI NẠN ĐẦU TIÊN"
+        },
+        {
+          "beatText": "tai nạn thảm khốc nhất",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 74,
+          "renderedComponentIds": [
+            "scene-106-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:loss/01/flat/bold/color:THẢM KHỐC"
+        },
+        {
+          "beatText": "điều buồn cười",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 147,
+          "renderedComponentIds": [
+            "scene-106-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:characters/cat_explain:NGHỊCH LÝ"
+        }
+      ],
+      "semanticTakeaway": "những người gặp tai nạn đầu tiên và thường là tai nạn",
+      "semanticAction": "được làm rõ",
+      "semanticObject": "finance/loss",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/compound_interest",
+        "finance/roi",
+        "chart/down/01/flat/bold/color",
+        "characters/cat_surprised",
+        "loss/01/flat/bold/color",
+        "characters/cat_explain"
+      ],
+      "sectionId": "dam-dong-thi-truong",
+      "heroVisual": true,
+      "focalType": "diagram",
+      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:color:2:1,card:compound_interest:1:1,card:roi:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "những người gặp tai nạn đầu tiên và thường là tai nạn",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:ICON_TRIPLE",
+        "register:infographic",
+        "asset:finance/compound_interest",
+        "asset:finance/roi",
+        "asset:chart/down/01/flat/bold/color"
+      ],
+      "subtitleCues": [
+        {
+          "text": "những người gặp tai nạn đầu tiên và thường",
+          "startFrame": 0,
+          "endFrame": 89
+        },
+        {
+          "text": "là tai nạn thảm khốc nhất Và cái điều",
+          "startFrame": 89,
+          "endFrame": 168
+        },
+        {
+          "text": "buồn cười là sau khi cộng tất cả",
+          "startFrame": 168,
+          "endFrame": 237
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-106-i0",
+          "position": {
+            "x": 0.2,
+            "y": 0.47
+          },
+          "background": "#7B5AA6",
+          "iconSrc": "styles/d/generated-assets/icons/finance-compound-interest.png",
+          "label": "Nợ",
+          "width": 500,
+          "height": 500,
+          "delay": 0,
+          "duration": 22
+        },
+        {
+          "id": "scene-106-i1",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-roi.png",
+          "label": "Tài sản",
+          "width": 500,
+          "height": 500,
+          "delay": 4,
+          "duration": 18
+        },
+        {
+          "id": "scene-106-i2",
+          "position": {
+            "x": 0.8,
+            "y": 0.47
+          },
+          "background": "#B56B35",
+          "iconSrc": "styles/d/generated-assets/icons/chart-down-01-flat-bold-color.png",
+          "label": "Rủi ro",
+          "width": 500,
+          "height": 500,
+          "delay": 36,
+          "duration": 35
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-106-cutaway",
+          "contentSrc": "styles/d/generated-assets/characters/cat_surprised.png",
+          "caption": "TAI NẠN ĐẦU TIÊN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 25,
+          "duration": 46
+        },
+        {
+          "id": "scene-106-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/loss-01-flat-bold-color.png",
+          "caption": "THẢM KHỐC",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 74,
+          "duration": 70
+        },
+        {
+          "id": "scene-106-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/characters/cat_explain.png",
+          "caption": "NGHỊCH LÝ",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 147
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-core",
+  "projectOpeningSceneId": "scene-001"
+}

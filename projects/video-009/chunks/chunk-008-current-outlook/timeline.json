@@ -1,0 +1,2972 @@
+{
+  "schemaVersion": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 5197,
+  "audio": "audio/chunks/video-009/chunk-008-current-outlook/voice.wav",
+  "background": "#FAFAF8",
+  "timingProvenance": {
+    "mode": "measured",
+    "sceneTimingSource": "durations",
+    "beatTimingSource": "proportional",
+    "beatTimingSummary": {
+      "aligned-words": 17,
+      "authored-beat": 1
+    },
+    "measuredSceneCount": 18,
+    "audioSeconds": 173.235,
+    "audioSha256": "eae771429a4958d0823b88ce42201ac2f63ecbc9410a6277da6841a03ac375f9",
+    "storyboardChecksum": "384eb4fe200e71f0e8306eb0770a40e47072d162715e65c465a2e03768a194d2",
+    "durationsChecksum": "3e3725d4a63194780434b7aa6548bd6fbaa861ab38d73d191afe8276c813d19a",
+    "wordsChecksum": "3db81ff8ecdc243a19d323ae7521bf11f013aeff5cdcbd9bc2a6204ccf2e4d3d",
+    "subtitleTiming": {
+      "source": "canonical-tts-scenes",
+      "canonicalWordCount": 382,
+      "matchedWordCount": 376,
+      "coverage": 1,
+      "matchedCoverage": 0.984293,
+      "interpolatedWordCount": 6,
+      "language": "en"
+    },
+    "assetStyle": "d",
+    "assetStyleManifestHash": "5acfa62ddd7ddbd220637a93c08f7065d236b5f291855dc9f4946bd86594e9a8"
+  },
+  "visualTreatmentPlan": {
+    "registerTargets": {
+      "full_tableau": 0.24,
+      "photo_broll": 0.145,
+      "character_action": 0.2,
+      "infographic": 0.23,
+      "evidence": 0.085,
+      "framebox": 0.05,
+      "visual_gag": 0.07
+    },
+    "characterFreeTarget": 0.36,
+    "heroConcepts": [
+      "KOSPI shock opens and closes the argument",
+      "borrowed buying power doubles both directions",
+      "housing debt turns a shortcut into necessity",
+      "the gaemi crowd moves as one leveraged force",
+      "CFD hides the person carrying the risk",
+      "speculation reroutes like water around a dam",
+      "a young worker needs a safer route to wealth"
+    ],
+    "visualMotifs": [
+      "a red margin threshold crossing the frame",
+      "an ant crowd gathering behind one order",
+      "a distant home receding from a young worker",
+      "water rerouting around a regulatory barrier",
+      "a phone tap turning into a debt contract"
+    ],
+    "forbiddenRepeats": [
+      "idle host beside an unrelated icon",
+      "dark statistic card as default",
+      "consecutive wallpaper photos",
+      "the same stage in adjacent tableaux",
+      "a repeated pose without a sentence-level emotional reason",
+      "generic two-column cards standing in for action"
+    ],
+    "usageBudgets": {
+      "maximumAssetUses": 10,
+      "maximumStageRatio": 0.05,
+      "maximumPoseRatio": 0.08,
+      "maximumConsecutiveSameStage": 1,
+      "maximumPhotoTreatmentRatio": 0.35,
+      "maximumStatRevealRatio": 0.08
+    },
+    "requiredVisualModes": [
+      "full_tableau",
+      "photo_broll",
+      "character_action",
+      "infographic",
+      "evidence",
+      "framebox",
+      "visual_gag"
+    ],
+    "heroCadenceSeconds": 42,
+    "paletteProfile": "editorial-muted-v2"
+  },
+  "scenes": [
+    {
+      "id": "scene-141",
+      "label": "Return from belief to the debt clock.",
+      "startFrame": 0,
+      "durationFrames": 301,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "of the consequences of asset prices rising faster than incomes for a long period.\r\n\r\nDebt grows year after year. Asset prices",
+      "sourceRange": {
+        "startWord": 2931,
+        "endWord": 2951,
+        "quoteChecksum": "12930701b6d64fd597a39e4c16bfd1e3c7b3c2d98c50e4f928b53fc9dc361bbe"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "asset prices rising faster than incomes",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 45,
+          "renderedComponentIds": [
+            "scene-141-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/expense:ASSETS OUTPACE INCOME"
+        },
+        {
+          "beatText": "Debt grows year after year",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 183,
+          "renderedComponentIds": [
+            "scene-141-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/loss:DEBT GROWS"
+        },
+        {
+          "beatText": "Asset prices",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 45,
+          "renderedComponentIds": [
+            "scene-141-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:arrow/up:ASSET PRICES"
+        }
+      ],
+      "semanticTakeaway": "Time favors neither the overleveraged nor the late exit.",
+      "semanticAction": "keeps",
+      "semanticObject": "its clock running",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "finance/loss",
+        "finance/interest_rate",
+        "finance/expense",
+        "arrow/up"
+      ],
+      "heroVisual": true,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:interest_rate:2:1,card:loss:1:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Debt and interest keep running after losses.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:finance/loss",
+        "asset:finance/interest_rate"
+      ],
+      "subtitleCues": [
+        {
+          "text": "of the consequences of asset prices rising faster than",
+          "startFrame": 0,
+          "endFrame": 134
+        },
+        {
+          "text": "incomes for a long period Debt grows year after",
+          "startFrame": 134,
+          "endFrame": 251
+        },
+        {
+          "text": "year Asset prices",
+          "startFrame": 251,
+          "endFrame": 301
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-141-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 17,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-141-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-loss.png",
+          "label": "Một vài lần thua",
+          "width": 650,
+          "height": 540,
+          "delay": 0
+        },
+        {
+          "id": "scene-141-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "label": "Khoản vay và lãi vẫn chạy",
+          "width": 650,
+          "height": 540,
+          "delay": 38
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-141-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-expense.png",
+          "caption": "ASSETS OUTPACE INCOME",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 45
+        },
+        {
+          "id": "scene-141-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-loss.png",
+          "caption": "DEBT GROWS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 183
+        },
+        {
+          "id": "scene-141-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/arrow-up.png",
+          "caption": "ASSET PRICES",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 45
+        }
+      ]
+    },
+    {
+      "id": "scene-142",
+      "label": "Collect the macro ingredients behind the fever.",
+      "startFrame": 301,
+      "durationFrames": 338,
+      "layout": "ICON_TRIPLE",
+      "entranceStyle": "fade",
+      "narration": "outpace wages. Cheap money sticks around for too long. Capital continuously flows into riskier assets.\r\n\r\nThroughout that process, many people convince",
+      "sourceRange": {
+        "startWord": 2952,
+        "endWord": 2972,
+        "quoteChecksum": "874bc538189122961ce10d7c6de15bec8598deb496c8fd171d4c66d86b1474df"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "ICON_TRIPLE",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "Cheap money sticks around for too long",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 57,
+          "renderedComponentIds": [
+            "scene-142-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/interest_rate:CHEAP MONEY LINGERS"
+        },
+        {
+          "beatText": "Capital continuously flows into riskier assets",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 132,
+          "renderedComponentIds": [
+            "scene-142-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:CAPITAL CHASES RISK"
+        },
+        {
+          "beatText": "Throughout that process",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 239,
+          "renderedComponentIds": [
+            "scene-142-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/person:WHO BELIEVES?"
+        }
+      ],
+      "semanticTakeaway": "The fever rests on years of imbalance.",
+      "semanticAction": "stack",
+      "semanticObject": "speculative pressure",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/profit",
+        "finance/house",
+        "finance/interest_rate",
+        "finance/chart_up",
+        "people/person"
+      ],
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "ICON_TRIPLE|infographic|graphic|0a:0p|none|card:house:2:1,card:interest_rate:2:1,card:profit:1:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Debt, expensive assets and cheap money stack up.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:ICON_TRIPLE",
+        "asset:finance/profit",
+        "asset:finance/house"
+      ],
+      "subtitleCues": [
+        {
+          "text": "outpace wages Cheap money sticks around for too long",
+          "startFrame": 0,
+          "endFrame": 122
+        },
+        {
+          "text": "Capital continuously flows into riskier assets Throughout that process",
+          "startFrame": 122,
+          "endFrame": 287
+        },
+        {
+          "text": "many people convince",
+          "startFrame": 287,
+          "endFrame": 338
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-142-i0",
+          "position": {
+            "x": 0.2,
+            "y": 0.47
+          },
+          "background": "#7B5AA6",
+          "iconSrc": "styles/d/generated-assets/icons/finance-profit.png",
+          "label": "Nợ tăng",
+          "width": 500,
+          "height": 500,
+          "delay": 0
+        },
+        {
+          "id": "scene-142-i1",
+          "position": {
+            "x": 0.5,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-house.png",
+          "label": "Tài sản vượt thu nhập",
+          "width": 500,
+          "height": 500,
+          "delay": 22
+        },
+        {
+          "id": "scene-142-i2",
+          "position": {
+            "x": 0.8,
+            "y": 0.47
+          },
+          "background": "#B56B35",
+          "iconSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "label": "Tiền rẻ",
+          "width": 500,
+          "height": 500,
+          "delay": 36
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-142-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "caption": "CHEAP MONEY LINGERS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 57
+        },
+        {
+          "id": "scene-142-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "CAPITAL CHASES RISK",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 132
+        },
+        {
+          "id": "scene-142-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/people-person.png",
+          "caption": "WHO BELIEVES?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 239
+        }
+      ]
+    },
+    {
+      "id": "scene-143",
+      "label": "Show a worried investor confronting the accumulation of debt and asset pressure.",
+      "startFrame": 639,
+      "durationFrames": 227,
+      "layout": "CHAR_PROP",
+      "entranceStyle": "fade",
+      "narration": "themselves that they will be the ones who manage to get out before everything goes wrong.\r\n\r\nThat same belief has",
+      "sourceRange": {
+        "startWord": 2973,
+        "endWord": 2992,
+        "quoteChecksum": "2522069da72c7eb35578bb89505d987a00b6248e03cf625df3c6823217d5bac9"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "CHAR_PROP",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "manage to get out before everything goes wrong",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 69,
+          "renderedComponentIds": [
+            "scene-143-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:GET OUT IN TIME"
+        }
+      ],
+      "semanticTakeaway": "The outcome was built gradually.",
+      "semanticAction": "pushes",
+      "semanticObject": "capital toward risk",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "finance/wallet",
+        "warning"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "CHAR_PROP|character_action|graphic|1a:1p|LEFT,RIGHT|frame:2:1|none|none",
+      "silentFrameTakeaway": "Long imbalance pushes capital into risk.",
+      "focalOccupancyTarget": 0.57,
+      "noveltyFromPrevious": [
+        "grammar:CHAR_PROP",
+        "register:character_action",
+        "asset:characters/cat_sad",
+        "asset:finance/wallet"
+      ],
+      "subtitleCues": [
+        {
+          "text": "themselves that they will be the ones who manage",
+          "startFrame": 0,
+          "endFrame": 94
+        },
+        {
+          "text": "to get out before everything goes wrong That same",
+          "startFrame": 94,
+          "endFrame": 190
+        },
+        {
+          "text": "belief has",
+          "startFrame": 190,
+          "endFrame": 227
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-143-cat",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "slot": "LEFT",
+          "scale": 2.8,
+          "circle": "#D7E8E6",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0
+        },
+        {
+          "assetId": "scene-143-prop",
+          "src": "styles/d/generated-assets/icons/finance-wallet.png",
+          "slot": "RIGHT",
+          "scale": 2.2,
+          "circle": "#F1D8C5",
+          "label": "NỢ VÀ TÀI SẢN",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 45,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-143-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "GET OUT IN TIME",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 69
+        }
+      ]
+    },
+    {
+      "id": "scene-144",
+      "label": "Show the universal belief in exiting before the crash.",
+      "startFrame": 866,
+      "durationFrames": 291,
+      "layout": "DUAL_CONTRAST",
+      "entranceStyle": "softScale",
+      "narration": "appeared in almost every speculative bubble in history. And very often, it is exactly that belief that helps bring everything crashing",
+      "sourceRange": {
+        "startWord": 2993,
+        "endWord": 3013,
+        "quoteChecksum": "d929efec0864d1ed948e14c12d3875e44ea23859732a9cf5615cd53b9315b061"
+      },
+      "visualRegister": "visual_gag",
+      "visualGrammar": "VISUAL_METAPHOR",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "almost every speculative bubble in history",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 26,
+          "renderedComponentIds": [
+            "scene-144-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:EVERY BUBBLE"
+        },
+        {
+          "beatText": "that belief that helps bring everything crashing",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 185,
+          "renderedComponentIds": [
+            "scene-144-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:BELIEF → CRASH"
+        }
+      ],
+      "semanticTakeaway": "The belief itself fuels every historical bubble.",
+      "semanticAction": "believes",
+      "semanticObject": "a timely exit",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/trending_up",
+        "finance/warning",
+        "props/concept_card",
+        "warning"
+      ],
+      "heroVisual": true,
+      "focalType": "visual_gag",
+      "visualFingerprint": "VISUAL_METAPHOR|visual_gag|graphic|0a:0p|none|card:trending_up:1:1,card:warning:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Everyone thinks they will exit first.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:VISUAL_METAPHOR",
+        "register:visual_gag",
+        "asset:finance/trending_up",
+        "asset:finance/warning"
+      ],
+      "subtitleCues": [
+        {
+          "text": "appeared in almost every speculative bubble in history And",
+          "startFrame": 0,
+          "endFrame": 129
+        },
+        {
+          "text": "very often it is exactly that belief that helps",
+          "startFrame": 129,
+          "endFrame": 234
+        },
+        {
+          "text": "bring everything crashing",
+          "startFrame": 234,
+          "endFrame": 291
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-144-l",
+          "position": {
+            "x": 0.25,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "label": "Tôi sẽ xuống kịp trước",
+          "width": 660,
+          "height": 540,
+          "delay": 0
+        },
+        {
+          "id": "scene-144-r",
+          "position": {
+            "x": 0.75,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-warning.png",
+          "label": "Ai cũng nghĩ mình không phải người cuối",
+          "width": 660,
+          "height": 540,
+          "delay": 22
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-144-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "EVERY BUBBLE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 26
+        },
+        {
+          "id": "scene-144-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "BELIEF → CRASH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 185
+        }
+      ]
+    },
+    {
+      "id": "scene-145",
+      "label": "Name the historical pattern through a shared recognition between two investors.",
+      "startFrame": 1157,
+      "durationFrames": 252,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "down.\r\n\r\nSo when will South Koreans realize what's happening and walk away from this game?\r\n\r\nActually, I think many of them",
+      "sourceRange": {
+        "startWord": 3014,
+        "endWord": 3034,
+        "quoteChecksum": "9bba71b62191512db1019d91d58976ee58e2bdcec82aa4c3064367fe9dba6373"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "authored-beat",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "when will South Koreans realize what's happening",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 24,
+          "renderedComponentIds": [
+            "scene-145-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:WHEN DO THEY REALIZE?"
+        },
+        {
+          "beatText": "walk away from this game",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 116,
+          "renderedComponentIds": [
+            "scene-145-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:WALK AWAY?"
+        }
+      ],
+      "semanticTakeaway": "The shared confidence is part of the danger.",
+      "semanticAction": "fuels",
+      "semanticObject": "a speculative bubble",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_sad",
+        "characters/cat_investor_phone",
+        "props/thought_bubble",
+        "warning",
+        "assets/scenes/boardroom.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|full_tableau|stage:boardroom|2a:0p|seat_left,seat_right|bubble,bubble,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "The exit belief helps break the bubble.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:full_tableau",
+        "asset:characters/cat_explain",
+        "asset:characters/cat_investor_phone",
+        "asset:assets/scenes/boardroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "down So when will South Koreans realize what's happening",
+          "startFrame": 0,
+          "endFrame": 118
+        },
+        {
+          "text": "and walk away from this game Actually I think",
+          "startFrame": 118,
+          "endFrame": 213
+        },
+        {
+          "text": "many of them",
+          "startFrame": 213,
+          "endFrame": 252
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/boardroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-145-a",
+          "src": "styles/d/generated-assets/characters/cat_sad.png",
+          "circle": "#D7E8E6",
+          "anchor": "seat_left",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 16,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-145-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#F1D8C5",
+          "anchor": "seat_right",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-145-qa",
+          "anchorAssetId": "scene-145-a",
+          "text": "Ai cũng nghĩ mình xuống kịp?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 48,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-145-qb",
+          "anchorAssetId": "scene-145-b",
+          "text": "Đó là suy nghĩ của hầu hết cơn sốt.",
+          "direction": "left",
+          "delay": 72,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-145-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "WHEN DO THEY REALIZE?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 24
+        },
+        {
+          "id": "scene-145-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "WALK AWAY?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 116
+        }
+      ]
+    },
+    {
+      "id": "scene-146",
+      "label": "Ask whether the cycle will end.",
+      "startFrame": 1409,
+      "durationFrames": 233,
+      "layout": "QA_REVEAL",
+      "entranceStyle": "slide",
+      "narration": "already understand the risks. But when they will step away is another question, and we don't really know the answer yet",
+      "sourceRange": {
+        "startWord": 3035,
+        "endWord": 3055,
+        "quoteChecksum": "5a1de36629ea87e0341900a5dfd5037aa1bb55480b14c1a88bbd9bdc33f77796"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "QA_REVEAL",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "when they will step away is another question",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 78,
+          "renderedComponentIds": [
+            "scene-146-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:WHEN STEP AWAY?"
+        }
+      ],
+      "semanticTakeaway": "Awareness alone does not end leverage.",
+      "semanticAction": "asks",
+      "semanticObject": "when to stop",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_think",
+        "props/thought_bubble"
+      ],
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "QA_REVEAL|infographic|graphic|1a:0p|RIGHT_BOTTOM|card:none:1:1,card:none:1:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Knowing danger does not end the game.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:QA_REVEAL",
+        "register:infographic"
+      ],
+      "subtitleCues": [
+        {
+          "text": "already understand the risks But when they will step",
+          "startFrame": 0,
+          "endFrame": 100
+        },
+        {
+          "text": "away is another question and we don't really know",
+          "startFrame": 100,
+          "endFrame": 194
+        },
+        {
+          "text": "the answer yet",
+          "startFrame": 194,
+          "endFrame": 233
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-146-cat",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "slot": "RIGHT_BOTTOM",
+          "scale": 2.1,
+          "circle": "#F1D8C5",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 70,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-146-q",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#286F7A",
+          "label": "Bao giờ cuộc chơi dừng?",
+          "width": 1200,
+          "height": 700,
+          "delay": 0,
+          "duration": 70
+        },
+        {
+          "id": "scene-146-a",
+          "position": {
+            "x": 0.43,
+            "y": 0.46
+          },
+          "background": "#B54848",
+          "label": "Biết rủi ro không đồng nghĩa đã có lối thoát.",
+          "width": 1200,
+          "height": 700,
+          "delay": 80
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-146-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "WHEN STEP AWAY?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 78
+        }
+      ]
+    },
+    {
+      "id": "scene-147",
+      "label": "Show the unresolved 2026 tug of war.",
+      "startFrame": 1642,
+      "durationFrames": 373,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "As 2026 unfolds, South Korea's stock market continues to experience intense volatility. On one side, foreign investors keep withdrawing capital. On",
+      "sourceRange": {
+        "startWord": 3056,
+        "endWord": 3076,
+        "quoteChecksum": "33b1d0e485592c3eeb9bd4b28408f997bfadef3c6b6d6c52c2eec281ca4600c4"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "As 2026 unfolds",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 6,
+          "renderedComponentIds": [
+            "scene-147-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:2026 OUTLOOK"
+        },
+        {
+          "beatText": "intense volatility",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 161,
+          "renderedComponentIds": [
+            "scene-147-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:INTENSE VOLATILITY"
+        },
+        {
+          "beatText": "foreign investors keep withdrawing capital",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 255,
+          "renderedComponentIds": [
+            "scene-147-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/exchange:FOREIGN CAPITAL EXITS"
+        },
+        {
+          "beatText": "On one side",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 220,
+          "renderedComponentIds": [
+            "scene-147-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:ONE SIDE: EXITING"
+        },
+        {
+          "beatText": "On",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 220,
+          "renderedComponentIds": [
+            "scene-147-cutaway-5"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/stock:THE OTHER SIDE"
+        }
+      ],
+      "semanticTakeaway": "The market remains divided in 2026.",
+      "semanticAction": "splits",
+      "semanticObject": "foreign selling and retail buying",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_contract",
+        "finance/stock",
+        "props/concept_card",
+        "warning",
+        "finance/exchange",
+        "assets/scenes/office_desk.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|character_action|stage:office_desk|1a:1p|desk,free|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Foreign money exits while retail keeps buying.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:character_action",
+        "asset:characters/cat_investor_contract",
+        "asset:finance/stock",
+        "asset:assets/scenes/office_desk.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "As 2026 unfolds South Korea's stock market continues to",
+          "startFrame": 0,
+          "endFrame": 145
+        },
+        {
+          "text": "experience intense volatility On one side foreign investors keep",
+          "startFrame": 145,
+          "endFrame": 314
+        },
+        {
+          "text": "withdrawing capital On",
+          "startFrame": 314,
+          "endFrame": 373
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/office-desk.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-147-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_contract.png",
+          "anchor": "desk",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 155,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-147-prop",
+          "src": "styles/d/generated-assets/icons/finance-stock.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-147-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "2026 OUTLOOK",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 6
+        },
+        {
+          "id": "scene-147-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "INTENSE VOLATILITY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 161
+        },
+        {
+          "id": "scene-147-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-exchange.png",
+          "caption": "FOREIGN CAPITAL EXITS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 255
+        },
+        {
+          "id": "scene-147-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "ONE SIDE: EXITING",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 220
+        },
+        {
+          "id": "scene-147-cutaway-5",
+          "contentSrc": "styles/d/generated-assets/icons/finance-stock.png",
+          "caption": "THE OTHER SIDE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 220
+        }
+      ]
+    },
+    {
+      "id": "scene-148",
+      "label": "Stage two incompatible views of the same decline.",
+      "startFrame": 2015,
+      "durationFrames": 308,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "the other, individual investors continue buying with determination.\r\n\r\nPeople have very different views about where the market is heading. Some believe",
+      "sourceRange": {
+        "startWord": 3077,
+        "endWord": 3097,
+        "quoteChecksum": "87af6fdf808dae119e894bc7d1525f6e3e50187b8ad8ffe66f80ae9e0ea3fed5"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "individual investors continue buying with determination",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 32,
+          "renderedComponentIds": [
+            "scene-148-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/stock:RETAIL KEEPS BUYING"
+        },
+        {
+          "beatText": "very different views",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 163,
+          "renderedComponentIds": [
+            "scene-148-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:OPPOSING VIEWS"
+        },
+        {
+          "beatText": "where the market is heading",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 207,
+          "renderedComponentIds": [
+            "scene-148-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:WHERE NEXT?"
+        }
+      ],
+      "semanticTakeaway": "The same chart supports opposing convictions.",
+      "semanticAction": "disagree",
+      "semanticObject": "the next market move",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_think",
+        "characters/cat_investor_phone",
+        "finance/stock",
+        "props/thought_bubble",
+        "finance/chart_up"
+      ],
+      "heroVisual": true,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|2a:0p|LEFT,RIGHT|bubble,bubble,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Investors disagree about the decline.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "asset:characters/cat_explain",
+        "asset:characters/cat_investor_phone"
+      ],
+      "subtitleCues": [
+        {
+          "text": "the other individual investors continue buying with determination People",
+          "startFrame": 0,
+          "endFrame": 153
+        },
+        {
+          "text": "have very different views about where the market is",
+          "startFrame": 153,
+          "endFrame": 261
+        },
+        {
+          "text": "heading Some believe",
+          "startFrame": 261,
+          "endFrame": 308
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-148-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "circle": "#D7E8E6",
+          "slot": "LEFT",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 32,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-148-b",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-148-qa",
+          "anchorAssetId": "scene-148-a",
+          "text": "Giảm là nguy hiểm hay cơ hội?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 48,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-148-qb",
+          "anchorAssetId": "scene-148-b",
+          "text": "Có người vẫn tin cú hồi phục sắp tới.",
+          "direction": "left",
+          "delay": 72,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-148-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-stock.png",
+          "caption": "RETAIL KEEPS BUYING",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 32
+        },
+        {
+          "id": "scene-148-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "OPPOSING VIEWS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 163
+        },
+        {
+          "id": "scene-148-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "WHERE NEXT?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 207
+        }
+      ]
+    },
+    {
+      "id": "scene-149",
+      "label": "Let one falling chart carry the ambiguity between danger and an apparent bargain.",
+      "startFrame": 2323,
+      "durationFrames": 261,
+      "layout": "CLOSE_UP",
+      "entranceStyle": "cut",
+      "narration": "that stocks are now undervalued and that the future still looks promising. Some are even continuing to borrow money to invest",
+      "sourceRange": {
+        "startWord": 3098,
+        "endWord": 3118,
+        "quoteChecksum": "a689d0b84e018c7bba9ed0b9828e713913878ef755e390eecfbf8bd1f0e74e98"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "BEAT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "stocks are now undervalued",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 16,
+          "renderedComponentIds": [
+            "scene-149-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/stock:UNDERVALUED?"
+        },
+        {
+          "beatText": "future still looks promising",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 87,
+          "renderedComponentIds": [
+            "scene-149-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:PROMISING FUTURE"
+        }
+      ],
+      "semanticTakeaway": "A decline can be interpreted as a discount.",
+      "semanticAction": "is read as",
+      "semanticObject": "a future opportunity",
+      "photoTreatment": "full_bleed",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/stock",
+        "finance/chart_up",
+        "backgrounds/evidence-market-pexels-16594724.jpg"
+      ],
+      "heroVisual": false,
+      "focalType": "photo",
+      "characterRequired": false,
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1|none|full_bleed",
+      "silentFrameTakeaway": "Giảm giá có thể trông như cơ hội.",
+      "focalOccupancyTarget": 0.48,
+      "noveltyFromPrevious": [
+        "grammar:BEAT",
+        "register:photo_broll",
+        "asset:backgrounds/evidence-market-pexels-16594724.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "that stocks are now undervalued and that the future",
+          "startFrame": 0,
+          "endFrame": 105
+        },
+        {
+          "text": "still looks promising Some are even continuing to borrow",
+          "startFrame": 105,
+          "endFrame": 220
+        },
+        {
+          "text": "money to invest",
+          "startFrame": 220,
+          "endFrame": 261
+        }
+      ],
+      "backgroundSrc": "backgrounds/evidence-market-pexels-16594724.jpg",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-149-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-stock.png",
+          "caption": "UNDERVALUED?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 16
+        },
+        {
+          "id": "scene-149-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "PROMISING FUTURE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 87
+        }
+      ]
+    },
+    {
+      "id": "scene-150",
+      "label": "Make the fresh recovery loan a contested choice between investor and broker.",
+      "startFrame": 2584,
+      "durationFrames": 240,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "convinced that the next rebound is just around the corner.\r\n\r\nAnd who knows? Maybe this time they'll be right.\r\n\r\nOf course",
+      "sourceRange": {
+        "startWord": 3119,
+        "endWord": 3139,
+        "quoteChecksum": "3600944c5458672d9f04aaf9fc5663ef506484f4aa73b64451618ac5c8d7e2a8"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "next rebound is just around the corner",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 34,
+          "renderedComponentIds": [
+            "scene-150-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:REBOUND SOON?"
+        },
+        {
+          "beatText": "Maybe this time they'll be right",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 149,
+          "renderedComponentIds": [
+            "scene-150-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:THIS TIME?"
+        }
+      ],
+      "semanticTakeaway": "Hope can restart leverage after a fall.",
+      "semanticAction": "borrows",
+      "semanticObject": "for the next recovery",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_investor_phone",
+        "characters/cat_business",
+        "finance/chart_up",
+        "props/thought_bubble",
+        "assets/scenes/boardroom.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|stage:boardroom|2a:0p|seat_left,seat_right|bubble,bubble,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "The recovery story restarts borrowing.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_investor_phone",
+        "asset:characters/cat_business",
+        "asset:assets/scenes/boardroom.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "convinced that the next rebound is just around the",
+          "startFrame": 0,
+          "endFrame": 102
+        },
+        {
+          "text": "corner And who knows Maybe this time they'll be",
+          "startFrame": 102,
+          "endFrame": 198
+        },
+        {
+          "text": "right Of course",
+          "startFrame": 198,
+          "endFrame": 240
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/boardroom.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-150-a",
+          "src": "styles/d/generated-assets/characters/cat_investor_phone.png",
+          "circle": "#D7E8E6",
+          "anchor": "seat_left",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 8,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 26,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-150-b",
+          "src": "styles/d/generated-assets/characters/cat_business.png",
+          "circle": "#F1D8C5",
+          "anchor": "seat_right",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-150-qa",
+          "anchorAssetId": "scene-150-a",
+          "text": "Vay thêm để chờ hồi phục?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 48,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-150-qb",
+          "anchorAssetId": "scene-150-b",
+          "text": "Hy vọng đang khởi động lại đòn bẩy.",
+          "direction": "left",
+          "delay": 72,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-150-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "REBOUND SOON?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 34
+        },
+        {
+          "id": "scene-150-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "THIS TIME?",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 149
+        }
+      ]
+    },
+    {
+      "id": "scene-151",
+      "label": "Hold on a lone home-study desk as hope invites one more private leveraged bet.",
+      "startFrame": 2824,
+      "durationFrames": 280,
+      "layout": "CLOSE_UP",
+      "entranceStyle": "cut",
+      "narration": "the optimistic scenario is entirely possible. South Korea is still home to some of the world's leading companies. It has a",
+      "sourceRange": {
+        "startWord": 3140,
+        "endWord": 3160,
+        "quoteChecksum": "b4e0a93b67ad5af333597ff308610da13b3b719eb5a096c3f55a845b10e5db5d"
+      },
+      "visualRegister": "photo_broll",
+      "visualGrammar": "BEAT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "optimistic scenario is entirely possible",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 14,
+          "renderedComponentIds": [
+            "scene-151-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:OPTIMISM IS POSSIBLE"
+        },
+        {
+          "beatText": "world's leading companies",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 200,
+          "renderedComponentIds": [
+            "scene-151-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/company:LEADING COMPANIES"
+        }
+      ],
+      "semanticTakeaway": "Hope can restart borrowing after a fall.",
+      "semanticAction": "imagines",
+      "semanticObject": "being right this time",
+      "photoTreatment": "cutaway",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/chart_up",
+        "finance/company",
+        "backgrounds/evidence-device-pexels-35028998.jpg"
+      ],
+      "heroVisual": false,
+      "focalType": "photo",
+      "characterRequired": false,
+      "visualFingerprint": "BEAT|photo_broll|photo|0a:0p|none|frame:2:1,frame:2:1|none|cutaway",
+      "silentFrameTakeaway": "One more bet feels like the right one.",
+      "focalOccupancyTarget": 0.5,
+      "noveltyFromPrevious": [
+        "grammar:BEAT",
+        "register:photo_broll",
+        "asset:backgrounds/evidence-device-pexels-35028998.jpg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "the optimistic scenario is entirely possible South Korea is",
+          "startFrame": 0,
+          "endFrame": 130
+        },
+        {
+          "text": "still home to some of the world's leading companies",
+          "startFrame": 130,
+          "endFrame": 242
+        },
+        {
+          "text": "It has a",
+          "startFrame": 242,
+          "endFrame": 280
+        }
+      ],
+      "backgroundSrc": "backgrounds/evidence-device-pexels-35028998.jpg",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "frameBoxes": [
+        {
+          "id": "scene-151-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "OPTIMISM IS POSSIBLE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 14
+        },
+        {
+          "id": "scene-151-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-company.png",
+          "caption": "LEADING COMPANIES",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 200
+        }
+      ]
+    },
+    {
+      "id": "scene-152",
+      "label": "Give the optimistic scenario its fair frame.",
+      "startFrame": 3104,
+      "durationFrames": 344,
+      "layout": "TABLEAU",
+      "entranceStyle": "softScale",
+      "narration": "powerful semiconductor industry, a role in AI, and strong potential drivers of long-term growth.\r\n\r\nIf conditions develop favorably, the market could",
+      "sourceRange": {
+        "startWord": 3161,
+        "endWord": 3181,
+        "quoteChecksum": "b4053c250f51c87673b459689a046bde80178b151fbadb79fae3872c5949a9ee"
+      },
+      "visualRegister": "full_tableau",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "powerful semiconductor industry",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 9,
+          "renderedComponentIds": [
+            "scene-152-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/company:SEMICONDUCTORS"
+        },
+        {
+          "beatText": "a role in AI",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 78,
+          "renderedComponentIds": [
+            "scene-152-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:AI ROLE"
+        },
+        {
+          "beatText": "strong potential drivers of long-term growth",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 131,
+          "renderedComponentIds": [
+            "scene-152-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:LONG-TERM GROWTH"
+        },
+        {
+          "beatText": "If conditions develop favorably",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 207,
+          "renderedComponentIds": [
+            "scene-152-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/concept_card:IF CONDITIONS ALIGN"
+        },
+        {
+          "beatText": "the market could",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 297,
+          "renderedComponentIds": [
+            "scene-152-cutaway-5"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:MARKET COULD RISE"
+        }
+      ],
+      "semanticTakeaway": "Optimism has an economic basis.",
+      "semanticAction": "retains",
+      "semanticObject": "real long-term strengths",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_explain",
+        "finance/company",
+        "props/concept_card",
+        "finance/chart_up",
+        "assets/scenes/office_desk.svg"
+      ],
+      "heroVisual": true,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|full_tableau|stage:office_desk|1a:1p|desk,free|frame:2:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Korea still has genuine long-term strengths.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:full_tableau",
+        "asset:characters/cat_explain",
+        "asset:finance/company",
+        "asset:assets/scenes/office_desk.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "powerful semiconductor industry a role in AI and strong",
+          "startFrame": 0,
+          "endFrame": 131
+        },
+        {
+          "text": "potential drivers of long-term growth If conditions develop favorably",
+          "startFrame": 131,
+          "endFrame": 296
+        },
+        {
+          "text": "the market could",
+          "startFrame": 296,
+          "endFrame": 344
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/office-desk.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-152-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "desk",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 3,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-152-prop",
+          "src": "styles/d/generated-assets/icons/finance-company.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-152-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-company.png",
+          "caption": "SEMICONDUCTORS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 9
+        },
+        {
+          "id": "scene-152-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "AI ROLE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 78
+        },
+        {
+          "id": "scene-152-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "LONG-TERM GROWTH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 131
+        },
+        {
+          "id": "scene-152-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/props-concept-card.png",
+          "caption": "IF CONDITIONS ALIGN",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 207
+        },
+        {
+          "id": "scene-152-cutaway-5",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "MARKET COULD RISE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 297
+        }
+      ]
+    },
+    {
+      "id": "scene-153",
+      "label": "Frame the conditional route to recovery.",
+      "startFrame": 3448,
+      "durationFrames": 332,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "absolutely resume its upward climb after this correction.\r\n\r\nBut opportunity always comes with risk. Leverage remains extremely high. Household debt is",
+      "sourceRange": {
+        "startWord": 3182,
+        "endWord": 3202,
+        "quoteChecksum": "00d2f8f922f881b2512de1e678444351f01333c2c302f710edb4b073b4d330ce"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "resume its upward climb after this correction",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 27,
+          "renderedComponentIds": [
+            "scene-153-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/chart_up:UPWARD CLIMB"
+        },
+        {
+          "beatText": "opportunity always comes with risk",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 120,
+          "renderedComponentIds": [
+            "scene-153-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:OPPORTUNITY + RISK"
+        },
+        {
+          "beatText": "Leverage remains extremely high",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 194,
+          "renderedComponentIds": [
+            "scene-153-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/loan:LEVERAGE STILL HIGH"
+        }
+      ],
+      "semanticTakeaway": "Recovery is possible, but conditional.",
+      "semanticAction": "recovers after",
+      "semanticObject": "an orderly adjustment",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "finance/stock",
+        "finance/trending_up",
+        "finance/chart_up",
+        "warning",
+        "finance/loan"
+      ],
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:stock:1:1,card:trending_up:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "A recovery remains possible after adjustment.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:finance/stock",
+        "asset:finance/trending_up"
+      ],
+      "subtitleCues": [
+        {
+          "text": "absolutely resume its upward climb after this correction But",
+          "startFrame": 0,
+          "endFrame": 136
+        },
+        {
+          "text": "opportunity always comes with risk Leverage remains extremely high",
+          "startFrame": 136,
+          "endFrame": 286
+        },
+        {
+          "text": "Household debt is",
+          "startFrame": 286,
+          "endFrame": 332
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-153-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 0,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-153-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-stock.png",
+          "label": "Điều chỉnh thuận lợi",
+          "width": 650,
+          "height": 540,
+          "delay": 0
+        },
+        {
+          "id": "scene-153-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-trending-up.png",
+          "label": "Thị trường có thể đi lên",
+          "width": 650,
+          "height": 540,
+          "delay": 38
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-153-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-chart-up.png",
+          "caption": "UPWARD CLIMB",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 27
+        },
+        {
+          "id": "scene-153-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "OPPORTUNITY + RISK",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 120
+        },
+        {
+          "id": "scene-153-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-loan.png",
+          "caption": "LEVERAGE STILL HIGH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 194
+        }
+      ]
+    },
+    {
+      "id": "scene-154",
+      "label": "Return to the structural risks beneath the optimistic case.",
+      "startFrame": 3780,
+      "durationFrames": 253,
+      "layout": "TABLEAU",
+      "entranceStyle": "fade",
+      "narration": "still among the highest in the world. Meanwhile, the real economy is recovering more slowly than many had hoped.\r\n\r\nWhen a",
+      "sourceRange": {
+        "startWord": 3203,
+        "endWord": 3223,
+        "quoteChecksum": "f92d12f1d5b84913f065cbb42f143dc41f5f13094fb0235d2cdfea80c3695a38"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "highest in the world",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 32,
+          "renderedComponentIds": [
+            "scene-154-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/credit_card:AMONG THE HIGHEST"
+        },
+        {
+          "beatText": "real economy is recovering more slowly",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 100,
+          "renderedComponentIds": [
+            "scene-154-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:SLOW RECOVERY"
+        },
+        {
+          "beatText": "When a",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 212,
+          "renderedComponentIds": [
+            "scene-154-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/interest_rate:WHEN A SHOCK HITS"
+        }
+      ],
+      "semanticTakeaway": "Opportunity does not erase structural risk.",
+      "semanticAction": "faces",
+      "semanticObject": "high leverage and debt",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_think",
+        "finance/debt",
+        "finance/credit_card",
+        "warning",
+        "finance/interest_rate",
+        "assets/scenes/office_desk.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|character_action|stage:office_desk|1a:1p|desk,free|frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "High debt and leverage remain below the recovery case.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "register:character_action",
+        "asset:characters/cat_think",
+        "asset:finance/debt",
+        "asset:assets/scenes/office_desk.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "still among the highest in the world Meanwhile the",
+          "startFrame": 0,
+          "endFrame": 105
+        },
+        {
+          "text": "real economy is recovering more slowly than many had",
+          "startFrame": 105,
+          "endFrame": 213
+        },
+        {
+          "text": "hoped When a",
+          "startFrame": 213,
+          "endFrame": 253
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-assets/scenes/office-desk.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-154-a",
+          "src": "styles/d/generated-assets/characters/cat_think.png",
+          "anchor": "desk",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 26,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-154-prop",
+          "src": "styles/d/generated-assets/icons/finance-debt.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-154-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-credit-card.png",
+          "caption": "AMONG THE HIGHEST",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 32
+        },
+        {
+          "id": "scene-154-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "SLOW RECOVERY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 100
+        },
+        {
+          "id": "scene-154-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "caption": "WHEN A SHOCK HITS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 212
+        }
+      ]
+    },
+    {
+      "id": "scene-155",
+      "label": "Explain why leverage makes shocks more sensitive.",
+      "startFrame": 4033,
+      "durationFrames": 281,
+      "layout": "CAUSE_EFFECT",
+      "entranceStyle": "slide",
+      "narration": "financial system is loaded with leverage, every shock becomes much more dangerous. It could be a change in global interest rates",
+      "sourceRange": {
+        "startWord": 3224,
+        "endWord": 3244,
+        "quoteChecksum": "7a6233c24c94319141c60209328f6bb62160acadd7268694e1d7e9cfd264f4f8"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "CAUSE_EFFECT",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "financial system is loaded with leverage",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 11,
+          "renderedComponentIds": [
+            "scene-155-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/loan:SYSTEM LEVERAGE"
+        },
+        {
+          "beatText": "every shock becomes much more dangerous",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 94,
+          "renderedComponentIds": [
+            "scene-155-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:SHOCKS AMPLIFY"
+        }
+      ],
+      "semanticTakeaway": "A fragile system reacts sharply to disruptions.",
+      "semanticAction": "amplifies",
+      "semanticObject": "a weak recovery",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "ui/arrow_right",
+        "finance/expense",
+        "finance/warning",
+        "finance/loan",
+        "warning"
+      ],
+      "heroVisual": false,
+      "focalType": "diagram",
+      "visualFingerprint": "CAUSE_EFFECT|infographic|graphic|0a:1p|free|card:expense:1:1,card:warning:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Weak recovery makes leverage more sensitive.",
+      "focalOccupancyTarget": 0.55,
+      "noveltyFromPrevious": [
+        "grammar:CAUSE_EFFECT",
+        "register:infographic",
+        "asset:finance/expense",
+        "asset:finance/warning"
+      ],
+      "subtitleCues": [
+        {
+          "text": "financial system is loaded with leverage every shock becomes",
+          "startFrame": 0,
+          "endFrame": 135
+        },
+        {
+          "text": "much more dangerous It could be a change in",
+          "startFrame": 135,
+          "endFrame": 232
+        },
+        {
+          "text": "global interest rates",
+          "startFrame": 232,
+          "endFrame": 281
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-155-arrow",
+          "src": "styles/d/generated-assets/icons/ui-arrow-right.png",
+          "position": {
+            "x": 0.5,
+            "y": 0.48
+          },
+          "scale": 1.8,
+          "enterAnimation": "fadeIn",
+          "enterDelay": 28,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 0,
+            "duration": 24
+          }
+        }
+      ],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-155-cause",
+          "position": {
+            "x": 0.24,
+            "y": 0.47
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-expense.png",
+          "label": "Kinh tế thực phục hồi chậm",
+          "width": 650,
+          "height": 540,
+          "delay": 0
+        },
+        {
+          "id": "scene-155-effect",
+          "position": {
+            "x": 0.76,
+            "y": 0.47
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-warning.png",
+          "label": "Cú sốc trở nên nhạy cảm",
+          "width": 650,
+          "height": 540,
+          "delay": 38
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-155-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-loan.png",
+          "caption": "SYSTEM LEVERAGE",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 11
+        },
+        {
+          "id": "scene-155-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "SHOCKS AMPLIFY",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 94
+        }
+      ]
+    },
+    {
+      "id": "scene-156",
+      "label": "List the distinct shock channels.",
+      "startFrame": 4314,
+      "durationFrames": 322,
+      "layout": "LINEUP",
+      "entranceStyle": "softScale",
+      "narration": "a geopolitical crisis, an unexpected development in the semiconductor industry, or simply a sudden shift in market sentiment.\r\n\r\nPerhaps the most",
+      "sourceRange": {
+        "startWord": 3245,
+        "endWord": 3265,
+        "quoteChecksum": "5fb8b485df0165c2fa3411a4237e6ccf27b72c4ecbf786ca84aa15f06279149e"
+      },
+      "visualRegister": "infographic",
+      "visualGrammar": "POLICY_LIST",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "geopolitical crisis",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 15,
+          "renderedComponentIds": [
+            "scene-156-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:warning:GEOPOLITICAL CRISIS"
+        },
+        {
+          "beatText": "unexpected development in the semiconductor industry",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 73,
+          "renderedComponentIds": [
+            "scene-156-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/company:CHIP SHOCK"
+        },
+        {
+          "beatText": "sudden shift in market sentiment",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 197,
+          "renderedComponentIds": [
+            "scene-156-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/trending_down:SENTIMENT SHIFTS"
+        },
+        {
+          "beatText": "Perhaps the most",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 271,
+          "renderedComponentIds": [
+            "scene-156-cutaway-4"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:THE REAL QUESTION"
+        }
+      ],
+      "semanticTakeaway": "The next trigger need not come from one place.",
+      "semanticAction": "faces",
+      "semanticObject": "multiple shock channels",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "finance/interest_rate",
+        "finance/warning",
+        "finance/company",
+        "finance/trending_down",
+        "warning",
+        "props/thought_bubble"
+      ],
+      "heroVisual": true,
+      "focalType": "diagram",
+      "visualFingerprint": "POLICY_LIST|infographic|graphic|0a:0p|none|card:company:2:1,card:interest_rate:0:1,card:trending_down:3:1,card:warning:1:1,frame:2:1,frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "Rates, geopolitics, chips and sentiment can all trigger stress.",
+      "focalOccupancyTarget": 0.58,
+      "noveltyFromPrevious": [
+        "grammar:POLICY_LIST",
+        "asset:finance/interest_rate",
+        "asset:finance/company",
+        "asset:finance/trending_down"
+      ],
+      "subtitleCues": [
+        {
+          "text": "a geopolitical crisis an unexpected development in the semiconductor",
+          "startFrame": 0,
+          "endFrame": 155
+        },
+        {
+          "text": "industry or simply a sudden shift in market sentiment",
+          "startFrame": 155,
+          "endFrame": 276
+        },
+        {
+          "text": "Perhaps the most",
+          "startFrame": 276,
+          "endFrame": 322
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [],
+      "texts": [],
+      "cards": [
+        {
+          "id": "scene-156-i0",
+          "position": {
+            "x": 0.14,
+            "y": 0.38
+          },
+          "background": "#286F7A",
+          "iconSrc": "styles/d/generated-assets/icons/finance-interest-rate.png",
+          "label": "1. Lãi suất toàn cầu",
+          "width": 430,
+          "height": 700,
+          "delay": 0
+        },
+        {
+          "id": "scene-156-i1",
+          "position": {
+            "x": 0.38,
+            "y": 0.38
+          },
+          "background": "#7B5AA6",
+          "iconSrc": "styles/d/generated-assets/icons/finance-warning.png",
+          "label": "2. Địa chính trị",
+          "width": 430,
+          "height": 700,
+          "delay": 20
+        },
+        {
+          "id": "scene-156-i2",
+          "position": {
+            "x": 0.62,
+            "y": 0.38
+          },
+          "background": "#B56B35",
+          "iconSrc": "styles/d/generated-assets/icons/finance-company.png",
+          "label": "3. Ngành chip",
+          "width": 430,
+          "height": 700,
+          "delay": 32
+        },
+        {
+          "id": "scene-156-i3",
+          "position": {
+            "x": 0.86,
+            "y": 0.38
+          },
+          "background": "#B54848",
+          "iconSrc": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "label": "4. Tâm lý thị trường",
+          "width": 430,
+          "height": 700,
+          "delay": 44
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-156-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/warning.png",
+          "caption": "GEOPOLITICAL CRISIS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 15
+        },
+        {
+          "id": "scene-156-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-company.png",
+          "caption": "CHIP SHOCK",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 73
+        },
+        {
+          "id": "scene-156-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/finance-trending-down.png",
+          "caption": "SENTIMENT SHIFTS",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 197
+        },
+        {
+          "id": "scene-156-cutaway-4",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "THE REAL QUESTION",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 271
+        }
+      ]
+    },
+    {
+      "id": "scene-157",
+      "label": "Land on the human question rather than a market prediction.",
+      "startFrame": 4636,
+      "durationFrames": 251,
+      "layout": "DIALOGUE",
+      "entranceStyle": "slide",
+      "narration": "important question to watch over the coming years is this: can South Korea find a way to help its younger generation",
+      "sourceRange": {
+        "startWord": 3266,
+        "endWord": 3286,
+        "quoteChecksum": "b346ac773853d8f39223a7a1233129723486fe983c2c14f5333ca832e7aa7eb2"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "DIALOGUE_QA",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "important question to watch over the coming years",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 9,
+          "renderedComponentIds": [
+            "scene-157-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/thought_bubble:THE IMPORTANT QUESTION"
+        },
+        {
+          "beatText": "help its younger generation",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 178,
+          "renderedComponentIds": [
+            "scene-157-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:people/person:YOUNGER GENERATION"
+        }
+      ],
+      "semanticTakeaway": "The answer is social as well as financial.",
+      "semanticAction": "must find",
+      "semanticObject": "a safer path to youth wealth",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_explain",
+        "characters/cat_homebuyer",
+        "props/thought_bubble",
+        "people/person"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "DIALOGUE_QA|character_action|graphic|2a:0p|LEFT,RIGHT|bubble,bubble,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "The real question is safer wealth-building for young people.",
+      "focalOccupancyTarget": 0.56,
+      "noveltyFromPrevious": [
+        "grammar:DIALOGUE_QA",
+        "register:character_action",
+        "asset:characters/cat_explain",
+        "asset:characters/cat_homebuyer"
+      ],
+      "subtitleCues": [
+        {
+          "text": "important question to watch over the coming years is",
+          "startFrame": 0,
+          "endFrame": 115
+        },
+        {
+          "text": "this can South Korea find a way to help",
+          "startFrame": 115,
+          "endFrame": 202
+        },
+        {
+          "text": "its younger generation",
+          "startFrame": 202,
+          "endFrame": 251
+        }
+      ],
+      "backgroundSrc": "#FFFFFF",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-157-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "circle": "#D7E8E6",
+          "slot": "LEFT",
+          "enterAnimation": "slideLeft",
+          "enterDelay": 0,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 9,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-157-b",
+          "src": "styles/d/generated-assets/characters/cat_homebuyer.png",
+          "circle": "#F1D8C5",
+          "slot": "RIGHT",
+          "enterAnimation": "slideRight",
+          "enterDelay": 18
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [
+        {
+          "id": "scene-157-qa",
+          "anchorAssetId": "scene-157-a",
+          "text": "Có thể xây tài sản mà không cược lớn hơn không?",
+          "direction": "right",
+          "delay": 12,
+          "duration": 48,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#D7E8E6"
+        },
+        {
+          "id": "scene-157-qb",
+          "anchorAssetId": "scene-157-b",
+          "text": "Đó mới là câu hỏi cần lời giải.",
+          "direction": "left",
+          "delay": 72,
+          "fontSize": 46,
+          "widthRatio": 0.54,
+          "background": "#F1D8C5"
+        }
+      ],
+      "frameBoxes": [
+        {
+          "id": "scene-157-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/props-thought-bubble.png",
+          "caption": "THE IMPORTANT QUESTION",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 9
+        },
+        {
+          "id": "scene-157-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/people-person.png",
+          "caption": "YOUNGER GENERATION",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 178
+        }
+      ]
+    },
+    {
+      "id": "scene-158",
+      "label": "Close the explainer cleanly.",
+      "startFrame": 4887,
+      "durationFrames": 310,
+      "layout": "TABLEAU",
+      "entranceStyle": "rise",
+      "narration": "build wealth without forcing them to take bigger and bigger gambles?\r\n\r\nThank you for watching. Don't forget to subscribe so you won't miss any future videos",
+      "sourceRange": {
+        "startWord": 3287,
+        "endWord": 3312,
+        "quoteChecksum": "0207a852bd76df12c042c7917346507334b6cad2828994964cd0cd99360bc0f4"
+      },
+      "visualRegister": "character_action",
+      "visualGrammar": "TABLEAU",
+      "beatTimingSource": "aligned-words",
+      "authoredTransitionReceipts": [
+        {
+          "beatText": "build wealth",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 10,
+          "renderedComponentIds": [
+            "scene-158-cutaway"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/savings:BUILD WEALTH"
+        },
+        {
+          "beatText": "bigger and bigger gambles",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 74,
+          "renderedComponentIds": [
+            "scene-158-cutaway-2"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:finance/loss:NOT BIGGER GAMBLES"
+        },
+        {
+          "beatText": "Thank you for watching",
+          "action": "reveal",
+          "targetSlot": "cutaway",
+          "frame": 136,
+          "renderedComponentIds": [
+            "scene-158-cutaway-3"
+          ],
+          "fromState": "absent",
+          "toState": "cutaway:props/book:THANK YOU"
+        }
+      ],
+      "semanticTakeaway": "The investigation closes without a false certainty.",
+      "semanticAction": "thanks",
+      "semanticObject": "the audience",
+      "assetResolutionNotes": [],
+      "semanticAssetIds": [
+        "characters/cat_explain",
+        "props/book",
+        "finance/savings",
+        "finance/loss",
+        "assets/scenes/library.svg"
+      ],
+      "heroVisual": false,
+      "focalType": "character_action",
+      "visualFingerprint": "TABLEAU|character_action|stage:library|1a:1p|free,table|frame:2:1,frame:2:1,frame:2:1|none|none",
+      "silentFrameTakeaway": "The host thanks the audience.",
+      "focalOccupancyTarget": 0.48,
+      "noveltyFromPrevious": [
+        "grammar:TABLEAU",
+        "asset:props/book",
+        "asset:assets/scenes/library.svg"
+      ],
+      "subtitleCues": [
+        {
+          "text": "build wealth without forcing them to take bigger and",
+          "startFrame": 0,
+          "endFrame": 107
+        },
+        {
+          "text": "bigger gambles Thank you for watching Don't forget to",
+          "startFrame": 107,
+          "endFrame": 216
+        },
+        {
+          "text": "subscribe so you won't miss any future videos",
+          "startFrame": 216,
+          "endFrame": 310
+        }
+      ],
+      "backgroundSrc": "styles/d/generated-backgrounds/library.png",
+      "clearPrevious": true,
+      "entities": [
+        {
+          "assetId": "scene-158-a",
+          "src": "styles/d/generated-assets/characters/cat_explain.png",
+          "anchor": "table",
+          "enterAnimation": "fadeIn",
+          "enterDelay": 6,
+          "emphasize": {
+            "animation": "shake",
+            "delay": 4,
+            "duration": 24
+          }
+        },
+        {
+          "assetId": "scene-158-prop",
+          "src": "styles/d/generated-assets/icons/props-book.png",
+          "position": {
+            "x": 0.76,
+            "y": 0.59
+          },
+          "scale": 1.1,
+          "motionPolicy": "fixed",
+          "enterDelay": 24,
+          "emphasize": {
+            "animation": "pulse",
+            "delay": 24,
+            "duration": 20
+          }
+        }
+      ],
+      "texts": [],
+      "speechBubbles": [],
+      "cards": [],
+      "frameBoxes": [
+        {
+          "id": "scene-158-cutaway",
+          "contentSrc": "styles/d/generated-assets/icons/finance-savings.png",
+          "caption": "BUILD WEALTH",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 10
+        },
+        {
+          "id": "scene-158-cutaway-2",
+          "contentSrc": "styles/d/generated-assets/icons/finance-loss.png",
+          "caption": "NOT BIGGER GAMBLES",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 74
+        },
+        {
+          "id": "scene-158-cutaway-3",
+          "contentSrc": "styles/d/generated-assets/icons/props-book.png",
+          "caption": "THANK YOU",
+          "position": {
+            "x": 0.5,
+            "y": 0.4
+          },
+          "width": 1550,
+          "objectFit": "cover",
+          "delay": 136
+        }
+      ]
+    }
+  ],
+  "artifactRole": "chunk-core",
+  "projectOpeningSceneId": "scene-001"
+}
